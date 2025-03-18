@@ -1,0 +1,23 @@
+[project]
+name = "maat"
+version = "0.1.0"
+description = "Run experimental software builds across Cairo language ecosystem."
+readme = "README.md"
+authors = [
+    { name = "Marek Kaput", email = "marek.kaput@swmansion.com" }
+]
+requires-python = ">=3.13"
+dependencies = [
+    "click>=8.1.8",
+    "docker>=7.1.0",
+    "pydantic>=2.10.6",
+    "rich>=13.9.4",
+    "ruff>=0.11.0",
+]
+
+[project.scripts]
+maat = "maat:cli"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

@@ -1,0 +1,70 @@
+{
+  "workspace": "release",
+  "scarb": "2.11.2",
+  "foundry": "0.39.0",
+  "maat_commit": "6fe7519",
+  "created_at": "2025-03-25T16:29:38.615777",
+  "total_execution_time": "PT2.666652S",
+  "tests": [
+    {
+      "id": 5,
+      "name": "EkuboProtocol/revenue-buybacks",
+      "steps": [
+        {
+          "id": 4,
+          "name": "git clone",
+          "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .",
+          "setup": true,
+          "exit_code": 0,
+          "stdout": null,
+          "stderr": "Cloning into '.'...\n"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "name": "EkuboProtocol/limit-orders-extension",
+      "steps": [
+        {
+          "id": 2,
+          "name": "git clone",
+          "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/limit-orders-extension .",
+          "setup": true,
+          "exit_code": 0,
+          "stdout": null,
+          "stderr": "Cloning into '.'...\n"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "name": "starkware-libs/starknet-staking",
+      "steps": [
+        {
+          "id": 6,
+          "name": "git clone",
+          "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
+          "setup": true,
+          "exit_code": 0,
+          "stdout": null,
+          "stderr": "Cloning into '.'...\n"
+        }
+      ]
+    },
+    {
+      "id": 1,
+      "name": "EkuboProtocol/governance",
+      "steps": [
+        {
+          "id": 0,
+          "name": "git clone",
+          "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .",
+          "setup": true,
+          "exit_code": 0,
+          "stdout": null,
+          "stderr": "Cloning into '.'...\n"
+        }
+      ]
+    }
+  ]
+}
