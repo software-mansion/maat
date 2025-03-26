@@ -2,57 +2,96 @@
   "workspace": "release",
   "scarb": "2.11.2",
   "foundry": "0.39.0",
-  "maat_commit": "6fe7519",
-  "created_at": "2025-03-25T16:29:38.615777",
-  "total_execution_time": "PT2.666652S",
+  "maat_commit": "b57d1a8",
+  "created_at": "2025-03-26T13:12:57.593653",
+  "total_execution_time": "PT3.545899S",
   "tests": [
     {
-      "id": 5,
+      "id": 14,
       "name": "EkuboProtocol/revenue-buybacks",
       "steps": [
         {
-          "id": 4,
+          "id": 10,
           "name": "git clone",
           "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .",
           "setup": true,
           "exit_code": 0,
           "stdout": null,
           "stderr": "Cloning into '.'...\n"
+        },
+        {
+          "id": 11,
+          "name": "build",
+          "run": "scarb --json build --test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 12,
+          "name": "test",
+          "run": "scarb --json lint",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 13,
+          "name": "test",
+          "run": "scarb --json test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
         }
       ]
     },
     {
-      "id": 3,
+      "id": 9,
       "name": "EkuboProtocol/limit-orders-extension",
       "steps": [
         {
-          "id": 2,
+          "id": 5,
           "name": "git clone",
           "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/limit-orders-extension .",
           "setup": true,
           "exit_code": 0,
           "stdout": null,
           "stderr": "Cloning into '.'...\n"
-        }
-      ]
-    },
-    {
-      "id": 7,
-      "name": "starkware-libs/starknet-staking",
-      "steps": [
+        },
         {
           "id": 6,
-          "name": "git clone",
-          "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
-          "setup": true,
-          "exit_code": 0,
-          "stdout": null,
-          "stderr": "Cloning into '.'...\n"
+          "name": "build",
+          "run": "scarb --json build --test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 7,
+          "name": "test",
+          "run": "scarb --json lint",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 8,
+          "name": "test",
+          "run": "scarb --json test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
         }
       ]
     },
     {
-      "id": 1,
+      "id": 4,
       "name": "EkuboProtocol/governance",
       "steps": [
         {
@@ -63,6 +102,75 @@
           "exit_code": 0,
           "stdout": null,
           "stderr": "Cloning into '.'...\n"
+        },
+        {
+          "id": 1,
+          "name": "build",
+          "run": "scarb --json build --test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 2,
+          "name": "test",
+          "run": "scarb --json lint",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 3,
+          "name": "test",
+          "run": "scarb --json test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        }
+      ]
+    },
+    {
+      "id": 19,
+      "name": "starkware-libs/starknet-staking",
+      "steps": [
+        {
+          "id": 15,
+          "name": "git clone",
+          "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
+          "setup": true,
+          "exit_code": 0,
+          "stdout": null,
+          "stderr": "Cloning into '.'...\n"
+        },
+        {
+          "id": 16,
+          "name": "build",
+          "run": "scarb --json build --test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 17,
+          "name": "test",
+          "run": "scarb --json lint",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
+        },
+        {
+          "id": 18,
+          "name": "test",
+          "run": "scarb --json test",
+          "setup": false,
+          "exit_code": 126,
+          "stdout": "OCI runtime exec failed: exec failed: unable to start container process: exec: \"scarb\": executable file not found in $PATH: unknown\r\n",
+          "stderr": null
         }
       ]
     }
