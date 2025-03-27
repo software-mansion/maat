@@ -5,7 +5,7 @@ from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import timedelta
 
-from python_on_whales import DockerClient, Image
+from python_on_whales import DockerClient, DockerException, Image, Volume
 from rich.console import Console
 from rich.progress import (
     BarColumn,
@@ -21,7 +21,6 @@ from maat import ReportBuilder
 from maat.runner.model import Test, TestStep, TestSuite
 
 
-# noinspection PyBroadException
 def execute_test_locally(
     test: Test,
     sandbox: Image | str,
@@ -29,8 +28,6 @@ def execute_test_locally(
     report_builder: ReportBuilder,
     progress: Progress,
 ):
-    workdir = "/root/maat-workbench"
-
     with (
         TestRunMonitor(test, progress) as monitor,
         report_builder.test(test) as trb,
@@ -39,30 +36,32 @@ def execute_test_locally(
         ) as volume,
     ):
         for step in test.steps:
-            with monitor.will_run_step(step):
-                if isinstance(step.run, str):
-                    command = shlex.split(step.run)
-                else:
-                    command = step.run
+            # noinspection PyBroadException
+            try:
+                with monitor.will_run_step(step):
+                    if isinstance(step.run, str):
+                        command = shlex.split(step.run)
+                    else:
+                        command = step.run
 
-                try:
-                    stdout = docker.container.run(
+                    name = f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}"
+
+                    exit_code, stdout, stderr = run_step_command(
+                        docker=docker,
                         image=sandbox,
                         command=command,
-                        name=f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}",
-                        remove=True,
-                        volumes=[(volume, workdir, "rw")],
-                        workdir=workdir,
+                        container_name=name,
+                        workbench_volume=volume,
                     )
 
                     trb.report(
                         step=step,
-                        exit_code=0,
+                        exit_code=exit_code,
                         stdout=stdout,
-                        stderr="",
+                        stderr=stderr,
                     )
-                except Exception:
-                    progress.console.print_exception()
+            except Exception:
+                progress.console.print_exception()
 
 
 def execute_test_suite_locally(
@@ -169,6 +168,48 @@ def ephemeral_volume(docker: DockerClient, **kwargs):
         yield volume
     finally:
         volume.remove()
+
+
+def run_step_command(
+    docker: DockerClient,
+    image: Image | str,
+    command: list[str],
+    container_name: str,
+    workbench_volume: Volume,
+) -> tuple[int, bytes, bytes]:
+    workdir = "/root/maat-workbench"
+
+    exit_code: int = 0
+    stdout_parts: list[bytes] = []
+    stderr_parts: list[bytes] = []
+    # noinspection PyBroadException
+    try:
+        stream = docker.container.run(
+            image=image,
+            command=command,
+            name=container_name,
+            remove=True,
+            volumes=[(workbench_volume, workdir, "rw")],
+            workdir=workdir,
+            stream=True,
+        )
+        for source, line in stream:
+            match source:
+                case "stdout":
+                    stdout_parts.append(line)
+                case "stderr":
+                    stderr_parts.append(line)
+    except DockerException as e:
+        # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
+        # Anything other than these values comes from the container process.
+        # Ref: https://docs.docker.com/engine/containers/run/#exit-status
+        exit_code = e.return_code
+        if exit_code not in [125, 126, 127]:
+            raise
+    finally:
+        stdout = b"".join(stdout_parts)
+        stderr = b"".join(stderr_parts)
+        return exit_code, stdout, stderr
 
 
 def sanitize_name(name: str) -> str:

@@ -18,8 +18,8 @@ class StepReport(BaseModel):
     run: Command
     setup: bool
     exit_code: int | None
-    stdout: str | None
-    stderr: str | None
+    stdout: bytes | None
+    stderr: bytes | None
 
     @classmethod
     def blueprint(cls, test_step: TestStep):

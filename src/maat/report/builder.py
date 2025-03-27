@@ -13,7 +13,13 @@ class TestReportBuilder:
         self._test = test
         self._reported_steps: dict[int, StepReport] = {}
 
-    def report(self, step: TestStep, exit_code: int, stdout: str, stderr: str) -> None:
+    def report(
+        self,
+        step: TestStep,
+        exit_code: int,
+        stdout: bytes,
+        stderr: bytes,
+    ) -> None:
         self._reported_steps[step.id] = StepReport.from_test_step(
             step,
             exit_code=exit_code,
