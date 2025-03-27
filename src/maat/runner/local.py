@@ -21,49 +21,6 @@ from maat import ReportBuilder
 from maat.runner.model import Test, TestStep, TestSuite
 
 
-def execute_test_locally(
-    test: Test,
-    sandbox: Image | str,
-    docker: DockerClient,
-    report_builder: ReportBuilder,
-    progress: Progress,
-):
-    with (
-        TestRunMonitor(test, progress) as monitor,
-        report_builder.test(test) as trb,
-        ephemeral_volume(
-            docker, volume_name=f"maat-{sanitize_name(test.name)}"
-        ) as volume,
-    ):
-        for step in test.steps:
-            # noinspection PyBroadException
-            try:
-                with monitor.will_run_step(step):
-                    if isinstance(step.run, str):
-                        command = shlex.split(step.run)
-                    else:
-                        command = step.run
-
-                    name = f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}"
-
-                    exit_code, stdout, stderr = run_step_command(
-                        docker=docker,
-                        image=sandbox,
-                        command=command,
-                        container_name=name,
-                        workbench_volume=volume,
-                    )
-
-                    trb.report(
-                        step=step,
-                        exit_code=exit_code,
-                        stdout=stdout,
-                        stderr=stderr,
-                    )
-            except Exception:
-                progress.console.print_exception()
-
-
 def execute_test_suite_locally(
     test_suite: TestSuite,
     jobs: int | None,
@@ -108,6 +65,49 @@ def execute_test_suite_locally(
         progress.console.log(
             f":test_tube: [progress.elapsed]{timedelta(seconds=progress.tasks[task].finished_time or 0)}[/progress.elapsed] [progress.description bold]Experiment[/progress.description bold]"
         )
+
+
+def execute_test_locally(
+    test: Test,
+    sandbox: Image | str,
+    docker: DockerClient,
+    report_builder: ReportBuilder,
+    progress: Progress,
+):
+    with (
+        TestRunMonitor(test, progress) as monitor,
+        report_builder.test(test) as trb,
+        ephemeral_volume(
+            docker, volume_name=f"maat-{sanitize_name(test.name)}"
+        ) as volume,
+    ):
+        for step in test.steps:
+            # noinspection PyBroadException
+            try:
+                with monitor.will_run_step(step):
+                    if isinstance(step.run, str):
+                        command = shlex.split(step.run)
+                    else:
+                        command = step.run
+
+                    name = f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}"
+
+                    exit_code, stdout, stderr = run_step_command(
+                        docker=docker,
+                        image=sandbox,
+                        command=command,
+                        container_name=name,
+                        workbench_volume=volume,
+                    )
+
+                    trb.report(
+                        step=step,
+                        exit_code=exit_code,
+                        stdout=stdout,
+                        stderr=stderr,
+                    )
+            except Exception:
+                progress.console.print_exception()
 
 
 class TestRunMonitor:
