@@ -1,6 +1,10 @@
+import base64
 import os
 import re
 import shlex
+import struct
+import threading
+import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import timedelta
@@ -20,6 +24,8 @@ from rich.progress import (
 from maat import ReportBuilder
 from maat.runner.model import Test, TestStep, TestSuite
 
+RUN_LABEL = "maat-run"
+
 
 def execute_test_suite_locally(
     test_suite: TestSuite,
@@ -28,7 +34,10 @@ def execute_test_suite_locally(
     report_builder: ReportBuilder,
     console: Console,
 ):
-    jobs = jobs or os.process_cpu_count() or 1
+    jobs = jobs or os.cpu_count() or 1
+    run_token = token()
+    run_event = threading.Event()
+    run_event.set()
 
     with (
         Progress(
@@ -46,10 +55,15 @@ def execute_test_suite_locally(
     ):
         task = progress.add_task("Experimenting", total=len(test_suite.tests))
 
+        def elapsed() -> timedelta:
+            return timedelta(seconds=progress.tasks[task].finished_time or 0)
+
         def worker_main(current_test: Test):
             execute_test_locally(
-                current_test,
+                test=current_test,
                 sandbox=test_suite.sandbox,
+                run_event=run_event,
+                run_token=run_token,
                 docker=docker,
                 report_builder=report_builder,
                 progress=progress,
@@ -59,21 +73,43 @@ def execute_test_suite_locally(
         for test in test_suite.tests:
             pool.submit(worker_main, test)
 
-        pool.shutdown(wait=True)
+        try:
+            pool.shutdown(wait=True)
+        except KeyboardInterrupt:
+            run_event.clear()
+
+            progress.console.log(
+                f":warning: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description]Cancelling experiment, sending SIGKILL to all containers...[/progress.description]"
+            )
+            progress.update(task, description="Cancelling")
+
+            kill_containers_with_run_token(docker, run_token)
+            pool.shutdown(wait=True)
+
+            progress.update(task, visible=False)
+            progress.console.log(
+                f":test_tube: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description bold]Experiment cancelled[/progress.description bold]"
+            )
+            raise
 
         progress.update(task, visible=False)
         progress.console.log(
-            f":test_tube: [progress.elapsed]{timedelta(seconds=progress.tasks[task].finished_time or 0)}[/progress.elapsed] [progress.description bold]Experiment[/progress.description bold]"
+            f":test_tube: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description bold]Experiment[/progress.description bold]"
         )
 
 
 def execute_test_locally(
     test: Test,
     sandbox: Image | str,
+    run_event: threading.Event,
+    run_token: str,
     docker: DockerClient,
     report_builder: ReportBuilder,
     progress: Progress,
 ):
+    if not run_event.is_set():
+        return
+
     with (
         TestRunMonitor(test, progress) as monitor,
         report_builder.test(test) as trb,
@@ -82,6 +118,9 @@ def execute_test_locally(
         ) as volume,
     ):
         for step in test.steps:
+            if not run_event.is_set():
+                return
+
             # noinspection PyBroadException
             try:
                 with monitor.will_run_step(step):
@@ -98,6 +137,7 @@ def execute_test_locally(
                         command=command,
                         container_name=name,
                         workbench_volume=volume,
+                        labels={RUN_LABEL: run_token},
                     )
 
                     trb.report(
@@ -176,6 +216,7 @@ def run_step_command(
     command: list[str],
     container_name: str,
     workbench_volume: Volume,
+    labels: dict[str, str],
 ) -> tuple[int, bytes, bytes]:
     workdir = "/root/maat-workbench"
 
@@ -187,6 +228,7 @@ def run_step_command(
             image=image,
             command=command,
             name=container_name,
+            labels=labels,
             remove=True,
             volumes=[(workbench_volume, workdir, "rw")],
             workdir=workdir,
@@ -211,5 +253,20 @@ def run_step_command(
         return exit_code, stdout, stderr
 
 
+def kill_containers_with_run_token(docker: DockerClient, run_token: str):
+    containers = docker.container.list(filters={"label": f"{RUN_LABEL}={run_token}"})
+    for container in containers:
+        container.kill()
+
+
 def sanitize_name(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
+
+
+def token() -> str:
+    """
+    Generate a short base32-encoded token based on high-precision current time.
+    """
+    current_time = time.time_ns()
+    packed_time = struct.pack(">Q", current_time)
+    return base64.b32encode(packed_time).decode("utf-8").rstrip("=").lower()

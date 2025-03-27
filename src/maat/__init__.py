@@ -13,7 +13,6 @@ from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
 
-# TODO: Make CTRL+C working when running locally. Maybe run containers in python async code instead of thread pool?
 # TODO: Reports need to be sorted and have somehow stable IDs for git diffability.
 
 
