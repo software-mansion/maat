@@ -8,7 +8,7 @@ from rich.console import Console
 
 from maat import sandbox
 from maat.ecosystem import build_test_suite
-from maat.report.builder import ReportBuilder
+from maat.report.reporter import Reporter
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
@@ -83,9 +83,7 @@ def run_local(
 ) -> None:
     console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
 
-    report_builder = ReportBuilder(
-        workspace_name=workspace.name, scarb=scarb, foundry=foundry
-    )
+    reporter = Reporter(workspace_name=workspace.name, scarb=scarb, foundry=foundry)
 
     sandbox_image = sandbox.build(
         scarb=scarb, foundry=foundry, docker=docker, console=console
@@ -101,11 +99,11 @@ def run_local(
         test_suite=test_suite,
         jobs=jobs,
         docker=docker,
-        report_builder=report_builder,
+        reporter=reporter,
         console=console,
     )
 
-    report_builder.finish().save()
+    reporter.finish().save()
 
 
 @cli.command(help="Compare two reports.")

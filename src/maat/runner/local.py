@@ -21,7 +21,7 @@ from rich.progress import (
     TimeRemainingColumn,
 )
 
-from maat import ReportBuilder
+from maat.report.reporter import Reporter, StepReporter
 from maat.runner.model import Test, TestStep, TestSuite
 
 RUN_LABEL = "maat-run"
@@ -31,7 +31,7 @@ def execute_test_suite_locally(
     test_suite: TestSuite,
     jobs: int | None,
     docker: DockerClient,
-    report_builder: ReportBuilder,
+    reporter: Reporter,
     console: Console,
 ):
     jobs = jobs or os.cpu_count() or 1
@@ -59,16 +59,20 @@ def execute_test_suite_locally(
             return timedelta(seconds=progress.tasks[task].finished_time or 0)
 
         def worker_main(current_test: Test):
-            execute_test_locally(
-                test=current_test,
-                sandbox=test_suite.sandbox,
-                run_event=run_event,
-                run_token=run_token,
-                docker=docker,
-                report_builder=report_builder,
-                progress=progress,
-            )
-            progress.advance(task)
+            # noinspection PyBroadException
+            try:
+                execute_test_locally(
+                    test=current_test,
+                    sandbox=test_suite.sandbox,
+                    run_event=run_event,
+                    run_token=run_token,
+                    docker=docker,
+                    reporter=reporter,
+                    progress=progress,
+                )
+                progress.advance(task)
+            except Exception:
+                progress.console.print_exception()
 
         for test in test_suite.tests:
             pool.submit(worker_main, test)
@@ -104,15 +108,16 @@ def execute_test_locally(
     run_event: threading.Event,
     run_token: str,
     docker: DockerClient,
-    report_builder: ReportBuilder,
+    reporter: Reporter,
     progress: Progress,
 ):
     if not run_event.is_set():
         return
 
+    test_reporter = reporter.test(test)
+
     with (
         TestRunMonitor(test, progress) as monitor,
-        report_builder.test(test) as report_builder,
         ephemeral_volume(
             docker, volume_name=f"maat-{sanitize_name(test.name)}"
         ) as volume,
@@ -121,33 +126,25 @@ def execute_test_locally(
             if not run_event.is_set():
                 return
 
-            # noinspection PyBroadException
-            try:
-                with monitor.will_run_step(step):
-                    if isinstance(step.run, str):
-                        command = shlex.split(step.run)
-                    else:
-                        command = step.run
+            step_reporter = test_reporter.step(step)
 
-                    name = f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}"
+            with monitor.will_run_step(step):
+                if isinstance(step.run, str):
+                    command = shlex.split(step.run)
+                else:
+                    command = step.run
 
-                    exit_code, stdout, stderr = run_step_command(
-                        docker=docker,
-                        image=sandbox,
-                        command=command,
-                        container_name=name,
-                        workbench_volume=volume,
-                        labels={RUN_LABEL: run_token},
-                    )
+                name = f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}"
 
-                    report_builder.report(
-                        step=step,
-                        exit_code=exit_code,
-                        stdout=stdout,
-                        stderr=stderr,
-                    )
-            except Exception:
-                progress.console.print_exception()
+                run_step_command(
+                    docker=docker,
+                    image=sandbox,
+                    command=command,
+                    container_name=name,
+                    workbench_volume=volume,
+                    labels={RUN_LABEL: run_token},
+                    step_reporter=step_reporter,
+                )
 
 
 class TestRunMonitor:
@@ -217,12 +214,10 @@ def run_step_command(
     container_name: str,
     workbench_volume: Volume,
     labels: dict[str, str],
-) -> tuple[int, list[bytes], list[bytes]]:
+    step_reporter: StepReporter,
+):
     workdir = "/root/maat-workbench"
 
-    exit_code: int = 0
-    stdout: list[bytes] = []
-    stderr: list[bytes] = []
     try:
         stream = docker.container.run(
             image=image,
@@ -237,18 +232,18 @@ def run_step_command(
         for source, line in stream:
             match source:
                 case "stdout":
-                    stdout.append(line)
+                    step_reporter.append_stdout_line(line)
                 case "stderr":
-                    stderr.append(line)
+                    step_reporter.append_stderr_line(line)
+        step_reporter.set_exit_code(0)
     except DockerException as e:
         # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
         # Anything other than these values comes from the container process.
         # Ref: https://docs.docker.com/engine/containers/run/#exit-status
         exit_code = e.return_code
-        if exit_code not in [125, 126, 127]:
+        step_reporter.set_exit_code(exit_code)
+        if exit_code in [125, 126, 127]:
             raise
-    finally:
-        return exit_code, stdout, stderr
 
 
 def kill_containers_with_run_token(docker: DockerClient, run_token: str):

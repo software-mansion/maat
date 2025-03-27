@@ -23,21 +23,14 @@ class StepReport(BaseModel):
 
     @classmethod
     def blueprint(cls, test_step: TestStep):
-        return cls.from_test_step(
-            test_step,
-            exit_code=None,
-            stdout=None,
-            stderr=None,
-        )
-
-    @classmethod
-    def from_test_step(cls, test_step: TestStep, **kwargs):
         return cls(
             id=test_step.id,
             name=test_step.name,
             run=normalize_command(test_step.run),
             setup=test_step.setup,
-            **kwargs,
+            exit_code=None,
+            stdout=None,
+            stderr=None,
         )
 
 
