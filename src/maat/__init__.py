@@ -2,13 +2,13 @@ import functools
 import pathlib
 
 import click
+from python_on_whales import DockerClient
 from rich import traceback
 from rich.console import Console
 
 from maat import sandbox
 from maat.ecosystem import build_test_suite
 from maat.report.builder import ReportBuilder
-from maat.runner.docker import MaatDockerClient
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
@@ -20,7 +20,7 @@ from maat.workspace import Workspace
 traceback.install(show_locals=True)
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
-pass_docker = click.make_pass_decorator(MaatDockerClient, ensure=True)
+pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
 
 
 def load_workspace(f):
@@ -76,7 +76,7 @@ def cli() -> None:
 @pass_console
 def run_local(
     console: Console,
-    docker: MaatDockerClient,
+    docker: DockerClient,
     workspace: Workspace,
     scarb: Semver,
     foundry: Semver,

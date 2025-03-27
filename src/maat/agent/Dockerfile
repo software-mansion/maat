@@ -4,7 +4,10 @@ LABEL maintainer="Software Mansion <contact@swmansion.com>"
 ENV RUSTUP_HOME=/opt/rustup
 ENV CARGO_HOME=/opt/cargo
 ENV ASDF_DATA_DIR=/opt/asdf
-ENV PATH="$ASDF_DATA_DIR/shims:$CARGO_HOME/bin:$PATH"
+
+# Adding /root/.local/bin because universal-sierra-compiler installer is hardcoded to this path.
+# And we will reuse it for asdf install just because.
+ENV PATH="$ASDF_DATA_DIR/shims:$CARGO_HOME/bin:/root/.local/bin:$PATH"
 
 # Install some build essentials and rustup-init.
 RUN dnf install -y gcc-c++ git make rustup && dnf clean all
@@ -12,20 +15,26 @@ RUN dnf install -y gcc-c++ git make rustup && dnf clean all
 # Install Rust, this will use RUSTUP_TOOLCHAIN from environment.
 ENV RUST_BACKTRACE=1
 ARG RUSTUP_TOOLCHAIN=1.85
+ENV RUSTUP_TOOLCHAIN="$RUSTUP_TOOLCHAIN"
 RUN rustup-init -y --no-modify-path && cargo --version
 
 # Install ASDF.
 ARG ASDF_VERSION=0.16.5
-RUN <<EOF sh
+ENV ASDF_VERSION="$ASDF_VERSION"
+RUN <<EOF
+set -eux
+mkdir -p /root/.local/bin
 export ARCH=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/' -e 's/i[3-6]86/386/')
-export DL_URL="https://github.com/asdf-vm/asdf/releases/download/v$ASDF_VERSION/asdf-v$ASDF_VERSION-linux-\$ARCH.tar.gz"
-curl -L "\$DL_URL" | tar -xz --strip-components=0 -C /usr/local/bin asdf
+export DL_URL="https://github.com/asdf-vm/asdf/releases/download/v$ASDF_VERSION/asdf-v$ASDF_VERSION-linux-$ARCH.tar.gz"
+curl --proto '=https' --tlsv1.2 -sSfL "$DL_URL" | tar -xz --strip-components=0 -C /root/.local/bin asdf
 asdf --version
 EOF
 
 # Install Scarb.
 ARG ASDF_SCARB_VERSION
-RUN <<EOF sh
+ENV ASDF_SCARB_VERSION="$ASDF_SCARB_VERSION"
+RUN <<EOF
+set -eux
 if [ -z "$ASDF_SCARB_VERSION" ]; then
   echo "ERROR: ASDF_SCARB_VERSION must be specified"
   exit 1
@@ -38,8 +47,10 @@ EOF
 # Install Starknet Foundry.
 # We try to normalize name of the environment variable controlling it because, well, LOL.
 ARG ASDF_STARKNET_FOUNDRY_VERSION
+ENV ASDF_STARKNET_FOUNDRY_VERSION="$ASDF_STARKNET_FOUNDRY_VERSION"
 ENV ASDF_STARKNET-FOUNDRY_VERSION="$ASDF_STARKNET_FOUNDRY_VERSION"
-RUN <<EOF sh
+RUN <<EOF
+set -eux
 if [ -z "${ASDF_STARKNET-FOUNDRY_VERSION}" ]; then
   echo "ERROR: ASDF_STARKNET_FOUNDRY_VERSION must be specified"
   exit 1
@@ -51,17 +62,13 @@ sncast --version
 EOF
 
 # Create sample snforge project and test it. This will compile snforge procmacros if needed and store it in caches.
-RUN <<EOF sh
+RUN <<EOF
+set -eux
 cd /tmp
-snforge init just_testing
+snforge new --no-vcs just_testing
 cd ./just_testing
 scarb build
 scarb test
 cd
 rm -rf /tmp/just_testing
 EOF
-
-# Add entrypoint script
-COPY entrypoint.sh /opt/entrypoint.sh
-RUN chmod +x /opt/entrypoint.sh
-ENTRYPOINT ["/opt/entrypoint.sh"]
