@@ -112,7 +112,7 @@ def execute_test_locally(
 
     with (
         TestRunMonitor(test, progress) as monitor,
-        report_builder.test(test) as trb,
+        report_builder.test(test) as report_builder,
         ephemeral_volume(
             docker, volume_name=f"maat-{sanitize_name(test.name)}"
         ) as volume,
@@ -140,7 +140,7 @@ def execute_test_locally(
                         labels={RUN_LABEL: run_token},
                     )
 
-                    trb.report(
+                    report_builder.report(
                         step=step,
                         exit_code=exit_code,
                         stdout=stdout,
@@ -217,12 +217,12 @@ def run_step_command(
     container_name: str,
     workbench_volume: Volume,
     labels: dict[str, str],
-) -> tuple[int, bytes, bytes]:
+) -> tuple[int, list[bytes], list[bytes]]:
     workdir = "/root/maat-workbench"
 
     exit_code: int = 0
-    stdout_parts: list[bytes] = []
-    stderr_parts: list[bytes] = []
+    stdout: list[bytes] = []
+    stderr: list[bytes] = []
     try:
         stream = docker.container.run(
             image=image,
@@ -237,9 +237,9 @@ def run_step_command(
         for source, line in stream:
             match source:
                 case "stdout":
-                    stdout_parts.append(line)
+                    stdout.append(line)
                 case "stderr":
-                    stderr_parts.append(line)
+                    stderr.append(line)
     except DockerException as e:
         # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
         # Anything other than these values comes from the container process.
@@ -248,8 +248,6 @@ def run_step_command(
         if exit_code not in [125, 126, 127]:
             raise
     finally:
-        stdout = b"".join(stdout_parts)
-        stderr = b"".join(stderr_parts)
         return exit_code, stdout, stderr
 
 

@@ -17,8 +17,8 @@ class TestReportBuilder:
         self,
         step: TestStep,
         exit_code: int,
-        stdout: bytes,
-        stderr: bytes,
+        stdout: list[bytes],
+        stderr: list[bytes],
     ) -> None:
         self._reported_steps[step.id] = StepReport.from_test_step(
             step,
