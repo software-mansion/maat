@@ -182,7 +182,6 @@ def run_step_command(
     exit_code: int = 0
     stdout_parts: list[bytes] = []
     stderr_parts: list[bytes] = []
-    # noinspection PyBroadException
     try:
         stream = docker.container.run(
             image=image,
