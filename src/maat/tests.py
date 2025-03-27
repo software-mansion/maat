@@ -22,7 +22,7 @@ Build = _Build()
 class _Lint(TestWorkflow):
     def steps(self) -> list[TestStep]:
         return [
-            TestStep(name="test", run="scarb --json lint"),
+            TestStep(name="lint", run="scarb --json lint"),
         ]
 
 
