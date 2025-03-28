@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from maat.ecosystem.git import setup_git
 from maat.ecosystem.registry import fetch_all_packages, setup_registry
-from maat.runner.model import TestStep
+from maat.runner.model import Step
 
 _GITHUB_URL = "https://github.com/"
 _SCARBS_XYZ = "https://scarbs.xyz/"
@@ -20,7 +20,7 @@ class EcosystemProject(BaseModel, ABC):
         pass
 
     @abstractmethod
-    def setup(self) -> list[TestStep]:
+    def setup(self) -> list[Step]:
         pass
 
 
@@ -34,7 +34,7 @@ class _Git(EcosystemProject):
         else:
             return _human_url(self.repo)
 
-    def setup(self) -> list[TestStep]:
+    def setup(self) -> list[Step]:
         return setup_git(repo=self.repo)
 
 
@@ -51,7 +51,7 @@ class _Registry(EcosystemProject):
 
         return name
 
-    def setup(self) -> list[TestStep]:
+    def setup(self) -> list[Step]:
         return setup_registry(
             registry_url=self.registry_url,
             package=self.package,

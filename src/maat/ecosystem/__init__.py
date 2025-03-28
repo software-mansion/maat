@@ -2,7 +2,7 @@ from typing import Iterator
 
 from rich.console import Console
 
-from maat import tests
+from maat import workflows
 from maat.ecosystem.spec import Ecosystem, EcosystemProject
 from maat.runner.model import ImageId, Test, TestSuite
 
@@ -15,8 +15,8 @@ def build_test_suite(
 
         for project in flatten_ecosystem(ecosystem):
             steps = project.setup()
-            for test in tests.All:
-                steps.extend(test.steps())
+            for workflow in workflows.ALL:
+                steps.extend(workflow())
 
             test = Test(name=project.name, steps=steps)
             suite.tests.append(test)

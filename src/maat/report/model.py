@@ -3,7 +3,7 @@ from datetime import datetime, timedelta
 from pydantic import BaseModel, Field
 
 from maat.installation import REPO, this_maat_commit
-from maat.runner.model import TestStep
+from maat.runner.model import Step
 from maat.semver import Semver
 from maat.utils.shell import join_command
 
@@ -16,19 +16,17 @@ class StepReport(BaseModel):
     id: int
     name: StepName
     run: Command
-    setup: bool
     exit_code: int | None
     stdout: list[bytes] | None
     stderr: list[bytes] | None
     execution_time: timedelta | None
 
     @classmethod
-    def blueprint(cls, test_step: TestStep):
+    def blueprint(cls, step: Step):
         return cls(
-            id=test_step.id,
-            name=test_step.name,
-            run=join_command(test_step.run),
-            setup=test_step.setup,
+            id=step.id,
+            name=step.name,
+            run=join_command(step.run),
             exit_code=None,
             stdout=None,
             stderr=None,

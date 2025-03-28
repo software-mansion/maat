@@ -1,11 +1,7 @@
-from maat.runner.model import TestStep
+from maat.runner.model import Step
 
 
-def setup_git(repo: str) -> list[TestStep]:
+def setup_git(repo: str) -> list[Step]:
     return [
-        TestStep(
-            name="git clone",
-            run=["git", "clone", "--depth", "1", "--no-tags", repo, "."],
-            setup=True,
-        ),
+        Step.setup(["git", "clone", "--depth", "1", "--no-tags", repo, "."]),
     ]

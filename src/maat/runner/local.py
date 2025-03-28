@@ -18,7 +18,7 @@ from rich.progress import (
 
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
-from maat.runner.model import Test, TestStep, TestSuite
+from maat.runner.model import Test, Step, TestSuite
 from maat.utils.shell import split_command
 
 
@@ -142,7 +142,7 @@ class TestProgress:
         self._task = self._progress.add_task(
             description=self._test.name,
             start=False,
-            total=sum(not s.setup for s in self._test.steps),
+            total=sum(not s.meta.setup for s in self._test.steps),
         )
 
     def __enter__(self):
@@ -168,16 +168,16 @@ class TestProgress:
         return False  # Don't suppress exceptions.
 
     @contextmanager
-    def will_run_step(self, step: TestStep):
+    def will_run_step(self, step: Step):
         self._progress.update(self._task, description=f"{self._test.name}: {step.name}")
 
-        if not step.setup and self._progress.tasks[self._task].start_time is None:
+        if not step.meta.setup and self._progress.tasks[self._task].start_time is None:
             self._progress.start_task(self._task)
 
         try:
             yield
         finally:
-            if not step.setup:
+            if not step.meta.setup:
                 self._progress.advance(self._task)
 
 
