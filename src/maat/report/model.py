@@ -20,6 +20,7 @@ class StepReport(BaseModel):
     exit_code: int | None
     stdout: list[bytes] | None
     stderr: list[bytes] | None
+    execution_time: timedelta | None
 
     @classmethod
     def blueprint(cls, test_step: TestStep):
@@ -31,6 +32,7 @@ class StepReport(BaseModel):
             exit_code=None,
             stdout=None,
             stderr=None,
+            execution_time=None,
         )
 
 
@@ -38,6 +40,14 @@ class TestReport(BaseModel):
     id: int
     name: TestName
     steps: list[StepReport] = []
+
+    @property
+    def execution_time(self) -> timedelta:
+        total = timedelta()
+        for step in self.steps:
+            if step.execution_time is not None:
+                total += step.execution_time
+        return total
 
 
 class Report(BaseModel):

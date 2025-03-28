@@ -9,9 +9,13 @@ from maat.semver import Semver
 class StepReporter:
     def __init__(self, report: StepReport):
         self._report = report
+        self._timer: _ExecutionTimer | None = None
 
     def set_exit_code(self, exit_code: int):
         self._report.exit_code = exit_code
+
+    def set_execution_time(self, execution_time: timedelta):
+        self._report.execution_time = execution_time
 
     def append_stdout_line(self, line: bytes):
         if self._report.stdout is None:
@@ -22,6 +26,15 @@ class StepReporter:
         if self._report.stderr is None:
             self._report.stderr = []
         self._report.stderr.append(line)
+
+    def __enter__(self) -> "StepReporter":
+        self._timer = _ExecutionTimer()
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        assert self._timer is not None
+        self.set_execution_time(self._timer.stop())
+        return False  # Don't suppress exceptions.
 
 
 class TestReporter:
@@ -58,13 +71,19 @@ class Reporter:
             foundry=foundry,
             total_execution_time=timedelta.max,
         )
-        self._start_time = time.perf_counter()
+        self._timer = _ExecutionTimer()
 
     def test(self, test: Test) -> TestReporter:
         return TestReporter(self._report, test)
 
     def finish(self) -> Report:
-        self._report.total_execution_time = timedelta(
-            seconds=time.perf_counter() - self._start_time
-        )
+        self._report.total_execution_time = self._timer.stop()
         return self._report
+
+
+class _ExecutionTimer:
+    def __init__(self):
+        self._start_time = time.perf_counter()
+
+    def stop(self) -> timedelta:
+        return timedelta(seconds=time.perf_counter() - self._start_time)

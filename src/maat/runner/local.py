@@ -126,9 +126,10 @@ def execute_test_locally(
             if not run_event.is_set():
                 return
 
-            step_reporter = test_reporter.step(step)
-
-            with test_progress.will_run_step(step):
+            with (
+                test_progress.will_run_step(step),
+                test_reporter.step(step) as step_reporter,
+            ):
                 run_step_command(
                     docker=docker,
                     image=sandbox,
