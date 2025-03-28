@@ -1,7 +1,8 @@
-from typing import Any, Self
+from typing import Any, Callable, Self
 
 from pydantic import BaseModel, Field, model_validator
 
+from maat.report.analysis import Analyser
 from maat.utils.shell import join_command
 from maat.utils.unique_id import unique_id
 
@@ -21,6 +22,37 @@ class StepMeta(BaseModel):
     Setup steps are not analysed in reports and progress bars behaves differently for these.
     """
 
+    analysers: Callable[[], list[Analyser]] | None = None
+
+    def __init__(self, /, **data: Any) -> None:
+        super().__init__(**data)
+
+        if self.name is not None:
+            if self.name in _meta_registry:
+                raise ValueError(
+                    f"step meta with name '{self.name}' is already registered"
+                )
+
+            _meta_registry[self.name] = self
+
+    @model_validator(mode="after")
+    def _check_name_is_set(self) -> Self:
+        has_prop_requiring_name = self.analysers is not None
+        if has_prop_requiring_name and self.name is None:
+            raise ValueError("unnamed step meta specifies props that require a name")
+        return self
+
+    @classmethod
+    def by_name(cls, name: str) -> Self | None:
+        # Ensure all workflows are loaded as they're the place where other StepMetas are created.
+        from maat.workflows import ALL
+
+        _ = ALL
+
+        return _meta_registry.get(name)
+
+
+_meta_registry: dict[str, StepMeta] = {}
 
 DefaultStepMeta = StepMeta()
 SetupStepMeta = StepMeta(setup=True)

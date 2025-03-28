@@ -1,5 +1,5 @@
 import functools
-import pathlib
+from pathlib import Path
 
 import click
 from python_on_whales import DockerClient
@@ -8,6 +8,8 @@ from rich.console import Console
 
 from maat import sandbox
 from maat.ecosystem import build_test_suite
+from maat.report.analysis import analyse_report
+from maat.report.model import Report
 from maat.report.reporter import Reporter
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
@@ -20,6 +22,9 @@ traceback.install(show_locals=True)
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
 pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
+
+
+PathParamType = click.Path(exists=True, dir_okay=False, readable=True, path_type=Path)
 
 
 def load_workspace(f):
@@ -103,19 +108,36 @@ def run_local(
         console=console,
     )
 
-    reporter.finish().save()
+    report = reporter.finish()
+
+    analyse_report(
+        report=report,
+        console=console,
+    )
+
+    report.save()
 
 
 @cli.command(help="Compare two reports.")
-@click.argument(
-    "old_report", type=click.Path(exists=True, dir_okay=False, path_type=pathlib.Path)
-)
-@click.argument(
-    "new_report", type=click.Path(exists=True, dir_okay=False, path_type=pathlib.Path)
-)
+@click.argument("old_report", type=PathParamType)
+@click.argument("new_report", type=PathParamType)
 def diff(old_report: str, new_report: str) -> None:
     print(f"Comparing reports: {old_report} vs {new_report}")
     # Implementation would go here
+
+
+@cli.command(help="Reanalyse an existing report and update it.")
+@click.argument("report", type=PathParamType)
+@pass_console
+def reanalyse(console: Console, report: Path) -> None:
+    report: Report = Report.model_validate_json(report.read_bytes())
+
+    analyse_report(
+        report=report,
+        console=console,
+    )
+
+    report.save()
 
 
 if __name__ == "__main__":
