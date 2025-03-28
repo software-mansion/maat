@@ -1,4 +1,5 @@
 import importlib.util
+from typing import Self
 
 from pydantic import BaseModel, ConfigDict
 from rich.console import Console
@@ -13,7 +14,7 @@ class WorkspaceSettings(BaseModel):
     ecosystem: Ecosystem
 
     @classmethod
-    def load(cls, workspace_name: str) -> "WorkspaceSettings":
+    def load(cls, workspace_name: str) -> Self:
         # Construct the path to the workspace Python script
         settings_script = REPO / "workspaces" / f"{workspace_name}.py"
         if not settings_script.exists():
@@ -48,5 +49,5 @@ class Workspace(BaseModel):
         return self.name
 
     @classmethod
-    def load(cls, name: str) -> "Workspace":
+    def load(cls, name: str) -> Self:
         return cls(name=name, settings=WorkspaceSettings.load(name))

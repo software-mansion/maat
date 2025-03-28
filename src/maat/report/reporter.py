@@ -1,5 +1,6 @@
 import time
 from datetime import timedelta
+from typing import Self
 
 from maat.report.model import Report, StepReport, TestReport
 from maat.runner.model import Test, TestStep
@@ -27,7 +28,7 @@ class StepReporter:
             self._report.stderr = []
         self._report.stderr.append(line)
 
-    def __enter__(self) -> "StepReporter":
+    def __enter__(self) -> Self:
         self._timer = _ExecutionTimer()
         return self
 
@@ -48,7 +49,7 @@ class TestReporter:
         )
         report.tests.append(test_report)
 
-    def step(self, step: TestStep) -> StepReporter:
+    def step(self, step: Step) -> StepReporter:
         step_report = next(
             (sr for sr in self._test_report.steps if sr.id == step.id), None
         )
