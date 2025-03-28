@@ -1,4 +1,3 @@
-import shlex
 from datetime import datetime, timedelta
 
 from pydantic import BaseModel, Field
@@ -6,6 +5,7 @@ from pydantic import BaseModel, Field
 from maat.installation import REPO, this_maat_commit
 from maat.runner.model import TestStep
 from maat.semver import Semver
+from maat.utils.shell import join_command
 
 type Command = str
 type TestName = str
@@ -26,7 +26,7 @@ class StepReport(BaseModel):
         return cls(
             id=test_step.id,
             name=test_step.name,
-            run=normalize_command(test_step.run),
+            run=join_command(test_step.run),
             setup=test_step.setup,
             exit_code=None,
             stdout=None,
@@ -56,9 +56,3 @@ class Report(BaseModel):
     def save(self):
         with open(REPO / "reports" / f"{self.name}.json", "w") as f:
             f.write(self.model_dump_json(indent=2) + "\n")
-
-
-def normalize_command(run: str | list[str]) -> str:
-    if isinstance(run, list):
-        return shlex.join(run)
-    return run

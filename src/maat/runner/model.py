@@ -1,8 +1,8 @@
-import shlex
 from itertools import count
-from typing import Any
 
 from pydantic import BaseModel, Field
+
+from maat.utils.shell import join_command
 
 _next_id = count()
 
@@ -12,11 +12,6 @@ def next_id() -> int:
     return next(_next_id)
 
 
-def _default_step_name(data: dict[str, Any]) -> str:
-    run = data["run"]
-    return shlex.join(run) if isinstance(run, list) else str(run)
-
-
 type Command = str | list[str]
 type ImageId = str
 
@@ -24,7 +19,7 @@ type ImageId = str
 class TestStep(BaseModel):
     id: int = Field(default_factory=next_id)
     run: Command
-    name: str = Field(default_factory=_default_step_name)
+    name: str = Field(default_factory=lambda data: join_command(data["run"]))
     setup: bool = False
     """Setup steps are not analyzed in reports."""
 

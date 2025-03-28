@@ -1,7 +1,6 @@
 import base64
 import os
 import re
-import shlex
 import struct
 import threading
 import time
@@ -23,6 +22,7 @@ from rich.progress import (
 
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.model import Test, TestStep, TestSuite
+from maat.utils.shell import split_command
 
 RUN_LABEL = "maat-run"
 
@@ -129,18 +129,11 @@ def execute_test_locally(
             step_reporter = test_reporter.step(step)
 
             with monitor.will_run_step(step):
-                if isinstance(step.run, str):
-                    command = shlex.split(step.run)
-                else:
-                    command = step.run
-
-                name = f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}"
-
                 run_step_command(
                     docker=docker,
                     image=sandbox,
-                    command=command,
-                    container_name=name,
+                    command=split_command(step.run),
+                    container_name=f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}",
                     workbench_volume=volume,
                     labels={RUN_LABEL: run_token},
                     step_reporter=step_reporter,
