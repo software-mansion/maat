@@ -2,8 +2,8 @@ import time
 from datetime import timedelta
 from typing import Self
 
-from maat.report.model import Report, StepReport, TestReport
-from maat.runner.model import Test, Step
+from maat import Report
+from maat.model import Step, Test, StepReport, TestReport
 from maat.semver import Semver
 
 

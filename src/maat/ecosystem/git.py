@@ -1,4 +1,4 @@
-from maat.runner.model import Step
+from maat.model import Step
 
 
 def setup_git(repo: str) -> list[Step]:

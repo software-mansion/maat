@@ -1,6 +1,6 @@
 from typing import Callable
 
-from maat.runner.model import Step
+from maat.model import Step
 from maat.workflows import build, lint, test
 
 type Workflow = Callable[[], list[Step]]

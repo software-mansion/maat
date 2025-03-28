@@ -4,7 +4,7 @@ from rich.console import Console
 
 from maat import workflows
 from maat.ecosystem.spec import Ecosystem, EcosystemProject
-from maat.runner.model import ImageId, Test, TestSuite
+from maat.model import ImageId, Test, TestSuite
 
 
 def build_test_suite(

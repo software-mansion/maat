@@ -18,7 +18,7 @@ from rich.progress import (
 
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
-from maat.runner.model import Test, Step, TestSuite
+from maat.model import Step, Test, TestSuite
 from maat.utils.shell import split_command
 
 

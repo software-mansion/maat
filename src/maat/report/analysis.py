@@ -1,12 +1,9 @@
-from typing import Callable, Iterable
+from typing import Iterable
 
 from rich.console import Console
 from rich.progress import track
 
-from maat.report.model import Report, StepReport, TestReport
-from maat.runner.model import StepMeta
-
-type Analyser = Callable[[TestReport, StepReport], None]
+from maat.model import Analyser, Report, StepMeta, StepReport, TestReport
 
 
 def analyse_report(report: Report, console: Console):

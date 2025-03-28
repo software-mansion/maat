@@ -1,4 +1,4 @@
-from maat.runner.model import Step, StepMeta
+from maat.model import StepMeta, Step
 
 BuildMeta = StepMeta(name="build")
 

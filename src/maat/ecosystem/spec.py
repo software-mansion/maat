@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from maat.ecosystem.git import setup_git
 from maat.ecosystem.registry import fetch_all_packages, setup_registry
-from maat.runner.model import Step
+from maat.model import Step
 
 _GITHUB_URL = "https://github.com/"
 _SCARBS_XYZ = "https://scarbs.xyz/"

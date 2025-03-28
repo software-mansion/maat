@@ -9,7 +9,7 @@ from rich.console import Console
 from maat import sandbox
 from maat.ecosystem import build_test_suite
 from maat.report.analysis import analyse_report
-from maat.report.model import Report
+from maat.model import Report
 from maat.report.reporter import Reporter
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
