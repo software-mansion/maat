@@ -53,14 +53,14 @@ def cli() -> None:
     envvar="MAAT_SCARB_VERSION",
     prompt="Scarb version",
     help="Version of Scarb to experiment on.",
-    type=SemverParamType(),
+    type=SemverParamType,
 )
 @click.option(
     "--foundry",
     envvar="MAAT_FOUNDRY_VERSION",
     prompt="Starknet Foundry version",
     help="Version of Starknet Foundry to experiment on.",
-    type=SemverParamType(),
+    type=SemverParamType,
 )
 @click.option(
     "-j",

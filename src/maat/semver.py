@@ -9,7 +9,7 @@ SEMVER_RE = re.compile(
 )
 
 
-class SemverParamType(click.ParamType):
+class _SemverParamType(click.ParamType):
     name = "version"
 
     def convert(self, value, param, ctx) -> Semver:
@@ -17,3 +17,6 @@ class SemverParamType(click.ParamType):
             return value
         else:
             self.fail(f"{value} is not a valid semantic version", param, ctx)
+
+
+SemverParamType = _SemverParamType()
