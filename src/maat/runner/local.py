@@ -109,7 +109,7 @@ def execute_test_locally(
     with (
         TestProgress(test, progress) as test_progress,
         ephemeral_volume(
-            docker, volume_name=f"maat-{sanitize_name(test.name)}"
+            docker, volume_name=f"maat-{sanitize_for_docker(test.name)}"
         ) as volume,
     ):
         for step in test.steps:
@@ -119,11 +119,11 @@ def execute_test_locally(
                 test_progress.will_run_step(step),
                 test_reporter.step(step) as step_reporter,
             ):
-                run_step_command(
+                docker_run_step(
                     docker=docker,
                     image=sandbox,
                     command=split_command(step.run),
-                    container_name=f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}",
+                    container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}",
                     workbench_volume=volume,
                     ct=ct,
                     step_reporter=step_reporter,
@@ -190,7 +190,7 @@ def ephemeral_volume(docker: DockerClient, **kwargs):
         volume.remove()
 
 
-def run_step_command(
+def docker_run_step(
     docker: DockerClient,
     image: Image | str,
     command: list[str],
@@ -229,5 +229,5 @@ def run_step_command(
             raise
 
 
-def sanitize_name(name: str) -> str:
+def sanitize_for_docker(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
