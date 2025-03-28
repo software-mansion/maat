@@ -1,9 +1,5 @@
-import base64
 import os
 import re
-import struct
-import threading
-import time
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import timedelta
@@ -21,10 +17,9 @@ from rich.progress import (
 )
 
 from maat.report.reporter import Reporter, StepReporter
+from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.model import Test, TestStep, TestSuite
 from maat.utils.shell import split_command
-
-RUN_LABEL = "maat-run"
 
 
 def execute_test_suite_locally(
@@ -35,9 +30,7 @@ def execute_test_suite_locally(
     console: Console,
 ):
     jobs = jobs or os.cpu_count() or 1
-    run_token = token()
-    run_event = threading.Event()
-    run_event.set()
+    ct = CancellationToken()
 
     with (
         Progress(
@@ -64,13 +57,14 @@ def execute_test_suite_locally(
                 execute_test_locally(
                     test=current_test,
                     sandbox=test_suite.sandbox,
-                    run_event=run_event,
-                    run_token=run_token,
+                    ct=ct,
                     docker=docker,
                     reporter=reporter,
                     progress=progress,
                 )
                 progress.advance(task)
+            except CancelledException:
+                pass
             except Exception:
                 progress.console.print_exception()
 
@@ -80,14 +74,12 @@ def execute_test_suite_locally(
         try:
             pool.shutdown(wait=True)
         except KeyboardInterrupt:
-            run_event.clear()
-
             progress.console.log(
                 f":warning: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description]Cancelling experiment, sending SIGKILL to all containers...[/progress.description]"
             )
             progress.update(task, description="Cancelling")
 
-            kill_containers_with_run_token(docker, run_token)
+            ct.cancel(docker)
             pool.shutdown(wait=True)
 
             progress.update(task, visible=False)
@@ -105,14 +97,12 @@ def execute_test_suite_locally(
 def execute_test_locally(
     test: Test,
     sandbox: Image | str,
-    run_event: threading.Event,
-    run_token: str,
+    ct: CancellationToken,
     docker: DockerClient,
     reporter: Reporter,
     progress: Progress,
 ):
-    if not run_event.is_set():
-        return
+    ct.raise_if_cancelled()
 
     test_reporter = reporter.test(test)
 
@@ -123,8 +113,7 @@ def execute_test_locally(
         ) as volume,
     ):
         for step in test.steps:
-            if not run_event.is_set():
-                return
+            ct.raise_if_cancelled()
 
             with (
                 test_progress.will_run_step(step),
@@ -136,7 +125,7 @@ def execute_test_locally(
                     command=split_command(step.run),
                     container_name=f"maat-{sanitize_name(test.name)}-{sanitize_name(step.name)}",
                     workbench_volume=volume,
-                    labels={RUN_LABEL: run_token},
+                    ct=ct,
                     step_reporter=step_reporter,
                 )
 
@@ -207,7 +196,7 @@ def run_step_command(
     command: list[str],
     container_name: str,
     workbench_volume: Volume,
-    labels: dict[str, str],
+    ct: CancellationToken,
     step_reporter: StepReporter,
 ):
     workdir = "/root/maat-workbench"
@@ -217,7 +206,7 @@ def run_step_command(
             image=image,
             command=command,
             name=container_name,
-            labels=labels,
+            labels=ct.container_labels,
             remove=True,
             volumes=[(workbench_volume, workdir, "rw")],
             workdir=workdir,
@@ -240,20 +229,5 @@ def run_step_command(
             raise
 
 
-def kill_containers_with_run_token(docker: DockerClient, run_token: str):
-    containers = docker.container.list(filters={"label": f"{RUN_LABEL}={run_token}"})
-    for container in containers:
-        container.kill()
-
-
 def sanitize_name(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
-
-
-def token() -> str:
-    """
-    Generate a short base32-encoded token based on high-precision current time.
-    """
-    current_time = time.time_ns()
-    packed_time = struct.pack(">Q", current_time)
-    return base64.b32encode(packed_time).decode("utf-8").rstrip("=").lower()
