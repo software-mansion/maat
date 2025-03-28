@@ -117,7 +117,7 @@ def execute_test_locally(
     test_reporter = reporter.test(test)
 
     with (
-        TestRunMonitor(test, progress) as monitor,
+        TestProgress(test, progress) as test_progress,
         ephemeral_volume(
             docker, volume_name=f"maat-{sanitize_name(test.name)}"
         ) as volume,
@@ -128,7 +128,7 @@ def execute_test_locally(
 
             step_reporter = test_reporter.step(step)
 
-            with monitor.will_run_step(step):
+            with test_progress.will_run_step(step):
                 run_step_command(
                     docker=docker,
                     image=sandbox,
@@ -140,7 +140,7 @@ def execute_test_locally(
                 )
 
 
-class TestRunMonitor:
+class TestProgress:
     """
     A context manager to handle test execution monitoring and progress reporting.
     Manages status icons, task creation, progress updates, and final reporting.
