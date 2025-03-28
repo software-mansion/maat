@@ -106,9 +106,13 @@ class StepReport(BaseModel):
     name: str
     run: str
     exit_code: int | None
+    execution_time: timedelta | None
+
+    analyses: dict[str, Any] = {}
+
+    # These two are kept last because they take significant chunks of view area.
     stdout: list[bytes] | None
     stderr: list[bytes] | None
-    execution_time: timedelta | None
 
     @classmethod
     def blueprint(cls, step: Step):
@@ -117,9 +121,9 @@ class StepReport(BaseModel):
             name=step.name,
             run=join_command(step.run),
             exit_code=None,
+            execution_time=None,
             stdout=None,
             stderr=None,
-            execution_time=None,
         )
 
 

@@ -15,17 +15,24 @@
           "name": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
           "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
           "exit_code": 0,
+          "execution_time": "PT1.414086S",
+          "analyses": {},
           "stdout": null,
           "stderr": [
             "Cloning into '.'...\n"
-          ],
-          "execution_time": "PT1.414086S"
+          ]
         },
         {
           "id": 2,
           "name": "build",
           "run": "scarb --json build --test",
           "exit_code": 0,
+          "execution_time": "PT1M11.453708S",
+          "analyses": {
+            "compiled_procmacros_from_source": [
+              "snforge_scarb_plugin v0.34.1"
+            ]
+          },
           "stdout": [
             "{\"status\":\"updating\",\"message\":\"git repository https://github.com/starkware-libs/starkware-starknet-utils\"}\n",
             "{\"status\":\"downloading\",\"message\":\"snforge_std v0.34.1\"}\n",
@@ -277,14 +284,15 @@
             "{\"type\":\"warn\",\"message\":\"Unused import: `staking::staking::staker_balance_trace::trace::StorageAsPath`\\n --> /root/maat-workbench/workspace/apps/staking/contracts/src/staking/staker_balance_trace/trace.cairo:5:31\\n    Mutable, MutableVecTrait, StorageAsPath, StoragePath, StoragePointerReadAccess,\\n                              ^^^^^^^^^^^^^\\n\"}\n",
             "{\"status\":\"finished\",\"message\":\"`dev` profile target(s) in 71 seconds\"}\n"
           ],
-          "stderr": null,
-          "execution_time": "PT1M11.453708S"
+          "stderr": null
         },
         {
           "id": 3,
           "name": "lint",
           "run": "scarb --json lint",
           "exit_code": 0,
+          "execution_time": "PT39.360414S",
+          "analyses": {},
           "stdout": [
             "{\"status\":\"updating\",\"message\":\"git repository https://github.com/starkware-libs/starkware-starknet-utils\"}\n",
             "{\"status\":\"downloading\",\"message\":\"openzeppelin_utils v1.0.0\"}\n",
@@ -529,14 +537,15 @@
             "{\"reason\":\"build-finished\",\"success\":true}\n",
             "{\"status\":\"linting\",\"message\":\"lib(staking) staking v1.14.4 (/root/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)\"}\n"
           ],
-          "stderr": null,
-          "execution_time": "PT39.360414S"
+          "stderr": null
         },
         {
           "id": 4,
           "name": "test",
           "run": "scarb --json test",
           "exit_code": 1,
+          "execution_time": "PT1M36.361495S",
+          "analyses": {},
           "stdout": [
             "{\"status\":\"running\",\"message\":\"test staking (SNFORGE_BACKTRACE=1 snforge test)\"}\n",
             "    Updating git repository https://github.com/starkware-libs/starkware-starknet-utils\n",
@@ -2057,8 +2066,7 @@
             "    staking::flow_test::test::staker_intent_last_action_first_regression_test\n",
             "    staking::flow_test::test::delegator_switch_after_upgrade_regression_test\n"
           ],
-          "stderr": null,
-          "execution_time": "PT1M36.361495S"
+          "stderr": null
         }
       ]
     }
