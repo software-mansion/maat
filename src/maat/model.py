@@ -26,6 +26,9 @@ class StepMeta(BaseModel):
     """
 
     analysers: Callable[[], list[Analyser]] | None = None
+    """
+    List of analyser functions that are called on outputs of this step when analysing reports.
+    """
 
     def __init__(self, /, **data: Any) -> None:
         super().__init__(**data)
