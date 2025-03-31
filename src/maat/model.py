@@ -1,7 +1,7 @@
-from abc import ABC
+from abc import ABC, ABCMeta
 from collections.abc import MutableMapping
 from datetime import datetime, timedelta
-from typing import Any, Callable, ClassVar, Self
+from typing import Any, Callable, ClassVar, Iterable, Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -106,7 +106,25 @@ class TestSuite(BaseModel):
     tests: list[Test] = []
 
 
-class Analysis(BaseModel, ABC):
+_analysis_classes: dict[str, type["Analysis"]] = {}
+
+
+class _AnalysisMeta(BaseModel.__class__, ABCMeta):
+    """Tracks all ``Analysis`` subclasses."""
+
+    def __new__(mcs, name, bases, namespace):
+        cls = super().__new__(mcs, name, bases, namespace)
+
+        # Only register classes that are actual subclasses of Analysis and not the Analysis class itself.
+        if name != "Analysis" and any(base.__name__ == "Analysis" for base in bases):
+            assert issubclass(cls, Analysis)
+            assert hasattr(cls, "KEY")
+            _analysis_classes[cls.KEY] = cls
+
+        return cls
+
+
+class Analysis(BaseModel, ABC, metaclass=_AnalysisMeta):
     KEY: ClassVar[str]
 
 
@@ -122,11 +140,13 @@ class AnalysisDict(BaseModel, MutableMapping[type[Analysis], Analysis]):
     def __delitem__(self, analysis_type: type[Analysis], /):
         return self.data.__delitem__(analysis_type.KEY)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.data.__len__()
 
-    def __iter__(self):
-        raise NotImplementedError
+    def __iter__(self) -> Iterable[Analysis]:
+        for key, data in self.data.items():
+            analysis_type = _analysis_classes[key]
+            yield analysis_type.model_validate(data)
 
     def add(self, analysis: Analysis):
         self[type(analysis)] = analysis
