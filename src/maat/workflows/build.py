@@ -7,6 +7,7 @@ BuildMeta = StepMeta(
     name="build",
     analysers=lambda: [
         compiled_procmacros_from_source,
+        count_warnings_and_errors,
     ],
 )
 
@@ -32,3 +33,29 @@ def compiled_procmacros_from_source(test: TestReport, step: StepReport):
                 if target_name in candidates:
                     found.append(candidates[target_name])
     step.analyses["compiled_procmacros_from_source"] = found
+
+
+def count_warnings_and_errors(test: TestReport, step: StepReport):
+    """
+    Analyzes the build output to count warnings and errors.
+
+    Warnings are identified by {"type": "warn"} in the JSON output.
+    Errors are identified by {"type": "error"} in the JSON output.
+
+    The counts are stored in step.analyses["build_warnings_and_errors"].
+    """
+    warnings = 0
+    errors = 0
+
+    for msg in jsonlines(step.stdout):
+        match msg:
+            case {"type": "warn"}:
+                warnings += 1
+            case {"type": "error"}:
+                errors += 1
+
+    step.analyses["build_warnings_and_errors"] = {
+        "warnings": warnings,
+        "errors": errors,
+        "total": warnings + errors
+    }

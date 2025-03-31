@@ -29,7 +29,12 @@
           "exit_code": 1,
           "execution_time": "PT5.485411S",
           "analyses": {
-            "compiled_procmacros_from_source": []
+            "compiled_procmacros_from_source": [],
+            "build_warnings_and_errors": {
+              "warnings": 15,
+              "errors": 10,
+              "total": 25
+            }
           },
           "stdout": [
             "{\"status\":\"compiling\",\"message\":\"test(governance_unittest) governance v0.1.0 (/root/maat-workbench/Scarb.toml)\"}\n",
@@ -254,7 +259,12 @@
           "analyses": {
             "compiled_procmacros_from_source": [
               "snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.30.0#196f06b251926697c3d66800f2a93ae595e76496)"
-            ]
+            ],
+            "build_warnings_and_errors": {
+              "warnings": 54,
+              "errors": 66,
+              "total": 120
+            }
           },
           "stdout": [
             "{\"status\":\"updating\",\"message\":\"git repository https://github.com/foundry-rs/starknet-foundry\"}\n",
@@ -1453,7 +1463,12 @@
           "analyses": {
             "compiled_procmacros_from_source": [
               "snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.29.0#d37d2272ca6c915117646de76cdf26ec06e44f61)"
-            ]
+            ],
+            "build_warnings_and_errors": {
+              "warnings": 53,
+              "errors": 15,
+              "total": 68
+            }
           },
           "stdout": [
             "{\"status\":\"updating\",\"message\":\"git repository https://github.com/ekuboprotocol/abis\"}\n",
@@ -2340,7 +2355,12 @@
           "analyses": {
             "compiled_procmacros_from_source": [
               "snforge_scarb_plugin v0.34.1"
-            ]
+            ],
+            "build_warnings_and_errors": {
+              "warnings": 6,
+              "errors": 0,
+              "total": 6
+            }
           },
           "stdout": [
             "{\"status\":\"updating\",\"message\":\"git repository https://github.com/starkware-libs/starkware-starknet-utils\"}\n",
