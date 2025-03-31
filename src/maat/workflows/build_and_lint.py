@@ -1,6 +1,7 @@
 import re
 from collections import defaultdict
 
+from maat.analyses import CompiledProcMacrosFromSource, ClassifyDiagnostics
 from maat.model import Step, StepMeta, StepReport, TestReport
 from maat.utils.data import jsonlines
 
@@ -29,7 +30,7 @@ def workflow() -> list[Step]:
 
 def compiled_procmacros_from_source(test: TestReport, step: StepReport):
     candidates = {}
-    found = []
+    package_ids = []
     for msg in jsonlines(step.stdout):
         match msg:
             # "{\"status\":\"compiling\",\"message\":\"snforge_scarb_plugin v0.34.1\"}\n",
@@ -40,8 +41,8 @@ def compiled_procmacros_from_source(test: TestReport, step: StepReport):
             # "{\"reason\":\"compiler-artifact\",\"target\":{...,\"name\":\"snforge_scarb_plugin\",...},...}\n",
             case {"reason": "compiler-artifact", "target": {"name": target_name}}:
                 if target_name in candidates:
-                    found.append(candidates[target_name])
-    step.analyses["compiled_procmacros_from_source"] = found
+                    package_ids.append(candidates[target_name])
+    step.analyses.add(CompiledProcMacrosFromSource(package_ids=package_ids))
 
 
 def classify_diagnostics(test: TestReport, step: StepReport):
@@ -65,9 +66,11 @@ def classify_diagnostics(test: TestReport, step: StepReport):
     for (severity, message), count in message_severity_count.items():
         diagnostics_by_message_and_severity.append((severity, message, count))
 
-    step.analyses["build_warnings_and_errors"] = {
-        "warnings": warnings,
-        "errors": errors,
-        "total": warnings + errors,
-        "diagnostics_by_message_and_severity": diagnostics_by_message_and_severity,
-    }
+    step.analyses.add(
+        ClassifyDiagnostics(
+            warnings=warnings,
+            errors=errors,
+            total=warnings + errors,
+            diagnostics_by_message_and_severity=diagnostics_by_message_and_severity,
+        )
+    )

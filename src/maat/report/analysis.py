@@ -10,26 +10,6 @@ How to write a new analysis
 * Access analysis results in the report JSON under the ``analyses`` field.
 * Multiple analysers can mutate the same analysis result.
   Analysers are executed in the order they're defined.
-
-Example pattern from the codebase:
-
-.. code-block:: python
-
-    # Define analyser function
-    def my_analyzer(test: TestReport, step: StepReport):
-        # Process data
-        results = process_data(step.stdout)
-        # Store results
-        step.analyses["my_analysis_key"] = results
-
-    # Create StepMeta with analyser
-    MyStepMeta = StepMeta(name="my_step", analysers=lambda: [my_analyser])
-
-    # Use in workflow
-    def workflow() -> list[Step]:
-        return [
-            Step(meta=MyStepMeta, run="command"),
-        ]
 """
 
 from typing import Iterable

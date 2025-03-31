@@ -1,5 +1,7 @@
+from abc import ABC
+from collections.abc import MutableMapping
 from datetime import datetime, timedelta
-from typing import Any, Callable, Self
+from typing import Any, Callable, ClassVar, Self
 
 from pydantic import BaseModel, Field, model_validator
 
@@ -104,6 +106,32 @@ class TestSuite(BaseModel):
     tests: list[Test] = []
 
 
+class Analysis(BaseModel, ABC):
+    KEY: ClassVar[str]
+
+
+class AnalysisDict(BaseModel, MutableMapping[type[Analysis], Analysis]):
+    data: dict[str, dict] = {}
+
+    def __getitem__(self, analysis_type: type[Analysis], /) -> Analysis:
+        return analysis_type.model_validate(self.data.__getitem__(analysis_type.KEY))
+
+    def __setitem__(self, analysis_type: type[Analysis], analysis: Analysis, /):
+        return self.data.__setitem__(analysis_type.KEY, analysis.model_dump())
+
+    def __delitem__(self, analysis_type: type[Analysis], /):
+        return self.data.__delitem__(analysis_type.KEY)
+
+    def __len__(self):
+        return self.data.__len__()
+
+    def __iter__(self):
+        raise NotImplementedError
+
+    def add(self, analysis: Analysis):
+        self[type(analysis)] = analysis
+
+
 class StepReport(BaseModel):
     id: int
     name: str
@@ -111,7 +139,7 @@ class StepReport(BaseModel):
     exit_code: int | None
     execution_time: timedelta | None
 
-    analyses: dict[str, Any] = {}
+    analyses: AnalysisDict = AnalysisDict()
 
     # These two are kept last because they take significant chunks of view area.
     stdout: list[bytes] | None
