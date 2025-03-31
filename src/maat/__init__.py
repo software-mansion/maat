@@ -8,6 +8,7 @@ from rich.console import Console
 
 from maat import sandbox
 from maat.ecosystem import build_test_suite
+from maat.installation import REPO
 from maat.report.analysis import analyse_report
 from maat.model import Report
 from maat.report.reporter import Reporter
@@ -127,17 +128,34 @@ def diff(old_report: str, new_report: str) -> None:
 
 
 @cli.command(help="Reanalyse an existing report and update it.")
-@click.argument("report", type=PathParamType)
+@click.argument("report", type=PathParamType, required=False)
+@click.option(
+    "--all", is_flag=True, help="Reanalyse all reports in the reports directory."
+)
 @pass_console
-def reanalyse(console: Console, report: Path) -> None:
-    report: Report = Report.model_validate_json(report.read_bytes())
+def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
+    def reanalyse_file(report_file: Path):
+        report_obj: Report = Report.model_validate_json(report_file.read_bytes())
+        analyse_report(report=report_obj, console=console)
+        report_obj.save()
 
-    analyse_report(
-        report=report,
-        console=console,
-    )
+    match (report, all):
+        case (None, False):
+            raise click.UsageError("Either --all or report must be specified")
+        case (None, True):
+            reports_dir = REPO / "reports"
+            report_files = list(reports_dir.glob("*.json"))
+            if not report_files:
+                console.log("No reports found in the reports directory.")
+                return
 
-    report.save()
+            for report_file in report_files:
+                console.log(f"Reanalysing report: {report_file.name}")
+                reanalyse_file(report_file)
+        case (report, False):
+            reanalyse_file(report)
+        case (report, True):
+            raise click.UsageError("Cannot specify both --all and report")
 
 
 if __name__ == "__main__":
