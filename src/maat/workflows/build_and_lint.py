@@ -11,10 +11,18 @@ BuildMeta = StepMeta(
     ],
 )
 
+LintMeta = StepMeta(
+    name="lint",
+    analysers=lambda: [
+        count_warnings_and_errors,
+    ],
+)
+
 
 def workflow() -> list[Step]:
     return [
         Step(meta=BuildMeta, run="scarb --json build --test"),
+        Step(meta=LintMeta, run="scarb --json lint"),
     ]
 
 
@@ -57,5 +65,5 @@ def count_warnings_and_errors(test: TestReport, step: StepReport):
     step.analyses["build_warnings_and_errors"] = {
         "warnings": warnings,
         "errors": errors,
-        "total": warnings + errors
+        "total": warnings + errors,
     }
