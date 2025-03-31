@@ -1,4 +1,5 @@
 import re
+from collections import defaultdict
 
 from maat.model import Step, StepMeta, StepReport, TestReport
 from maat.utils.data import jsonlines
@@ -7,14 +8,14 @@ BuildMeta = StepMeta(
     name="build",
     analysers=lambda: [
         compiled_procmacros_from_source,
-        count_warnings_and_errors,
+        classify_diagnostics,
     ],
 )
 
 LintMeta = StepMeta(
     name="lint",
     analysers=lambda: [
-        count_warnings_and_errors,
+        classify_diagnostics,
     ],
 )
 
@@ -43,17 +44,10 @@ def compiled_procmacros_from_source(test: TestReport, step: StepReport):
     step.analyses["compiled_procmacros_from_source"] = found
 
 
-def count_warnings_and_errors(test: TestReport, step: StepReport):
-    """
-    Analyzes the build output to count warnings and errors.
-
-    Warnings are identified by {"type": "warn"} in the JSON output.
-    Errors are identified by {"type": "error"} in the JSON output.
-
-    The counts are stored in step.analyses["build_warnings_and_errors"].
-    """
+def classify_diagnostics(test: TestReport, step: StepReport):
     warnings = 0
     errors = 0
+    message_severity_count = defaultdict(int)
 
     for msg in jsonlines(step.stdout):
         match msg:
@@ -62,8 +56,18 @@ def count_warnings_and_errors(test: TestReport, step: StepReport):
             case {"type": "error"}:
                 errors += 1
 
+        match msg:
+            case {"type": severity, "message": message}:
+                first_line = message.split("\n")[0]
+                message_severity_count[(severity, first_line)] += 1
+
+    diagnostics_by_message_and_severity = []
+    for (severity, message), count in message_severity_count.items():
+        diagnostics_by_message_and_severity.append((severity, message, count))
+
     step.analyses["build_warnings_and_errors"] = {
         "warnings": warnings,
         "errors": errors,
         "total": warnings + errors,
+        "diagnostics_by_message_and_severity": diagnostics_by_message_and_severity,
     }
