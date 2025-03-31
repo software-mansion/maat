@@ -16,9 +16,7 @@
           "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .",
           "exit_code": 0,
           "execution_time": "PT1.585174S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": null,
           "stderr": [
             "Cloning into '.'...\n"
@@ -31,62 +29,60 @@
           "exit_code": 1,
           "execution_time": "PT5.522992S",
           "analyses": {
-            "data": {
-              "compiled_procmacros_from_source": {
-                "package_ids": []
-              },
-              "classify_diagnostics": {
-                "warnings": 15,
-                "errors": 10,
-                "total": 25,
-                "diagnostics_by_message_and_severity": [
-                  [
-                    "error",
-                    "Method `__validate__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.",
-                    1
-                  ],
-                  [
-                    "error",
-                    "Method `__validate_declare__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.",
-                    1
-                  ],
-                  [
-                    "error",
-                    "Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>.",
-                    1
-                  ],
-                  [
-                    "error",
-                    "could not compile `governance` due to previous error",
-                    1
-                  ],
-                  [
-                    "error",
-                    "Identifier not found.",
-                    2
-                  ],
-                  [
-                    "error",
-                    "Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.",
-                    4
-                  ],
-                  [
-                    "warn",
-                    "Usage of deprecated feature `\"starknet-storage-deprecation\"` with no `#[feature(\"starknet-storage-deprecation\")]` attribute. Note: \"Use `starknet::storage::MutableVecTrait::push` instead.\"",
-                    4
-                  ],
-                  [
-                    "warn",
-                    "Usage of deprecated feature `\"deprecated-starknet-consts\"` with no `#[feature(\"deprecated-starknet-consts\")]` attribute. Note: \"Use `TryInto::try_into` in const context instead.\"",
-                    5
-                  ],
-                  [
-                    "warn",
-                    "Unused variable. Consider ignoring by prefixing with `_`.",
-                    6
-                  ]
+            "compiled_procmacros_from_source": {
+              "package_ids": []
+            },
+            "classify_diagnostics": {
+              "warnings": 15,
+              "errors": 10,
+              "total": 25,
+              "diagnostics_by_message_and_severity": [
+                [
+                  "error",
+                  "Method `__validate__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.",
+                  1
+                ],
+                [
+                  "error",
+                  "Method `__validate_declare__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.",
+                  1
+                ],
+                [
+                  "error",
+                  "Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>.",
+                  1
+                ],
+                [
+                  "error",
+                  "could not compile `governance` due to previous error",
+                  1
+                ],
+                [
+                  "error",
+                  "Identifier not found.",
+                  2
+                ],
+                [
+                  "error",
+                  "Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.",
+                  4
+                ],
+                [
+                  "warn",
+                  "Usage of deprecated feature `\"starknet-storage-deprecation\"` with no `#[feature(\"starknet-storage-deprecation\")]` attribute. Note: \"Use `starknet::storage::MutableVecTrait::push` instead.\"",
+                  4
+                ],
+                [
+                  "warn",
+                  "Usage of deprecated feature `\"deprecated-starknet-consts\"` with no `#[feature(\"deprecated-starknet-consts\")]` attribute. Note: \"Use `TryInto::try_into` in const context instead.\"",
+                  5
+                ],
+                [
+                  "warn",
+                  "Unused variable. Consider ignoring by prefixing with `_`.",
+                  6
                 ]
-              }
+              ]
             }
           },
           "stdout": [
@@ -126,13 +122,11 @@
           "exit_code": 0,
           "execution_time": "PT2.253704S",
           "analyses": {
-            "data": {
-              "classify_diagnostics": {
-                "warnings": 0,
-                "errors": 0,
-                "total": 0,
-                "diagnostics_by_message_and_severity": []
-              }
+            "classify_diagnostics": {
+              "warnings": 0,
+              "errors": 0,
+              "total": 0,
+              "diagnostics_by_message_and_severity": []
             }
           },
           "stdout": [
@@ -146,9 +140,7 @@
           "run": "scarb --json test",
           "exit_code": 1,
           "execution_time": "PT8.900103S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": [
             "{\"status\":\"running\",\"message\":\"cairo-test governance\"}\n",
             "   Compiling test(governance_unittest) governance v0.1.0 (/root/maat-workbench/Scarb.toml)\n",
@@ -308,9 +300,7 @@
           "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/limit-orders-extension .",
           "exit_code": 0,
           "execution_time": "PT1.201242S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": null,
           "stderr": [
             "Cloning into '.'...\n"
@@ -323,294 +313,292 @@
           "exit_code": 1,
           "execution_time": "PT1M1.068086S",
           "analyses": {
-            "data": {
-              "compiled_procmacros_from_source": {
-                "package_ids": [
-                  "snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.30.0#196f06b251926697c3d66800f2a93ae595e76496)"
+            "compiled_procmacros_from_source": {
+              "package_ids": [
+                "snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.30.0#196f06b251926697c3d66800f2a93ae595e76496)"
+              ]
+            },
+            "classify_diagnostics": {
+              "warnings": 54,
+              "errors": 66,
+              "total": 120,
+              "diagnostics_by_message_and_severity": [
+                [
+                  "warn",
+                  "Usage of deprecated feature `\"deprecated-starknet-consts\"` with no `#[feature(\"deprecated-starknet-consts\")]` attribute. Note: \"Use `TryInto::try_into` in const context instead.\"",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `basic_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `call_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_with_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_without_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `component_macros`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `constructor_with_params`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `contract_printing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `coverage_project`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `declare_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `env`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `erc20_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `exit_first`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `features`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `file_reading`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `forking`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fuzzing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `hello_workspaces`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `invoke_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `main_workspace`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `misc_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `missing_field_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `old_sncast_std`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `panic_decoding`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `should_panic_test`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `simple_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_file_test_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `steps`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `subtraction`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_info`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_resources`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
+                  1
+                ],
+                [
+                  "error",
+                  "could not compile `ekubo_limit_orders_extension` due to previous error",
+                  1
+                ],
+                [
+                  "warn",
+                  "package name differs between Cargo and Scarb manifest",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map`",
+                  2
+                ],
+                [
+                  "error",
+                  "Plugin diagnostic: Unsupported attribute.",
+                  65
                 ]
-              },
-              "classify_diagnostics": {
-                "warnings": 54,
-                "errors": 66,
-                "total": 120,
-                "diagnostics_by_message_and_severity": [
-                  [
-                    "warn",
-                    "Usage of deprecated feature `\"deprecated-starknet-consts\"` with no `#[feature(\"deprecated-starknet-consts\")]` attribute. Note: \"Use `TryInto::try_into` in const context instead.\"",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `basic_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `call_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_with_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_without_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `component_macros`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `constructor_with_params`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `contract_printing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `coverage_project`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `declare_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `env`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `erc20_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `exit_first`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `features`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `file_reading`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `forking`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fuzzing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `hello_workspaces`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `invoke_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `main_workspace`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `misc_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `missing_field_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `old_sncast_std`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `panic_decoding`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `should_panic_test`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `simple_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_file_test_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `steps`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `subtraction`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_info`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_resources`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
-                    1
-                  ],
-                  [
-                    "error",
-                    "could not compile `ekubo_limit_orders_extension` due to previous error",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "package name differs between Cargo and Scarb manifest",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map`",
-                    2
-                  ],
-                  [
-                    "error",
-                    "Plugin diagnostic: Unsupported attribute.",
-                    65
-                  ]
-                ]
-              }
+              ]
             }
           },
           "stdout": [
@@ -951,269 +939,267 @@
           "exit_code": 0,
           "execution_time": "PT59.413937S",
           "analyses": {
-            "data": {
-              "classify_diagnostics": {
-                "warnings": 52,
-                "errors": 0,
-                "total": 52,
-                "diagnostics_by_message_and_severity": [
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `basic_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `call_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_with_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_without_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `component_macros`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `constructor_with_params`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `contract_printing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `coverage_project`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `declare_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `env`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `erc20_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `exit_first`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `features`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `file_reading`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `forking`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fuzzing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `hello_workspaces`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `invoke_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `main_workspace`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `misc_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `missing_field_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `old_sncast_std`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `panic_decoding`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `should_panic_test`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `simple_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_file_test_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `steps`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `subtraction`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_info`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_resources`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map`",
-                    2
-                  ]
+            "classify_diagnostics": {
+              "warnings": 52,
+              "errors": 0,
+              "total": 52,
+              "diagnostics_by_message_and_severity": [
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `basic_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `call_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_with_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_without_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `component_macros`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `constructor_with_params`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `contract_printing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `coverage_project`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `declare_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `env`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `erc20_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `exit_first`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `features`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `file_reading`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `forking`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fuzzing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `hello_workspaces`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `invoke_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `main_workspace`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `misc_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `missing_field_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `old_sncast_std`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `panic_decoding`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `should_panic_test`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `simple_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_file_test_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `steps`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `subtraction`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_info`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_resources`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map`",
+                  2
                 ]
-              }
+              ]
             }
           },
           "stdout": [
@@ -1485,9 +1471,7 @@
           "run": "scarb --json test",
           "exit_code": 1,
           "execution_time": "PT51.800803S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": [
             "{\"status\":\"running\",\"message\":\"cairo-test ekubo_limit_orders_extension\"}\n",
             "warn: `cairo_test` plugin not found\n",
@@ -2062,9 +2046,7 @@
           "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .",
           "exit_code": 0,
           "execution_time": "PT1.174784S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": null,
           "stderr": [
             "Cloning into '.'...\n"
@@ -2077,289 +2059,287 @@
           "exit_code": 1,
           "execution_time": "PT59.888442S",
           "analyses": {
-            "data": {
-              "compiled_procmacros_from_source": {
-                "package_ids": [
-                  "snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.29.0#d37d2272ca6c915117646de76cdf26ec06e44f61)"
+            "compiled_procmacros_from_source": {
+              "package_ids": [
+                "snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.29.0#d37d2272ca6c915117646de76cdf26ec06e44f61)"
+              ]
+            },
+            "classify_diagnostics": {
+              "warnings": 53,
+              "errors": 15,
+              "total": 68,
+              "diagnostics_by_message_and_severity": [
+                [
+                  "warn",
+                  "Usage of deprecated feature `\"deprecated-starknet-consts\"` with no `#[feature(\"deprecated-starknet-consts\")]` attribute. Note: \"Use `TryInto::try_into` in const context instead.\"",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `basic_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `call_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_with_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_without_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `component_macros`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `constructor_with_params`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `contract_printing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `declare_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `env`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `erc20_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `exit_first`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `features`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `file_reading`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `forking`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fuzzing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `hello_workspaces`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `invoke_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `main_workspace`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `misc_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `missing_field_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `old_sncast_std`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `panic_decoding`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `should_panic_test`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `simple_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_file_test_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `steps`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `subtraction`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_info`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_resources`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
+                  1
+                ],
+                [
+                  "error",
+                  "could not compile `ekubo_rb` due to previous error",
+                  1
+                ],
+                [
+                  "warn",
+                  "package name differs between Cargo and Scarb manifest",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map`",
+                  2
+                ],
+                [
+                  "error",
+                  "Plugin diagnostic: Unsupported attribute.",
+                  14
                 ]
-              },
-              "classify_diagnostics": {
-                "warnings": 53,
-                "errors": 15,
-                "total": 68,
-                "diagnostics_by_message_and_severity": [
-                  [
-                    "warn",
-                    "Usage of deprecated feature `\"deprecated-starknet-consts\"` with no `#[feature(\"deprecated-starknet-consts\")]` attribute. Note: \"Use `TryInto::try_into` in const context instead.\"",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `basic_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `call_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_with_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_without_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `component_macros`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `constructor_with_params`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `contract_printing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `declare_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `env`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `erc20_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `exit_first`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `features`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `file_reading`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `forking`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fuzzing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `hello_workspaces`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `invoke_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `main_workspace`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `misc_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `missing_field_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `old_sncast_std`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `panic_decoding`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `should_panic_test`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `simple_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_file_test_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `steps`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `subtraction`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_info`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_resources`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
-                    1
-                  ],
-                  [
-                    "error",
-                    "could not compile `ekubo_rb` due to previous error",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "package name differs between Cargo and Scarb manifest",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map`",
-                    2
-                  ],
-                  [
-                    "error",
-                    "Plugin diagnostic: Unsupported attribute.",
-                    14
-                  ]
-                ]
-              }
+              ]
             }
           },
           "stdout": [
@@ -2648,264 +2628,262 @@
           "exit_code": 0,
           "execution_time": "PT54.849916S",
           "analyses": {
-            "data": {
-              "classify_diagnostics": {
-                "warnings": 51,
-                "errors": 0,
-                "total": 51,
-                "diagnostics_by_message_and_severity": [
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `basic_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `build_fails`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `call_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_addition`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cast_fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_with_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `collection_without_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `component_macros`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `constructor_with_params`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `contract_printing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `declare_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty_lib`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `empty`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `env`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `erc20_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `exit_first`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `features`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fibonacci`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `file_reading`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `forking`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `fuzzing`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `hello_workspaces`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `invoke_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `main_workspace`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `misc_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `missing_field_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `old_sncast_std`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `package2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `panic_decoding`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script1`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `script2`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `should_panic_test`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `simple_package`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_file_test_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state_script`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `state`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `steps`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `subtraction`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_info`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `trace_resources`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "`edition` field not set in `[package]` section for package `map`",
-                    2
-                  ]
+            "classify_diagnostics": {
+              "warnings": 51,
+              "errors": 0,
+              "total": 51,
+              "diagnostics_by_message_and_severity": [
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `basic_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_casm`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails_no_sierra`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `build_fails`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `call_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_addition`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cast_fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `cheatnet_testing_contracts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_with_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `collection_without_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `component_macros`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `constructor_with_params`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `contract_printing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `declare_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `deploy_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty_lib`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `empty`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `env`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `erc20_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `exit_first`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `features`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fibonacci`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `file_reading`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `forking`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `fuzzing`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `hello_workspaces`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `invoke_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `main_workspace`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `misc_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `missing_field_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `old_sncast_std`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `package2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `panic_decoding`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script1`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `script2`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `should_panic_test`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `simple_package`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_file_test_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state_script`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `state`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `steps`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `subtraction`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_info`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `trace_resources`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `tx_status_test_scripts`",
+                  1
+                ],
+                [
+                  "warn",
+                  "`edition` field not set in `[package]` section for package `map`",
+                  2
                 ]
-              }
+              ]
             }
           },
           "stdout": [
@@ -3176,9 +3154,7 @@
           "run": "scarb --json test",
           "exit_code": 1,
           "execution_time": "PT49.342312S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": [
             "{\"status\":\"running\",\"message\":\"cairo-test ekubo_rb\"}\n",
             "warn: `cairo_test` plugin not found\n",
@@ -3494,9 +3470,7 @@
           "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
           "exit_code": 0,
           "execution_time": "PT1.42822S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": null,
           "stderr": [
             "Cloning into '.'...\n"
@@ -3509,49 +3483,47 @@
           "exit_code": 0,
           "execution_time": "PT1M49.807126S",
           "analyses": {
-            "data": {
-              "compiled_procmacros_from_source": {
-                "package_ids": [
-                  "snforge_scarb_plugin v0.34.1"
+            "compiled_procmacros_from_source": {
+              "package_ids": [
+                "snforge_scarb_plugin v0.34.1"
+              ]
+            },
+            "classify_diagnostics": {
+              "warnings": 6,
+              "errors": 0,
+              "total": 6,
+              "diagnostics_by_message_and_severity": [
+                [
+                  "warn",
+                  "Unused import: `staking::attestation::attestation::Attestation::get_block_hash_syscall`",
+                  1
+                ],
+                [
+                  "warn",
+                  "Unused import: `staking::pool::pool_member_balance_trace::trace::StorageAsPath`",
+                  1
+                ],
+                [
+                  "warn",
+                  "Unused import: `staking::reward_supplier::interface::Timestamp`",
+                  1
+                ],
+                [
+                  "warn",
+                  "Unused import: `staking::staking::objects::StakerPoolInfoTrait`",
+                  1
+                ],
+                [
+                  "warn",
+                  "Unused import: `staking::staking::staker_balance_trace::trace::Error`",
+                  1
+                ],
+                [
+                  "warn",
+                  "Unused import: `staking::staking::staker_balance_trace::trace::StorageAsPath`",
+                  1
                 ]
-              },
-              "classify_diagnostics": {
-                "warnings": 6,
-                "errors": 0,
-                "total": 6,
-                "diagnostics_by_message_and_severity": [
-                  [
-                    "warn",
-                    "Unused import: `staking::attestation::attestation::Attestation::get_block_hash_syscall`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "Unused import: `staking::pool::pool_member_balance_trace::trace::StorageAsPath`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "Unused import: `staking::reward_supplier::interface::Timestamp`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "Unused import: `staking::staking::objects::StakerPoolInfoTrait`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "Unused import: `staking::staking::staker_balance_trace::trace::Error`",
-                    1
-                  ],
-                  [
-                    "warn",
-                    "Unused import: `staking::staking::staker_balance_trace::trace::StorageAsPath`",
-                    1
-                  ]
-                ]
-              }
+              ]
             }
           },
           "stdout": [
@@ -3814,13 +3786,11 @@
           "exit_code": 0,
           "execution_time": "PT37.43687S",
           "analyses": {
-            "data": {
-              "classify_diagnostics": {
-                "warnings": 0,
-                "errors": 0,
-                "total": 0,
-                "diagnostics_by_message_and_severity": []
-              }
+            "classify_diagnostics": {
+              "warnings": 0,
+              "errors": 0,
+              "total": 0,
+              "diagnostics_by_message_and_severity": []
             }
           },
           "stdout": [
@@ -4075,9 +4045,7 @@
           "run": "scarb --json test",
           "exit_code": 1,
           "execution_time": "PT1M28.243275S",
-          "analyses": {
-            "data": {}
-          },
+          "analyses": {},
           "stdout": [
             "{\"status\":\"running\",\"message\":\"test staking (SNFORGE_BACKTRACE=1 snforge test)\"}\n",
             "    Updating git repository https://github.com/starkware-libs/starkware-starknet-utils\n",

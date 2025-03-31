@@ -1,9 +1,13 @@
-from abc import ABC, ABCMeta
-from collections.abc import MutableMapping
 from datetime import datetime, timedelta
-from typing import Any, Callable, ClassVar, Iterable, Self
+from typing import Any, Callable, Self
 
-from pydantic import BaseModel, Field, model_validator
+from pydantic import (
+    BaseModel,
+    Field,
+    model_validator,
+    model_serializer,
+    SerializerFunctionWrapHandler,
+)
 
 from maat.installation import REPO, this_maat_commit
 from maat.semver import Semver
@@ -106,50 +110,24 @@ class TestSuite(BaseModel):
     tests: list[Test] = []
 
 
-_analysis_classes: dict[str, type["Analysis"]] = {}
+class CompiledProcMacrosFromSource(BaseModel):
+    package_ids: list[str]
 
 
-class _AnalysisMeta(BaseModel.__class__, ABCMeta):
-    """Tracks all ``Analysis`` subclasses."""
-
-    def __new__(mcs, name, bases, namespace):
-        cls = super().__new__(mcs, name, bases, namespace)
-
-        # Only register classes that are actual subclasses of Analysis and not the Analysis class itself.
-        if name != "Analysis" and any(base.__name__ == "Analysis" for base in bases):
-            assert issubclass(cls, Analysis)
-            assert hasattr(cls, "KEY")
-            _analysis_classes[cls.KEY] = cls
-
-        return cls
+class ClassifyDiagnostics(BaseModel):
+    warnings: int
+    errors: int
+    total: int
+    diagnostics_by_message_and_severity: list[tuple[str, str, int]]
 
 
-class Analysis(BaseModel, ABC, metaclass=_AnalysisMeta):
-    KEY: ClassVar[str]
+class Analyses(BaseModel):
+    compiled_procmacros_from_source: CompiledProcMacrosFromSource | None = None
+    classify_diagnostics: ClassifyDiagnostics | None = None
 
-
-class AnalysisDict(BaseModel, MutableMapping[type[Analysis], Analysis]):
-    data: dict[str, dict] = {}
-
-    def __getitem__(self, analysis_type: type[Analysis], /) -> Analysis:
-        return analysis_type.model_validate(self.data.__getitem__(analysis_type.KEY))
-
-    def __setitem__(self, analysis_type: type[Analysis], analysis: Analysis, /):
-        return self.data.__setitem__(analysis_type.KEY, analysis.model_dump())
-
-    def __delitem__(self, analysis_type: type[Analysis], /):
-        return self.data.__delitem__(analysis_type.KEY)
-
-    def __len__(self) -> int:
-        return self.data.__len__()
-
-    def __iter__(self) -> Iterable[Analysis]:
-        for key, data in self.data.items():
-            analysis_type = _analysis_classes[key]
-            yield analysis_type.model_validate(data)
-
-    def add(self, analysis: Analysis):
-        self[type(analysis)] = analysis
+    @model_serializer(mode="wrap")
+    def serialize_model(self, nxt: SerializerFunctionWrapHandler):
+        return {k: v for k, v in nxt(self).items() if v is not None}
 
 
 class StepReport(BaseModel):
@@ -159,7 +137,7 @@ class StepReport(BaseModel):
     exit_code: int | None
     execution_time: timedelta | None
 
-    analyses: AnalysisDict = AnalysisDict()
+    analyses: Analyses = Analyses()
 
     # These two are kept last because they take significant chunks of view area.
     stdout: list[bytes] | None

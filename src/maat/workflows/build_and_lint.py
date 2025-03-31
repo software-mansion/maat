@@ -1,8 +1,14 @@
 import re
 from collections import defaultdict
 
-from maat.analyses import CompiledProcMacrosFromSource, ClassifyDiagnostics
-from maat.model import Step, StepMeta, StepReport, TestReport
+from maat.model import (
+    ClassifyDiagnostics,
+    CompiledProcMacrosFromSource,
+    Step,
+    StepMeta,
+    StepReport,
+    TestReport,
+)
 from maat.utils.data import jsonlines
 
 BuildMeta = StepMeta(
@@ -42,7 +48,9 @@ def compiled_procmacros_from_source(test: TestReport, step: StepReport):
             case {"reason": "compiler-artifact", "target": {"name": target_name}}:
                 if target_name in candidates:
                     package_ids.append(candidates[target_name])
-    step.analyses.add(CompiledProcMacrosFromSource(package_ids=package_ids))
+    step.analyses.compiled_procmacros_from_source = CompiledProcMacrosFromSource(
+        package_ids=package_ids
+    )
 
 
 def classify_diagnostics(test: TestReport, step: StepReport):
@@ -67,11 +75,9 @@ def classify_diagnostics(test: TestReport, step: StepReport):
         diagnostics_by_message_and_severity.append((severity, message, count))
     diagnostics_by_message_and_severity.sort(key=lambda x: (x[2], x[1]))
 
-    step.analyses.add(
-        ClassifyDiagnostics(
-            warnings=warnings,
-            errors=errors,
-            total=warnings + errors,
-            diagnostics_by_message_and_severity=diagnostics_by_message_and_severity,
-        )
+    step.analyses.classify_diagnostics = ClassifyDiagnostics(
+        warnings=warnings,
+        errors=errors,
+        total=warnings + errors,
+        diagnostics_by_message_and_severity=diagnostics_by_message_and_severity,
     )
