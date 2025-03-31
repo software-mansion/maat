@@ -65,6 +65,7 @@ def classify_diagnostics(test: TestReport, step: StepReport):
     diagnostics_by_message_and_severity = []
     for (severity, message), count in message_severity_count.items():
         diagnostics_by_message_and_severity.append((severity, message, count))
+    diagnostics_by_message_and_severity.sort(key=lambda x: (x[2], x[1]))
 
     step.analyses.add(
         ClassifyDiagnostics(
