@@ -1,8 +1,7 @@
-import json
 import re
-from typing import Iterable
 
 from maat.model import Step, StepMeta, StepReport, TestReport
+from maat.utils.data import jsonlines
 
 BuildMeta = StepMeta(
     name="build",
@@ -21,7 +20,7 @@ def workflow() -> list[Step]:
 def compiled_procmacros_from_source(test: TestReport, step: StepReport):
     candidates = {}
     found = []
-    for msg in jsonlines(step.stdout or []):
+    for msg in jsonlines(step.stdout):
         match msg:
             # "{\"status\":\"compiling\",\"message\":\"snforge_scarb_plugin v0.34.1\"}\n",
             case {"status": "compiling", "message": message}:
@@ -33,11 +32,3 @@ def compiled_procmacros_from_source(test: TestReport, step: StepReport):
                 if target_name in candidates:
                     found.append(candidates[target_name])
     step.analyses["compiled_procmacros_from_source"] = found
-
-
-def jsonlines(output: list[str]) -> Iterable[dict]:
-    for line in output:
-        try:
-            yield json.loads(line)
-        except json.JSONDecodeError:
-            pass
