@@ -117,11 +117,18 @@ def execute_test_locally(
         for step in test.steps:
             ct.raise_if_cancelled()
 
+            # Skip execution if a setup step has failed but still create a report.
+            if test_progress.setup_failed:
+                # Mark as skipped due to a setup failure.
+                with test_reporter.step(step) as step_reporter:
+                    step_reporter.set_exit_code(-1)
+                continue
+
             with (
                 test_progress.will_run_step(step),
                 test_reporter.step(step) as step_reporter,
             ):
-                docker_run_step(
+                exit_code = docker_run_step(
                     docker=docker,
                     image=sandbox,
                     command=split_command(step.run),
@@ -130,6 +137,10 @@ def execute_test_locally(
                     ct=ct,
                     step_reporter=step_reporter,
                 )
+
+                # If this was a setup step, and it failed, mark that we should skip remaining steps.
+                if step.meta.setup and exit_code != 0:
+                    test_progress.setup_failed = True
 
 
 class TestProgress:
@@ -147,11 +158,13 @@ class TestProgress:
             total=sum(not s.meta.setup for s in self._test.steps),
         )
 
+        self.setup_failed = False
+
     def __enter__(self):
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type:
+        if exc_type or self.setup_failed:
             status_icon = ":x:"
         else:
             status_icon = ":white_check_mark:"
@@ -194,8 +207,9 @@ def docker_run_step(
     workbench_volume: Volume,
     ct: CancellationToken,
     step_reporter: StepReporter,
-):
+) -> int:
     workdir = "/root/maat-workbench"
+    exit_code = 0
 
     try:
         stream = docker.container.run(
@@ -214,15 +228,16 @@ def docker_run_step(
                     step_reporter.append_stdout_line(line)
                 case "stderr":
                     step_reporter.append_stderr_line(line)
-        step_reporter.set_exit_code(0)
     except DockerException as e:
         # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
         # Anything other than these values comes from the container process.
         # Ref: https://docs.docker.com/engine/containers/run/#exit-status
         exit_code = e.return_code
-        step_reporter.set_exit_code(exit_code)
         if exit_code in [125, 126, 127]:
             raise
+    finally:
+        step_reporter.set_exit_code(exit_code)
+        return exit_code
 
 
 def sanitize_for_docker(name: str) -> str:
