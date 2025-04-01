@@ -1,17 +1,3 @@
-"""
-How to write a new analysis
-==========================
-
-* Define an analyser function that takes ``TestReport`` and ``StepReport`` parameters.
-* Store analysis results in a ``step.analyses`` dictionary with a unique key.
-* Create a ``StepMeta`` with a unique name and register your analyser function.
-* Use ``analysers=lambda: [your_analyzer_function]`` in the ``StepMeta`` constructor.
-* Ensure your analyser is properly registered in a workflow.
-* Access analysis results in the report JSON under the ``analyses`` field.
-* Multiple analysers can mutate the same analysis result.
-  Analysers are executed in the order they're defined.
-"""
-
 from typing import Iterable
 
 from rich.console import Console
