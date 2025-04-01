@@ -19,7 +19,9 @@ from rich.progress import (
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.model import Step, Test, TestSuite
+from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.utils.shell import split_command
+from maat.utils.unique_id import unique_id
 
 
 def execute_test_suite_locally(
@@ -123,7 +125,7 @@ def execute_test_locally(
                     docker=docker,
                     image=sandbox,
                     command=split_command(step.run),
-                    container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}",
+                    container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}-{unique_id()}",
                     workbench_volume=volume,
                     ct=ct,
                     step_reporter=step_reporter,
@@ -182,15 +184,6 @@ class TestProgress:
         finally:
             if not step.meta.setup:
                 self._progress.advance(self._task)
-
-
-@contextmanager
-def ephemeral_volume(docker: DockerClient, **kwargs):
-    volume = docker.volume.create(**kwargs)
-    try:
-        yield volume
-    finally:
-        volume.remove()
 
 
 def docker_run_step(

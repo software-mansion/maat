@@ -3,7 +3,7 @@ import struct
 import threading
 import time
 
-from python_on_whales import DockerClient
+from python_on_whales import DockerClient, DockerException
 
 
 class CancellationToken:
@@ -38,7 +38,13 @@ class CancellationToken:
             filters={"label": f"maat-ct={self._label_token}"}
         )
         for container in containers:
-            container.kill()
+            try:
+                container.kill()
+            except DockerException as e:
+                if "is not running" in str(e):
+                    continue
+                else:
+                    raise
 
 
 class CancelledException(Exception):
