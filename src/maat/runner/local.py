@@ -169,7 +169,10 @@ class TestProgress:
 
     @contextmanager
     def will_run_step(self, step: Step):
-        self._progress.update(self._task, description=f"{self._test.name}: {step.name}")
+        self._progress.update(
+            self._task,
+            description=f"{self._test.name}: {truncate_with_ellipsis(step.name, max_length=24)}",
+        )
 
         if not step.meta.setup and self._progress.tasks[self._task].start_time is None:
             self._progress.start_task(self._task)
@@ -231,3 +234,10 @@ def docker_run_step(
 
 def sanitize_for_docker(name: str) -> str:
     return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
+
+
+def truncate_with_ellipsis(text, max_length):
+    """Truncate text to `max_length` and add ellipsis if needed."""
+    if len(text) <= max_length:
+        return text
+    return text[: max_length - 1] + "…"
