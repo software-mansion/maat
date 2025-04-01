@@ -3,12 +3,13 @@ from collections.abc import Callable
 
 from pydantic import BaseModel
 
+from maat.ecosystem import scarbs_xyz
 from maat.ecosystem.git import setup_git
-from maat.ecosystem.registry import fetch_all_packages, setup_registry
+from maat.ecosystem.registry import setup_registry
+from maat.ecosystem.scarbs_xyz import BASE_URL
 from maat.model import Step
 
 _GITHUB_URL = "https://github.com/"
-_SCARBS_XYZ = "https://scarbs.xyz/"
 
 type Ecosystem = EcosystemProject | list[Ecosystem] | Callable[[], Ecosystem]
 
@@ -46,7 +47,7 @@ class _Registry(EcosystemProject):
     def name(self) -> str:
         name = self.package
 
-        if self.registry_url != _SCARBS_XYZ:
+        if self.registry_url != BASE_URL:
             name += f"@{_human_url(self.registry_url)}"
 
         return name
@@ -71,21 +72,16 @@ def registry(registry_url: str, package: str) -> Ecosystem:
 
 
 def scarbs(package: str) -> Ecosystem:
-    return registry(_SCARBS_XYZ, package)
-
-
-def entire_registry(registry_url: str) -> Ecosystem:
-    def lazy() -> Ecosystem:
-        return [
-            registry(registry_url, package)
-            for package in fetch_all_packages(registry_url)
-        ]
-
-    return lazy
+    return registry(BASE_URL, package)
 
 
 def entire_scarbs() -> Ecosystem:
-    return entire_registry(_SCARBS_XYZ)
+    def lazy() -> Ecosystem:
+        return [
+            registry(BASE_URL, package) for package in scarbs_xyz.fetch_all_packages()
+        ]
+
+    return lazy
 
 
 def _human_url(url: str) -> str:
