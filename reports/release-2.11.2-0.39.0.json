@@ -4045,7 +4045,14 @@
           "run": "scarb --json test",
           "exit_code": 1,
           "execution_time": "PT1M28.243275S",
-          "analyses": {},
+          "analyses": {
+            "tests_summary": {
+              "passed": 260,
+              "failed": 30,
+              "skipped": 0,
+              "ignored": 1
+            }
+          },
           "stdout": [
             "{\"status\":\"running\",\"message\":\"test staking (SNFORGE_BACKTRACE=1 snforge test)\"}\n",
             "    Updating git repository https://github.com/starkware-libs/starkware-starknet-utils\n",

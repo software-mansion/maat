@@ -15,3 +15,10 @@ def jsonlines(output: list[str] | None) -> Iterable[dict]:
             yield json.loads(line)
         except json.JSONDecodeError:
             pass
+
+
+def utf8continuous(output: list[bytes] | None) -> str:
+    if output is None:
+        return ""
+
+    return b"".join(output).decode("utf-8", errors="replace")

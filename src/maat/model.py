@@ -121,9 +121,21 @@ class ClassifyDiagnostics(BaseModel):
     diagnostics_by_message_and_severity: list[tuple[str, str, int]]
 
 
+class TestsSummary(BaseModel):
+    passed: int
+    failed: int
+    skipped: int
+    ignored: int
+
+    @property
+    def total(self) -> int:
+        return self.passed + self.failed + self.skipped + self.ignored
+
+
 class Analyses(BaseModel):
     compiled_procmacros_from_source: CompiledProcMacrosFromSource | None = None
     classify_diagnostics: ClassifyDiagnostics | None = None
+    tests_summary: TestsSummary | None = None
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):
