@@ -1,4 +1,3 @@
-import re
 from functools import lru_cache
 from typing import Self
 from urllib.parse import urljoin
@@ -8,6 +7,7 @@ from pydantic import BaseModel, RootModel
 
 from maat.ecosystem import scarbs_xyz
 from maat.model import Step
+from maat.utils.smart_sort import smart_sort_key
 from maat.utils.unique_id import unique_id
 
 
@@ -67,7 +67,7 @@ class IndexRecords(RootModel):
         return cls.model_validate_json(requests.get(url).content)
 
     def latest_version(self) -> str:
-        latest_record = max(self.root, key=lambda record: _split_semver(record.v))
+        latest_record = max(self.root, key=lambda record: smart_sort_key(record.v))
         return latest_record.v
 
 
@@ -82,26 +82,3 @@ def _package_prefix(name: str) -> str:
             return f"3/{name[:1]}"
         case _:
             return f"{name[:2]}/{name[2:4]}"
-
-
-def _split_semver(semver: str) -> list[int | str]:
-    """
-    Split a semantic version into its components.
-
-    ```
-    1.2.3 -> [1, 2, 3]
-    0.1.0-alpha -> [0, 1, 0, "alpha"]
-    0.1.0-alpha.1 -> [0, 1, 0, "alpha", 1]
-    0.1.0-alpha.1+2024 -> [0, 1, 0, "alpha", 1, 2024]
-    ```
-    """
-
-    components = re.split(r"[.\-+]", semver)
-    return [try_int(c) for c in components]
-
-
-def try_int(c: str) -> int | str:
-    if c.isdigit():
-        return int(c)
-    else:
-        return c

@@ -7,6 +7,7 @@ import jinja2
 from pydantic import BaseModel
 
 from maat.report.metrics import Metrics
+from maat.utils.smart_sort import smart_sort_key
 
 
 def render_html(metrics: list[Metrics]) -> Path:
@@ -39,6 +40,9 @@ class RootViewModel(BaseModel):
 
 
 def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
+    # Sort columns
+    metrics.sort(key=lambda m: smart_sort_key(m.file_stem))
+
     # Create column titles from file_stem of each metrics object
     column_titles = [metric.file_stem for metric in metrics]
 
