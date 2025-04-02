@@ -11,6 +11,8 @@ from maat.ecosystem import build_test_suite
 from maat.installation import REPO
 from maat.report.analysis import analyse_report
 from maat.model import Report
+from maat.report.metrics import Metrics
+from maat.report import browser
 from maat.report.reporter import Reporter
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
@@ -119,14 +121,21 @@ def run_local(
     report.save()
 
 
-@cli.command(
-    help="Open and display one or more reports. If multiple reports are provided, they will be compared."
-)
+@cli.command(help="Open and display one or more reports in a web browser.")
 @click.argument("reports", type=PathParamType, nargs=-1, required=True)
 @pass_console
 def open(console: Console, reports: tuple[Path, ...]) -> None:
-    # Implementation would go here
-    pass
+    all_metrics = []
+    for path in reports:
+        report = Report.model_validate_json(path.read_bytes())
+        metrics = Metrics.compute(report=report, path=path)
+        all_metrics.append(metrics)
+
+    html_path = browser.render_html(all_metrics)
+    console.log("Report generated at:", html_path)
+
+    console.log("Opening report in browser...")
+    click.launch(str(html_path))
 
 
 @cli.command(help="Reanalyse an existing report and update it.")

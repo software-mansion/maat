@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Callable, Self
+from typing import Any, Callable, Self, Literal
 
 from pydantic import (
     BaseModel,
@@ -17,6 +17,7 @@ from maat.utils.unique_id import unique_id
 type ImageId = str
 
 type Analyser = Callable[[TestReport, StepReport], None]
+type Severity = Literal["error"] | Literal["warn"]
 
 
 class StepMeta(BaseModel):
@@ -118,7 +119,7 @@ class ClassifyDiagnostics(BaseModel):
     warnings: int
     errors: int
     total: int
-    diagnostics_by_message_and_severity: list[tuple[str, str, int]]
+    diagnostics_by_message_and_severity: list[tuple[Severity, str, int]]
 
 
 class TestsSummary(BaseModel):
