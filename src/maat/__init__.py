@@ -119,12 +119,14 @@ def run_local(
     report.save()
 
 
-@cli.command(help="Compare two reports.")
-@click.argument("old_report", type=PathParamType)
-@click.argument("new_report", type=PathParamType)
-def diff(old_report: str, new_report: str) -> None:
-    print(f"Comparing reports: {old_report} vs {new_report}")
+@cli.command(
+    help="Open and display one or more reports. If multiple reports are provided, they will be compared."
+)
+@click.argument("reports", type=PathParamType, nargs=-1, required=True)
+@pass_console
+def open(console: Console, reports: tuple[Path, ...]) -> None:
     # Implementation would go here
+    pass
 
 
 @cli.command(help="Reanalyse an existing report and update it.")
