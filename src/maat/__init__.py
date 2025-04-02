@@ -18,8 +18,6 @@ from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
 
-# TODO: Reports need to be sorted and have somehow stable IDs for git diffability.
-
 
 traceback.install(show_locals=True)
 
