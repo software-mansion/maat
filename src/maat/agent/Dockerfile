@@ -1,8 +1,14 @@
 FROM fedora:42
 LABEL maintainer="Software Mansion <contact@swmansion.com>"
 
+ARG MAAT_CACHE
+ENV MAAT_CACHE="$MAAT_CACHE"
+ARG MAAT_WORKBENCH
+ENV MAAT_WORKBENCH="$MAAT_WORKBENCH"
+
 ENV RUSTUP_HOME=/opt/rustup
 ENV CARGO_HOME=/opt/cargo
+ENV SCARB_CACHE="$MAAT_CACHE/scarb"
 ENV ASDF_DATA_DIR=/opt/asdf
 
 # Adding /root/.local/bin because universal-sierra-compiler installer is hardcoded to this path.
@@ -59,16 +65,4 @@ asdf plugin add starknet-foundry
 asdf install starknet-foundry
 snforge --version
 sncast --version
-EOF
-
-# Create sample snforge project and test it. This will compile snforge procmacros if needed and store it in caches.
-RUN <<EOF
-set -eux
-cd /tmp
-snforge new --no-vcs just_testing
-cd ./just_testing
-scarb build
-scarb test
-cd
-rm -rf /tmp/just_testing
 EOF

@@ -20,6 +20,7 @@ from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.model import Step, Test, TestSuite
 from maat.runner.ephemeral_volume import ephemeral_volume
+from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
 from maat.utils.shell import split_command
 from maat.utils.unique_id import unique_id
 
@@ -47,6 +48,7 @@ def execute_test_suite_locally(
             console=console,
         ) as progress,
         ThreadPoolExecutor(max_workers=jobs) as pool,
+        ephemeral_volume(docker) as cache_volume,
     ):
         task = progress.add_task("Experimenting", total=len(test_suite.tests))
 
@@ -59,6 +61,7 @@ def execute_test_suite_locally(
                 execute_test_locally(
                     test=current_test,
                     sandbox=test_suite.sandbox,
+                    cache_volume=cache_volume,
                     ct=ct,
                     docker=docker,
                     reporter=reporter,
@@ -99,6 +102,7 @@ def execute_test_suite_locally(
 def execute_test_locally(
     test: Test,
     sandbox: Image | str,
+    cache_volume: Volume,
     ct: CancellationToken,
     docker: DockerClient,
     reporter: Reporter,
@@ -131,12 +135,13 @@ def execute_test_locally(
                     image=sandbox,
                     command=split_command(step.run),
                     container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}-{unique_id()}",
-                    workbench_volume=volume,
+                    cache_volume=cache_volume,
+                    workbench_volume=workbench_volume,
                     ct=ct,
                     step_reporter=step_reporter,
                 )
 
-                # If this was a setup step, and it failed, mark that we should skip remaining steps.
+                # If this was a setup step, and it failed, mark that we should skip the remaining steps.
                 if step.meta.setup and exit_code != 0:
                     test_progress.setup_failed = True
 
@@ -202,11 +207,11 @@ def docker_run_step(
     image: Image | str,
     command: list[str],
     container_name: str,
+    cache_volume: Volume,
     workbench_volume: Volume,
     ct: CancellationToken,
     step_reporter: StepReporter,
 ) -> int:
-    workdir = "/root/maat-workbench"
     exit_code = 0
 
     try:
@@ -216,8 +221,11 @@ def docker_run_step(
             name=container_name,
             labels=ct.container_labels,
             remove=True,
-            volumes=[(workbench_volume, workdir, "rw")],
-            workdir=workdir,
+            volumes=[
+                (cache_volume, MAAT_CACHE, "rw"),
+                (workbench_volume, MAAT_WORKBENCH, "rw"),
+            ],
+            workdir=MAAT_WORKBENCH,
             stream=True,
         )
         for source, line in stream:

@@ -1,4 +1,4 @@
-import importlib
+import importlib.resources
 
 from python_on_whales import DockerClient, Image
 from rich.console import Console
@@ -6,6 +6,8 @@ from rich.console import Console
 from maat.semver import Semver
 
 SANDBOX_REPOSITORY = "maat/sandbox"
+MAAT_CACHE = "/mnt/maat-cache"
+MAAT_WORKBENCH = "/mnt/maat-workbench"
 
 
 def build(
@@ -21,6 +23,8 @@ def build(
                 build_args={
                     "ASDF_SCARB_VERSION": scarb,
                     "ASDF_STARKNET_FOUNDRY_VERSION": foundry,
+                    "MAAT_CACHE": MAAT_CACHE,
+                    "MAAT_WORKBENCH": MAAT_WORKBENCH,
                 },
                 pull=True,
                 tags=[
