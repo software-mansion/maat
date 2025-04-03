@@ -9,15 +9,14 @@ from rich.console import Console
 from maat import sandbox
 from maat.ecosystem import build_test_suite
 from maat.installation import REPO
-from maat.report.analysis import analyse_report
 from maat.model import Report
-from maat.report.metrics import Metrics
 from maat.report import browser
+from maat.report.analysis import analyse_report
+from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
-
 
 traceback.install(show_locals=True)
 
@@ -117,6 +116,32 @@ def run_local(
     )
 
     report.save()
+
+
+@cli.command(help="Build the sandbox image for the given environment.")
+@click.option(
+    "--scarb",
+    envvar="MAAT_SCARB_VERSION",
+    prompt="Scarb version",
+    help="Version of Scarb to experiment on.",
+    type=SemverParamType,
+)
+@click.option(
+    "--foundry",
+    envvar="MAAT_FOUNDRY_VERSION",
+    prompt="Starknet Foundry version",
+    help="Version of Starknet Foundry to experiment on.",
+    type=SemverParamType,
+)
+@pass_docker
+@pass_console
+def build_sandbox(
+    console: Console,
+    docker: DockerClient,
+    scarb: Semver,
+    foundry: Semver,
+) -> None:
+    sandbox.build(scarb=scarb, foundry=foundry, docker=docker, console=console)
 
 
 @cli.command(help="Open and display one or more reports in a web browser.")
