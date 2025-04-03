@@ -110,9 +110,7 @@ def execute_test_locally(
 
     with (
         TestProgress(test, progress) as test_progress,
-        ephemeral_volume(
-            docker, volume_name=f"maat-{sanitize_for_docker(test.name)}"
-        ) as volume,
+        ephemeral_volume(docker) as workbench_volume,
     ):
         for step in test.steps:
             ct.raise_if_cancelled()
