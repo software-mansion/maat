@@ -1,11 +1,12 @@
-from datetime import timedelta, datetime
+from collections import defaultdict
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Self
+from typing import Iterable, Self
 
 import pydantic
 from pydantic import BaseModel
 
-from maat.model import Report, Severity
+from maat.model import ClassifiedDiagnostic, Report, Severity
 
 
 class Metrics(pydantic.BaseModel):
@@ -37,9 +38,9 @@ class Metrics(pydantic.BaseModel):
     avg_warnings_in_dirty_build: float
     avg_errors_in_dirty_build: float
 
-    build_diagnostics: list[tuple[Severity, str, int]]
+    build_diagnostics: list[ClassifiedDiagnostic]
     """List of all build diagnostics from all build runs."""
-    lint_diagnostics: list[tuple[Severity, str, int]]
+    lint_diagnostics: list[ClassifiedDiagnostic]
     """List of all lint diagnostics (lint-specific, no build ones) from all linter runs."""
 
     failed_tests_ratio: float
@@ -65,8 +66,8 @@ class Metrics(pydantic.BaseModel):
         warnings_in_dirty_build = []
         errors_in_dirty_build = []
 
-        build_diagnostics = []
-        lint_diagnostics = []
+        build_diagnostics_set = ClassifiedDiagnosticsSet()
+        lint_diagnostics_set = ClassifiedDiagnosticsSet()
 
         total_tests = 0
         failed_tests = 0
@@ -88,13 +89,9 @@ class Metrics(pydantic.BaseModel):
                             warnings_in_dirty_build.append(diag.warnings)
                             errors_in_dirty_build.append(diag.errors)
 
-                            # Add diagnostics to the list
-                            for (
-                                severity,
-                                message,
-                                count,
-                            ) in diag.diagnostics_by_message_and_severity:
-                                build_diagnostics.append((severity, message, count))
+                            build_diagnostics_set.extend(
+                                diag.diagnostics_by_message_and_severity
+                            )
                         else:
                             clean_builds += 1
 
@@ -113,13 +110,9 @@ class Metrics(pydantic.BaseModel):
                         if diag.total > 0:
                             dirty_lints += 1
 
-                            # Add diagnostics to the list
-                            for (
-                                severity,
-                                message,
-                                count,
-                            ) in diag.diagnostics_by_message_and_severity:
-                                lint_diagnostics.append((severity, message, count))
+                            lint_diagnostics_set.extend(
+                                diag.diagnostics_by_message_and_severity
+                            )
                         else:
                             clean_lints += 1
 
@@ -163,6 +156,12 @@ class Metrics(pydantic.BaseModel):
         # Remove duplicates from compiled_procmacros
         compiled_procmacros = sorted(set(compiled_procmacros))
 
+        # Sort diagnostics.
+        build_diagnostics = list(build_diagnostics_set)
+        build_diagnostics.sort(key=_classified_diagnostics_sort_key)
+        lint_diagnostics = list(lint_diagnostics_set)
+        lint_diagnostics.sort(key=_classified_diagnostics_sort_key)
+
         # Create and return the Metrics object
         return cls(
             file_stem=path.stem,
@@ -190,6 +189,17 @@ class Metrics(pydantic.BaseModel):
         )
 
 
+def _classified_diagnostics_sort_key(d: ClassifiedDiagnostic) -> tuple:
+    """
+    Returns a key that can be used to sort diagnostics in the following order:
+    1. Higher count first (descending order).
+    2. Severity, where "error" is higher than "warn".
+    3. Alphabetically by diagnostic message.
+    """
+    severity_priority = {"error": 1, "warn": 2}
+    return -d.count, severity_priority[d.severity], d.message
+
+
 class MetricsTransposed(BaseModel):
     file_stem: list[str]
     workspace: list[str]
@@ -209,8 +219,8 @@ class MetricsTransposed(BaseModel):
     dirty_tests: list[int]
     avg_warnings_in_dirty_build: list[float]
     avg_errors_in_dirty_build: list[float]
-    build_diagnostics: list[list[tuple[Severity, str, int]]]
-    lint_diagnostics: list[list[tuple[Severity, str, int]]]
+    build_diagnostics: list[list[ClassifiedDiagnostic]]
+    lint_diagnostics: list[list[ClassifiedDiagnostic]]
     failed_tests_ratio: list[float]
     compiled_procmacros_from_source: list[list[str]]
 
@@ -237,3 +247,19 @@ def _assert_transposed_fields():
 
 
 _assert_transposed_fields()
+
+
+class ClassifiedDiagnosticsSet:
+    def __init__(self):
+        self._data: dict[(Severity, str), int] = defaultdict(int)
+
+    def add(self, diag: ClassifiedDiagnostic):
+        self._data[(diag.severity, diag.message)] += diag.count
+
+    def extend(self, other: Iterable[ClassifiedDiagnostic]):
+        for diag in other:
+            self.add(diag)
+
+    def __iter__(self):
+        for (severity, message), count in self._data.items():
+            yield ClassifiedDiagnostic(severity=severity, message=message, count=count)

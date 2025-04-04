@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Callable, Self, Literal
+from typing import Any, Callable, Self, Literal, NamedTuple
 
 from pydantic import (
     BaseModel,
@@ -115,11 +115,17 @@ class CompiledProcMacrosFromSource(BaseModel):
     package_ids: list[str]
 
 
+class ClassifiedDiagnostic(NamedTuple):
+    severity: Severity
+    message: str
+    count: int
+
+
 class ClassifyDiagnostics(BaseModel):
     warnings: int
     errors: int
     total: int
-    diagnostics_by_message_and_severity: list[tuple[Severity, str, int]]
+    diagnostics_by_message_and_severity: list[ClassifiedDiagnostic]
 
 
 class TestsSummary(BaseModel):

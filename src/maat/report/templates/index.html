@@ -22,6 +22,8 @@
             --font-family-main: system-ui, sans-serif;
             --font-family-fancy: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
             --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
+            --header-height: 3em;
         }
 
         @media (prefers-color-scheme: dark) {
@@ -49,13 +51,14 @@
             font-family: var(--font-family-main), sans-serif;
             margin: 0;
             padding: 0;
+            overflow-x: auto;
         }
 
         header {
             background: var(--color-primary-light);
             border-bottom: 1px solid var(--color-border);
             display: flex;
-            height: 4em;
+            height: var(--header-height);
             align-items: center;
         }
 
@@ -68,15 +71,22 @@
 
         h1 {
             font-family: var(--font-family-fancy), sans-serif;
-            font-size: 2rem;
+            font-size: calc(var(--header-height) * 0.5);
             margin: 0;
             padding: 0 1rem;
+        }
+
+        main {
+            width: 100%;
+            max-height: calc(100vh - var(--header-height));
+            overflow: auto;
         }
 
         table {
             --cell-background: var(--color-background-alt);
             border-collapse: collapse;
             min-width: 100%;
+            table-layout: fixed;
         }
 
         thead {
@@ -96,6 +106,10 @@
             text-align: left;
             border-bottom: 1px solid var(--color-border);
             background: var(--cell-background);
+            overflow: auto;
+            min-width: 10em;
+            max-width: 50em;
+            width: auto;
         }
 
         tr > td:first-child {
@@ -118,6 +132,17 @@
             font-weight: bold;
         }
 
+        tr.details {
+            --cell-background: linear-gradient(
+                    to bottom,
+                    color-mix(in oklab, var(--color-border), var(--color-primary-light)) 0,
+                    var(--color-primary-light) 0.67em);
+        }
+
+        tr.details td {
+            vertical-align: top;
+        }
+
         .error {
             color: var(--color-error);
         }
@@ -130,9 +155,12 @@
             color: var(--color-success);
         }
 
-        .code {
+        .text-sm {
+            font-size: 0.8em;
+        }
+
+        .code, pre, code {
             font-family: var(--font-family-mono), monospace;
-            white-space: pre;
         }
 
         .text-right {
@@ -145,33 +173,45 @@
     <div id="logo"></div>
     <h1>Ma'at Report Diff</h1>
 </header>
-<table>
-    <thead>
-    <tr>
-        <th></th>
-        {% for title in column_titles %}
-            <th class="text-right">{{ title }}</th>
-        {% endfor %}
-    </tr>
-    </thead>
-    <tbody>
-    {% for section in sections %}
-        <!-- region {{ section.title }} Section -->
-        <tr class="section-header">
-            <td>{{ section.title }}</td>
-            <td colspan="{{ column_titles|length }}"></td>
+<main>
+    <table>
+        <thead>
+        <tr>
+            <th></th>
+            {% for title in column_titles %}
+                <th class="text-right">{{ title }}</th>
+            {% endfor %}
         </tr>
-        {% for row in section.rows %}
-            <tr>
-                <td>{{ row.title }}</td>
-                {% for cell in row.cells %}
-                    <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
-                {% endfor %}
+        </thead>
+        <tbody>
+        {% for section in sections %}
+            <!-- region {{ section.title }} Section -->
+            <tr class="section-header">
+                <td>{{ section.title }}</td>
+                <td colspan="{{ column_titles|length }}"></td>
             </tr>
+            {% for row in section.rows %}
+                <tr>
+                    <td>{{ row.title }}</td>
+                    {% for cell in row.cells %}
+                        <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
+                    {% endfor %}
+                </tr>
+                {% if row.details is not none %}
+                    <tr class="details">
+                        <td></td>
+                        {% for cell in row.details %}
+                            <td class="{{ "text-sm"|clsx(cell.class_name) }}">
+                                <pre>{{ cell.value }}</pre>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endif %}
+            {% endfor %}
+            <!-- endregion -->
         {% endfor %}
-        <!-- endregion -->
-    {% endfor %}
-    </tbody>
-</table>
+        </tbody>
+    </table>
+</main>
 </body>
 </html>
