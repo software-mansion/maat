@@ -161,10 +161,15 @@
 
         tr.details td {
             vertical-align: top;
+            overflow: hidden;
         }
 
         body.hide-details tr.details {
             display: none;
+        }
+
+        body.overflow-auto tr.details td {
+            overflow: auto;
         }
 
         .error {
@@ -205,6 +210,10 @@
         <div class="control-group">
             <input type="checkbox" id="toggle-details" onchange="toggleBodyClass('hide-details')" checked>
             <label for="toggle-details">Show details</label>
+        </div>
+        <div class="control-group">
+            <input type="checkbox" id="toggle-overflow" onchange="toggleBodyClass('overflow-auto')">
+            <label for="toggle-overflow">Scrollable details</label>
         </div>
     </div>
 </header>
