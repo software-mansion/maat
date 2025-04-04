@@ -85,6 +85,22 @@ You can then compare two reports with the following invocation to detect regress
 ./maat open old_report.json report.json
 ```
 
+## Debugging reports
+
+The `maat.model.Report` class provides a fully typed representation of report files.
+With Python REPL it is fairly easy to inspect reports and look for some traces of errors.
+
+The `maat.repl` module provides some handy utilities.
+For example, to examine what projects have issues with procmacro loading, you can run:
+
+```python
+from maat.repl import *
+
+r = open_report("reports/release-2.11.2-0.39.0.json")
+
+list_test_names_containing_pattern_in_stdout(r, "Unsupported attribute")
+```
+
 [cairo]: https://www.cairo-lang.org/
 
 [crater]: https://github.com/rust-lang/crater
