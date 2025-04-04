@@ -13,7 +13,6 @@ from rich.progress import (
     TaskProgressColumn,
     TextColumn,
     TimeElapsedColumn,
-    TimeRemainingColumn,
 )
 
 from maat.report.reporter import Reporter, StepReporter
@@ -41,9 +40,6 @@ def execute_test_suite_locally(
             TextColumn("[progress.description]{task.description}"),
             BarColumn(),
             TaskProgressColumn(),
-            TextColumn("RT"),
-            TimeRemainingColumn(),
-            TextColumn("ET"),
             TimeElapsedColumn(),
             console=console,
         ) as progress,
