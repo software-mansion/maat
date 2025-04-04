@@ -17,7 +17,7 @@
             --color-error: #FF6259;
             --color-warning: #FFD61E;
             --color-success: #57B495;
-            --color-shadow: #33488E;
+            --color-shadow: black;
 
             --font-family-main: system-ui, sans-serif;
             --font-family-fancy: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
@@ -155,7 +155,7 @@
         tr.details {
             --cell-background: linear-gradient(
                     to bottom,
-                    color-mix(in oklab, var(--color-border), var(--color-primary-light)) 0,
+                    color-mix(in oklab, var(--color-shadow) 10%, var(--color-primary-light)) 0,
                     var(--color-primary-light) 0.67em);
         }
 
