@@ -30,6 +30,7 @@ LintMeta = StepMeta(
 
 def workflow() -> list[Step]:
     return [
+        Step.setup("maat-check-versions"),
         Step(meta=BuildMeta, run="scarb --json build --test"),
         Step(meta=LintMeta, run="scarb --json lint"),
     ]

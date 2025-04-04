@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+set -eu
+
+check_asdf_tool_version() {
+    local tool="$1"
+    local expected_version="$2"
+    local env_var_name="$3"
+
+    # Check if the tool is correctly installed with expected version.
+    if ! asdf current --no-header "$tool" | grep -Eq "^$tool\\s+$expected_version\\s+$env_var_name\\s+true$"; then
+        echo "$tool is NOT OK"
+        asdf current
+        return 1
+    fi
+
+    return 0
+}
+
+if ! check_asdf_tool_version "scarb" "${ASDF_SCARB_VERSION}" "ASDF_SCARB_VERSION"; then
+    exit 1
+fi
+
+if ! check_asdf_tool_version "starknet-foundry" "${ASDF_STARKNET_FOUNDRY_VERSION}" "ASDF_STARKNET-FOUNDRY_VERSION"; then
+    exit 2
+fi

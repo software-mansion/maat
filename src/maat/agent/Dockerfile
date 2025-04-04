@@ -66,3 +66,6 @@ asdf install starknet-foundry
 snforge --version
 sncast --version
 EOF
+
+# Add all agent binaries to /root/.local/bin.
+ADD --chmod=0755 bin/* /root/.local/bin
