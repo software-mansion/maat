@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+set -eu
+
+# A somehow "smart" test runner launcher that uses heuristics to detect whether a project uses Starknet Foundry or
+# Cairo Test. We cannot rely on developer overriding Scarb "test" script like we recommend because of two reasons:
+# 1. scarbs.xyz packages have scripts stripped-off.
+# 2. This is just a recommendation and some projects in the wild did not bother setting it.
+
+if scarb metadata --format-version 1 2>/dev/null | grep -q 'snforge_scarb_plugin'; then
+  snforge test
+else
+  scarb cairo-test
+fi
