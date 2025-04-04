@@ -2,12 +2,13 @@ from datetime import timedelta, datetime
 from pathlib import Path
 from typing import Self
 
+import pydantic
 from pydantic import BaseModel
 
 from maat.model import Report, Severity
 
 
-class Metrics(BaseModel):
+class Metrics(pydantic.BaseModel):
     file_stem: str
     workspace: str
     scarb_version: str
@@ -187,3 +188,52 @@ class Metrics(BaseModel):
             failed_tests_ratio=failed_tests_ratio,
             compiled_procmacros_from_source=compiled_procmacros,
         )
+
+
+class MetricsTransposed(BaseModel):
+    file_stem: list[str]
+    workspace: list[str]
+    scarb_version: list[str]
+    foundry_version: list[str]
+    maat_commit: list[str]
+    created_at: list[datetime]
+    total_execution_time: list[timedelta]
+    avg_build_time: list[timedelta]
+    avg_lint_time: list[timedelta]
+    avg_test_time: list[timedelta]
+    clean_builds: list[int]
+    clean_lints: list[int]
+    clean_tests: list[int]
+    dirty_builds: list[int]
+    dirty_lints: list[int]
+    dirty_tests: list[int]
+    avg_warnings_in_dirty_build: list[float]
+    avg_errors_in_dirty_build: list[float]
+    build_diagnostics: list[list[tuple[Severity, str, int]]]
+    lint_diagnostics: list[list[tuple[Severity, str, int]]]
+    failed_tests_ratio: list[float]
+    compiled_procmacros_from_source: list[list[str]]
+
+    @classmethod
+    def new(cls, metrics_list: list[Metrics]) -> Self:
+        result = {}
+        # noinspection PyUnresolvedReferences
+        for k in cls.model_fields.keys():
+            result[k] = [getattr(item, k) for item in metrics_list]
+        return cls(**result)
+
+
+# noinspection PyUnresolvedReferences
+def _assert_transposed_fields():
+    assert Metrics.model_fields.keys() == MetricsTransposed.model_fields.keys(), (
+        "Field names do not match."
+    )
+    for field_name, field_info in Metrics.model_fields.items():
+        metric_type = field_info.annotation
+        transposed_type = MetricsTransposed.model_fields[field_name].annotation
+        assert transposed_type == list[metric_type], (
+            f"Type mismatch for field '{field_name}': {metric_type} != {transposed_type}"
+        )
+
+
+_assert_transposed_fields()
