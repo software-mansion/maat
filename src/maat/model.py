@@ -202,6 +202,10 @@ class Report(BaseModel):
     def name(self) -> str:
         return f"{self.workspace}-{self.scarb}-{self.foundry}"
 
+    def sort(self):
+        self.tests.sort(key=lambda t: t.name)
+
     def save(self):
+        self.sort()
         with open(REPO / "reports" / f"{self.name}.json", "w") as f:
             f.write(self.model_dump_json(indent=2) + "\n")
