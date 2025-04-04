@@ -10,8 +10,8 @@ from typing import Any, Callable, Iterable, Iterator, Self
 import jinja2
 from pydantic import BaseModel, RootModel
 
-from maat.report.metrics import Metrics, MetricsTransposed
 from maat.model import ClassifiedDiagnostic
+from maat.report.metrics import Metrics, MetricsTransposed
 from maat.utils.smart_sort import smart_sort_key
 from maat.utils.templating import clsx
 
@@ -69,6 +69,12 @@ class CellViewModel(BaseModel):
     @classmethod
     def len(cls, iterable: Sized, **kwargs) -> Self:
         return cls.new(len(iterable), **kwargs)
+
+    @classmethod
+    def name_count_dict(cls, d: dict[str, int], /):
+        return cls.new(
+            "\n".join(f"{count:4} {name}" for name, count in d.items()),
+        )
 
     @classmethod
     def classified_diagnostic(cls, diag: ClassifiedDiagnostic) -> Self:
@@ -200,10 +206,7 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
             func=CellViewModel.len,
             details=DetailsViewModel.map(
                 t.compiled_procmacros_from_source,
-                func=lambda procmacros: CellViewModel.new(
-                    "\n".join(procmacros) if procmacros else "No proc macros compiled from source",
-                    class_name="procmacros-list"
-                )
+                func=CellViewModel.name_count_dict,
             ),
         ),
     ]

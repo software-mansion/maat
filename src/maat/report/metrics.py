@@ -46,8 +46,8 @@ class Metrics(pydantic.BaseModel):
     failed_tests_ratio: float
     """N failed tests / N tests"""
 
-    compiled_procmacros_from_source: list[str]
-    """List of proc macro package IDs that were compiled from source."""
+    compiled_procmacros_from_source: dict[str, int]
+    """Package ID->Total Count dict of proc macros that were compiled from source."""
 
     @classmethod
     def compute(cls, report: Report, path: Path) -> Self:
@@ -72,7 +72,7 @@ class Metrics(pydantic.BaseModel):
         total_tests = 0
         failed_tests = 0
 
-        compiled_procmacros = []
+        compiled_procmacros = defaultdict(int)
 
         # Process each test and step
         for test in report.tests:
@@ -96,9 +96,10 @@ class Metrics(pydantic.BaseModel):
                             clean_builds += 1
 
                     if step.analyses.compiled_procmacros_from_source:
-                        compiled_procmacros.extend(
-                            step.analyses.compiled_procmacros_from_source.package_ids
-                        )
+                        for (
+                            package_id
+                        ) in step.analyses.compiled_procmacros_from_source.package_ids:
+                            compiled_procmacros[package_id] += 1
 
                 # Process lint steps
                 elif step.name == "lint":
@@ -153,8 +154,10 @@ class Metrics(pydantic.BaseModel):
             failed_tests / max(total_tests, 1) if total_tests > 0 else 0.0
         )
 
-        # Remove duplicates from compiled_procmacros
-        compiled_procmacros = sorted(set(compiled_procmacros))
+        # Reorder compiled_procmacros in the dictionary.
+        compiled_procmacros = dict(
+            sorted(compiled_procmacros.items(), key=lambda x: (-x[1], x[0]))
+        )
 
         # Sort diagnostics.
         build_diagnostics = list(build_diagnostics_set)
@@ -222,7 +225,7 @@ class MetricsTransposed(BaseModel):
     build_diagnostics: list[list[ClassifiedDiagnostic]]
     lint_diagnostics: list[list[ClassifiedDiagnostic]]
     failed_tests_ratio: list[float]
-    compiled_procmacros_from_source: list[list[str]]
+    compiled_procmacros_from_source: list[dict[str, int]]
 
     @classmethod
     def new(cls, metrics_list: list[Metrics]) -> Self:
