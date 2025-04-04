@@ -62,6 +62,26 @@
             align-items: center;
         }
 
+        .header-controls {
+            display: flex;
+            align-items: center;
+            margin-left: auto;
+            padding-right: 1rem;
+            gap: 1rem;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .control-group label {
+            font-size: 0.9em;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+        }
+
         #logo {
             align-self: stretch;
             background: url("{{ logo_base64 }}");
@@ -143,6 +163,10 @@
             vertical-align: top;
         }
 
+        body.hide-details tr.details {
+            display: none;
+        }
+
         .error {
             color: var(--color-error);
         }
@@ -167,11 +191,22 @@
             text-align: right;
         }
     </style>
+    <script>
+        function toggleBodyClass(className) {
+            document.body.classList.toggle(className);
+        }
+    </script>
 </head>
 <body>
 <header>
     <div id="logo"></div>
     <h1>Ma'at Report Diff</h1>
+    <div class="header-controls">
+        <div class="control-group">
+            <input type="checkbox" id="toggle-details" onchange="toggleBodyClass('hide-details')" checked>
+            <label for="toggle-details">Show details</label>
+        </div>
+    </div>
 </header>
 <main>
     <table>
