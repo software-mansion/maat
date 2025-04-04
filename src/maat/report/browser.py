@@ -198,6 +198,13 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
             "Total Compiled Proc Macros",
             t.compiled_procmacros_from_source,
             func=CellViewModel.len,
+            details=DetailsViewModel.map(
+                t.compiled_procmacros_from_source,
+                func=lambda procmacros: CellViewModel.new(
+                    "\n".join(procmacros) if procmacros else "No proc macros compiled from source",
+                    class_name="procmacros-list"
+                )
+            ),
         ),
     ]
     sections.append(SectionViewModel(title="Other Metrics", rows=other_rows))
