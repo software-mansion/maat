@@ -1,13 +1,16 @@
 import tempfile
+from collections.abc import Sized
 from contextlib import contextmanager
+from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Iterator
+from typing import Any, Callable, Iterator, Self
 
 import jinja2
 from pydantic import BaseModel
 
 from maat.report.metrics import Metrics
 from maat.utils.smart_sort import smart_sort_key
+from maat.utils.templating import clsx
 
 
 def render_html(metrics: list[Metrics]) -> Path:
@@ -23,10 +26,60 @@ class CellViewModel(BaseModel):
     value: str
     class_name: str | None = None
 
+    @classmethod
+    def new(
+        cls, value: Any, *, class_name: str | None = None, float_precision: int = 2
+    ) -> Self:
+        s: str
+        match value:
+            case datetime():
+                s = value.strftime("%Y-%m-%d %H:%M:%S")
+            case timedelta():
+                mm, ss = divmod(value.seconds, 60)
+                hh, mm = divmod(mm, 60)
+                s = "%d:%02d:%02d" % (hh, mm, ss)
+                if value.days:
+
+                    def plural(n):
+                        return n, abs(n) != 1 and "s" or ""
+
+                    s = ("%d day%s, " % plural(value.days)) + s
+                if value.microseconds:
+                    # Round to the nearest 1/(10**float_precision)th of a second.
+                    # For example, 0:07:12.211526 -> 0:07:12.21 (when float_precision = 2).
+                    ms = round(value.microseconds / 10**6, float_precision)
+                    # Add fractional seconds, omit leading `0` with that `[1:]`.
+                    s += f"{ms:.{float_precision}f}"[1:]
+            case float():
+                s = f"{value:.{float_precision}f}"
+            case _:
+                s = str(value)
+
+        return cls(
+            value=s,
+            class_name=clsx(
+                f"type-{type(value).__name__.split('.')[-1]}",
+                class_name,
+            ),
+        )
+
+    @classmethod
+    def len(cls, iterable: Sized, **kwargs) -> Self:
+        return cls.new(len(iterable), **kwargs)
+
 
 class RowViewModel(BaseModel):
     title: str
     cells: list[CellViewModel]
+
+    @classmethod
+    def map(
+        cls,
+        title: str,
+        cells: Iterator[Any],
+        func: Callable[[Any], CellViewModel] = CellViewModel.new,
+    ) -> Self:
+        return cls(title=title, cells=[func(val) for val in cells])
 
 
 class SectionViewModel(BaseModel):
@@ -51,134 +104,73 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
 
     # Metadata section
     metadata_rows = [
-        RowViewModel(
-            title="Workspace",
-            cells=[CellViewModel(value=str(metric.workspace)) for metric in metrics],
+        RowViewModel.map("Workspace", (metric.workspace for metric in metrics)),
+        RowViewModel.map("Scarb Version", (metric.scarb_version for metric in metrics)),
+        RowViewModel.map(
+            "Foundry Version", (metric.foundry_version for metric in metrics)
         ),
-        RowViewModel(
-            title="Scarb Version",
-            cells=[
-                CellViewModel(value=str(metric.scarb_version)) for metric in metrics
-            ],
-        ),
-        RowViewModel(
-            title="Foundry Version",
-            cells=[
-                CellViewModel(value=str(metric.foundry_version)) for metric in metrics
-            ],
-        ),
-        RowViewModel(
-            title="Ma'at Commit",
-            cells=[CellViewModel(value=str(metric.maat_commit)) for metric in metrics],
-        ),
-        RowViewModel(
-            title="Created At",
-            cells=[
-                CellViewModel(value=metric.created_at.strftime("%Y-%m-%d %H:%M:%S"))
-                for metric in metrics
-            ],
-        ),
-        RowViewModel(
-            title="Total Execution Time",
-            cells=[
-                CellViewModel(value=str(metric.total_execution_time))
-                for metric in metrics
-            ],
+        RowViewModel.map("Ma'at Commit", (metric.maat_commit for metric in metrics)),
+        RowViewModel.map("Created At", (metric.created_at for metric in metrics)),
+        RowViewModel.map(
+            "Total Execution Time", (metric.total_execution_time for metric in metrics)
         ),
     ]
     sections.append(SectionViewModel(title="Metadata", rows=metadata_rows))
 
     # Time metrics section
     time_rows = [
-        RowViewModel(
-            title="Avg. Build Time",
-            cells=[
-                CellViewModel(value=str(metric.avg_build_time)) for metric in metrics
-            ],
+        RowViewModel.map(
+            "Avg. Build Time", (metric.avg_build_time for metric in metrics)
         ),
-        RowViewModel(
-            title="Avg. Lint Time",
-            cells=[
-                CellViewModel(value=str(metric.avg_lint_time)) for metric in metrics
-            ],
+        RowViewModel.map(
+            "Avg. Lint Time", (metric.avg_lint_time for metric in metrics)
         ),
-        RowViewModel(
-            title="Avg. Test Time",
-            cells=[
-                CellViewModel(value=str(metric.avg_test_time)) for metric in metrics
-            ],
+        RowViewModel.map(
+            "Avg. Test Time", (metric.avg_test_time for metric in metrics)
         ),
     ]
     sections.append(SectionViewModel(title="Time Metrics", rows=time_rows))
 
     # Build metrics section
     build_rows = [
-        RowViewModel(
-            title="Clean Builds",
-            cells=[CellViewModel(value=str(metric.clean_builds)) for metric in metrics],
+        RowViewModel.map("Clean Builds", (metric.clean_builds for metric in metrics)),
+        RowViewModel.map("Dirty Builds", (metric.dirty_builds for metric in metrics)),
+        RowViewModel.map(
+            "Avg. Warnings in Dirty Build",
+            (metric.avg_warnings_in_dirty_build for metric in metrics),
+            func=lambda val: CellViewModel.new(val, float_precision=1),
         ),
-        RowViewModel(
-            title="Dirty Builds",
-            cells=[CellViewModel(value=str(metric.dirty_builds)) for metric in metrics],
-        ),
-        RowViewModel(
-            title="Avg. Warnings in Dirty Build",
-            cells=[
-                CellViewModel(value=f"{metric.avg_warnings_in_dirty_build:.1f}")
-                for metric in metrics
-            ],
-        ),
-        RowViewModel(
-            title="Avg. Errors in Dirty Build",
-            cells=[
-                CellViewModel(value=f"{metric.avg_errors_in_dirty_build:.1f}")
-                for metric in metrics
-            ],
+        RowViewModel.map(
+            "Avg. Errors in Dirty Build",
+            (metric.avg_errors_in_dirty_build for metric in metrics),
+            func=lambda val: CellViewModel.new(val, float_precision=1),
         ),
     ]
     sections.append(SectionViewModel(title="Build Metrics", rows=build_rows))
 
     # Lint metrics section
     lint_rows = [
-        RowViewModel(
-            title="Clean Lints",
-            cells=[CellViewModel(value=str(metric.clean_lints)) for metric in metrics],
-        ),
-        RowViewModel(
-            title="Dirty Lints",
-            cells=[CellViewModel(value=str(metric.dirty_lints)) for metric in metrics],
-        ),
+        RowViewModel.map("Clean Lints", (metric.clean_lints for metric in metrics)),
+        RowViewModel.map("Dirty Lints", (metric.dirty_lints for metric in metrics)),
     ]
     sections.append(SectionViewModel(title="Lint Metrics", rows=lint_rows))
 
     # Test metrics section
     test_rows = [
-        RowViewModel(
-            title="Clean Tests",
-            cells=[CellViewModel(value=str(metric.clean_tests)) for metric in metrics],
-        ),
-        RowViewModel(
-            title="Dirty Tests",
-            cells=[CellViewModel(value=str(metric.dirty_tests)) for metric in metrics],
-        ),
-        RowViewModel(
-            title="Failed Tests Ratio",
-            cells=[
-                CellViewModel(value=str(metric.failed_tests_ratio))
-                for metric in metrics
-            ],
+        RowViewModel.map("Clean Tests", (metric.clean_tests for metric in metrics)),
+        RowViewModel.map("Dirty Tests", (metric.dirty_tests for metric in metrics)),
+        RowViewModel.map(
+            "Failed Tests Ratio", (metric.failed_tests_ratio for metric in metrics)
         ),
     ]
     sections.append(SectionViewModel(title="Test Metrics", rows=test_rows))
 
     # Other metrics section
     other_rows = [
-        RowViewModel(
-            title="Total Compiled Proc Macros",
-            cells=[
-                CellViewModel(value=str(len(metric.compiled_procmacros_from_source)))
-                for metric in metrics
-            ],
+        RowViewModel.map(
+            "Total Compiled Proc Macros",
+            (metric.compiled_procmacros_from_source for metric in metrics),
+            func=CellViewModel.len,
         ),
     ]
     sections.append(SectionViewModel(title="Other Metrics", rows=other_rows))
@@ -188,10 +180,12 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
 
 @contextmanager
 def _jinja_env() -> Iterator[jinja2.Environment]:
-    yield jinja2.Environment(
+    env = jinja2.Environment(
         loader=jinja2.PackageLoader("maat.report"),
         autoescape=jinja2.select_autoescape(),
     )
+    env.filters["clsx"] = clsx
+    yield env
 
 
 def _save_html_as_temp_file(html: str) -> Path:

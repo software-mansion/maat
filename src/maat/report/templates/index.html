@@ -157,7 +157,7 @@
             <tr>
                 <td>{{ row.title }}</td>
                 {% for cell in row.cells %}
-                    <td class="code text-right {{ cell.class_name or "" }}">{{ cell.value }}</td>
+                    <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
                 {% endfor %}
             </tr>
         {% endfor %}
