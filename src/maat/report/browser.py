@@ -1,9 +1,11 @@
+import base64
+import importlib.resources
 import tempfile
 from collections.abc import Sized
 from contextlib import contextmanager
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Iterator, Self, Iterable
+from typing import Any, Callable, Iterable, Iterator, Self
 
 import jinja2
 from pydantic import BaseModel
@@ -174,6 +176,16 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
         autoescape=jinja2.select_autoescape(),
     )
     env.filters["clsx"] = clsx
+
+    # Get logo.png using importlib.resources and base64 encode it
+    logo_data = (
+        importlib.resources.files("maat.report")
+        .joinpath("templates/logo.png")
+        .read_bytes()
+    )
+    logo_base64 = base64.b64encode(logo_data).decode("utf-8")
+    env.globals["logo_base64"] = f"data:image/png;base64,{logo_base64}"
+
     yield env
 
 

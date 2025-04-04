@@ -7,7 +7,6 @@
     <title>Ma'at Report Analysis</title>
     <style>
         :root {
-            /* Colors */
             --color-background: #FCFCFF;
             --color-background-alt: #F8F9FF;
             --color-text-primary: #001A72;
@@ -18,25 +17,15 @@
             --color-error: #FF6259;
             --color-warning: #FFD61E;
             --color-success: #57B495;
-            --color-shadow: rgba(0, 26, 114, 0.1);
+            --color-shadow: #33488E;
 
-            /* Spacing */
-            --spacing-standard: 20px;
-            --spacing-cell-x: 15px;
-            --spacing-cell-y: 12px;
-
-            /* Typography */
             --font-family-main: system-ui, sans-serif;
             --font-family-fancy: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
             --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
-
-            /* Box shadows */
-            --box-shadow-1: 0 25px 50px -12px rgba(51, 72, 142, 0.13);
         }
 
         @media (prefers-color-scheme: dark) {
             :root {
-                /* Dark mode colors */
                 --color-background: #232736;
                 --color-background-alt: #30354A;
                 --color-text-primary: #C1C6E5;
@@ -47,7 +36,6 @@
                 --color-error: #FF6259;
                 --color-warning: #FFD61E;
                 --color-success: #57B495;
-                --color-shadow: rgba(0, 0, 0, 0.3);
             }
         }
 
@@ -56,23 +44,39 @@
         }
 
         body {
-            font-family: var(--font-family-main), sans-serif;
-            margin: var(--spacing-standard);
-            color: var(--color-text-primary);
             background-color: var(--color-background);
+            color: var(--color-text-primary);
+            font-family: var(--font-family-main), sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: var(--color-primary-light);
+            border-bottom: 1px solid var(--color-border);
+            display: flex;
+            height: 4em;
+            align-items: center;
+        }
+
+        #logo {
+            align-self: stretch;
+            background: url("{{ logo_base64 }}");
+            background-size: contain;
+            aspect-ratio: 1 / 1;
         }
 
         h1 {
             font-family: var(--font-family-fancy), sans-serif;
-            text-align: center;
+            font-size: 2rem;
+            margin: 0;
+            padding: 0 1rem;
         }
 
         table {
             --cell-background: var(--color-background-alt);
             border-collapse: collapse;
-            border: 1px solid var(--color-border);
-            margin: var(--spacing-standard) auto;
-            box-shadow: var(--box-shadow-1);
+            min-width: 100%;
         }
 
         thead {
@@ -88,17 +92,18 @@
         }
 
         th, td {
-            padding: var(--spacing-cell-y) var(--spacing-cell-x);
+            padding: 0.7em 0.8em;
             text-align: left;
             border-bottom: 1px solid var(--color-border);
-            background-color: var(--cell-background);
+            background: var(--cell-background);
         }
 
         tr > td:first-child {
             font-weight: bold;
-            position: sticky;
             left: 0;
+            position: sticky;
             text-wrap: nowrap;
+            width: 0;
         }
 
         thead > tr > th:first-child {
@@ -106,6 +111,11 @@
             top: 0;
             left: 0;
             z-index: 3;
+        }
+
+        tr.section-header {
+            --cell-background: var(--color-primary-light);
+            font-weight: bold;
         }
 
         .error {
@@ -128,15 +138,13 @@
         .text-right {
             text-align: right;
         }
-
-        .section-header {
-            --cell-background: var(--color-primary-light);
-            font-weight: bold;
-        }
     </style>
 </head>
 <body>
-<h1>Ma'at Report Analysis</h1>
+<header>
+    <div id="logo"></div>
+    <h1>Ma'at Report Diff</h1>
+</header>
 <table>
     <thead>
     <tr>
