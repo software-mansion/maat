@@ -31,7 +31,7 @@ def execute_test_suite_locally(
     reporter: Reporter,
     console: Console,
 ):
-    jobs = jobs or os.cpu_count() or 1
+    jobs = determine_jobs_amount(jobs)
     ct = CancellationToken()
 
     with (
@@ -251,3 +251,14 @@ def truncate_with_ellipsis(text, max_length):
     if len(text) <= max_length:
         return text
     return text[: max_length - 1] + "…"
+
+
+def determine_jobs_amount(jobs: int | None) -> int:
+    if jobs is not None:
+        return jobs
+
+    if num := os.cpu_count():
+        # Too much parallelism results in aggressive RAM consumption and severely degraded perf.
+        return max(num, 4)
+
+    return 1

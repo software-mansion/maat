@@ -82,7 +82,7 @@ def run_local(
     workspace: Workspace,
     scarb: Semver,
     foundry: Semver,
-    jobs: int,
+    jobs: int | None,
 ) -> None:
     console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
 
