@@ -28,6 +28,36 @@ pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
 PathParamType = click.Path(exists=True, dir_okay=False, readable=True, path_type=Path)
 
 
+def workspace_options(f):
+    f = click.option(
+        "-w",
+        "--workspace",
+        envvar="MAAT_WORKSPACE",
+        default="local",
+        help="Workspace name.",
+        metavar="WORKSPACE",
+    )(f)
+    return f
+
+
+def tool_versions_options(f):
+    f = click.option(
+        "--scarb",
+        envvar="MAAT_SCARB_VERSION",
+        prompt="Scarb version",
+        help="Version of Scarb to experiment on.",
+        type=SemverParamType,
+    )(f)
+    f = click.option(
+        "--foundry",
+        envvar="MAAT_FOUNDRY_VERSION",
+        prompt="Starknet Foundry version",
+        help="Version of Starknet Foundry to experiment on.",
+        type=SemverParamType,
+    )(f)
+    return f
+
+
 def load_workspace(f):
     @click.pass_context
     def new_func(ctx, *args, **kwargs):
@@ -46,28 +76,8 @@ def cli() -> None:
 
 
 @cli.command(help="Run an experiment locally.")
-@click.option(
-    "-w",
-    "--workspace",
-    envvar="MAAT_WORKSPACE",
-    default="local",
-    help="Workspace name.",
-    metavar="WORKSPACE",
-)
-@click.option(
-    "--scarb",
-    envvar="MAAT_SCARB_VERSION",
-    prompt="Scarb version",
-    help="Version of Scarb to experiment on.",
-    type=SemverParamType,
-)
-@click.option(
-    "--foundry",
-    envvar="MAAT_FOUNDRY_VERSION",
-    prompt="Starknet Foundry version",
-    help="Version of Starknet Foundry to experiment on.",
-    type=SemverParamType,
-)
+@workspace_options
+@tool_versions_options
 @click.option(
     "-j",
     "--jobs",
@@ -197,28 +207,8 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
     help="Run setup steps for a test and dump workbench to the checkouts directory."
 )
 @click.argument("test_name", required=True)
-@click.option(
-    "-w",
-    "--workspace",
-    envvar="MAAT_WORKSPACE",
-    default="local",
-    help="Workspace name.",
-    metavar="WORKSPACE",
-)
-@click.option(
-    "--scarb",
-    envvar="MAAT_SCARB_VERSION",
-    prompt="Scarb version",
-    help="Version of Scarb to experiment on.",
-    type=SemverParamType,
-)
-@click.option(
-    "--foundry",
-    envvar="MAAT_FOUNDRY_VERSION",
-    prompt="Starknet Foundry version",
-    help="Version of Starknet Foundry to experiment on.",
-    type=SemverParamType,
-)
+@workspace_options
+@tool_versions_options
 @load_workspace
 @pass_docker
 @pass_console
