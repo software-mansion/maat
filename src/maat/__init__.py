@@ -2,8 +2,8 @@ import functools
 from pathlib import Path
 
 import click
+import rich.traceback
 from python_on_whales import DockerClient
-from rich import traceback
 from rich.console import Console
 
 from maat import sandbox
@@ -17,8 +17,6 @@ from maat.report.reporter import Reporter
 from maat.runner.local import execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
-
-traceback.install(show_locals=True)
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
 pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
@@ -193,4 +191,5 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
 
 
 if __name__ == "__main__":
+    rich.traceback.install(show_locals=True)
     cli()
