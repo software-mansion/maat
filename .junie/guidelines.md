@@ -2,8 +2,10 @@
 
 ## Project Overview
 
-Ma'at is a tool for running experimental software builds across the Cairo language ecosystem, similar to Crater in the
-Rust ecosystem. It helps test compatibility and detect regressions when making changes to the Cairo toolchain.
+Ma'at is a tool for running experimental software builds across the Cairo language ecosystem,
+similar to Crater in the
+Rust ecosystem. It helps test compatibility and detect regressions when making changes to the Cairo
+toolchain.
 
 ### Key Features
 
@@ -22,10 +24,16 @@ The project is organised as follows:
     - `agent/`: Dockerfile and content provisioned to sandbox containers which run tests.
     - `ecosystem/`: Code for pulling projects from the Cairo ecosystem.
     - `report/`: Report generation and analysis.
+    - `repl.py`: Utilities for debugging reports using Python REPL.
     - `runner/`: Test execution code.
+    - `sandbox.py`: Code for building Docker sandbox image.
+    - `semver.py`: Semantic versioning utilities.
+    - `utils/`: Various utility functions and helpers that are shared across other modules.
     - `workflows/`: Predefined workflows for build, lint, and test operations.
+    - `workspace.py`: Workspace configuration loading.
 - `reports/`: Directory for storing experiment reports.
-- `workspaces/`: Workspace definitions.
+- `workspaces/`: Workspace definitions (that specify which projects from the Cairo ecosystem are
+  experimented on).
 
 ## Testing Guidelines
 
@@ -53,7 +61,8 @@ The project follows these code style guidelines:
 
 ### Codebase
 
-- The project uses Docker for running experiments, so any changes should maintain compatibility with the Docker-based
+- The project uses Docker for running experiments, so any changes should maintain compatibility with
+  the Docker-based
   workflow.
 - Reports are saved as JSON files and should maintain a consistent format for comparison.
     - Ensure lists are sorted by a stable key.
@@ -61,7 +70,8 @@ The project follows these code style guidelines:
 
 ### About Cairo ecosystem
 
-- There are two distinct test runners used throughout the ecosystem: `snforge` (Starknet Foundry, more advanced) and
+- There are two distinct test runners used throughout the ecosystem: `snforge` (Starknet Foundry,
+  more advanced) and
   `cairo-test` (Cairo Test, callable as `scarb cairo-test`, minimal but faster).
   By convention, projects alias one of these runners as `scarb test`.
   You can examine project's `Scarb.toml` to infer what framework is used.

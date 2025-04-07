@@ -22,6 +22,7 @@ You need the following things to have up and running on your machine:
 
 - [uv]
 - Docker (or compatible stack like Podman or OrbStack)
+    - you need `docker` CLI to be accessible via `PATH`
 
 To get started, run:
 
