@@ -18,6 +18,7 @@ from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.local import docker_run_step, execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
+from maat.utils.asdf import asdf_set
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -276,6 +277,9 @@ def checkout(
             source=(workbench_volume, "."),
             destination=checkout_dir,
         )
+
+    asdf_set(checkout_dir, "scarb", scarb)
+    asdf_set(checkout_dir, "starknet-foundry", foundry)
 
     console.log(f":file_folder: Checked out {checkout_dir}")
 
