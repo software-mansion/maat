@@ -188,6 +188,12 @@ class TestReport(BaseModel):
                 total += step.execution_time
         return total
 
+    def get_step_by_name(self, name: str) -> StepReport | None:
+        for step in self.steps:
+            if step.name == name:
+                return step
+        return None
+
 
 class Report(BaseModel):
     workspace: str
@@ -209,3 +215,6 @@ class Report(BaseModel):
         self.sort()
         with open(REPO / "reports" / f"{self.name}.json", "w") as f:
             f.write(self.model_dump_json(indent=2) + "\n")
+
+    def tests_by_name(self) -> dict[str, TestReport]:
+        return {test.name: test for test in self.tests}

@@ -6,8 +6,9 @@ Run: `from maat.repl import *`
 
 import pathlib
 import re
+from collections import defaultdict
 
-from maat.model import Report
+from maat.model import Report, TestReport
 from maat.utils.data import utf8continuous
 
 
@@ -28,3 +29,11 @@ def list_test_names_containing_pattern_in_stdout(
                 result.add(test.name)
                 break  # Avoid duplicating test names
     return list(sorted(result))
+
+
+def zip_tests(*args: Report) -> list[tuple[TestReport, ...]]:
+    lists = defaultdict(lambda: [None] * len(args))
+    for i, report in enumerate(args):
+        for test in report.tests:
+            lists[test.name][i] = test
+    return list(map(tuple, lists.values()))
