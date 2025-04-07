@@ -110,6 +110,12 @@ class TestSuite(BaseModel):
     sandbox: ImageId
     tests: list[Test] = []
 
+    def test_by_name(self, name: str) -> Test | None:
+        for test in self.tests:
+            if test.name == name:
+                return test
+        return None
+
 
 class CompiledProcMacrosFromSource(BaseModel):
     package_ids: list[str]

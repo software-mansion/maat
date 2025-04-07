@@ -15,9 +15,9 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
+from maat.model import Step, Test, TestSuite
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
-from maat.model import Step, Test, TestSuite
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
 from maat.utils.shell import split_command
@@ -202,20 +202,28 @@ def docker_run_step(
     docker: DockerClient,
     image: Image | str,
     command: list[str],
-    container_name: str,
     cache_volume: Volume,
     workbench_volume: Volume,
-    ct: CancellationToken,
-    step_reporter: StepReporter,
+    container_name: str | None = None,
+    ct: CancellationToken | None = None,
+    step_reporter: StepReporter | None = None,
+    raise_on_nonzero_exit: bool = False,
 ) -> int:
     exit_code = 0
+
+    if container_name is None:
+        container_name = f"maat-{unique_id()}"
+
+    labels = {}
+    if ct is not None:
+        labels.update(ct.container_labels)
 
     try:
         stream = docker.container.run(
             image=image,
             command=command,
             name=container_name,
-            labels=ct.container_labels,
+            labels=labels,
             remove=True,
             volumes=[
                 (cache_volume, MAAT_CACHE, "rw"),
@@ -225,20 +233,26 @@ def docker_run_step(
             stream=True,
         )
         for source, line in stream:
-            match source:
-                case "stdout":
-                    step_reporter.append_stdout_line(line)
-                case "stderr":
-                    step_reporter.append_stderr_line(line)
+            if step_reporter is not None:
+                match source:
+                    case "stdout":
+                        step_reporter.append_stdout_line(line)
+                    case "stderr":
+                        step_reporter.append_stderr_line(line)
     except DockerException as e:
-        # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
-        # Anything other than these values comes from the container process.
-        # Ref: https://docs.docker.com/engine/containers/run/#exit-status
         exit_code = e.return_code
-        if exit_code in [125, 126, 127]:
-            raise
+        if raise_on_nonzero_exit:
+            if exit_code != 0:
+                raise
+        else:
+            # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
+            # Anything other than these values comes from the container process.
+            # Ref: https://docs.docker.com/engine/containers/run/#exit-status
+            if exit_code in [125, 126, 127]:
+                raise
     finally:
-        step_reporter.set_exit_code(exit_code)
+        if step_reporter is not None:
+            step_reporter.set_exit_code(exit_code)
         return exit_code
 
 

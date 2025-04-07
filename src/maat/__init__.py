@@ -1,4 +1,5 @@
 import functools
+import shutil
 from pathlib import Path
 
 import click
@@ -14,7 +15,8 @@ from maat.report import browser
 from maat.report.analysis import analyse_report
 from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
-from maat.runner.local import execute_test_suite_locally
+from maat.runner.ephemeral_volume import ephemeral_volume
+from maat.runner.local import docker_run_step, execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.workspace import Workspace
 
@@ -188,6 +190,94 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
             reanalyse_file(report)
         case (report, True):
             raise click.UsageError("Cannot specify both --all and report")
+
+
+@cli.command(
+    help="Run setup steps for a test and dump workbench to the checkouts directory."
+)
+@click.argument("test_name", required=True)
+@click.option(
+    "-w",
+    "--workspace",
+    envvar="MAAT_WORKSPACE",
+    default="local",
+    help="Workspace name.",
+    metavar="WORKSPACE",
+)
+@click.option(
+    "--scarb",
+    envvar="MAAT_SCARB_VERSION",
+    prompt="Scarb version",
+    help="Version of Scarb to experiment on.",
+    type=SemverParamType,
+)
+@click.option(
+    "--foundry",
+    envvar="MAAT_FOUNDRY_VERSION",
+    prompt="Starknet Foundry version",
+    help="Version of Starknet Foundry to experiment on.",
+    type=SemverParamType,
+)
+@load_workspace
+@pass_docker
+@pass_console
+def checkout(
+    console: Console,
+    docker: DockerClient,
+    workspace: Workspace,
+    test_name: str,
+    scarb: Semver,
+    foundry: Semver,
+) -> None:
+    sandbox_image = sandbox.build(
+        scarb=scarb, foundry=foundry, docker=docker, console=console
+    )
+
+    test_suite = build_test_suite(
+        ecosystem=workspace.settings.ecosystem,
+        sandbox=sandbox_image.id,
+        console=console,
+    )
+
+    test = test_suite.test_by_name(test_name)
+    if test is None:
+        raise click.UsageError(
+            f"test '{test_name}' not found in workspace '{workspace.name}'"
+        )
+
+    setup_steps = [step for step in test.steps if step.meta.setup]
+    if not setup_steps:
+        raise RuntimeError(f"no setup steps found for test: {test_name}")
+
+    checkout_dir = REPO / "checkouts" / test_name
+    if checkout_dir.exists():
+        console.log(f"Removing existing checkout directory: {checkout_dir}")
+        shutil.rmtree(checkout_dir)
+    checkout_dir.mkdir(parents=True, exist_ok=True)
+
+    with (
+        console.status("Running setup steps...") as status,
+        ephemeral_volume(docker) as cache_volume,
+        ephemeral_volume(docker) as workbench_volume,
+    ):
+        for step in setup_steps:
+            status.update(step.name)
+            docker_run_step(
+                docker=docker,
+                image=sandbox_image,
+                command=step.run if isinstance(step.run, list) else step.run.split(),
+                cache_volume=cache_volume,
+                workbench_volume=workbench_volume,
+                raise_on_nonzero_exit=True,
+            )
+
+        status.update("Copying workbench contents...")
+        docker.volume.copy(
+            source=(workbench_volume, "."),
+            destination=checkout_dir,
+        )
+
+    console.log(f":file_folder: Checked out {checkout_dir}")
 
 
 if __name__ == "__main__":
