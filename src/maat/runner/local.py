@@ -242,18 +242,17 @@ def docker_run_step(
     except DockerException as e:
         exit_code = e.return_code
         if raise_on_nonzero_exit:
-            if exit_code != 0:
-                raise
-        else:
-            # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
-            # Anything other than these values comes from the container process.
-            # Ref: https://docs.docker.com/engine/containers/run/#exit-status
-            if exit_code in [125, 126, 127]:
-                raise
+            raise
+        # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
+        # Anything other than these values comes from the container process.
+        # Ref: https://docs.docker.com/engine/containers/run/#exit-status
+        elif exit_code in [125, 126, 127]:
+            raise
     finally:
         if step_reporter is not None:
             step_reporter.set_exit_code(exit_code)
-        return exit_code
+
+    return exit_code
 
 
 def sanitize_for_docker(name: str) -> str:
