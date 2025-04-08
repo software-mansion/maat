@@ -36,6 +36,9 @@ curl --proto '=https' --tlsv1.2 -sSfL "$DL_URL" | tar -xz --strip-components=0 -
 asdf --version
 EOF
 
+# Install UV.
+COPY --from=ghcr.io/astral-sh/uv:0.6.13 /uv /uvx /root/.local/bin/
+
 # Install Scarb.
 ARG ASDF_SCARB_VERSION
 ENV ASDF_SCARB_VERSION="$ASDF_SCARB_VERSION"
