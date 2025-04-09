@@ -6,8 +6,16 @@ set -eu
 # 1. scarbs.xyz packages have scripts stripped-off.
 # 2. This is just a recommendation and some projects in the wild did not bother setting it.
 
-if scarb metadata --format-version 1 2>/dev/null | grep -q 'snforge_scarb_plugin'; then
-  snforge test
+is_snforge_plugin_present() {
+    scarb metadata --format-version 1 2>/dev/null | grep -q 'snforge_scarb_plugin'
+}
+
+is_snforge_used_in_source_code() {
+    rg -q --glob '*.cairo' --no-ignore -e 'snforge_std::|#\[should_panic\('
+}
+
+if is_snforge_plugin_present || is_snforge_used_in_source_code; then
+    exec snforge test
 else
-  scarb cairo-test
+    exec scarb cairo-test
 fi
