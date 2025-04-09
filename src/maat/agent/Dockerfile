@@ -16,7 +16,7 @@ ENV ASDF_DATA_DIR=/opt/asdf
 ENV PATH="$ASDF_DATA_DIR/shims:$CARGO_HOME/bin:/root/.local/bin:$PATH"
 
 # Install some build essentials and rustup-init.
-RUN dnf install -y gcc-c++ git make rustup && dnf clean all
+RUN dnf install -y gcc-c++ git make ripgrep rustup && dnf clean all
 
 # Install Rust, this will use RUSTUP_TOOLCHAIN from environment.
 ENV RUST_BACKTRACE=1
