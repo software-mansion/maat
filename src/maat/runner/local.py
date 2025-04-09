@@ -272,6 +272,6 @@ def determine_jobs_amount(jobs: int | None) -> int:
 
     if num := os.cpu_count():
         # Too much parallelism results in aggressive RAM consumption and severely degraded perf.
-        return max(num, 4)
+        return min(num, 4)
 
     return 1
