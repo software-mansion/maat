@@ -35,6 +35,13 @@ def patch_field(table: Any, key: str, value: Any):
     table[key].comment(comment)
 
 
+def ensure_in_array(table: Any, key: str, value: Any):
+    array = table.setdefault(key, tomlkit.array())
+    if value not in array:
+        array.append(value)
+    table[key].comment(f"NOTE: maat-patch added {value!r}")
+
+
 def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
     members = []
 
@@ -92,6 +99,13 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
                 raise RuntimeError(
                     f"multiple test runners detected: {', '.join(detected_test_runners)}"
                 )
+
+    # Make sure snforge_std is in the "allow-prebuilt-plugins" array.
+    ensure_in_array(
+        manifest.setdefault("tool", {}).setdefault("scarb", {}),
+        "allow-prebuilt-plugins",
+        "snforge_std",
+    )
 
 
 def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
