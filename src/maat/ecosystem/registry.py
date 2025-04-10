@@ -1,8 +1,8 @@
-from functools import lru_cache
 from typing import Self
 from urllib.parse import urljoin
 
 import requests
+from cache_to_disk import cache_to_disk
 from pydantic import BaseModel, RootModel
 
 from maat.ecosystem import scarbs_xyz
@@ -32,7 +32,7 @@ class RegistryConfig(BaseModel):
     index: str
 
     @classmethod
-    @lru_cache
+    @cache_to_disk(1)
     def fetch(cls, registry_url: str) -> Self:
         url = cls.config_json_url(registry_url)
         return cls.model_validate_json(requests.get(url).content)
@@ -62,6 +62,7 @@ class IndexRecords(RootModel):
     root: list[IndexRecord]
 
     @classmethod
+    @cache_to_disk(1)
     def fetch(cls, registry: RegistryConfig, package: str) -> Self:
         url = registry.expand_index(package)
         return cls.model_validate_json(requests.get(url).content)

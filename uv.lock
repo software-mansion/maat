@@ -146,6 +146,15 @@ css = [
 ]
 
 [[package]]
+name = "cache-to-disk"
+version = "2.0.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/22/df/9712d98cadf4dfab259b09ea2972f5585f4a6909d19fe60be2b7adb8823d/cache_to_disk-2.0.0.tar.gz", hash = "sha256:79e19ea9b72eedc5cec83bb8aa55374afc671493e7d13d541f3b63eb3a13fb32", size = 6362 }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/87/4f/bd5da67f8f509c8e34cab16f6cc88a843d9b15b3631381a09d98f4f1d70f/cache_to_disk-2.0.0-py3-none-any.whl", hash = "sha256:ea5afe13d4284cb4a06169b0807fbc60547cbe19c54563bf90e1d44f24029481", size = 8718 },
+]
+
+[[package]]
 name = "certifi"
 version = "2025.1.31"
 source = { registry = "https://pypi.org/simple" }
@@ -707,6 +716,7 @@ version = "0.1.0"
 source = { editable = "." }
 dependencies = [
     { name = "beautifulsoup4" },
+    { name = "cache-to-disk" },
     { name = "click" },
     { name = "jinja2" },
     { name = "jupyter" },
@@ -723,6 +733,7 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "beautifulsoup4", specifier = ">=4.13.3" },
+    { name = "cache-to-disk", specifier = ">=2.0.0" },
     { name = "click", specifier = ">=8.1.8" },
     { name = "jinja2", specifier = ">=3.1.6" },
     { name = "jupyter", specifier = ">=1.1.1" },

@@ -1,14 +1,15 @@
 import re
-from typing import Iterable
 from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
+from cache_to_disk import cache_to_disk
 
 BASE_URL = "https://scarbs.xyz/"
 
 
-def fetch_all_packages() -> Iterable[str]:
+@cache_to_disk(1)
+def fetch_all_packages() -> list[str]:
     response = requests.get(urljoin(BASE_URL, "/packages"))
     soup = BeautifulSoup(response.text, "html.parser")
 
@@ -20,9 +21,12 @@ def fetch_all_packages() -> Iterable[str]:
             page_number = int(match.group(1))
             total_pages = max(total_pages, page_number)
 
+    result = []
     for page in range(1, total_pages + 1):
         page_url = urljoin(BASE_URL, f"/packages?page={page}")
-        yield from _get_packages_from_page(page_url)
+        result.extend(_get_packages_from_page(page_url))
+
+    return result
 
 
 def _get_packages_from_page(page_url):
