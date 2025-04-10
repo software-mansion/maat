@@ -61,8 +61,8 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
 
     patch_field(scarbs_patch_table, "assert_macros", scarb_version)
     patch_field(scarbs_patch_table, "starknet", scarb_version)
-    patch_field(scarbs_patch_table, "snforge_std", starknet_foundry_version)
-    patch_field(scarbs_patch_table, "snforge_scarb_plugin", starknet_foundry_version)
+    patch_field(scarbs_patch_table, "snforge_std", foundry_version)
+    patch_field(scarbs_patch_table, "snforge_scarb_plugin", foundry_version)
 
     # Detect the test runner to use for this project and set the "test" script to run it.
     # We don't try to override test command if the project already sets one
@@ -100,14 +100,14 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
         # is not satisfactory by Ma'at environment.
         patch_field(package, "cairo-version", scarb_version)
 
-    dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
-    match detect_test_runner(member_root):
-        case "snforge":
-            patch_field(dev_dependencies, "snforge_std", starknet_foundry_version)
-        case "cairo-test":
+        test_runner = detect_test_runner(member_root)
+        dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
+        if test_runner == "snforge":
+            patch_field(dev_dependencies, "snforge_std", foundry_version)
+        if "snforge_scarb_plugin" in dev_dependencies:
+            patch_field(dev_dependencies, "snforge_scarb_plugin", foundry_version)
+        if test_runner == "cairo-test":
             patch_field(dev_dependencies, "cairo_test", scarb_version)
-        case _:
-            raise NotImplementedError
 
 
 @cache
@@ -128,7 +128,7 @@ if __name__ == "__main__":
     scarb_version = os.getenv("ASDF_SCARB_VERSION")
     assert scarb_version
 
-    starknet_foundry_version = os.getenv("ASDF_STARKNET_FOUNDRY_VERSION")
-    assert starknet_foundry_version
+    foundry_version = os.getenv("ASDF_STARKNET_FOUNDRY_VERSION")
+    assert foundry_version
 
     patch("Scarb.toml", patch_root)
