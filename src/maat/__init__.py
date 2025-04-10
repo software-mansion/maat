@@ -19,6 +19,7 @@ from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.local import docker_run_step, execute_test_suite_locally
 from maat.semver import Semver, SemverParamType
 from maat.utils.asdf import asdf_set
+from maat.utils.notify import send_notification
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -127,6 +128,12 @@ def run_local(
     )
 
     report.save()
+
+    send_notification(
+        title="Ma'at Experiment Finished",
+        message=f"Experiment in workspace '{workspace.name}' on Scarb {scarb} and \
+                  Starknet Foundry {foundry} has completed.",
+    )
 
 
 @cli.command(help="Build the sandbox image for the given environment.")
