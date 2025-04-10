@@ -4,8 +4,6 @@
 # dependencies = [
 #   "tomlkit>=0.13.2",
 # ]
-# [tool.uv]
-# python-preference = "system"
 # ///
 
 import os
