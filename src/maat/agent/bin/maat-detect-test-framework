@@ -6,12 +6,12 @@ set -eu
 # 1. scarbs.xyz packages have scripts stripped-off.
 # 2. This is just a recommendation and some projects in the wild did not bother setting it.
 
-if rg -q --glob '*.cairo' --no-ignore -e 'snforge_std::|#\[should_panic\(|#\[fork\('; then
+if rg -q --no-ignore-parent --glob '{src,test,tests}/**/*.cairo' -e 'snforge_std::|#\[should_panic\(|#\[fork\('; then
     echo "snforge"
     exit 0
 fi
 
-if scarb metadata --format-version 1 2>/dev/null | grep -q 'snforge_scarb_plugin'; then
+if scarb metadata --format-version 1 2>/dev/null | rg -q 'snforge_scarb_plugin'; then
     echo "snforge"
     exit 0
 fi

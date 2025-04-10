@@ -1,0 +1,134 @@
+#!/usr/bin/env -S uv run --script
+# /// script
+# requires-python = ">=3.13"
+# dependencies = [
+#   "tomlkit>=0.13.2",
+# ]
+# ///
+
+import os
+import subprocess
+from functools import cache
+from pathlib import Path
+from typing import Callable, Literal, cast, Any
+
+import tomlkit
+
+KnownTestRunner = Literal["snforge", "cairo-test"]
+
+
+def patch(
+    scarb_toml_path: Path | str, func: Callable[[tomlkit.TOMLDocument, Path], None]
+):
+    """
+    Modifies a TOML file by applying a given transformation to its content and saving it back.
+    """
+    path = Path(scarb_toml_path)
+    manifest = tomlkit.parse(path.read_text())
+    func(manifest, path.parent)
+    path.write_text(tomlkit.dumps(manifest))
+
+
+def patch_field(table: Any, key: str, value: Any):
+    comment = f"NOTE: added by maat-patch, was: {table.get(key, None)!r}"
+    table[key] = value
+    table[key].comment(comment)
+
+
+def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
+    members = []
+
+    patch_member(manifest, project_root)
+    if "package" in manifest:
+        members.append(Path("."))
+
+    if (workspace := manifest.get("workspace")) is not None:
+        if "members" in workspace:
+            for member in workspace["members"]:
+                member_path = Path(member)
+                members.append(member_path)
+                patch(member_path / "Scarb.toml", patch_member)
+
+    # Use [patch.scarbs-xyz] to enforce particular dependency versions to match Ma'at environment.
+    patch_table = manifest.setdefault("patch", tomlkit.table())
+
+    if "scarbs-xyz" in patch_table:
+        scarbs_patch_table = patch_table["scarbs-xyz"]
+    elif '"https://scarbs.xyz/"' in patch_table:
+        scarbs_patch_table = patch_table['"https://scarbs.xyz/"']
+    else:
+        scarbs_patch_table = patch_table.setdefault("scarbs-xyz", tomlkit.table())
+
+    patch_field(scarbs_patch_table, "assert_macros", scarb_version)
+    patch_field(scarbs_patch_table, "starknet", scarb_version)
+    patch_field(scarbs_patch_table, "snforge_std", starknet_foundry_version)
+    patch_field(scarbs_patch_table, "snforge_scarb_plugin", starknet_foundry_version)
+
+    # Detect the test runner to use for this project and set the "test" script to run it.
+    # We don't try to override test command if the project already sets one
+    # or just sets it to something trivial.
+    script_table = manifest.setdefault("scripts", tomlkit.table())
+    if "test" not in script_table or script_table["test"] in [
+        "snforge test",
+        "scarb cairo-test",
+    ]:
+        detected_test_runners = set(detect_test_runner(root) for root in members)
+        match len(detected_test_runners):
+            case 0:
+                pass
+            case 1:
+                test_runner = detected_test_runners.pop()
+
+                match test_runner:
+                    case "snforge":
+                        command = "snforge test --workspace --fuzzer-seed 1"
+                    case "cairo-test":
+                        command = "scarb cairo-test --workspace"
+                    case _:
+                        raise NotImplementedError
+
+                patch_field(script_table, "test", command)
+            case _:
+                raise RuntimeError(
+                    f"multiple test runners detected: {', '.join(detected_test_runners)}"
+                )
+
+
+def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
+    if (package := manifest.get("package")) is not None:
+        # Override "cairo-version" just in case project specifies version requirement that
+        # is not satisfactory by Ma'at environment.
+        patch_field(package, "cairo-version", scarb_version)
+
+    dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
+    match detect_test_runner(member_root):
+        case "snforge":
+            patch_field(dev_dependencies, "snforge_std", starknet_foundry_version)
+        case "cairo-test":
+            patch_field(dev_dependencies, "cairo_test", scarb_version)
+        case _:
+            raise NotImplementedError
+
+
+@cache
+def detect_test_runner(root: Path) -> KnownTestRunner:
+    return cast(
+        KnownTestRunner,
+        subprocess.run(
+            ["maat-detect-test-framework"],
+            stdout=subprocess.PIPE,
+            cwd=root,
+            text=True,
+            check=True,
+        ).stdout.strip(),
+    )
+
+
+if __name__ == "__main__":
+    scarb_version = os.getenv("ASDF_SCARB_VERSION")
+    assert scarb_version
+
+    starknet_foundry_version = os.getenv("ASDF_STARKNET_FOUNDRY_VERSION")
+    assert starknet_foundry_version
+
+    patch("Scarb.toml", patch_root)

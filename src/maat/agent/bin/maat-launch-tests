@@ -1,8 +1,0 @@
-#!/usr/bin/env bash
-set -eu
-
-if [ "$(maat-detect-test-framework)" = "snforge" ]; then
-    exec snforge test
-else
-    exec scarb cairo-test
-fi
