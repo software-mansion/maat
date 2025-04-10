@@ -23,16 +23,22 @@ def tests_summary(test: TestReport, step: StepReport):
     """
     stdout = utf8continuous(step.stdout)
 
-    # Look for the test summary line
-    match = re.search(
-        r"Tests: (\d+) passed, (\d+) failed, (\d+) skipped, (\d+) ignored",
-        stdout,
-    )
+    # Look for the test summary line.
+    match = re.search(r"^(?:Tests: |test result: ).*", stdout, re.M)
     if match:
-        passed = int(match.group(1))
-        failed = int(match.group(2))
-        skipped = int(match.group(3))
-        ignored = int(match.group(4))
+        line = match.group(0)
+
+        def extract_count(pattern: str, text: str, default: int | None = None) -> int:
+            m = re.search(pattern, text)
+            if default is None:
+                return int(m.group(1))
+            else:
+                return int(m.group(1)) if m else default
+
+        passed = extract_count(r"(\d+)\s+passed", line)
+        failed = extract_count(r"(\d+)\s+failed", line)
+        skipped = extract_count(r"(\d+)\s+skipped", line, 0)
+        ignored = extract_count(r"(\d+)\s+ignored", line)
 
         step.analyses.tests_summary = TestsSummary(
             passed=passed,
