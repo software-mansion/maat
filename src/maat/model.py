@@ -17,7 +17,7 @@ from maat.utils.unique_id import unique_id
 type ImageId = str
 
 type Analyser = Callable[[TestReport, StepReport], None]
-type Severity = Literal["error"] | Literal["warn"]
+type Severity = Literal["error", "warn"]
 
 
 class StepMeta(BaseModel):
