@@ -22,26 +22,28 @@ def tests_summary(test: TestReport, step: StepReport):
     """
     stdout = step.stdout_utf8continuous()
 
-    # Look for the test summary line.
-    match = re.search(r"^(?:Tests: |test result: ).*", stdout, re.M)
-    if match:
-        line = match.group(0)
+    # Find all test summary lines.
+    matches = re.findall(r"^(?:Tests: |test result: ).*", stdout, re.M)
 
-        def extract_count(pattern: str, text: str, default: int | None = None) -> int:
-            m = re.search(pattern, text)
-            if default is None:
-                return int(m.group(1))
-            else:
-                return int(m.group(1)) if m else default
+    passed, failed, skipped, ignored = 0, 0, 0, 0
+    for line in matches:
+        passed += _extract_count(r"(\d+)\s+passed", line, 0)
+        failed += _extract_count(r"(\d+)\s+failed", line, 0)
+        skipped += _extract_count(r"(\d+)\s+skipped", line, 0)
+        ignored += _extract_count(r"(\d+)\s+ignored", line, 0)
 
-        passed = extract_count(r"(\d+)\s+passed", line)
-        failed = extract_count(r"(\d+)\s+failed", line)
-        skipped = extract_count(r"(\d+)\s+skipped", line, 0)
-        ignored = extract_count(r"(\d+)\s+ignored", line)
-
+    if matches:
         step.analyses.tests_summary = TestsSummary(
             passed=passed,
             failed=failed,
             skipped=skipped,
             ignored=ignored,
         )
+
+
+def _extract_count(pattern: str, text: str, default: int | None = None) -> int:
+    m = re.search(pattern, text)
+    if default is None:
+        return int(m.group(1))
+    else:
+        return int(m.group(1)) if m else default
