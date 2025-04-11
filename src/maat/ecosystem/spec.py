@@ -83,7 +83,7 @@ def entire_scarbs(*, blacklist: list[str | re.Pattern] = None) -> Ecosystem:
     def is_blacklisted(package: str) -> bool:
         for rule in blacklist:
             match rule:
-                case re.Pattern() if re.fullmatch(rule, package):
+                case re.Pattern() if re.search(rule, package):
                     return True
                 case _ if rule == package:
                     return True
