@@ -1,5 +1,5 @@
 from datetime import datetime, timedelta
-from typing import Any, Callable, Self, Literal, NamedTuple
+from typing import Any, Callable, Self, Literal, NamedTuple, Iterable
 
 from pydantic import (
     BaseModel,
@@ -11,6 +11,7 @@ from pydantic import (
 
 from maat.installation import REPO, this_maat_commit
 from maat.semver import Semver
+from maat.utils.data import jsonlines, utf8continuous
 from maat.utils.shell import join_command
 from maat.utils.unique_id import unique_id
 
@@ -179,6 +180,12 @@ class StepReport(BaseModel):
             stdout=None,
             stderr=None,
         )
+
+    def stdout_jsonlines(self) -> Iterable[dict[str, Any]]:
+        return jsonlines(self.stdout)
+
+    def stdout_utf8continuous(self) -> str:
+        return utf8continuous(self.stdout)
 
 
 class TestReport(BaseModel):

@@ -1,7 +1,6 @@
 import re
 
 from maat.model import Step, StepMeta, StepReport, TestReport, TestsSummary
-from maat.utils.data import utf8continuous
 
 TestMeta = StepMeta(
     name="test",
@@ -21,7 +20,7 @@ def tests_summary(test: TestReport, step: StepReport):
     """
     Analyses the test output to extract the number of passed, failed, and ignored tests.
     """
-    stdout = utf8continuous(step.stdout)
+    stdout = step.stdout_utf8continuous()
 
     # Look for the test summary line.
     match = re.search(r"^(?:Tests: |test result: ).*", stdout, re.M)

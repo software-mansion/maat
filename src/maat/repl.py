@@ -9,7 +9,6 @@ import re
 from collections import defaultdict
 
 from maat.model import Report, TestReport
-from maat.utils.data import utf8continuous
 
 
 def open_report(path: str | pathlib.Path) -> Report:
@@ -24,7 +23,7 @@ def list_test_names_containing_pattern_in_stdout(
     result = set()
     for test in report.tests:
         for step in test.steps:
-            stdout_combined = utf8continuous(step.stdout)
+            stdout_combined = step.stdout_utf8continuous()
             if compiled_pattern.search(stdout_combined):
                 result.add(test.name)
                 break  # Avoid duplicating test names

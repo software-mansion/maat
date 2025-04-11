@@ -10,7 +10,6 @@ from maat.model import (
     StepReport,
     TestReport,
 )
-from maat.utils.data import jsonlines
 
 BuildMeta = StepMeta(
     name="build",
@@ -39,7 +38,7 @@ def workflow() -> list[Step]:
 def compiled_procmacros_from_source(test: TestReport, step: StepReport):
     candidates = {}
     package_ids = []
-    for msg in jsonlines(step.stdout):
+    for msg in step.stdout_jsonlines():
         match msg:
             # "{\"status\":\"compiling\",\"message\":\"snforge_scarb_plugin v0.34.1\"}\n",
             case {"status": "compiling", "message": message}:
@@ -60,7 +59,7 @@ def classify_diagnostics(test: TestReport, step: StepReport):
     errors = 0
     message_severity_count = defaultdict(int)
 
-    for msg in jsonlines(step.stdout):
+    for msg in step.stdout_jsonlines():
         match msg:
             case {"type": "warn"}:
                 warnings += 1
