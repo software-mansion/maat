@@ -3,8 +3,7 @@ from datetime import timedelta
 from typing import Self
 
 from maat import Report
-from maat.model import Step, Test, StepReport, TestReport
-from maat.semver import Semver
+from maat.model import Semver, Step, StepReport, Test, TestReport
 
 
 class StepReporter:

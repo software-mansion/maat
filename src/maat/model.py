@@ -1,20 +1,20 @@
 from datetime import datetime, timedelta
-from typing import Any, Callable, Self, Literal, NamedTuple, Iterable
+from typing import Any, Callable, Iterable, Literal, NamedTuple, Self
 
 from pydantic import (
     BaseModel,
     Field,
-    model_validator,
-    model_serializer,
     SerializerFunctionWrapHandler,
+    model_serializer,
+    model_validator,
 )
 
 from maat.installation import REPO, this_maat_commit
-from maat.semver import Semver
 from maat.utils.data import jsonlines, utf8continuous
 from maat.utils.shell import join_command
 from maat.utils.unique_id import unique_id
 
+type Semver = str
 type ImageId = str
 
 type Analyser = Callable[[TestReport, StepReport], None]

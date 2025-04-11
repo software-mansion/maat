@@ -11,14 +11,13 @@ from rich.console import Console
 from maat import sandbox
 from maat.ecosystem import build_test_suite
 from maat.installation import REPO
-from maat.model import Report
+from maat.model import Report, Semver
 from maat.report import browser
 from maat.report.analysis import analyse_report
 from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.local import docker_run_step, execute_test_suite_locally
-from maat.semver import Semver, SemverParamType
 from maat.utils.asdf import asdf_set
 from maat.utils.notify import send_notification
 from maat.workspace import Workspace
@@ -48,14 +47,12 @@ def tool_versions_options(f):
         envvar="MAAT_SCARB_VERSION",
         prompt="Scarb version",
         help="Version of Scarb to experiment on.",
-        type=SemverParamType,
     )(f)
     f = click.option(
         "--foundry",
         envvar="MAAT_FOUNDRY_VERSION",
         prompt="Starknet Foundry version",
         help="Version of Starknet Foundry to experiment on.",
-        type=SemverParamType,
     )(f)
     return f
 
@@ -143,14 +140,12 @@ def run_local(
     envvar="MAAT_SCARB_VERSION",
     prompt="Scarb version",
     help="Version of Scarb to experiment on.",
-    type=SemverParamType,
 )
 @click.option(
     "--foundry",
     envvar="MAAT_FOUNDRY_VERSION",
     prompt="Starknet Foundry version",
     help="Version of Starknet Foundry to experiment on.",
-    type=SemverParamType,
 )
 @pass_docker
 @pass_console

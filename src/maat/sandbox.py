@@ -3,7 +3,7 @@ import importlib.resources
 from python_on_whales import DockerClient, Image
 from rich.console import Console
 
-from maat.semver import Semver
+from maat.model import Semver
 
 SANDBOX_REPOSITORY = "maat/sandbox"
 MAAT_CACHE = "/mnt/maat-cache"
