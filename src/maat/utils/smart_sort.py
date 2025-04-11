@@ -1,7 +1,27 @@
 import re
+from functools import total_ordering
+from typing import Self
 
 
-def smart_sort_key(text: str) -> list[int | str]:
+@total_ordering
+class _Key:
+    __slots__ = ("_key",)
+
+    def __init__(self, key: int | str):
+        self._key = key
+
+    def __eq__(self, other: Self):
+        return self._key == other._key
+
+    def __lt__(self, other: Self):
+        if type(self._key) is type(other._key):
+            return self._key < other._key
+        else:
+            # Ints are lower than strings.
+            return isinstance(self._key, int)
+
+
+def smart_sort_key(text: str) -> list[_Key]:
     """
     Split a string (e.g. a semver) into components suitable for smart sorting.
 
@@ -14,7 +34,7 @@ def smart_sort_key(text: str) -> list[int | str]:
     """
 
     components = re.split(r"[.\-+]", text)
-    return [_try_int(c) for c in components]
+    return [_Key(_try_int(c)) for c in components]
 
 
 def _try_int(c: str) -> int | str:
