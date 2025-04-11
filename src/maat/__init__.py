@@ -249,10 +249,6 @@ def checkout(
         raise RuntimeError(f"no setup steps found for test: {test_name}")
 
     checkout_dir = REPO / "checkouts" / test_name
-    if checkout_dir.exists():
-        console.log(f"Removing existing checkout directory: {checkout_dir}")
-        shutil.rmtree(checkout_dir)
-    checkout_dir.mkdir(parents=True, exist_ok=True)
 
     with (
         console.status("Running setup steps...") as status,
@@ -271,6 +267,11 @@ def checkout(
             )
 
         status.update("Copying workbench contents...")
+
+        if checkout_dir.exists():
+            shutil.rmtree(checkout_dir)
+        checkout_dir.mkdir(parents=True, exist_ok=True)
+
         docker.volume.copy(
             source=(workbench_volume, "."),
             destination=checkout_dir,
