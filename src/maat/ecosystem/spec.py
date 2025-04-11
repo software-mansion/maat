@@ -1,3 +1,4 @@
+import re
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
@@ -75,10 +76,24 @@ def scarbs(package: str) -> Ecosystem:
     return registry(BASE_URL, package)
 
 
-def entire_scarbs() -> Ecosystem:
+def entire_scarbs(*, blacklist: list[str | re.Pattern] = None) -> Ecosystem:
+    if blacklist is None:
+        blacklist = []
+
+    def is_blacklisted(package: str) -> bool:
+        for rule in blacklist:
+            match rule:
+                case re.Pattern() if re.fullmatch(rule, package):
+                    return True
+                case _ if rule == package:
+                    return True
+        return False
+
     def lazy() -> Ecosystem:
         return [
-            registry(BASE_URL, package) for package in scarbs_xyz.fetch_all_packages()
+            registry(BASE_URL, package)
+            for package in scarbs_xyz.fetch_all_packages()
+            if not is_blacklisted(package)
         ]
 
     return lazy
