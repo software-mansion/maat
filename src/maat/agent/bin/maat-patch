@@ -6,7 +6,6 @@
 # ]
 # ///
 
-import os
 import subprocess
 from functools import cache
 from pathlib import Path
@@ -133,11 +132,12 @@ def test_runner_command(test_runner: KnownTestRunner) -> str:
             raise NotImplementedError
 
 
+def get_tool_version(tool: str) -> str:
+    # We can't rely on ASDF_{TOOL}_VERSION environment variables because they may be aliases.
+    return subprocess.check_output([tool, "-V"]).decode("utf-8").split()[1]
+
+
 if __name__ == "__main__":
-    scarb_version = os.getenv("ASDF_SCARB_VERSION")
-    assert scarb_version
-
-    foundry_version = os.getenv("ASDF_STARKNET_FOUNDRY_VERSION")
-    assert foundry_version
-
+    scarb_version = get_tool_version("scarb")
+    foundry_version = get_tool_version("snforge")
     patch("Scarb.toml", patch_root)
