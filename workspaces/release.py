@@ -10,6 +10,7 @@ ecosystem: Ecosystem = [
             "assert_macros",
             "cairo_execute",
             "cairo_run",
+            "cairo_test",
             "sncast_std",
             "snforge_scarb_plugin",
             "starknet",
