@@ -3,12 +3,12 @@ from contextlib import contextmanager
 from python_on_whales import DockerClient, Volume
 from retry import retry
 
-from maat.utils.unique_id import unique_id
+from maat.utils.unique_id import snowflake_id
 
 
 @contextmanager
 def ephemeral_volume(docker: DockerClient):
-    volume_name = f"maat-{unique_id()}"
+    volume_name = f"maat-{snowflake_id()}"
 
     # noinspection PyBroadException
     try:

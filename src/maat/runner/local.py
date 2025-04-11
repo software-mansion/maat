@@ -21,7 +21,7 @@ from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
 from maat.utils.shell import split_command
-from maat.utils.unique_id import unique_id
+from maat.utils.unique_id import snowflake_id
 
 
 def execute_test_suite_locally(
@@ -130,7 +130,7 @@ def execute_test_locally(
                     docker=docker,
                     image=sandbox,
                     command=split_command(step.run),
-                    container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}-{unique_id()}",
+                    container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}-{snowflake_id()}",
                     cache_volume=cache_volume,
                     workbench_volume=workbench_volume,
                     ct=ct,
@@ -212,7 +212,7 @@ def docker_run_step(
     exit_code = 0
 
     if container_name is None:
-        container_name = f"maat-{unique_id()}"
+        container_name = f"maat-{snowflake_id()}"
 
     labels = {}
     if ct is not None:
