@@ -5,13 +5,20 @@ set -eu
 # Cairo Test. We cannot rely on developer overriding Scarb "test" script like we recommend because of two reasons:
 # 1. scarbs.xyz packages have scripts stripped-off.
 # 2. This is just a recommendation and some projects in the wild did not bother setting it.
+#
+# This script also returns "cargo-test" for proc macro packages.
+
+if rg -q -e '\[cairo-plugin\]' 'Scarb.toml'; then
+    echo "cargo-test"
+    exit 0
+fi
 
 if rg -q --no-ignore-parent --glob '{src,test,tests}/**/*.cairo' -e 'snforge_std::|#\[fork\(|#\[fuzzer\(|#\[ignore\('; then
     echo "snforge"
     exit 0
 fi
 
-if rg -q --no-ignore-parent --glob 'Scarb.toml' -e 'snforge'; then
+if rg -q -e 'snforge' 'Scarb.toml'; then
     echo "snforge"
     exit 0
 fi

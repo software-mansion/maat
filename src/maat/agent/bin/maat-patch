@@ -7,14 +7,16 @@
 # ///
 
 import os
+import shlex
 import subprocess
+from collections import defaultdict
 from functools import cache
 from pathlib import Path
 from typing import Callable, Literal, cast, Any
 
 import tomlkit
 
-KnownTestRunner = Literal["snforge", "cairo-test"]
+KnownTestRunner = Literal["snforge", "cairo-test", "cargo-test"]
 
 
 def patch(
@@ -79,26 +81,27 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
         "snforge test",
         "scarb cairo-test",
     ]:
-        detected_test_runners = set(detect_test_runner(root) for root in members)
+        detected_test_runners = defaultdict(list)
+        for root in members:
+            test_runner = detect_test_runner(root)
+            detected_test_runners[test_runner].append(root)
+
         match len(detected_test_runners):
             case 0:
-                pass
+                command = "exit 0"
             case 1:
-                test_runner = detected_test_runners.pop()
-
-                match test_runner:
-                    case "snforge":
-                        command = "snforge test --workspace --fuzzer-seed 1"
-                    case "cairo-test":
-                        command = "scarb cairo-test --workspace"
-                    case _:
-                        raise NotImplementedError
-
-                patch_field(script_table, "test", command)
+                test_runner = next(iter(detected_test_runners))
+                command = test_runner_command(test_runner)
             case _:
-                raise RuntimeError(
-                    f"multiple test runners detected: {', '.join(detected_test_runners)}"
-                )
+                parts = []
+                for test_runner, roots in detected_test_runners.items():
+                    run_command = test_runner_command(test_runner, workspace=False)
+                    for root in roots:
+                        cd_command = f"cd {shlex.quote(str(root.absolute()))}"
+                        parts.append(f"{cd_command} && {run_command}")
+                command = "; ".join(parts)
+
+        patch_field(script_table, "test", command)
 
     # Make sure snforge_std is in the "allow-prebuilt-plugins" array.
     ensure_in_array(
@@ -136,6 +139,23 @@ def detect_test_runner(root: Path) -> KnownTestRunner:
             check=True,
         ).stdout.strip(),
     )
+
+
+def test_runner_command(test_runner: KnownTestRunner, workspace: bool = True) -> str:
+    match test_runner:
+        case "snforge":
+            command = "snforge test --fuzzer-seed 1"
+        case "cairo-test":
+            command = "scarb cairo-test"
+        case "cargo-test":
+            command = "cargo test"
+        case _:
+            raise NotImplementedError
+
+    if workspace:
+        command += " --workspace"
+
+    return command
 
 
 if __name__ == "__main__":
