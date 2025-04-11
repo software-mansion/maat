@@ -12,7 +12,7 @@ TestMeta = StepMeta(
 
 def workflow() -> list[Step]:
     return [
-        Step(meta=TestMeta, run="scarb --json test"),
+        Step(meta=TestMeta, run="scarb --json test --workspace"),
     ]
 
 

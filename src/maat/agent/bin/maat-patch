@@ -7,9 +7,7 @@
 # ///
 
 import os
-import shlex
 import subprocess
-from collections import defaultdict
 from functools import cache
 from pathlib import Path
 from typing import Callable, Literal, cast, Any
@@ -73,36 +71,6 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
     patch_field(scarbs_patch_table, "snforge_std", foundry_version)
     patch_field(scarbs_patch_table, "snforge_scarb_plugin", foundry_version)
 
-    # Detect the test runner to use for this project and set the "test" script to run it.
-    # We don't try to override test command if the project already sets one
-    # or just sets it to something trivial.
-    script_table = manifest.setdefault("scripts", tomlkit.table())
-    if "test" not in script_table or script_table["test"] in [
-        "snforge test",
-        "scarb cairo-test",
-    ]:
-        detected_test_runners = defaultdict(list)
-        for root in members:
-            test_runner = detect_test_runner(root)
-            detected_test_runners[test_runner].append(root)
-
-        match len(detected_test_runners):
-            case 0:
-                command = "exit 0"
-            case 1:
-                test_runner = next(iter(detected_test_runners))
-                command = test_runner_command(test_runner)
-            case _:
-                parts = []
-                for test_runner, roots in detected_test_runners.items():
-                    run_command = test_runner_command(test_runner, workspace=False)
-                    for root in roots:
-                        cd_command = f"cd {shlex.quote(str(root.absolute()))}"
-                        parts.append(f"{cd_command} && {run_command}")
-                command = "; ".join(parts)
-
-        patch_field(script_table, "test", command)
-
     # Make sure snforge_std is in the "allow-prebuilt-plugins" array.
     ensure_in_array(
         manifest.setdefault("tool", {}).setdefault("scarb", {}),
@@ -118,6 +86,7 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
         patch_field(package, "cairo-version", scarb_version)
 
         test_runner = detect_test_runner(member_root)
+
         dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
         if test_runner == "snforge":
             patch_field(dev_dependencies, "snforge_std", foundry_version)
@@ -125,6 +94,17 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
             patch_field(dev_dependencies, "snforge_scarb_plugin", foundry_version)
         if test_runner == "cairo-test":
             patch_field(dev_dependencies, "cairo_test", scarb_version)
+
+        # Detect the test runner to use for this package and set the "test" script to run it.
+        # We don't try to override test command if the package already sets one
+        # or just sets it to something trivial.
+        script_table = manifest.setdefault("scripts", tomlkit.table())
+        if "test" not in script_table or script_table["test"] in [
+            "snforge test",
+            "scarb cairo-test",
+            "cargo test",
+        ]:
+            patch_field(script_table, "test", test_runner_command(test_runner))
 
 
 @cache
@@ -141,21 +121,16 @@ def detect_test_runner(root: Path) -> KnownTestRunner:
     )
 
 
-def test_runner_command(test_runner: KnownTestRunner, workspace: bool = True) -> str:
+def test_runner_command(test_runner: KnownTestRunner) -> str:
     match test_runner:
         case "snforge":
-            command = "snforge test --fuzzer-seed 1"
+            return "snforge test --fuzzer-seed 1"
         case "cairo-test":
-            command = "scarb cairo-test"
+            return "scarb cairo-test"
         case "cargo-test":
-            command = "cargo test"
+            return "cargo test"
         case _:
             raise NotImplementedError
-
-    if workspace:
-        command += " --workspace"
-
-    return command
 
 
 if __name__ == "__main__":
