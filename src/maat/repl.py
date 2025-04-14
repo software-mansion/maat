@@ -16,7 +16,7 @@ def open_report(path: str | pathlib.Path) -> Report:
     Opens and parses a Ma'at report from a file.
 
     Args:
-        path: Path to the report file, can be a string or a Path object.
+        path: Path to the report file can be a string or a Path object.
 
     Returns:
         A validated Report object containing the report data.
@@ -49,6 +49,29 @@ def list_test_names_containing_pattern_in_stdout(
             if compiled_pattern.search(stdout_combined):
                 result.add(test.name)
                 break  # Avoid duplicating test names
+    return list(sorted(result))
+
+
+def list_test_names_with_non_zero_exit_code_for_step(
+    report: Report, step_name: str
+) -> list[str]:
+    """
+    Retrieves a list of test names from the provided report that have non-zero exit codes
+    for a specific step.
+
+    :param report:
+        The report object which contains test details such as test names and their steps.
+    :param step_name:
+        The name of the step to filter tests by identifying only the relevant failing steps.
+    :return:
+        A sorted list of strings, each representing the name of a test with the specified step
+        that has a non-zero exit code.
+    """
+    result = set()
+    for test in report.tests:
+        for step in test.steps:
+            if step.name == step_name and step.exit_code != 0:
+                result.add(test.name)
     return list(sorted(result))
 
 
