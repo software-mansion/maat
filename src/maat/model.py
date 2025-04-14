@@ -187,6 +187,9 @@ class StepReport(BaseModel):
     def stdout_utf8continuous(self) -> str:
         return utf8continuous(self.stdout)
 
+    def stderr_utf8continuous(self) -> str:
+        return utf8continuous(self.stderr)
+
 
 class TestReport(BaseModel):
     id: int
@@ -228,6 +231,12 @@ class Report(BaseModel):
         self.sort()
         with open(REPO / "reports" / f"{self.name}.json", "w") as f:
             f.write(self.model_dump_json(indent=2) + "\n")
+
+    def test(self, name: str) -> TestReport | None:
+        for test in self.tests:
+            if test.name == name:
+                return test
+        return None
 
     def tests_by_name(self) -> dict[str, TestReport]:
         return {test.name: test for test in self.tests}
