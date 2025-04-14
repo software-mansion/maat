@@ -1,10 +1,8 @@
 import base64
 import importlib.resources
-import tempfile
 from collections.abc import Sized
 from contextlib import contextmanager
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator, Self
 
 import jinja2
@@ -16,13 +14,12 @@ from maat.utils.smart_sort import smart_sort_key
 from maat.utils.templating import clsx
 
 
-def render_html(metrics: list[Metrics]) -> Path:
+def render_html(metrics: list[Metrics]) -> str:
     view_model = _build_view_model(metrics)
 
     with _jinja_env() as env:
         template = env.get_template("index.html")
-        html = template.render(**view_model.model_dump())
-        return _save_html_as_temp_file(html)
+        return template.render(**view_model.model_dump())
 
 
 class CellViewModel(BaseModel):
@@ -234,9 +231,3 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
     env.globals["logo_base64"] = f"data:image/png;base64,{logo_base64}"
 
     yield env
-
-
-def _save_html_as_temp_file(html: str) -> Path:
-    with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as temp_file:
-        temp_file.write(html.encode("utf-8"))
-        return Path(temp_file.name)

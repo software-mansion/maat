@@ -1,5 +1,6 @@
 import functools
 import shutil
+import tempfile
 from pathlib import Path
 
 import cache_to_disk
@@ -160,19 +161,37 @@ def build_sandbox(
 
 @cli.command(help="Open and display one or more reports in a web browser.")
 @click.argument("reports", type=PathParamType, nargs=-1, required=True)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Write output to file instead of opening in browser. Use '-' for stdout.",
+)
 @pass_console
-def open(console: Console, reports: tuple[Path, ...]) -> None:
+def open(
+    console: Console,
+    reports: tuple[Path, ...],
+    output: Path | None = None,
+) -> None:
     all_metrics = []
     for path in reports:
         report = Report.model_validate_json(path.read_bytes())
         metrics = Metrics.compute(report=report, path=path)
         all_metrics.append(metrics)
 
-    html_path = browser.render_html(all_metrics)
-    console.log("Report generated at:", html_path)
+    html = browser.render_html(all_metrics)
 
-    console.log("Opening report in browser...")
-    click.launch(str(html_path))
+    if output is not None:
+        with click.open_file(output, "w", encoding="utf-8") as f:
+            f.write(html)
+    else:
+        # Open in browser
+        with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as temp_file:
+            temp_file.write(html.encode("utf-8"))
+
+            console.log("Report generated at:", temp_file.name)
+            console.log("Opening report in browser...")
+            click.launch(str(temp_file.name))
 
 
 @cli.command(help="Reanalyse an existing report and update it.")
