@@ -12,6 +12,15 @@ from maat.model import Report, TestReport
 
 
 def open_report(path: str | pathlib.Path) -> Report:
+    """
+    Opens and parses a Ma'at report from a file.
+
+    Args:
+        path: Path to the report file, can be a string or a Path object.
+
+    Returns:
+        A validated Report object containing the report data.
+    """
     path = pathlib.Path(path)
     return Report.model_validate_json(path.read_bytes())
 
@@ -19,6 +28,19 @@ def open_report(path: str | pathlib.Path) -> Report:
 def list_test_names_containing_pattern_in_stdout(
     report: Report, pattern: str
 ) -> list[str]:
+    """
+    Finds test names where the stdout contains a specific pattern.
+
+    This function searches through all tests in a report and identifies those
+    that have stdout output matching the given regular expression pattern.
+
+    Args:
+        report: The Ma'at report to search through.
+        pattern: A regular expression pattern to search for in stdout.
+
+    Returns:
+        A sorted list of test names that contain the pattern in their stdout.
+    """
     compiled_pattern = re.compile(pattern)
     result = set()
     for test in report.tests:
@@ -31,6 +53,20 @@ def list_test_names_containing_pattern_in_stdout(
 
 
 def zip_tests(*args: Report) -> list[tuple[TestReport, ...]]:
+    """
+    Combines multiple reports by matching tests with the same name.
+
+    This function takes multiple Report objects and creates tuples of TestReport objects
+    that share the same test name across reports. If a test is missing in a report,
+    its position in the tuple will be None.
+
+    Args:
+        *args: Multiple Report objects to be combined.
+
+    Returns:
+        A list of tuples, where each tuple contains TestReport objects (or None)
+        from each input report that share the same test name.
+    """
     lists = defaultdict(lambda: [None] * len(args))
     for i, report in enumerate(args):
         for test in report.tests:
