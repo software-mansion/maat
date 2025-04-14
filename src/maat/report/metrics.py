@@ -17,6 +17,8 @@ class Metrics(pydantic.BaseModel):
     maat_commit: str
     created_at: datetime
     total_execution_time: timedelta
+    total_projects: int
+    """Total number of projects tested in the experiment."""
 
     avg_build_time: timedelta
     avg_lint_time: timedelta
@@ -174,6 +176,7 @@ class Metrics(pydantic.BaseModel):
             maat_commit=report.maat_commit,
             created_at=report.created_at,
             total_execution_time=report.total_execution_time,
+            total_projects=len(report.tests),
             avg_build_time=avg_build_time,
             avg_lint_time=avg_lint_time,
             avg_test_time=avg_test_time,
@@ -211,6 +214,7 @@ class MetricsTransposed(BaseModel):
     maat_commit: list[str]
     created_at: list[datetime]
     total_execution_time: list[timedelta]
+    total_projects: list[int]
     avg_build_time: list[timedelta]
     avg_lint_time: list[timedelta]
     avg_test_time: list[timedelta]

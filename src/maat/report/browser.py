@@ -143,6 +143,7 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
         RowViewModel.map("Ma'at Commit", t.maat_commit),
         RowViewModel.map("Created At", t.created_at),
         RowViewModel.map("Total Execution Time", t.total_execution_time),
+        RowViewModel.map("Total Projects", t.total_projects),
     ]
     sections.append(SectionViewModel(title="Metadata", rows=metadata_rows))
 
