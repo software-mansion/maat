@@ -201,7 +201,7 @@ class TestReport(BaseModel):
                 total += step.execution_time
         return total
 
-    def get_step_by_name(self, name: str) -> StepReport | None:
+    def step(self, name: str) -> StepReport | None:
         for step in self.steps:
             if step.name == name:
                 return step
