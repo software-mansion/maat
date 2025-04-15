@@ -23,7 +23,7 @@ jobs:
       # TODO: Maybe include only 10-ish recently commited reports?
       - run: ./maat open -o web/index.html reports/*
 
-      - uses: actions/configure-pages@v4
+      - uses: actions/configure-pages@v5
       - uses: actions/upload-pages-artifact@v3
         id: deployment
         with:
