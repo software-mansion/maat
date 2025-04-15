@@ -4,13 +4,10 @@ from collections.abc import Callable
 
 from pydantic import BaseModel
 
-from maat.ecosystem import scarbs_xyz
-from maat.ecosystem.git import setup_git
-from maat.ecosystem.registry import setup_registry
-from maat.ecosystem.scarbs_xyz import BASE_URL
+import maat.ecosystem.git as _git
+import maat.ecosystem.registry as _registry
+import maat.ecosystem.scarbs_xyz as _scarbs_xyz
 from maat.model import Step
-
-_GITHUB_URL = "https://github.com/"
 
 type Ecosystem = EcosystemProject | list[Ecosystem] | Callable[[], Ecosystem]
 
@@ -19,6 +16,10 @@ class EcosystemProject(BaseModel, ABC):
     @property
     @abstractmethod
     def name(self) -> str:
+        pass
+
+    @abstractmethod
+    def fetch_rev(self) -> str:
         pass
 
     @abstractmethod
@@ -31,13 +32,16 @@ class _Git(EcosystemProject):
 
     @property
     def name(self) -> str:
-        if self.repo.startswith(_GITHUB_URL):
-            return self.repo.removeprefix(_GITHUB_URL).removesuffix("/")
+        if self.repo.startswith(_git.GITHUB_URL):
+            return self.repo.removeprefix(_git.GITHUB_URL).removesuffix("/")
         else:
             return _human_url(self.repo)
 
+    def fetch_rev(self) -> str:
+        return _git.fetch_commit_hash(repo=self.repo)
+
     def setup(self) -> list[Step]:
-        return setup_git(repo=self.repo)
+        return _git.setup_git(repo=self.repo)
 
 
 class _Registry(EcosystemProject):
@@ -48,13 +52,19 @@ class _Registry(EcosystemProject):
     def name(self) -> str:
         name = self.package
 
-        if self.registry_url != BASE_URL:
+        if self.registry_url != _scarbs_xyz.BASE_URL:
             name += f"@{_human_url(self.registry_url)}"
 
         return name
 
+    def fetch_rev(self) -> str:
+        return _registry.fetch_version(
+            registry_url=self.registry_url,
+            package=self.package,
+        )
+
     def setup(self) -> list[Step]:
-        return setup_registry(
+        return _registry.setup_registry(
             registry_url=self.registry_url,
             package=self.package,
         )
@@ -73,7 +83,7 @@ def registry(registry_url: str, package: str) -> Ecosystem:
 
 
 def scarbs(package: str) -> Ecosystem:
-    return registry(BASE_URL, package)
+    return registry(_scarbs_xyz.BASE_URL, package)
 
 
 def entire_scarbs(*, blacklist: list[str | re.Pattern] = None) -> Ecosystem:
@@ -91,8 +101,8 @@ def entire_scarbs(*, blacklist: list[str | re.Pattern] = None) -> Ecosystem:
 
     def lazy() -> Ecosystem:
         return [
-            registry(BASE_URL, package)
-            for package in scarbs_xyz.fetch_all_packages()
+            registry(_scarbs_xyz.BASE_URL, package)
+            for package in _scarbs_xyz.fetch_all_packages()
             if not is_blacklisted(package)
         ]
 

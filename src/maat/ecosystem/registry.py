@@ -11,6 +11,12 @@ from maat.utils.smart_sort import smart_sort_key
 from maat.utils.unique_id import unique_id
 
 
+def fetch_version(registry_url: str, package: str) -> str:
+    registry_config = RegistryConfig.fetch(registry_url)
+    records = IndexRecords.fetch(registry_config, package)
+    return records.latest_version()
+
+
 def setup_registry(registry_url: str, package: str) -> list[Step]:
     registry_config = RegistryConfig.fetch(registry_url)
     records = IndexRecords.fetch(registry_config, package)

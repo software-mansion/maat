@@ -18,7 +18,7 @@ def build_test_suite(
             for workflow in workflows.ALL:
                 steps.extend(workflow())
 
-            test = Test(name=project.name, steps=steps)
+            test = Test(name=project.name, rev=project.fetch_rev(), steps=steps)
             suite.tests.append(test)
 
         return suite

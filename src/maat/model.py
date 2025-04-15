@@ -104,6 +104,7 @@ class Step(BaseModel):
 class Test(BaseModel):
     id: int = Field(default_factory=unique_id)
     name: str
+    rev: str
     steps: list[Step]
 
 
@@ -194,7 +195,12 @@ class StepReport(BaseModel):
 class TestReport(BaseModel):
     id: int
     name: str
+    rev: str | None = None
     steps: list[StepReport] = []
+
+    @property
+    def name_and_rev(self) -> str:
+        return f"{self.name}-{self.rev}"
 
     @property
     def execution_time(self) -> timedelta:

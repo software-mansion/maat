@@ -44,6 +44,7 @@ class TestReporter:
         self._test_report = test_report = TestReport(
             id=test.id,
             name=test.name,
+            rev=test.rev,
             steps=[StepReport.blueprint(step) for step in test.steps],
         )
         report.tests.append(test_report)

@@ -301,6 +301,7 @@ def checkout(
 @pass_console
 def prune_cache(console: Console) -> None:
     cache_to_disk.delete_disk_caches_for_function("fetch_all_packages")
+    cache_to_disk.delete_disk_caches_for_function("fetch_commit_hash")
     cache_to_disk.delete_disk_caches_for_function("fetch")
 
 
