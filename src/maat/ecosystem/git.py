@@ -15,7 +15,7 @@ def fetch_commit_hash(repo: str) -> str:
             f"https://api.github.com/repos/{repo_path}/branches/main"
         )
         response.raise_for_status()
-        return response.json()["commit"]["sha"]
+        return response.json()["commit"]["sha"][:9]
     else:
         raise NotImplementedError
 
