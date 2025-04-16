@@ -18,6 +18,13 @@ ENV PATH="$ASDF_DATA_DIR/shims:$CARGO_HOME/bin:/root/.local/bin:$PATH"
 # Install some build essentials and rustup-init.
 RUN dnf install -y gcc-c++ git make ripgrep rustup && dnf clean all
 
+# Preconfigure Git to allow commiting from within the agent.
+RUN <<EOF
+git config --system init.defaultBranch main
+git config --system user.email "contact@swmansion.com"
+git config --system user.name "Ma'at"
+EOF
+
 # Install Rust, this will use RUSTUP_TOOLCHAIN from environment.
 ENV RUST_BACKTRACE=1
 ARG RUSTUP_TOOLCHAIN=1.85
