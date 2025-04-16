@@ -6,7 +6,7 @@ from datetime import datetime, timedelta
 from typing import Any, Callable, Iterable, Iterator, Self
 
 import jinja2
-from pydantic import BaseModel, RootModel
+from pydantic import BaseModel
 
 from maat.model import ClassifiedDiagnostic
 from maat.report.metrics import Metrics, MetricsTransposed
@@ -81,23 +81,9 @@ class CellViewModel(BaseModel):
         )
 
 
-class DetailsViewModel(RootModel):
-    root: list[CellViewModel]
-
-    @classmethod
-    def map(
-        cls,
-        cells: Iterable[Any],
-        /,
-        func: Callable[[Any], CellViewModel] = CellViewModel.new,
-    ) -> Self:
-        return cls(root=[func(val) for val in cells])
-
-
 class RowViewModel(BaseModel):
     title: str
     cells: list[CellViewModel]
-    details: DetailsViewModel | None = None
 
     @classmethod
     def map(
@@ -106,9 +92,8 @@ class RowViewModel(BaseModel):
         cells: Iterable[Any],
         /,
         func: Callable[[Any], CellViewModel] = CellViewModel.new,
-        **kwargs,
     ) -> Self:
-        return cls(title=title, cells=[func(val) for val in cells], **kwargs)
+        return cls(title=title, cells=[func(val) for val in cells])
 
 
 class SectionViewModel(BaseModel):
@@ -152,63 +137,11 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
     ]
     sections.append(SectionViewModel(title="Time Metrics", rows=time_rows))
 
-    # Build metrics section.
-    build_rows = [
-        RowViewModel.map("Clean Builds", t.clean_builds),
-        RowViewModel.map(
-            "Dirty Builds",
-            t.dirty_builds,
-            details=DetailsViewModel.map(
-                t.build_diagnostics, func=CellViewModel.classified_diagnostic
-            ),
-        ),
-        RowViewModel.map(
-            "Avg. Warnings in Dirty Build",
-            t.avg_warnings_in_dirty_build,
-            func=lambda val: CellViewModel.new(val, float_precision=1),
-        ),
-        RowViewModel.map(
-            "Avg. Errors in Dirty Build",
-            t.avg_errors_in_dirty_build,
-            func=lambda val: CellViewModel.new(val, float_precision=1),
-        ),
-    ]
-    sections.append(SectionViewModel(title="Build Metrics", rows=build_rows))
-
-    # Lint metrics section.
-    lint_rows = [
-        RowViewModel.map("Clean Lints", t.clean_lints),
-        RowViewModel.map(
-            "Dirty Lints",
-            t.dirty_lints,
-            details=DetailsViewModel.map(
-                t.lint_diagnostics, func=CellViewModel.classified_diagnostic
-            ),
-        ),
-    ]
-    sections.append(SectionViewModel(title="Lint Metrics", rows=lint_rows))
-
     # Test metrics section.
     test_rows = [
-        RowViewModel.map("Clean Tests", t.clean_tests),
-        RowViewModel.map("Dirty Tests", t.dirty_tests),
         RowViewModel.map("Failed Tests Ratio", t.failed_tests_ratio),
     ]
     sections.append(SectionViewModel(title="Test Metrics", rows=test_rows))
-
-    # All other metrics section.
-    other_rows = [
-        RowViewModel.map(
-            "Total Compiled Proc Macros",
-            t.compiled_procmacros_from_source,
-            func=CellViewModel.len,
-            details=DetailsViewModel.map(
-                t.compiled_procmacros_from_source,
-                func=CellViewModel.name_count_dict,
-            ),
-        ),
-    ]
-    sections.append(SectionViewModel(title="Other Metrics", rows=other_rows))
 
     return RootViewModel(column_titles=column_titles, sections=sections)
 

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="color-scheme" content="light dark">
-    <title>Ma'at Report Analysis</title>
+    <title>Ma'at Report Diff</title>
     <style>
         :root {
             --color-background: #FCFCFF;
@@ -60,26 +60,6 @@
             display: flex;
             height: var(--header-height);
             align-items: center;
-        }
-
-        .header-controls {
-            display: flex;
-            align-items: center;
-            margin-left: auto;
-            padding-right: 1rem;
-            gap: 1rem;
-        }
-
-        .control-group {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .control-group label {
-            font-size: 0.9em;
-            color: var(--color-text-secondary);
-            cursor: pointer;
         }
 
         #logo {
@@ -152,26 +132,6 @@
             font-weight: bold;
         }
 
-        tr.details {
-            --cell-background: linear-gradient(
-                    to bottom,
-                    color-mix(in oklab, var(--color-shadow) 10%, var(--color-primary-light)) 0,
-                    var(--color-primary-light) 0.67em);
-        }
-
-        tr.details td {
-            vertical-align: top;
-            overflow: hidden;
-        }
-
-        body.hide-details tr.details {
-            display: none;
-        }
-
-        body.overflow-auto tr.details td {
-            overflow: auto;
-        }
-
         .error {
             color: var(--color-error);
         }
@@ -188,7 +148,7 @@
             font-size: 0.8em;
         }
 
-        .code, pre, code {
+        pre, code {
             font-family: var(--font-family-mono), monospace;
         }
 
@@ -196,26 +156,11 @@
             text-align: right;
         }
     </style>
-    <script>
-        function toggleBodyClass(className) {
-            document.body.classList.toggle(className);
-        }
-    </script>
 </head>
 <body>
 <header>
     <div id="logo"></div>
     <h1>Ma'at Report Diff</h1>
-    <div class="header-controls">
-        <div class="control-group">
-            <input type="checkbox" id="toggle-details" onchange="toggleBodyClass('hide-details')" checked>
-            <label for="toggle-details">Show details</label>
-        </div>
-        <div class="control-group">
-            <input type="checkbox" id="toggle-overflow" onchange="toggleBodyClass('overflow-auto')">
-            <label for="toggle-overflow">Scrollable details</label>
-        </div>
-    </div>
 </header>
 <main>
     <table>
@@ -241,16 +186,6 @@
                         <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
                     {% endfor %}
                 </tr>
-                {% if row.details is not none %}
-                    <tr class="details">
-                        <td></td>
-                        {% for cell in row.details %}
-                            <td class="{{ "text-sm"|clsx(cell.class_name) }}">
-                                <pre>{{ cell.value }}</pre>
-                            </td>
-                        {% endfor %}
-                    </tr>
-                {% endif %}
             {% endfor %}
             <!-- endregion -->
         {% endfor %}
