@@ -10,11 +10,10 @@ import rich.traceback
 from python_on_whales import DockerClient
 from rich.console import Console
 
-from maat import sandbox
+from maat import sandbox, web
 from maat.ecosystem import build_test_suite
 from maat.installation import REPO
 from maat.model import Report, Semver
-from maat.report import browser
 from maat.report.analysis import analyse_report
 from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
@@ -189,7 +188,7 @@ def open(
         else:
             output_dir = output
 
-        browser.generate(all_metrics, output=output_dir)
+        web.build(all_metrics, output=output_dir)
 
         if output is None:
             console.log("Report generated at:", output_dir.name)

@@ -15,8 +15,8 @@ from maat.utils.smart_sort import smart_sort_key
 from maat.utils.templating import clsx
 
 
-def generate(metrics: list[Metrics], output: Path):
-    _copy_traversable(importlib.resources.files("maat.report.resources"), output)
+def build(metrics: list[Metrics], output: Path):
+    _copy_traversable(importlib.resources.files("maat.web.resources"), output)
 
     view_model = _build_view_model(metrics)
 
@@ -152,7 +152,7 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
 @contextmanager
 def _jinja_env() -> Iterator[jinja2.Environment]:
     env = jinja2.Environment(
-        loader=jinja2.PackageLoader("maat.report"),
+        loader=jinja2.PackageLoader("maat.web", "templates"),
         autoescape=jinja2.select_autoescape(),
     )
     env.filters["clsx"] = clsx
