@@ -234,11 +234,7 @@ def docker_run_step(
         )
         for source, line in stream:
             if step_reporter is not None:
-                match source:
-                    case "stdout":
-                        step_reporter.append_stdout_line(line)
-                    case "stderr":
-                        step_reporter.append_stderr_line(line)
+                step_reporter.log(source, line)
     except DockerException as e:
         exit_code = e.return_code
         if raise_on_nonzero_exit:

@@ -25,30 +25,22 @@ def open_report(path: str | pathlib.Path) -> Report:
     return Report.model_validate_json(path.read_bytes())
 
 
-def list_test_names_containing_pattern_in_stdout(
+def list_test_names_containing_pattern_in_log(
     report: Report, pattern: str
 ) -> list[str]:
     """
-    Finds test names where the stdout contains a specific pattern.
-
-    This function searches through all tests in a report and identifies those
-    that have stdout output matching the given regular expression pattern.
-
-    Args:
-        report: The Ma'at report to search through.
-        pattern: A regular expression pattern to search for in stdout.
+    Finds test names where the log (stdout+stderr) contains a specific pattern.
 
     Returns:
-        A sorted list of test names that contain the pattern in their stdout.
+        A sorted list of test names that contain the pattern in their log.
     """
     compiled_pattern = re.compile(pattern)
     result = set()
     for test in report.tests:
         for step in test.steps:
-            stdout_combined = step.stdout_utf8continuous()
-            if compiled_pattern.search(stdout_combined):
+            if compiled_pattern.search(step.log_str or ""):
                 result.add(test.name)
-                break  # Avoid duplicating test names
+                break
     return list(sorted(result))
 
 

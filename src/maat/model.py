@@ -1,3 +1,4 @@
+import json
 from datetime import datetime, timedelta
 from typing import Any, Callable, Iterable, Literal, NamedTuple, Self
 
@@ -10,7 +11,6 @@ from pydantic import (
 )
 
 from maat.installation import REPO, this_maat_commit
-from maat.utils.data import jsonlines, utf8continuous
 from maat.utils.shell import join_command
 from maat.utils.unique_id import unique_id
 
@@ -166,9 +166,8 @@ class StepReport(BaseModel):
 
     analyses: Analyses = Analyses()
 
-    # These two are kept last because they take significant chunks of view area.
-    stdout: list[bytes] | None
-    stderr: list[bytes] | None
+    # This one is kept last because it takes significant chunks of view area.
+    log: bytes | None = None
 
     @classmethod
     def blueprint(cls, step: Step):
@@ -178,18 +177,25 @@ class StepReport(BaseModel):
             run=join_command(step.run),
             exit_code=None,
             execution_time=None,
-            stdout=None,
-            stderr=None,
+            log=None,
         )
 
+    @property
+    def log_str(self) -> str | None:
+        if self.log is None:
+            return None
+        return self.log.decode("utf-8", errors="replace")
+
     def stdout_jsonlines(self) -> Iterable[dict[str, Any]]:
-        return jsonlines(self.stdout)
+        if self.log is None:
+            return
 
-    def stdout_utf8continuous(self) -> str:
-        return utf8continuous(self.stdout)
-
-    def stderr_utf8continuous(self) -> str:
-        return utf8continuous(self.stderr)
+        for line in self.log.splitlines():
+            if payload := line.removeprefix(b"[out] "):
+                try:
+                    yield json.loads(payload)
+                except json.JSONDecodeError:
+                    pass
 
 
 class TestReport(BaseModel):
@@ -215,6 +221,20 @@ class TestReport(BaseModel):
             if step.name == name:
                 return step
         return None
+
+    def combined_log(self) -> bytes:
+        chunks = []
+        chunks.extend(("=== ", self.name_and_rev, " ===\n"))
+        for step in self.steps:
+            chunks.extend(("\n>>> ", step.run, "\n"))
+            if step.log is not None:
+                chunks.append(step.log)
+            if step.exit_code is not None and step.exit_code != 0:
+                chunks.append(f"Process finished with exit code {step.exit_code}\n")
+        return b"".join(
+            (chunk if isinstance(chunk, bytes) else str(chunk).encode("utf-8"))
+            for chunk in chunks
+        )
 
 
 class Report(BaseModel):
@@ -246,3 +266,13 @@ class Report(BaseModel):
 
     def tests_by_name(self) -> dict[str, TestReport]:
         return {test.name: test for test in self.tests}
+
+
+class ReportMeta(BaseModel):
+    """Some metadata about the report file itself."""
+
+    name: str
+
+    @classmethod
+    def new(cls, path: Path) -> Self:
+        return cls(name=path.stem)

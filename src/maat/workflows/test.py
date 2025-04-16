@@ -20,10 +20,8 @@ def tests_summary(test: TestReport, step: StepReport):
     """
     Analyses the test output to extract the number of passed, failed, and ignored tests.
     """
-    stdout = step.stdout_utf8continuous()
-
     # Find all test summary lines.
-    matches = re.findall(r"^(?:Tests: |test result: ).*", stdout, re.M)
+    matches = re.findall(r"^\[out]\s*(?:Tests: |test result: ).*", step.log_str, re.M)
 
     passed, failed, skipped, ignored = 0, 0, 0, 0
     for line in matches:

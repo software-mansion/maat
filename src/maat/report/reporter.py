@@ -1,6 +1,6 @@
 import time
 from datetime import timedelta
-from typing import Self
+from typing import Literal, Self
 
 from maat import Report
 from maat.model import Semver, Step, StepReport, Test, TestReport
@@ -10,22 +10,23 @@ class StepReporter:
     def __init__(self, report: StepReport):
         self._report = report
         self._timer: _ExecutionTimer | None = None
+        self._log_builder: list[bytes] = []
 
     def set_exit_code(self, exit_code: int):
         self._report.exit_code = exit_code
 
-    def set_execution_time(self, execution_time: timedelta):
-        self._report.execution_time = execution_time
+    def log(self, source: Literal["stdout", "stderr"], line: bytes):
+        match source:
+            case "stdout":
+                source_tag = b"out"
+            case "stderr":
+                source_tag = b"err"
+            case unknown:
+                raise ValueError(unknown)
 
-    def append_stdout_line(self, line: bytes):
-        if self._report.stdout is None:
-            self._report.stdout = []
-        self._report.stdout.append(line)
-
-    def append_stderr_line(self, line: bytes):
-        if self._report.stderr is None:
-            self._report.stderr = []
-        self._report.stderr.append(line)
+        self._log_builder.extend((b"[", source_tag, b"] ", line))
+        if not line.endswith(b"\n"):
+            self._log_builder.append(b"\n")
 
     def __enter__(self) -> Self:
         self._timer = _ExecutionTimer()
@@ -33,7 +34,10 @@ class StepReporter:
 
     def __exit__(self, exc_type, exc_val, exc_tb):
         assert self._timer is not None
-        self.set_execution_time(self._timer.stop())
+        self._report.execution_time = self._timer.stop()
+
+        self._report.log = b"".join(self._log_builder)
+
         return False  # Don't suppress exceptions.
 
 
