@@ -17,9 +17,9 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     metrics = [Metrics.compute(report, meta) for report, meta in reports]
 
     _copy_traversable(importlib.resources.files("maat.web.resources"), output)
+    _write_logs(reports, output)
 
     view_model = _build_view_model(metrics)
-
     with _jinja_env() as env:
         index_html = env.get_template("index.html").render(**view_model.model_dump())
         (output / "index.html").write_text(index_html, encoding="utf-8")
@@ -67,3 +67,14 @@ def _copy_traversable(traversable: Traversable, dest: Path):
         else:
             dest_child = dest / child.name
             dest_child.write_bytes(child.read_bytes())
+
+
+def _write_logs(reports: list[tuple[Report, ReportMeta]], output: Path):
+    for report, meta in reports:
+        report_dir = output / meta.name
+        for test in report.tests:
+            test_dir = report_dir / test.name_and_rev
+            test_dir.mkdir(parents=True, exist_ok=True)
+
+            log_file = test_dir / "logs.txt"
+            log_file.write_bytes(test.combined_log())
