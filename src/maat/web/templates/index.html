@@ -1,3 +1,26 @@
+{% macro table_section(title) %}
+    <!-- region {{ title }} Section -->
+    <tr class="section-header">
+        <td>{{ title }}</td>
+        <td colspan="{{ report_names|length }}"></td>
+    </tr>
+    {{ caller() }}
+    <!-- endregion -->
+{% endmacro %}
+
+{% macro metrics_row(title, values) %}
+    <tr>
+        <td>{{ title }}</td>
+        {% for value in values %}
+            <td class="text-right">{{ caller(value) }}</td>
+        {% endfor %}
+    </tr>
+{% endmacro %}
+
+{% macro metrics_row_s(title, values) %}
+    {% call(value) metrics_row(title, values) %}{{ value }}{% endcall %}
+{% endmacro %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,22 +48,35 @@
             </tr>
             </thead>
             <tbody>
-            {% for section in sections %}
-                <!-- region {{ section.title }} Section -->
-                <tr class="section-header">
-                    <td>{{ section.title }}</td>
-                    <td colspan="{{ report_names|length }}"></td>
-                </tr>
-                {% for row in section.rows %}
-                    <tr>
-                        <td>{{ row.title }}</td>
-                        {% for cell in row.cells %}
-                            <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
-                        {% endfor %}
-                    </tr>
-                {% endfor %}
-                <!-- endregion -->
-            {% endfor %}
+            {% call table_section("Metadata") %}
+                {{ metrics_row_s("Workspace", metrics.workspace) }}
+                {{ metrics_row_s("Scarb Version", metrics.scarb_version) }}
+                {{ metrics_row_s("Foundry Version", metrics.foundry_version) }}
+                {{ metrics_row_s("Ma'at Commit", metrics.maat_commit) }}
+                {% call(value) metrics_row("Created At", metrics.created_at) %}
+                    {{ value|datetimeformat }}
+                {% endcall %}
+                {% call(value) metrics_row("Total Execution Time", metrics.total_execution_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+                {{ metrics_row_s("Total Projects", metrics.total_projects) }}
+            {% endcall %}
+            {% call table_section("Timings") %}
+                {% call(value) metrics_row("Avg. Build Time", metrics.avg_build_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+                {% call(value) metrics_row("Avg. Lint Time", metrics.avg_lint_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+                {% call(value) metrics_row("Avg. Test Time", metrics.avg_test_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+            {% endcall %}
+            {% call table_section("Test Metrics") %}
+                {% call(value) metrics_row("Failed Tests Ratio", metrics.failed_tests_ratio) %}
+                    {{ value|round(2) }}
+                {% endcall %}
+            {% endcall %}
             </tbody>
         </table>
     </details>
