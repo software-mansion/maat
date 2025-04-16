@@ -9,11 +9,14 @@
     --color-error: #FF6259;
     --color-warning: #FFD61E;
     --color-success: #57B495;
-    --color-shadow: black;
 
     --font-family-main: system-ui, sans-serif;
     --font-family-fancy: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
     --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
+
+    --color-shadow: #001A7220;
+    --box-shadow-md: 0 4px 6px -1px var(--color-shadow), 0 2px 4px -2px var(--color-shadow);
+    --box-shadow-lg: 0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow);
 
     --header-height: 3em;
 }
@@ -30,6 +33,7 @@
         --color-error: #FF6259;
         --color-warning: #FFD61E;
         --color-success: #57B495;
+        --color-shadow: #00000020;
     }
 }
 
@@ -70,14 +74,47 @@ h1 {
 
 main {
     width: 100%;
+    padding-bottom: 1em; /* Extra spacing for shadows to fit. */
     max-height: calc(100vh - var(--header-height));
     overflow: auto;
+}
+
+details {
+    margin: 1em auto;
+    width: fit-content;
+    border: 1px solid var(--color-border);
+    border-radius: 0.5em;
+    box-shadow: var(--box-shadow-lg);
+    overflow: hidden;
+
+    & summary {
+        --accent: var(--color-primary-light);
+        --stripe-color: color-mix(in oklab, var(--color-background) 25%, transparent);
+
+        cursor: pointer;
+        background: var(--accent);
+        padding: 0.4em 0.5em;
+        position: relative;
+        user-select: none;
+        z-index: 1;
+    }
+
+    & > table {
+        border-top: none;
+    }
+
+    &[open] > summary {
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    &:not([open]) > summary {
+        min-width: calc(min(95vw, 50em));
+    }
 }
 
 table {
     --cell-background: var(--color-background-alt);
     border-collapse: collapse;
-    min-width: 100%;
     table-layout: fixed;
 
     & thead {
@@ -101,6 +138,12 @@ table {
         min-width: 10em;
         max-width: 50em;
         width: auto;
+    }
+
+    & tr:last-child {
+        & th, td {
+            border-bottom: none;
+        }
     }
 
     & tr > td:first-child {

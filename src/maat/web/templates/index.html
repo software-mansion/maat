@@ -13,34 +13,37 @@
     <h1>Ma'at Report Diff</h1>
 </header>
 <main>
-    <table>
-        <thead>
-        <tr>
-            <th></th>
-            {% for title in column_titles %}
-                <th class="text-right">{{ title }}</th>
-            {% endfor %}
-        </tr>
-        </thead>
-        <tbody>
-        {% for section in sections %}
-            <!-- region {{ section.title }} Section -->
-            <tr class="section-header">
-                <td>{{ section.title }}</td>
-                <td colspan="{{ column_titles|length }}"></td>
+    <details open>
+        <summary>Metrics</summary>
+        <table>
+            <thead>
+            <tr>
+                <th></th>
+                {% for title in report_names %}
+                    <th class="text-right">{{ title }}</th>
+                {% endfor %}
             </tr>
-            {% for row in section.rows %}
-                <tr>
-                    <td>{{ row.title }}</td>
-                    {% for cell in row.cells %}
-                        <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
-                    {% endfor %}
+            </thead>
+            <tbody>
+            {% for section in sections %}
+                <!-- region {{ section.title }} Section -->
+                <tr class="section-header">
+                    <td>{{ section.title }}</td>
+                    <td colspan="{{ report_names|length }}"></td>
                 </tr>
+                {% for row in section.rows %}
+                    <tr>
+                        <td>{{ row.title }}</td>
+                        {% for cell in row.cells %}
+                            <td class="{{ "code text-right"|clsx(cell.class_name) }}">{{ cell.value }}</td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                <!-- endregion -->
             {% endfor %}
-            <!-- endregion -->
-        {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </details>
 </main>
 </body>
 </html>

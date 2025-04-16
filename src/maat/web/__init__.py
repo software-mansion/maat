@@ -107,7 +107,7 @@ class SectionViewModel(BaseModel):
 
 
 class RootViewModel(BaseModel):
-    column_titles: list[str]
+    report_names: list[str]
     sections: list[SectionViewModel]
 
 
@@ -116,7 +116,7 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
     metrics.sort(key=lambda m: smart_sort_key(m.meta.name))
     t = MetricsTransposed.new(metrics)
 
-    column_titles = [m.name for m in t.meta]
+    report_names = [m.name for m in t.meta]
 
     # Create sections for different categories of metrics,
     sections = []
@@ -147,7 +147,7 @@ def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
     ]
     sections.append(SectionViewModel(title="Test Metrics", rows=test_rows))
 
-    return RootViewModel(column_titles=column_titles, sections=sections)
+    return RootViewModel(report_names=report_names, sections=sections)
 
 
 @contextmanager
