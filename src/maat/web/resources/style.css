@@ -79,49 +79,49 @@ table {
     border-collapse: collapse;
     min-width: 100%;
     table-layout: fixed;
-}
 
-thead {
-    --cell-background: var(--color-background);
-    color: var(--color-text-secondary);
-    position: sticky;
-    top: 0;
-    z-index: 2;
-}
+    & thead {
+        --cell-background: var(--color-background);
+        color: var(--color-text-secondary);
+        position: sticky;
+        top: 0;
+        z-index: 2;
+    }
 
-tr:hover {
-    --cell-background: var(--color-background);
-}
+    & tr:hover {
+        --cell-background: var(--color-background);
+    }
 
-th, td {
-    padding: 0.7em 0.8em;
-    text-align: left;
-    border-bottom: 1px solid var(--color-border);
-    background: var(--cell-background);
-    overflow: auto;
-    min-width: 10em;
-    max-width: 50em;
-    width: auto;
-}
+    & th, td {
+        padding: 0.7em 0.8em;
+        text-align: left;
+        border-bottom: 1px solid var(--color-border);
+        background: var(--cell-background);
+        overflow: auto;
+        min-width: 10em;
+        max-width: 50em;
+        width: auto;
+    }
 
-tr > td:first-child {
-    font-weight: bold;
-    left: 0;
-    position: sticky;
-    text-wrap: nowrap;
-    width: 0;
-}
+    & tr > td:first-child {
+        font-weight: bold;
+        left: 0;
+        position: sticky;
+        text-wrap: nowrap;
+        width: 0;
+    }
 
-thead > tr > th:first-child {
-    position: sticky;
-    top: 0;
-    left: 0;
-    z-index: 3;
-}
+    & thead > tr > th:first-child {
+        position: sticky;
+        top: 0;
+        left: 0;
+        z-index: 3;
+    }
 
-tr.section-header {
-    --cell-background: var(--color-primary-light);
-    font-weight: bold;
+    & tr.section-header {
+        --cell-background: var(--color-primary-light);
+        font-weight: bold;
+    }
 }
 
 .error {
