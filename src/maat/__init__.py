@@ -13,9 +13,8 @@ from rich.console import Console
 from maat import sandbox, web
 from maat.ecosystem import build_test_suite
 from maat.installation import REPO
-from maat.model import Report, Semver
+from maat.model import Report, Semver, ReportMeta
 from maat.report.analysis import analyse_report
-from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.local import docker_run_step, execute_test_suite_locally
@@ -174,7 +173,8 @@ def open(
     output: Path | None = None,
 ) -> None:
     report_tuples = [
-        (Report.model_validate_json(path.read_bytes()), path) for path in reports
+        (Report.model_validate_json(path.read_bytes()), ReportMeta.new(path))
+        for path in reports
     ]
 
     with ExitStack() as stack:

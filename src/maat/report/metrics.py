@@ -1,15 +1,14 @@
 from datetime import datetime, timedelta
-from pathlib import Path
 from typing import Self
 
 import pydantic
 from pydantic import BaseModel
 
-from maat.model import ClassifiedDiagnostic, Report
+from maat.model import ClassifiedDiagnostic, Report, ReportMeta
 
 
 class Metrics(pydantic.BaseModel):
-    file_stem: str
+    meta: ReportMeta
     workspace: str
     scarb_version: str
     foundry_version: str
@@ -27,7 +26,7 @@ class Metrics(pydantic.BaseModel):
     """N failed tests / N tests"""
 
     @classmethod
-    def compute(cls, report: Report, path: Path) -> Self:
+    def compute(cls, report: Report, meta: ReportMeta) -> Self:
         # Initialize counters and accumulators.
         build_times = []
         lint_times = []
@@ -67,7 +66,7 @@ class Metrics(pydantic.BaseModel):
 
         # Create and return the Metrics object
         return cls(
-            file_stem=path.stem,
+            meta=meta,
             workspace=report.workspace,
             scarb_version=report.scarb,
             foundry_version=report.foundry,
@@ -94,7 +93,7 @@ def _classified_diagnostics_sort_key(d: ClassifiedDiagnostic) -> tuple:
 
 
 class MetricsTransposed(BaseModel):
-    file_stem: list[str]
+    meta: list[ReportMeta]
     workspace: list[str]
     scarb_version: list[str]
     foundry_version: list[str]

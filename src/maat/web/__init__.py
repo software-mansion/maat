@@ -9,14 +9,14 @@ from typing import Any, Callable, Iterable, Iterator, Self
 import jinja2
 from pydantic import BaseModel
 
-from maat.model import ClassifiedDiagnostic, Report
+from maat.model import ClassifiedDiagnostic, Report, ReportMeta
 from maat.report.metrics import Metrics, MetricsTransposed
 from maat.utils.smart_sort import smart_sort_key
 from maat.utils.templating import clsx
 
 
-def build(reports: list[tuple[Report, Path]], output: Path):
-    metrics = [Metrics.compute(report, path) for report, path in reports]
+def build(reports: list[tuple[Report, ReportMeta]], output: Path):
+    metrics = [Metrics.compute(report, meta) for report, meta in reports]
 
     _copy_traversable(importlib.resources.files("maat.web.resources"), output)
 
@@ -113,11 +113,10 @@ class RootViewModel(BaseModel):
 
 def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
     # Sort and transpose columns.
-    metrics.sort(key=lambda m: smart_sort_key(m.file_stem))
+    metrics.sort(key=lambda m: smart_sort_key(m.meta.name))
     t = MetricsTransposed.new(metrics)
 
-    # Create column titles from file_stem of each metrics object.
-    column_titles = t.file_stem
+    column_titles = [m.name for m in t.meta]
 
     # Create sections for different categories of metrics,
     sections = []
