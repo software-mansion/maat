@@ -1,4 +1,5 @@
 import importlib.resources
+import shutil
 from contextlib import contextmanager
 from importlib.resources.abc import Traversable
 from pathlib import Path
@@ -14,6 +15,10 @@ from maat.web import filters
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+
     metrics = [Metrics.compute(report, meta) for report, meta in reports]
 
     _copy_traversable(importlib.resources.files("maat.web.resources"), output)
