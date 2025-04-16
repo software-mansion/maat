@@ -75,13 +75,6 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
         patch_field(scarbs_patch_table, "snforge_std", foundry_version)
         patch_field(scarbs_patch_table, "snforge_scarb_plugin", foundry_version)
 
-    # Make sure snforge_std is in the "allow-prebuilt-plugins" array.
-    ensure_in_array(
-        manifest.setdefault("tool", {}).setdefault("scarb", {}),
-        "allow-prebuilt-plugins",
-        "snforge_std",
-    )
-
 
 def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
     if (package := manifest.get("package")) is not None:
@@ -108,6 +101,18 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
             "cargo test",
         ]:
             patch_field(script_table, "test", test_runner_command(test_runner))
+
+        # Make sure snforge_std is in the "allow-prebuilt-plugins" array.
+        # NOTE: setdefaults seems buggy when used recursively, so we have to do it manually.
+        if "tool" not in manifest:
+            manifest["tool"] = tomlkit.table()
+        if "scarb" not in manifest["tool"]:
+            manifest["tool"]["scarb"] = tomlkit.table()
+        ensure_in_array(
+            manifest["tool"]["scarb"],
+            "allow-prebuilt-plugins",
+            "snforge_std",
+        )
 
 
 @cache
