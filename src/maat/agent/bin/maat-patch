@@ -15,6 +15,8 @@ import tomlkit
 
 KnownTestRunner = Literal["snforge", "cairo-test", "cargo-test"]
 
+patched_files: list[Path] = []
+
 
 def patch(
     scarb_toml_path: Path | str, func: Callable[[tomlkit.TOMLDocument, Path], None]
@@ -23,6 +25,7 @@ def patch(
     Modifies a TOML file by applying a given transformation to its content and saving it back.
     """
     path = Path(scarb_toml_path)
+    patched_files.append(path)
     manifest = tomlkit.parse(path.read_text())
     func(manifest, path.parent)
     path.write_text(tomlkit.dumps(manifest))
@@ -138,6 +141,23 @@ def get_tool_version(tool: str) -> str:
     return subprocess.check_output([tool, "-V"]).decode("utf-8").split()[1]
 
 
+def ensure_clean_git_repo():
+    if Path(".git").exists():
+        subprocess.check_output(["rm", "-rf", ".git"])
+    subprocess.check_output(["git", "init"])
+    subprocess.check_output(["git", "add", "."])
+    subprocess.check_output(["git", "commit", "-m", "maat initial state"])
+
+
+def diff_and_commit_patched_files():
+    if patched_files:
+        subprocess.check_output(["git", "add"] + [str(p) for p in patched_files])
+        subprocess.run(["git", "diff", "--staged"], check=True)
+        subprocess.check_output(["git", "commit", "-m", "maat patch"])
+    else:
+        print("no patches applied")
+
+
 if __name__ == "__main__":
     scarb_version = get_tool_version("scarb")
     foundry_version = get_tool_version("snforge")
@@ -146,4 +166,6 @@ if __name__ == "__main__":
 
     should_patch_snforge_std = not is_snforge_std
 
+    ensure_clean_git_repo()
     patch("Scarb.toml", patch_root)
+    diff_and_commit_patched_files()
