@@ -9,13 +9,15 @@ from typing import Any, Callable, Iterable, Iterator, Self
 import jinja2
 from pydantic import BaseModel
 
-from maat.model import ClassifiedDiagnostic
+from maat.model import ClassifiedDiagnostic, Report
 from maat.report.metrics import Metrics, MetricsTransposed
 from maat.utils.smart_sort import smart_sort_key
 from maat.utils.templating import clsx
 
 
-def build(metrics: list[Metrics], output: Path):
+def build(reports: list[tuple[Report, Path]], output: Path):
+    metrics = [Metrics.compute(report, path) for report, path in reports]
+
     _copy_traversable(importlib.resources.files("maat.web.resources"), output)
 
     view_model = _build_view_model(metrics)

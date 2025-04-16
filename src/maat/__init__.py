@@ -173,11 +173,9 @@ def open(
     reports: tuple[Path, ...],
     output: Path | None = None,
 ) -> None:
-    all_metrics = []
-    for path in reports:
-        report = Report.model_validate_json(path.read_bytes())
-        metrics = Metrics.compute(report=report, path=path)
-        all_metrics.append(metrics)
+    report_tuples = [
+        (Report.model_validate_json(path.read_bytes()), path) for path in reports
+    ]
 
     with ExitStack() as stack:
         output_dir: Path
@@ -188,7 +186,7 @@ def open(
         else:
             output_dir = output
 
-        web.build(all_metrics, output=output_dir)
+        web.build(reports=report_tuples, output=output_dir)
 
         if output is None:
             console.log("Report generated at:", output_dir.name)
