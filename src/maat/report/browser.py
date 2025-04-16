@@ -1,8 +1,9 @@
-import base64
 import importlib.resources
 from collections.abc import Sized
 from contextlib import contextmanager
 from datetime import datetime, timedelta
+from importlib.resources.abc import Traversable
+from pathlib import Path
 from typing import Any, Callable, Iterable, Iterator, Self
 
 import jinja2
@@ -14,12 +15,14 @@ from maat.utils.smart_sort import smart_sort_key
 from maat.utils.templating import clsx
 
 
-def render_html(metrics: list[Metrics]) -> str:
+def generate(metrics: list[Metrics], output: Path):
+    _copy_traversable(importlib.resources.files("maat.report.resources"), output)
+
     view_model = _build_view_model(metrics)
 
     with _jinja_env() as env:
-        template = env.get_template("index.html")
-        return template.render(**view_model.model_dump())
+        index_html = env.get_template("index.html").render(**view_model.model_dump())
+        (output / "index.html").write_text(index_html, encoding="utf-8")
 
 
 class CellViewModel(BaseModel):
@@ -154,13 +157,14 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
     )
     env.filters["clsx"] = clsx
 
-    # Get logo.png using importlib.resources and base64 encode it
-    logo_data = (
-        importlib.resources.files("maat.report")
-        .joinpath("templates/logo.png")
-        .read_bytes()
-    )
-    logo_base64 = base64.b64encode(logo_data).decode("utf-8")
-    env.globals["logo_base64"] = f"data:image/png;base64,{logo_base64}"
-
     yield env
+
+
+def _copy_traversable(traversable: Traversable, dest: Path):
+    dest.mkdir(parents=True, exist_ok=True)
+    for child in traversable.iterdir():
+        if child.is_dir():
+            _copy_traversable(child, dest / child.name)
+        else:
+            dest_child = dest / child.name
+            dest_child.write_bytes(child.read_bytes())

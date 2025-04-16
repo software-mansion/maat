@@ -1,6 +1,7 @@
 import functools
 import shutil
 import tempfile
+from contextlib import ExitStack
 from pathlib import Path
 
 import cache_to_disk
@@ -164,8 +165,8 @@ def build_sandbox(
 @click.option(
     "-o",
     "--output",
-    type=click.Path(dir_okay=False, path_type=Path),
-    help="Write output to file instead of opening in browser. Use '-' for stdout.",
+    type=click.Path(dir_okay=True, file_okay=False, path_type=Path),
+    help="Write output to directory instead of opening in browser.",
 )
 @pass_console
 def open(
@@ -179,19 +180,21 @@ def open(
         metrics = Metrics.compute(report=report, path=path)
         all_metrics.append(metrics)
 
-    html = browser.render_html(all_metrics)
+    with ExitStack() as stack:
+        output_dir: Path
+        if output is None:
+            output_dir = Path(
+                stack.enter_context(tempfile.TemporaryDirectory(delete=False))
+            )
+        else:
+            output_dir = output
 
-    if output is not None:
-        with click.open_file(output, "w", encoding="utf-8") as f:
-            f.write(html)
-    else:
-        # Open in browser
-        with tempfile.NamedTemporaryFile(suffix=".html", delete=False) as temp_file:
-            temp_file.write(html.encode("utf-8"))
+        browser.generate(all_metrics, output=output_dir)
 
-            console.log("Report generated at:", temp_file.name)
+        if output is None:
+            console.log("Report generated at:", output_dir.name)
             console.log("Opening report in browser...")
-            click.launch(str(temp_file.name))
+            click.launch(str(output_dir / "index.html"))
 
 
 @cli.command(help="Reanalyse an existing report and update it.")
