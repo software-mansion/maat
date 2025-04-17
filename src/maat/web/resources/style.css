@@ -183,6 +183,10 @@ table {
     font-size: 0.8em;
 }
 
+.underline {
+    text-decoration: underline;
+}
+
 pre, code {
     font-family: var(--font-family-mono), monospace;
 }

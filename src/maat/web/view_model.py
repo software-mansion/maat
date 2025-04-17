@@ -7,6 +7,11 @@ from maat.report.metrics import Metrics, MetricsTransposed
 from maat.utils.smart_sort import smart_sort_key
 
 
+class ReportNameViewModel(BaseModel):
+    title: str
+    is_reference: bool = False
+
+
 class TestCellViewModel(BaseModel):
     missing: bool = False
     label: str
@@ -28,7 +33,7 @@ class LabelGroupViewModel(BaseModel):
 
 
 class RootViewModel(BaseModel):
-    report_names: list[str]
+    report_names: list[ReportNameViewModel]
     metrics: MetricsTransposed
     label_groups: list[LabelGroupViewModel]
 
@@ -39,7 +44,9 @@ def build_view_model(
     reports.sort(key=_reports_sorting_key)
 
     metrics_transposed = MetricsTransposed.new([metrics for _, _, metrics in reports])
-    report_names = [m.name for m in metrics_transposed.meta]
+
+    report_names = [ReportNameViewModel(title=m.name) for m in metrics_transposed.meta]
+    report_names[-1].is_reference = True
 
     label_groups = []
     for category in LabelCategory:
@@ -50,7 +57,7 @@ def build_view_model(
 
         unique_test_names = list(
             sorted(
-                set(test.name for tests in tests_with_category for test in tests),
+                set(test.name for test in tests_with_category[-1]),
                 key=smart_sort_key,
             )
         )

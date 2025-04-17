@@ -1,3 +1,14 @@
+{% macro header(first_column = "") %}
+    <thead>
+    <tr>
+        <th>{{ first_column }}</th>
+        {% for rn in report_names %}
+            <th class="{{ "text-center"|clsx(underline=rn.is_reference) }}">{{ rn.title }}</th>
+        {% endfor %}
+    </tr>
+    </thead>
+{% endmacro %}
+
 {% macro table_section(title) %}
     <!-- region {{ title }} Section -->
     <tr class="section-header">
@@ -39,14 +50,7 @@
     <details open>
         <summary>Metrics</summary>
         <table>
-            <thead>
-            <tr>
-                <th></th>
-                {% for title in report_names %}
-                    <th class="text-right">{{ title }}</th>
-                {% endfor %}
-            </tr>
-            </thead>
+            {{ header() }}
             <tbody>
             {% call table_section("Metadata") %}
                 {{ metrics_row_s("Workspace", metrics.workspace) }}
@@ -84,14 +88,7 @@
         <details>
             <summary>{{ label_group.category }}</summary>
             <table>
-                <thead>
-                <tr>
-                    <th>Project</th>
-                    {% for title in report_names %}
-                        <th class="text-center">{{ title }}</th>
-                    {% endfor %}
-                </tr>
-                </thead>
+                {{ header("Project") }}
                 <tbody>
                 {% for row in label_group.rows %}
                     <tr>
