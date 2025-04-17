@@ -3,7 +3,15 @@ import re
 from rich.console import Console
 from rich.progress import track
 
-from maat.model import Analyser, Label, LabelCategory, Report, TestReport, TestsSummary
+from maat.model import (
+    Analyser,
+    Label,
+    LabelCategory,
+    Report,
+    TestReport,
+    TestsSummary,
+    StepReport,
+)
 
 
 def analyse_report(report: Report, console: Console):
@@ -67,16 +75,20 @@ def label(test: TestReport):
     labels: list[Label] = []
 
     if (fetch := test.step("fetch")) and fetch.was_executed and fetch.exit_code != 0:
-        labels.append(Label.new(LabelCategory.BROKEN, "unknown deps error"))
+        labels.append(Label.new(LabelCategory.BROKEN, _why_fetch_failed(fetch)))
 
     if (build := test.step("build")) and build.was_executed and build.exit_code != 0:
-        labels.append(Label.new(LabelCategory.BUILD_FAIL, "build failed"))
+        if build_fail_reason := _why_build_failed(build):
+            lbl = Label.new(LabelCategory.BUILD_FAIL, build_fail_reason)
+        else:
+            lbl = Label.new(LabelCategory.BROKEN, "broken build")
+        labels.append(lbl)
 
     if not any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels):
         # Don't add these labels if more critical failures have been identified.
 
         if (lint := test.step("lint")) and lint.was_executed and lint.exit_code != 0:
-            labels.append(Label.new(LabelCategory.LINT_FAIL, "lint violations"))
+            labels.append(Label.new(LabelCategory.LINT_FAIL, _why_lint_failed(lint)))
 
         # Test summary is populated only if a test step has been executed, not checking twice.
         if ts := test.analyses.tests_summary:
@@ -89,3 +101,31 @@ def label(test: TestReport):
     assert labels, f"no labels were finally assigned for {test.name}"
     labels.sort(key=Label.priority)
     test.analyses.labels = labels
+
+
+def _why_fetch_failed(fetch: StepReport) -> str:
+    return "unknown deps error"
+
+
+def _why_build_failed(build: StepReport) -> str | None:
+    if re.search(
+        r"^\[out] error: could not compile `.*` due to previous error",
+        build.log_str,
+        re.M,
+    ):
+        return "compiler error"
+
+    return None
+
+
+def _why_lint_failed(lint: StepReport) -> str:
+    if (
+        b"[out] error: scarb was not compiled with the `lint` command enabled"
+        in lint.log
+    ) or b"[out] error: no such command: `lint`" in lint.log:
+        return "no linter"
+
+    if b"[err] error: unexpected argument '--deny-warnings' found" in lint.log:
+        return "no --deny-warnings"
+
+    return "lint violations"

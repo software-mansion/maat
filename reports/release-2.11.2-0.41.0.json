@@ -70,7 +70,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -138,7 +138,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -206,7 +206,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -289,7 +289,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -365,7 +365,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -448,7 +448,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -531,7 +531,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -614,7 +614,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -697,7 +697,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -780,7 +780,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -863,7 +863,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -946,7 +946,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1029,7 +1029,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1112,7 +1112,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1195,7 +1195,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1278,7 +1278,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1361,7 +1361,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1444,7 +1444,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -1520,7 +1520,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -1596,7 +1596,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1679,7 +1679,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -1755,7 +1755,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1838,7 +1838,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -1921,7 +1921,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -1997,7 +1997,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2080,7 +2080,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2163,7 +2163,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2246,7 +2246,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2329,7 +2329,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2412,7 +2412,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2495,7 +2495,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2578,7 +2578,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2653,7 +2653,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-fail(42 failed)"
         ],
         "tests_summary": {
@@ -2736,7 +2736,8 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "lint-fail(no --deny-warnings)",
+          "broken(broken build)"
         ]
       }
     },
@@ -2888,7 +2889,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -2971,7 +2972,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -3047,7 +3048,7 @@
       ],
       "analyses": {
         "labels": [
-          "build-fail(build failed)"
+          "build-fail(compiler error)"
         ]
       }
     },
@@ -3123,7 +3124,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
@@ -3206,7 +3207,7 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(lint violations)",
+          "lint-fail(no --deny-warnings)",
           "test-pass(tests passed)"
         ],
         "tests_summary": {
