@@ -187,6 +187,10 @@ pre, code {
     font-family: var(--font-family-mono), monospace;
 }
 
+.text-center {
+    text-align: center;
+}
+
 .text-right {
     text-align: right;
 }

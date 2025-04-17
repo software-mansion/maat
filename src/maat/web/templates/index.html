@@ -80,6 +80,37 @@
             </tbody>
         </table>
     </details>
+    {% for label_group in label_groups %}
+        <details>
+            <summary>{{ label_group.category }}</summary>
+            <table>
+                <thead>
+                <tr>
+                    <th>Project</th>
+                    {% for title in report_names %}
+                        <th class="text-center">{{ title }}</th>
+                    {% endfor %}
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in label_group.rows %}
+                    <tr>
+                        <td>{{ row.project }}</td>
+                        {% for cell in row.cells %}
+                            <td class="text-center">
+                                {% if cell.missing %}
+                                    &mdash;
+                                {% else %}
+                                    <a href="{{ cell.logs_href }}">{{ cell.label }}</a>
+                                {% endif %}
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    {% endfor %}
 </main>
 </body>
 </html>

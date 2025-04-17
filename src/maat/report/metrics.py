@@ -4,7 +4,7 @@ from typing import Self
 import pydantic
 from pydantic import BaseModel
 
-from maat.model import ClassifiedDiagnostic, Report, ReportMeta
+from maat.model import Report, ReportMeta
 
 
 class Metrics(pydantic.BaseModel):
@@ -78,17 +78,6 @@ class Metrics(pydantic.BaseModel):
             avg_test_time=avg_test_time,
             failed_tests_ratio=failed_tests_ratio,
         )
-
-
-def _classified_diagnostics_sort_key(d: ClassifiedDiagnostic) -> tuple:
-    """
-    Returns a key that can be used to sort diagnostics in the following order:
-    1. Higher count first (descending order).
-    2. Severity, where "error" is higher than "warn".
-    3. Alphabetically by diagnostic message.
-    """
-    severity_priority = {"error": 1, "warn": 2}
-    return -d.count, severity_priority[d.severity], d.message
 
 
 class MetricsTransposed(BaseModel):

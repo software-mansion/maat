@@ -15,7 +15,7 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from maat.model import Step, Test, TestSuite
+from maat.model import Step, Test, TestSuite, EXIT_RUNNER_SKIPPED
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
@@ -119,7 +119,7 @@ def execute_test_locally(
             if test_progress.setup_failed:
                 # Mark as skipped due to a setup failure.
                 with test_reporter.step(step) as step_reporter:
-                    step_reporter.set_exit_code(-1)
+                    step_reporter.set_exit_code(EXIT_RUNNER_SKIPPED)
                 continue
 
             with (

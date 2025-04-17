@@ -6,12 +6,11 @@ from pathlib import Path
 from typing import Iterator
 
 import jinja2
-from pydantic import BaseModel
 
 from maat.model import Report, ReportMeta
-from maat.report.metrics import Metrics, MetricsTransposed
-from maat.utils.smart_sort import smart_sort_key
+from maat.report.metrics import Metrics
 from maat.web import filters
+from maat.web.view_model import build_view_model, logs_txt_path
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
@@ -19,30 +18,22 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
-    metrics = [Metrics.compute(report, meta) for report, meta in reports]
+    reports = [
+        (
+            report,
+            meta,
+            Metrics.compute(report, meta),
+        )
+        for report, meta in reports
+    ]
 
     _copy_traversable(importlib.resources.files("maat.web.resources"), output)
     _write_logs(reports, output)
 
-    view_model = _build_view_model(metrics)
+    vm = build_view_model(reports)
     with _jinja_env() as env:
-        index_html = env.get_template("index.html").render(**view_model.model_dump())
+        index_html = env.get_template("index.html").render(**vm.model_dump())
         (output / "index.html").write_text(index_html, encoding="utf-8")
-
-
-class RootViewModel(BaseModel):
-    report_names: list[str]
-    metrics: MetricsTransposed
-
-
-def _build_view_model(metrics: list[Metrics]) -> RootViewModel:
-    # Sort and transpose columns.
-    metrics.sort(key=lambda m: smart_sort_key(m.meta.name))
-    metrics_transposed = MetricsTransposed.new(metrics)
-
-    report_names = [m.name for m in metrics_transposed.meta]
-
-    return RootViewModel(report_names=report_names, metrics=metrics_transposed)
 
 
 @contextmanager
@@ -50,6 +41,7 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
     env = jinja2.Environment(
         loader=jinja2.PackageLoader("maat.web", "templates"),
         autoescape=jinja2.select_autoescape(),
+        undefined=jinja2.StrictUndefined,
     )
 
     # Create a dictionary of filter functions from the filters module
@@ -74,12 +66,9 @@ def _copy_traversable(traversable: Traversable, dest: Path):
             dest_child.write_bytes(child.read_bytes())
 
 
-def _write_logs(reports: list[tuple[Report, ReportMeta]], output: Path):
-    for report, meta in reports:
-        report_dir = output / meta.name
+def _write_logs(reports: list[tuple[Report, ReportMeta, Metrics]], output: Path):
+    for report, meta, _ in reports:
         for test in report.tests:
-            test_dir = report_dir / test.name_and_rev
-            test_dir.mkdir(parents=True, exist_ok=True)
-
-            log_file = test_dir / "logs.txt"
+            log_file = output / logs_txt_path(meta, test)
+            log_file.parent.mkdir(parents=True, exist_ok=True)
             log_file.write_bytes(test.combined_log())

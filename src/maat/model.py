@@ -1,11 +1,12 @@
-import json
+import enum
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Iterable, Literal, NamedTuple, Self
+from typing import Any, Callable, Literal, Self
 
 from pydantic import (
     BaseModel,
     Field,
+    RootModel,
     SerializerFunctionWrapHandler,
     model_serializer,
 )
@@ -19,6 +20,9 @@ type ImageId = str
 
 type Analyser = Callable[[TestReport], None]
 type Severity = Literal["error", "warn"]
+
+EXIT_RUNNER_SKIPPED = -1
+"""Exit code set for steps which were skipped by the runner."""
 
 
 class Step(BaseModel):
@@ -49,21 +53,42 @@ class TestSuite(BaseModel):
         return None
 
 
-class CompiledProcMacrosFromSource(BaseModel):
-    package_ids: list[str]
+@enum.unique
+class LabelCategory(enum.StrEnum):
+    # The higher the category here, the higher the priority when sorting for human presentation.
+    BUILD_FAIL = "build-fail"
+    LINT_FAIL = "lint-fail"
+    TEST_FAIL = "test-fail"
+    TEST_PASS = "test-pass"
+    BROKEN = "broken"
+    ERROR = "error"
 
 
-class ClassifiedDiagnostic(NamedTuple):
-    severity: Severity
-    message: str
-    count: int
+_label_category_regex = "|".join(LabelCategory.__members__.values())
 
 
-class ClassifyDiagnostics(BaseModel):
-    warnings: int
-    errors: int
-    total: int
-    diagnostics_by_message_and_severity: list[ClassifiedDiagnostic]
+class Label(RootModel):
+    root: str = Field(pattern=f"^(?:{_label_category_regex})(?:\([^()]+\))?$")
+
+    @classmethod
+    def new(cls, category: LabelCategory, comment: str | None = None) -> Self:
+        return cls(root=category if comment is None else f"{category}({comment})")
+
+    @property
+    def category(self) -> LabelCategory:
+        return LabelCategory(self.root.split("(")[0])
+
+    @property
+    def comment(self) -> str | None:
+        parts = self.root.split("(", 1)
+        if len(parts) > 1:
+            return parts[1].rstrip(")")
+        return None
+
+    @staticmethod
+    def priority(label: "Label") -> Any:
+        """Returns a sorting key for this label when sorting for human presentation."""
+        return list(LabelCategory).index(label.category), label.root
 
 
 class TestsSummary(BaseModel):
@@ -78,13 +103,26 @@ class TestsSummary(BaseModel):
 
 
 class Analyses(BaseModel):
-    compiled_procmacros_from_source: CompiledProcMacrosFromSource | None = None
-    classify_diagnostics: ClassifyDiagnostics | None = None
+    labels: list[Label] | None = None
     tests_summary: TestsSummary | None = None
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):
         return {k: v for k, v in nxt(self).items() if v is not None}
+
+    def has_label_category(self, category: LabelCategory) -> bool:
+        if self.labels is None:
+            return False
+
+        return any(label.category == category for label in self.labels)
+
+    def label_by_category(self, category: LabelCategory) -> Label | None:
+        if self.labels is None:
+            return None
+        for label in self.labels:
+            if label.category == category:
+                return label
+        return None
 
 
 class StepReport(BaseModel):
@@ -114,16 +152,9 @@ class StepReport(BaseModel):
             return None
         return self.log.decode("utf-8", errors="replace")
 
-    def stdout_jsonlines(self) -> Iterable[dict[str, Any]]:
-        if self.log is None:
-            return
-
-        for line in self.log.splitlines():
-            if payload := line.removeprefix(b"[out] "):
-                try:
-                    yield json.loads(payload)
-                except json.JSONDecodeError:
-                    pass
+    @property
+    def was_executed(self) -> bool:
+        return self.exit_code is not None and self.exit_code != EXIT_RUNNER_SKIPPED
 
 
 class TestReport(BaseModel):
@@ -195,6 +226,11 @@ class Report(BaseModel):
 
     def tests_by_name(self) -> dict[str, TestReport]:
         return {test.name: test for test in self.tests}
+
+    def tests_with_label_category(self, category: LabelCategory) -> list[TestReport]:
+        return [
+            test for test in self.tests if test.analyses.has_label_category(category)
+        ]
 
 
 class ReportMeta(BaseModel):

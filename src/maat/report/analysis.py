@@ -1,25 +1,15 @@
 import re
-from collections import defaultdict
 
 from rich.console import Console
 from rich.progress import track
 
-from maat.model import (
-    Analyser,
-    Report,
-    TestReport,
-    CompiledProcMacrosFromSource,
-    ClassifiedDiagnostic,
-    ClassifyDiagnostics,
-    TestsSummary,
-)
+from maat.model import Analyser, Label, LabelCategory, Report, TestReport, TestsSummary
 
 
 def analyse_report(report: Report, console: Console):
     analyzers: list[Analyser] = [
-        compiled_procmacros_from_source,
-        classify_diagnostics,
         tests_summary,
+        label,  # NOTE: This analyser depends on all previous ones.
     ]
 
     jobs: list[tuple[Analyser, TestReport]] = [
@@ -33,67 +23,6 @@ def analyse_report(report: Report, console: Console):
         transient=True,
     ):
         analyser(test)
-
-
-def compiled_procmacros_from_source(test: TestReport):
-    step = test.step("build")
-    if step is None:
-        return
-
-    candidates = {}
-    package_ids = []
-    for msg in step.stdout_jsonlines():
-        match msg:
-            # "{\"status\":\"compiling\",\"message\":\"snforge_scarb_plugin v0.34.1\"}\n",
-            case {"status": "compiling", "message": message}:
-                match = re.match(r"^(?P<name>.+?)\s+v(?P<version>.+)$", message)
-                if match:
-                    candidates[match.group("name")] = message
-            # "{\"reason\":\"compiler-artifact\",\"target\":{...,\"name\":\"snforge_scarb_plugin\",...},...}\n",
-            case {"reason": "compiler-artifact", "target": {"name": target_name}}:
-                if target_name in candidates:
-                    package_ids.append(candidates[target_name])
-    test.analyses.compiled_procmacros_from_source = CompiledProcMacrosFromSource(
-        package_ids=package_ids
-    )
-
-
-def classify_diagnostics(test: TestReport):
-    step = test.step("build")
-    if step is None:
-        return
-
-    warnings = 0
-    errors = 0
-    message_severity_count = defaultdict(int)
-
-    for msg in step.stdout_jsonlines():
-        match msg:
-            case {"type": "warn"}:
-                warnings += 1
-            case {"type": "error"}:
-                errors += 1
-
-        match msg:
-            case {"type": severity, "message": message}:
-                first_line = message.split("\n")[0]
-                message_severity_count[(severity, first_line)] += 1
-
-    diagnostics_by_message_and_severity = []
-    for (severity, message), count in message_severity_count.items():
-        diagnostics_by_message_and_severity.append(
-            ClassifiedDiagnostic(severity, message, count)
-        )
-    diagnostics_by_message_and_severity.sort(
-        key=lambda x: (x.severity, x.message, x.count)
-    )
-
-    test.analyses.classify_diagnostics = ClassifyDiagnostics(
-        warnings=warnings,
-        errors=errors,
-        total=warnings + errors,
-        diagnostics_by_message_and_severity=diagnostics_by_message_and_severity,
-    )
 
 
 def tests_summary(test: TestReport):
@@ -129,3 +58,34 @@ def _extract_count(pattern: str, text: str, default: int | None = None) -> int:
         return int(m.group(1))
     else:
         return int(m.group(1)) if m else default
+
+
+def label(test: TestReport):
+    """
+    Assign various labels to the test.
+    """
+    labels: list[Label] = []
+
+    if (fetch := test.step("fetch")) and fetch.was_executed and fetch.exit_code != 0:
+        labels.append(Label.new(LabelCategory.BROKEN, "unknown deps error"))
+
+    if (build := test.step("build")) and build.was_executed and build.exit_code != 0:
+        labels.append(Label.new(LabelCategory.BUILD_FAIL, "build failed"))
+
+    if not any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels):
+        # Don't add these labels if more critical failures have been identified.
+
+        if (lint := test.step("lint")) and lint.was_executed and lint.exit_code != 0:
+            labels.append(Label.new(LabelCategory.LINT_FAIL, "lint violations"))
+
+        # Test summary is populated only if a test step has been executed, not checking twice.
+        if ts := test.analyses.tests_summary:
+            if ts.failed > 0:
+                lbl = Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
+            else:
+                lbl = Label.new(LabelCategory.TEST_PASS, "tests passed")
+            labels.append(lbl)
+
+    assert labels, f"no labels were finally assigned for {test.name}"
+    labels.sort(key=Label.priority)
+    test.analyses.labels = labels
