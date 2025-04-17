@@ -86,7 +86,7 @@
     </details>
     {% for label_group in label_groups %}
         <details>
-            <summary>{{ label_group.category }}</summary>
+            <summary>{{ label_group.category }} ({{ label_group.rows|length }})</summary>
             <table>
                 {{ header("Project") }}
                 <tbody>
