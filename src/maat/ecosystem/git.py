@@ -22,5 +22,5 @@ def fetch_commit_hash(repo: str) -> str:
 
 def setup_git(repo: str) -> list[Step]:
     return [
-        Step.setup(["git", "clone", "--depth", "1", "--no-tags", repo, "."]),
+        Step(run=["git", "clone", "--depth", "1", "--no-tags", repo, "."], setup=True),
     ]

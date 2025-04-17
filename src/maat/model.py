@@ -8,7 +8,6 @@ from pydantic import (
     Field,
     SerializerFunctionWrapHandler,
     model_serializer,
-    model_validator,
 )
 
 from maat.installation import REPO, this_maat_commit
@@ -18,88 +17,18 @@ from maat.utils.unique_id import unique_id
 type Semver = str
 type ImageId = str
 
-type Analyser = Callable[[TestReport, StepReport], None]
+type Analyser = Callable[[TestReport], None]
 type Severity = Literal["error", "warn"]
 
 
-class StepMeta(BaseModel):
-    name: str | None = None
-    """
-    A predefined, globally unique name for significant steps.
-    Steps with name defined via meta can be analyzed etc.
-    """
-
-    setup: bool = False
-    """
-    Setup steps are not analysed in reports and progress bars behaves differently for these.
-    """
-
-    analysers: Callable[[], list[Analyser]] | None = None
-    """
-    List of analyser functions that are called on outputs of this step when analysing reports.
-    """
-
-    def __init__(self, /, **data: Any) -> None:
-        super().__init__(**data)
-
-        if self.name is not None:
-            if self.name in _meta_registry:
-                raise ValueError(
-                    f"step meta with name '{self.name}' is already registered"
-                )
-
-            _meta_registry[self.name] = self
-
-    @model_validator(mode="after")
-    def _check_name_is_set(self) -> Self:
-        has_prop_requiring_name = self.analysers is not None
-        if has_prop_requiring_name and self.name is None:
-            raise ValueError("unnamed step meta specifies props that require a name")
-        return self
-
-    @classmethod
-    def by_name(cls, name: str) -> Self | None:
-        # Ensure all workflows are loaded as they're the place where other StepMetas are created.
-        from maat.workflows import ALL
-
-        _ = ALL
-
-        return _meta_registry.get(name)
-
-
-_meta_registry: dict[str, StepMeta] = {}
-
-DefaultStepMeta = StepMeta()
-SetupStepMeta = StepMeta(setup=True)
-
-
-def _step_name_default(data: dict[str, Any]) -> str:
-    meta: StepMeta = data["meta"]
-    if meta.name is not None:
-        return meta.name
-
-    run: str | list[str] = data["run"]
-    return join_command(run)
-
-
 class Step(BaseModel):
-    meta: StepMeta = DefaultStepMeta
     id: int = Field(default_factory=unique_id)
     run: str | list[str]
-    name: str = Field(default_factory=_step_name_default)
-
-    @model_validator(mode="after")
-    def _check_name(self) -> Self:
-        if self.meta.name is not None and self.name != self.meta.name:
-            raise ValueError(
-                f"step name '{self.name}' does not match step meta name '{self.meta.name}'"
-            )
-        return self
-
-    @classmethod
-    def setup(cls, run: str | list[str]) -> Self:
-        """Shortcut for creating setup steps that are irrelevant to analysis."""
-        return cls(meta=SetupStepMeta, run=run)
+    name: str = Field(default_factory=lambda data: join_command(data["run"]))
+    setup: bool = False
+    """
+    Setup steps halt test on failure and progress bars behaves differently for these.
+    """
 
 
 class Test(BaseModel):
@@ -165,8 +94,6 @@ class StepReport(BaseModel):
     exit_code: int | None
     execution_time: timedelta | None
 
-    analyses: Analyses = Analyses()
-
     # This one is kept last because it takes significant chunks of view area.
     log: bytes | None = None
 
@@ -204,6 +131,7 @@ class TestReport(BaseModel):
     name: str
     rev: str | None = None
     steps: list[StepReport] = []
+    analyses: Analyses = Analyses()
 
     @property
     def name_and_rev(self) -> str:

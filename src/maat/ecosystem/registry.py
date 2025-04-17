@@ -28,8 +28,11 @@ def setup_registry(registry_url: str, package: str) -> list[Step]:
     dl_path = f"archive-{unique_id()}.tar.zstd"
 
     return [
-        Step.setup(["curl", "-sSLf", dl_url, "-o", dl_path]),
-        Step.setup(["tar", "--zstd", "-xf", dl_path, "--strip-components", "1"]),
+        Step(run=["curl", "-sSLf", dl_url, "-o", dl_path], setup=True),
+        Step(
+            run=["tar", "--zstd", "-xf", dl_path, "--strip-components", "1"],
+            setup=True,
+        ),
     ]
 
 

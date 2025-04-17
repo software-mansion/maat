@@ -11,7 +11,7 @@ from python_on_whales import DockerClient
 from rich.console import Console
 
 from maat import sandbox, web
-from maat.ecosystem import build_test_suite
+from maat.workflow import build_test_suite
 from maat.installation import REPO
 from maat.model import Report, Semver, ReportMeta
 from maat.report.analysis import analyse_report
@@ -258,7 +258,7 @@ def checkout(
             f"test '{test_name}' not found in workspace '{workspace.name}'"
         )
 
-    setup_steps = [step for step in test.steps if step.meta.setup]
+    setup_steps = [step for step in test.steps if step.setup]
     if not setup_steps:
         raise RuntimeError(f"no setup steps found for test: {test_name}")
 

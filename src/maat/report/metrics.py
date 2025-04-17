@@ -37,22 +37,21 @@ class Metrics(pydantic.BaseModel):
 
         # Process each test and step
         for test in report.tests:
-            if (step := test.step("build")) is not None:
+            if step := test.step("build"):
                 if step.execution_time:
                     build_times.append(step.execution_time)
 
-            if (step := test.step("lint")) is not None:
+            if step := test.step("lint"):
                 if step.execution_time:
                     lint_times.append(step.execution_time)
 
-            if (step := test.step("test")) is not None:
+            if step := test.step("test"):
                 if step.execution_time:
                     test_times.append(step.execution_time)
 
-                if step.analyses.tests_summary:
-                    summary = step.analyses.tests_summary
-                    total_tests += summary.total
-                    failed_tests += summary.failed
+            if summary := test.analyses.tests_summary:
+                total_tests += summary.total
+                failed_tests += summary.failed
 
         # Calculate averages
         avg_build_time = sum(build_times, timedelta()) / max(len(build_times), 1)

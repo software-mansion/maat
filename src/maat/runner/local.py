@@ -138,7 +138,7 @@ def execute_test_locally(
                 )
 
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
-                if step.meta.setup and exit_code != 0:
+                if step.setup and exit_code != 0:
                     test_progress.setup_failed = True
 
 
@@ -154,7 +154,7 @@ class TestProgress:
         self._task = self._progress.add_task(
             description=self._test.name,
             start=False,
-            total=sum(not s.meta.setup for s in self._test.steps),
+            total=sum(not s.setup for s in self._test.steps),
         )
 
         self.setup_failed = False
@@ -188,13 +188,13 @@ class TestProgress:
             description=f"{self._test.name}: {truncate_with_ellipsis(step.name, max_length=24)}",
         )
 
-        if not step.meta.setup and self._progress.tasks[self._task].start_time is None:
+        if not step.setup and self._progress.tasks[self._task].start_time is None:
             self._progress.start_task(self._task)
 
         try:
             yield
         finally:
-            if not step.meta.setup:
+            if not step.setup:
                 self._progress.advance(self._task)
 
 
