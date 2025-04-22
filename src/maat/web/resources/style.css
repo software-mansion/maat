@@ -11,14 +11,13 @@
     --color-success: #57B495;
 
     --font-family-main: system-ui, sans-serif;
-    --font-family-fancy: Avenir, Montserrat, Corbel, 'URW Gothic', source-sans-pro, sans-serif;
+    --font-family-fancy: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
     --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 
     --color-shadow: #001A7220;
     --box-shadow-md: 0 4px 6px -1px var(--color-shadow), 0 2px 4px -2px var(--color-shadow);
     --box-shadow-lg: 0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow);
 
-    --header-height: 3em;
     --details-spacing: 2em;
 }
 
@@ -51,39 +50,23 @@ body {
     overflow-x: auto;
 }
 
-header {
-    background: var(--color-primary-light);
-    border-bottom: 1px solid var(--color-border);
-    display: flex;
-    height: var(--header-height);
-    align-items: center;
-}
-
-#logo {
-    align-self: stretch;
-    background: url("logo.png");
-    background-size: contain;
-    aspect-ratio: 1 / 1;
-}
-
 h1 {
-    font-family: var(--font-family-fancy), sans-serif;
-    font-size: calc(var(--header-height) * 0.5);
-    margin: 0;
-    padding: 0 1rem;
+    font-family: var(--font-family-fancy), serif;
+    font-size: 3em;
+    font-weight: 200;
+    text-align: center;
 }
 
 main {
     width: 100%;
     padding-bottom: var(--details-spacing); /* Extra spacing for shadows to fit. */
-    max-height: calc(100vh - var(--header-height));
     overflow: auto;
 }
 
 details {
     --border-radius: 0.5em;
 
-    margin: var(--details-spacing) auto;
+    margin: 0 auto var(--details-spacing) auto;
     width: fit-content;
     border: 1px solid var(--color-border);
     border-radius: var(--border-radius);
