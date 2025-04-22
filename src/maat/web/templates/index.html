@@ -76,17 +76,15 @@
                     {{ value|timedeltaformat }}
                 {% endcall %}
             {% endcall %}
-            {% call table_section("Test Metrics") %}
-                {% call(value) metrics_row("Failed Tests Ratio", metrics.failed_tests_ratio) %}
-                    {{ value|round(2) }}
-                {% endcall %}
-            {% endcall %}
             </tbody>
         </table>
     </details>
     {% for label_group in label_groups %}
         <details>
-            <summary>{{ label_group.category }} ({{ label_group.rows|length }})</summary>
+            <summary>
+                <b>{{ label_group.category }}</b>
+                ({{ label_group.count }}, {{ (label_group.ratio * 100)|round(2) }}%)
+            </summary>
             <table>
                 {{ header("Project") }}
                 <tbody>

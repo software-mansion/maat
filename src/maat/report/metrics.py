@@ -22,8 +22,6 @@ class Metrics(pydantic.BaseModel):
     avg_lint_time: timedelta
     avg_test_time: timedelta
 
-    failed_tests_ratio: float
-    """N failed tests / N tests"""
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
@@ -58,10 +56,6 @@ class Metrics(pydantic.BaseModel):
         avg_lint_time = sum(lint_times, timedelta()) / max(len(lint_times), 1)
         avg_test_time = sum(test_times, timedelta()) / max(len(test_times), 1)
 
-        # Calculate the failed test ratio.
-        failed_tests_ratio = (
-            failed_tests / max(total_tests, 1) if total_tests > 0 else 0.0
-        )
 
         # Create and return the Metrics object
         return cls(
@@ -76,7 +70,6 @@ class Metrics(pydantic.BaseModel):
             avg_build_time=avg_build_time,
             avg_lint_time=avg_lint_time,
             avg_test_time=avg_test_time,
-            failed_tests_ratio=failed_tests_ratio,
         )
 
 
@@ -92,7 +85,6 @@ class MetricsTransposed(BaseModel):
     avg_build_time: list[timedelta]
     avg_lint_time: list[timedelta]
     avg_test_time: list[timedelta]
-    failed_tests_ratio: list[float]
 
     @classmethod
     def new(cls, metrics_list: list[Metrics]) -> Self:

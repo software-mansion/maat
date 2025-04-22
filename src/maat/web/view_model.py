@@ -30,6 +30,8 @@ class LabelGroupRowViewModel(BaseModel):
 class LabelGroupViewModel(BaseModel):
     category: LabelCategory
     rows: list[LabelGroupRowViewModel]
+    count: int
+    ratio: float
 
 
 class RootViewModel(BaseModel):
@@ -47,6 +49,8 @@ def build_view_model(
 
     report_names = [ReportNameViewModel(title=m.name) for m in metrics_transposed.meta]
     report_names[-1].is_reference = True
+
+    reference_metrics = reports[-1][2]
 
     label_groups = []
     for category in LabelCategory:
@@ -90,7 +94,16 @@ def build_view_model(
             rows.append(LabelGroupRowViewModel(project=test_name, cells=cells))
 
         if rows:
-            label_groups.append(LabelGroupViewModel(category=category, rows=rows))
+            ratio = len(rows) / reference_metrics.total_projects
+
+            label_groups.append(
+                LabelGroupViewModel(
+                    category=category,
+                    rows=rows,
+                    count=len(rows),
+                    ratio=ratio,
+                )
+            )
 
     return RootViewModel(
         report_names=report_names,
