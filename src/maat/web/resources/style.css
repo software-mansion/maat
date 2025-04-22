@@ -161,6 +161,30 @@ table {
     }
 }
 
+.help {
+    --color: color-mix(in oklab, var(--color-text-primary) 50%, transparent);
+
+    cursor: help;
+    text-decoration: none;
+
+    &::after {
+        content: '?';
+        display: inline-block;
+        position: relative;
+        vertical-align: top;
+        font-size: 0.7rem;
+        text-align: center;
+        color: var(--color);
+        text-decoration: none;
+        font-weight: normal;
+    }
+
+    &:hover {
+        --color: var(--color-text-primary);
+        text-decoration: underline dotted;
+    }
+}
+
 .error {
     color: var(--color-error);
 }
@@ -175,6 +199,10 @@ table {
 
 .text-sm {
     font-size: 0.8em;
+}
+
+.bold {
+    font-weight: bold;
 }
 
 .underline {

@@ -1,10 +1,21 @@
+{% macro q(help) %}
+    <abbr class="help" title="{{ help }}">?</abbr>
+{% endmacro %}
+
 {% macro header(first_column = "") %}
     <thead>
     <tr>
         <th>{{ first_column }}</th>
-        {% for rn in report_names %}
-            <th class="{{ "text-center"|clsx(underline=rn.is_reference) }}">{{ rn.title }}</th>
-        {% endfor %}
+        {%- for rn in report_names -%}
+            <th class="text-center">
+                {%- if rn.is_reference %}
+                    <abbr class="help underline"
+                          title="This is the reference report. All comparative cells in other columns are compared with respective cells from this column.">{{ rn.title }}</abbr>
+                {% else -%}
+                    {{ rn.title }}
+                {%- endif -%}
+            </th>
+        {% endfor -%}
     </tr>
     </thead>
 {% endmacro %}
@@ -82,8 +93,10 @@
     {% for label_group in label_groups %}
         <details>
             <summary>
-                <b>{{ label_group.category }}</b>
-                ({{ label_group.count }}, {{ (label_group.ratio * 100)|round(2) }}%)
+                <abbr class="help bold"
+                      title="{{ label_group.category.help }}">{{ label_group.category }}</abbr>
+                ({{ label_group.count }}, <abbr class="help"
+                                                title="Relative to total projects in reference column.">{{ (label_group.ratio * 100)|round(2) }}%</abbr>)
             </summary>
             <table>
                 {{ header("Project") }}
