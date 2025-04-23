@@ -2737,7 +2737,7 @@
       "analyses": {
         "labels": [
           "lint-fail(no --deny-warnings)",
-          "broken(broken build)"
+          "broken(compiler panic)"
         ]
       }
     },

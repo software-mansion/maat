@@ -75,27 +75,20 @@ def label(test: TestReport):
     labels: list[Label] = []
 
     if (fetch := test.step("fetch")) and fetch.was_executed and fetch.exit_code != 0:
-        labels.append(Label.new(LabelCategory.BROKEN, _why_fetch_failed(fetch)))
+        labels.append(_fetch_label(fetch))
 
     if (build := test.step("build")) and build.was_executed and build.exit_code != 0:
-        if build_fail_reason := _why_build_failed(build):
-            lbl = Label.new(LabelCategory.BUILD_FAIL, build_fail_reason)
-        else:
-            lbl = Label.new(LabelCategory.BROKEN, "broken build")
-        labels.append(lbl)
+        labels.append(_build_label(build))
 
     if not any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels):
         # Don't add these labels if more critical failures have been identified.
 
         if (lint := test.step("lint")) and lint.was_executed and lint.exit_code != 0:
-            labels.append(Label.new(LabelCategory.LINT_FAIL, _why_lint_failed(lint)))
+            labels.append(_lint_label(lint))
 
         # Test summary is populated only if a test step has been executed, not checking twice.
         if ts := test.analyses.tests_summary:
-            if ts.failed > 0:
-                lbl = Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
-            else:
-                lbl = Label.new(LabelCategory.TEST_PASS, "tests passed")
+            lbl = _test_label(ts)
             labels.append(lbl)
 
     assert labels, f"no labels were finally assigned for {test.name}"
@@ -103,29 +96,48 @@ def label(test: TestReport):
     test.analyses.labels = labels
 
 
-def _why_fetch_failed(fetch: StepReport) -> str:
-    return "unknown deps error"
+def _fetch_label(fetch: StepReport) -> Label:
+    return Label.new(LabelCategory.BROKEN, "unknown deps error")
 
 
-def _why_build_failed(build: StepReport) -> str | None:
+def _build_label(build: StepReport) -> Label | None:
+    if m := re.search(
+        r"^\[err] thread '.*' panicked at (?P<path>.*):", build.log_str, re.M
+    ):
+        path = m.group("path")
+        if "cairo-lang-" in path:
+            source = "compiler"
+        elif "scarb" in path:
+            source = "scarb"
+        else:
+            source = "dep crate"
+        return Label.new(LabelCategory.BROKEN, f"{source} panic")
+
     if re.search(
         r"^\[out] error: could not compile `.*` due to previous error",
         build.log_str,
         re.M,
     ):
-        return "compiler error"
+        return Label.new(LabelCategory.BUILD_FAIL, "compiler error")
 
-    return None
+    return Label.new(LabelCategory.BROKEN, "broken build")
 
 
-def _why_lint_failed(lint: StepReport) -> str:
+def _lint_label(lint: StepReport) -> Label:
     if (
         b"[out] error: scarb was not compiled with the `lint` command enabled"
         in lint.log
     ) or b"[out] error: no such command: `lint`" in lint.log:
-        return "no linter"
+        return Label.new(LabelCategory.LINT_FAIL, "no linter")
 
     if b"[err] error: unexpected argument '--deny-warnings' found" in lint.log:
-        return "no --deny-warnings"
+        return Label.new(LabelCategory.LINT_FAIL, "no --deny-warnings")
 
-    return "lint violations"
+    return Label.new(LabelCategory.LINT_FAIL, "lint violations")
+
+
+def _test_label(ts: TestsSummary) -> Label:
+    if ts.failed > 0:
+        return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
+    else:
+        return Label.new(LabelCategory.TEST_PASS, "tests passed")

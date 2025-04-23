@@ -2723,7 +2723,7 @@
       "analyses": {
         "labels": [
           "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(compiler panic)"
         ]
       }
     },

@@ -71,7 +71,7 @@ class LabelCategory(enum.StrEnum):
             self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable .",
             self.TEST_FAIL: "Build succeeded but tests failed.",
             self.TEST_PASS: 'Build succeeded and tests passed. This is the "clean" state.',
-            self.BROKEN: "Something is broken for this project in Ma'at context. This requires Ma'at maintainers investigation. Please ping them.",
+            self.BROKEN: "Something is broken for this project in Ma'at context. This is either Ma'at bug, Cairo compiler panic or runtime error, like OOM.",
         }[self]
 
 
