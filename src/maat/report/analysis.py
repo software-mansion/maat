@@ -11,6 +11,7 @@ from maat.model import (
     TestReport,
     TestsSummary,
     StepReport,
+    Labels,
 )
 
 
@@ -72,27 +73,26 @@ def label(test: TestReport):
     """
     Assign various labels to the test.
     """
-    labels: list[Label] = []
+    labels = Labels()
 
     if (fetch := test.step("fetch")) and fetch.was_executed and fetch.exit_code != 0:
-        labels.append(_fetch_label(fetch))
+        labels.add(_fetch_label(fetch))
 
     if (build := test.step("build")) and build.was_executed and build.exit_code != 0:
-        labels.append(_build_label(build))
+        labels.add(_build_label(build))
 
     if not any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels):
         # Don't add these labels if more critical failures have been identified.
 
         if (lint := test.step("lint")) and lint.was_executed and lint.exit_code != 0:
-            labels.append(_lint_label(lint))
+            labels.add(_lint_label(lint))
 
         # Test summary is populated only if a test step has been executed, not checking twice.
         if ts := test.analyses.tests_summary:
             lbl = _test_label(ts)
-            labels.append(lbl)
+            labels.add(lbl)
 
     assert labels, f"no labels were finally assigned for {test.name}"
-    labels.sort(key=Label.priority)
     test.analyses.labels = labels
 
 

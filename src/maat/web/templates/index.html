@@ -106,7 +106,9 @@
                         <td>{{ row.project }}</td>
                         {% for cell in row.cells %}
                             <td class="text-center">
-                                {% if cell.missing %}
+                                {% if cell.missing and cell.logs_href %}
+                                    <a href="{{ cell.logs.href }}">&mdash;</a>
+                                {% elif cell.missing %}
                                     &mdash;
                                 {% else %}
                                     <a href="{{ cell.logs_href }}">{{ cell.label }}</a>

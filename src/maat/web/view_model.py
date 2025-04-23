@@ -20,6 +20,7 @@ class TestCellViewModel(BaseModel):
 
 class MissingTestCellViewModel(BaseModel):
     missing: bool = True
+    logs_href: str | None = None
 
 
 class LabelGroupRowViewModel(BaseModel):
@@ -43,49 +44,46 @@ class RootViewModel(BaseModel):
 def build_view_model(
     reports: list[tuple[Report, ReportMeta, Metrics]],
 ) -> RootViewModel:
+    reference_report_idx = -1
+
     reports.sort(key=_reports_sorting_key)
 
     metrics_transposed = MetricsTransposed.new([metrics for _, _, metrics in reports])
 
     report_names = [ReportNameViewModel(title=m.name) for m in metrics_transposed.meta]
-    report_names[-1].is_reference = True
+    report_names[reference_report_idx].is_reference = True
 
-    reference_metrics = reports[-1][2]
+    reference_report, _, reference_metrics = reports[reference_report_idx]
 
     label_groups = []
     for category in LabelCategory:
-        tests_with_category: list[list[TestReport]] = [
-            report.tests_with_label_category(category) for report, _, _ in reports
-        ]
-        assert len(tests_with_category) == len(reports)
-
-        unique_test_names = list(
-            sorted(
-                set(test.name for test in tests_with_category[-1]),
-                key=smart_sort_key,
-            )
+        relevant_test_names = list(
+            test.name
+            for test in reference_report.tests
+            if category in test.analyses.labels
         )
+        relevant_test_names.sort(key=smart_sort_key)
 
-        tests_indexed_by_report_and_name: dict[tuple[int, str], TestReport] = {
+        tests_by_report_idx_and_name: dict[tuple[int, str], TestReport] = {
             (report_idx, test.name): test
-            for report_idx, tests in enumerate(tests_with_category)
-            for test in tests
+            for report_idx, (report, _, _) in enumerate(reports)
+            for test in report.tests
         }
 
         rows = []
-        for test_name in unique_test_names:
+        for test_name in relevant_test_names:
             cells = []
             for report_idx, (_, report_meta, _) in enumerate(reports):
-                if test := tests_indexed_by_report_and_name.get(
-                    (report_idx, test_name)
-                ):
-                    label = test.analyses.label_by_category(category)
-                    assert label is not None
+                if test := tests_by_report_idx_and_name.get((report_idx, test_name)):
                     logs_href = str(logs_txt_path(report_meta, test))
-                    cell = TestCellViewModel(
-                        label=label.comment or label.category,
-                        logs_href=logs_href,
-                    )
+
+                    if label := test.analyses.labels.prioritize(category)[0]:
+                        cell = TestCellViewModel(
+                            label=label.comment or label.category,
+                            logs_href=logs_href,
+                        )
+                    else:
+                        cell = MissingTestCellViewModel(logs_href=logs_href)
                 else:
                     cell = MissingTestCellViewModel()
 

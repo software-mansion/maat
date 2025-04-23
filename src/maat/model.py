@@ -2,6 +2,7 @@ import enum
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable, Literal, Self
+from collections.abc import MutableSet
 
 from pydantic import (
     BaseModel,
@@ -101,6 +102,12 @@ class Label(RootModel):
         """Returns a sorting key for this label when sorting for human presentation."""
         return list(LabelCategory).index(label.category), label.root
 
+    def __repr__(self) -> str:
+        return f"{self.__class__.__name__}({self.root})"
+
+    def __str__(self) -> str:
+        return self.root
+
 
 class TestsSummary(BaseModel):
     passed: int
@@ -113,27 +120,51 @@ class TestsSummary(BaseModel):
         return self.passed + self.failed + self.skipped + self.ignored
 
 
+class Labels(MutableSet[Label], RootModel):
+    root: list[Label] = Field(default_factory=list)
+
+    def __contains__(self, item: Label | LabelCategory) -> bool:
+        if isinstance(item, LabelCategory):
+            return any(label.category == item for label in self.root)
+
+        return item in self.root
+
+    def __iter__(self):
+        return iter(self.root)
+
+    def add(self, label: Label):
+        self.root.append(label)
+        self.root.sort(key=Label.priority)
+
+    def discard(self, label: Label):
+        if label in self.root:
+            self.root.remove(label)
+
+    def __len__(self):
+        return len(self.root)
+
+    def prioritize(self, category: LabelCategory) -> list[Label]:
+        """
+        Returns a new list of labels with the given category's labels first.
+        """
+        new = list(self)
+        new.sort(key=lambda label: label.category != category)
+        return new
+
+    def __repr__(self):
+        return f"{self.__class__.__name__}[{', '.join(map(str, self.root))}]"
+
+    def __str__(self):
+        return f"[{', '.join(map(str, self.root))}]"
+
+
 class Analyses(BaseModel):
-    labels: list[Label] | None = None
+    labels: Labels | None = None
     tests_summary: TestsSummary | None = None
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):
         return {k: v for k, v in nxt(self).items() if v is not None}
-
-    def has_label_category(self, category: LabelCategory) -> bool:
-        if self.labels is None:
-            return False
-
-        return any(label.category == category for label in self.labels)
-
-    def label_by_category(self, category: LabelCategory) -> Label | None:
-        if self.labels is None:
-            return None
-        for label in self.labels:
-            if label.category == category:
-                return label
-        return None
 
 
 class StepReport(BaseModel):
@@ -237,11 +268,6 @@ class Report(BaseModel):
 
     def tests_by_name(self) -> dict[str, TestReport]:
         return {test.name: test for test in self.tests}
-
-    def tests_with_label_category(self, category: LabelCategory) -> list[TestReport]:
-        return [
-            test for test in self.tests if test.analyses.has_label_category(category)
-        ]
 
 
 class ReportMeta(BaseModel):
