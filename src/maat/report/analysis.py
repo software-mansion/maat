@@ -97,21 +97,33 @@ def label(test: TestReport):
 
 
 def _fetch_label(fetch: StepReport) -> Label:
+    if lbl := _fatal_panic(fetch):
+        return lbl
+
+    if re.search(
+        r"^\[out] error: version solving failed:",
+        fetch.log_str,
+        re.M,
+    ):
+        return Label.new(LabelCategory.BROKEN, "unsolvable deps")
+
+    if re.search(
+        r"^\[out] Scarb does not have real version solving algorithm yet.",
+        fetch.log_str,
+        re.M,
+    ) or re.search(
+        r"^\[out] Caused by:\n\[out]\s+cannot find package `",
+        fetch.log_str,
+        re.M,
+    ):
+        return Label.new(LabelCategory.BROKEN, "pubgrub required")
+
     return Label.new(LabelCategory.BROKEN, "unknown deps error")
 
 
 def _build_label(build: StepReport) -> Label | None:
-    if m := re.search(
-        r"^\[err] thread '.*' panicked at (?P<path>.*):", build.log_str, re.M
-    ):
-        path = m.group("path")
-        if "cairo-lang-" in path:
-            source = "compiler"
-        elif "scarb" in path:
-            source = "scarb"
-        else:
-            source = "dep crate"
-        return Label.new(LabelCategory.BROKEN, f"{source} panic")
+    if lbl := _fatal_panic(build):
+        return lbl
 
     if re.search(
         r"^\[out] error: could not compile `.*` due to previous error",
@@ -141,3 +153,19 @@ def _test_label(ts: TestsSummary) -> Label:
         return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
     else:
         return Label.new(LabelCategory.TEST_PASS, "tests passed")
+
+
+def _fatal_panic(step: StepReport) -> Label | None:
+    m = re.search(r"^\[err] thread '.*' panicked at (?P<path>.*):", step.log_str, re.M)
+
+    if not m:
+        return None
+
+    path = m.group("path")
+    if "cairo-lang-" in path:
+        source = "compiler"
+    elif "scarb" in path:
+        source = "scarb"
+    else:
+        source = "unknown"
+    return Label.new(LabelCategory.BROKEN, f"{source} panic")

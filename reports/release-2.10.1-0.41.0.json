@@ -220,7 +220,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -449,7 +449,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -601,7 +601,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -1221,7 +1221,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -1297,7 +1297,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -1449,7 +1449,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -2582,7 +2582,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(unknown panic)"
         ]
       }
     },
@@ -2658,7 +2658,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
@@ -2734,7 +2734,7 @@
       ],
       "analyses": {
         "labels": [
-          "broken(unknown deps error)"
+          "broken(pubgrub required)"
         ]
       }
     },
