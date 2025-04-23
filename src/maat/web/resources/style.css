@@ -6,15 +6,19 @@
     --color-border: #C1C6E5;
     --color-primary: #33488E;
     --color-primary-light: #EEF0FF;
-    --color-error: #FF6259;
-    --color-warning: #FFD61E;
-    --color-success: #57B495;
+
+    --color-broken: #e12afb;
+    --color-error: #fb2c36;
+    --color-build-fail: #ff6900;
+    --color-test-fail: #2b7fff;
+    --color-test-pass: #00c950;
+    --color-lint-fail: #79716b;
 
     --font-family-main: system-ui, sans-serif;
     --font-family-fancy: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
     --font-family-mono: ui-monospace, 'Cascadia Code', 'Source Code Pro', Menlo, Consolas, 'DejaVu Sans Mono', monospace;
 
-    --color-shadow: #001A7220;
+    --color-shadow: #001A7214;
     --box-shadow-md: 0 4px 6px -1px var(--color-shadow), 0 2px 4px -2px var(--color-shadow);
     --box-shadow-lg: 0 10px 15px -3px var(--color-shadow), 0 4px 6px -4px var(--color-shadow);
 
@@ -30,9 +34,6 @@
         --color-border: #444466;
         --color-primary: #4A5FA0;
         --color-primary-light: #1E2133;
-        --color-error: #FF6259;
-        --color-warning: #FFD61E;
-        --color-success: #57B495;
         --color-shadow: #00000020;
     }
 }
@@ -74,11 +75,8 @@ details {
     overflow: hidden;
 
     & summary {
-        --accent: var(--color-primary-light);
-        --stripe-color: color-mix(in oklab, var(--color-background) 25%, transparent);
-
         cursor: pointer;
-        background: var(--accent);
+        background: var(--color-primary-light);
         padding: 0.4em 0.5em;
         position: relative;
         user-select: none;
@@ -87,6 +85,18 @@ details {
         &:focus-visible {
             outline: none;
             box-shadow: inset 0 0 0 1px ActiveText;
+        }
+
+        &::marker {
+            content: "▶";
+        }
+    }
+
+    &.color-coded {
+        border-color: var(--accent);
+
+        & > summary::marker {
+            color: var(--accent);
         }
     }
 
@@ -98,6 +108,10 @@ details {
         border-bottom: 1px solid var(--color-border);
         border-top-left-radius: var(--border-radius);
         border-top-right-radius: var(--border-radius);
+
+        &::marker {
+            content: "▼";
+        }
     }
 
     &:not([open]) > summary {
@@ -185,16 +199,36 @@ table {
     }
 }
 
+.broken {
+    --accent: var(--color-broken);
+}
+
 .error {
-    color: var(--color-error);
+    --accent: var(--color-error);
 }
 
-.warning {
-    color: var(--color-warning);
+.build-fail {
+    --accent: var(--color-build-fail);
 }
 
-.success {
-    color: var(--color-success);
+.test-fail {
+    --accent: var(--color-test-fail);
+}
+
+.test-pass {
+    --accent: var(--color-test-pass);
+}
+
+.lint-fail {
+    --accent: var(--color-lint-fail);
+}
+
+.bullet {
+    color: var(--accent);
+    cursor: help;
+    user-select: none;
+    text-decoration: none;
+    font-weight: normal;
 }
 
 .text-sm {

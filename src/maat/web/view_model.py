@@ -15,6 +15,7 @@ class ReportNameViewModel(BaseModel):
 class TestCellViewModel(BaseModel):
     missing: bool = False
     label: str
+    category: str
     logs_href: str
 
 
@@ -80,6 +81,7 @@ def build_view_model(
                     if label := test.analyses.labels.prioritize(category)[0]:
                         cell = TestCellViewModel(
                             label=label.comment or label.category,
+                            category=label.category,
                             logs_href=logs_href,
                         )
                     else:

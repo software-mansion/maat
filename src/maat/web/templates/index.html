@@ -2,6 +2,10 @@
     <abbr class="help" title="{{ help }}">?</abbr>
 {% endmacro %}
 
+{% macro bullet(category) %}
+    <span class="{{ "bullet"|clsx(category) }}" title="{{ category }}">&#x2756;</span>
+{% endmacro %}
+
 {% macro header(first_column = "") %}
     <thead>
     <tr>
@@ -91,7 +95,7 @@
         </table>
     </details>
     {% for label_group in label_groups %}
-        <details>
+        <details class="{{ "color-coded"|clsx(label_group.category) }}">
             <summary>
                 <abbr class="help bold"
                       title="{{ label_group.category.help }}">{{ label_group.category }}</abbr>
@@ -111,6 +115,7 @@
                                 {% elif cell.missing %}
                                     &mdash;
                                 {% else %}
+                                    {{ bullet(cell.category) }}
                                     <a href="{{ cell.logs_href }}">{{ cell.label }}</a>
                                 {% endif %}
                             </td>
