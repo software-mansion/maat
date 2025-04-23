@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 set -eu
 
+# Print current versions so that they'll be visible in logs.
+asdf current
+
 check_asdf_tool_version() {
     local tool="$1"
     local expected_version="$2"
@@ -9,7 +12,6 @@ check_asdf_tool_version() {
     # Check if the tool is correctly installed with expected version.
     if ! asdf current --no-header "$tool" | grep -Eq "^$tool\\s+$expected_version\\s+$env_var_name\\s+true$"; then
         echo "$tool is NOT OK"
-        asdf current
         return 1
     fi
 
