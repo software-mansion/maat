@@ -10,16 +10,16 @@
     <thead>
     <tr>
         <th>{{ first_column }}</th>
-        {%- for rn in report_names -%}
+        {% for rn in report_names %}
             <th class="text-center">
-                {%- if rn.is_reference %}
+                {% if rn.is_reference %}
                     <abbr class="help underline"
                           title="This is the reference report. All comparative cells in other columns are compared with respective cells from this column.">{{ rn.title }}</abbr>
-                {% else -%}
+                {% else %}
                     {{ rn.title }}
-                {%- endif -%}
+                {% endif %}
             </th>
-        {% endfor -%}
+        {% endfor %}
     </tr>
     </thead>
 {% endmacro %}
@@ -99,8 +99,9 @@
             <summary>
                 <abbr class="help bold"
                       title="{{ label_group.category.help }}">{{ label_group.category }}</abbr>
-                ({{ label_group.count }}, <abbr class="help"
-                                                title="Relative to total projects in reference column.">{{ (label_group.ratio * 100)|round(2) }}%</abbr>)
+                ({{ label_group.count }},
+                <abbr class="help"
+                      title="Relative to total projects in reference column.">{{ (label_group.ratio * 100)|round(2) }}%</abbr>)
             </summary>
             <table>
                 {{ header("Project") }}
