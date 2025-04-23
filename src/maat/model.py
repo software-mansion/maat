@@ -56,22 +56,22 @@ class TestSuite(BaseModel):
 @enum.unique
 class LabelCategory(enum.StrEnum):
     # The higher the category here, the higher the priority when sorting for human presentation.
+    BROKEN = "broken"
     ERROR = "error"
     BUILD_FAIL = "build-fail"
-    LINT_FAIL = "lint-fail"
     TEST_FAIL = "test-fail"
     TEST_PASS = "test-pass"
-    BROKEN = "broken"
+    LINT_FAIL = "lint-fail"
 
     @enum.property
     def help(self) -> str:
         return {
+            self.BROKEN: "Something is broken for this project in Ma'at context. This is either Ma'at bug, Cairo compiler panic or runtime error, like OOM.",
             self.ERROR: "A serious error occurred before project could be built.",
             self.BUILD_FAIL: "Build failed.",
-            self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable .",
             self.TEST_FAIL: "Build succeeded but tests failed.",
             self.TEST_PASS: 'Build succeeded and tests passed. This is the "clean" state.',
-            self.BROKEN: "Something is broken for this project in Ma'at context. This is either Ma'at bug, Cairo compiler panic or runtime error, like OOM.",
+            self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable .",
         }[self]
 
 

@@ -70,8 +70,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 156,
@@ -145,8 +145,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-fail(6 failed)"
+          "test-fail(6 failed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -372,8 +372,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(broken build)",
+          "lint-fail(no linter)"
         ]
       }
     },
@@ -677,8 +677,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(broken build)",
+          "lint-fail(no linter)"
         ]
       }
     },
@@ -754,8 +754,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -913,8 +913,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(broken build)",
+          "lint-fail(no linter)"
         ]
       }
     },
@@ -990,8 +990,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(broken build)",
+          "lint-fail(no linter)"
         ]
       }
     },
@@ -1067,8 +1067,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(broken build)",
+          "lint-fail(no linter)"
         ]
       }
     },
@@ -1144,8 +1144,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "broken(broken build)"
+          "broken(broken build)",
+          "lint-fail(no linter)"
         ]
       }
     },
@@ -1525,8 +1525,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -1684,8 +1684,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -1767,8 +1767,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -1926,8 +1926,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 14,
@@ -2009,8 +2009,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2092,8 +2092,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2175,8 +2175,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2258,8 +2258,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2341,8 +2341,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2424,8 +2424,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2507,8 +2507,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 0,
@@ -2810,8 +2810,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 16,
@@ -3045,8 +3045,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 46,
@@ -3128,8 +3128,8 @@
       ],
       "analyses": {
         "labels": [
-          "lint-fail(no linter)",
-          "test-pass(tests passed)"
+          "test-pass(tests passed)",
+          "lint-fail(no linter)"
         ],
         "tests_summary": {
           "passed": 2,
