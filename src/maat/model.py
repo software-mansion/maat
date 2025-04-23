@@ -79,7 +79,7 @@ _label_category_regex = "|".join(LabelCategory.__members__.values())
 
 
 class Label(RootModel):
-    root: str = Field(pattern=f"^(?:{_label_category_regex})(?:\([^()]+\))?$")
+    root: str = Field(pattern=rf"^(?:{_label_category_regex})(?:\([^()]+\))?$")
 
     @classmethod
     def new(cls, category: LabelCategory, comment: str | None = None) -> Self:
