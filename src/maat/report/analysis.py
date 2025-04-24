@@ -7,11 +7,11 @@ from maat.model import (
     Analyser,
     Label,
     LabelCategory,
+    Labels,
     Report,
+    StepReport,
     TestReport,
     TestsSummary,
-    StepReport,
-    Labels,
 )
 
 
@@ -101,18 +101,17 @@ def _fetch_label(fetch: StepReport) -> Label:
         return lbl
 
     if re.search(
-        r"^\[out] error: version solving failed:",
+        r"^\[out] error: version solving failed:"
+        r"|^\[out] error: failed to lookup for `.*` in registry:"
+        r"|^\[out] error: found dependencies on the same package `.*` coming from incompatible sources:",
         fetch.log_str,
         re.M,
     ):
         return Label.new(LabelCategory.BROKEN, "unsolvable deps")
 
     if re.search(
-        r"^\[out] Scarb does not have real version solving algorithm yet.",
-        fetch.log_str,
-        re.M,
-    ) or re.search(
-        r"^\[out] Caused by:\n\[out]\s+cannot find package `",
+        r"^\[out] Scarb does not have real version solving algorithm yet."
+        r"|^\[out] Caused by:\n\[out]\s+cannot find package `",
         fetch.log_str,
         re.M,
     ):
