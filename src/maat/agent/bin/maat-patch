@@ -9,7 +9,7 @@
 import subprocess
 from functools import cache
 from pathlib import Path
-from typing import Callable, Literal, cast, Any
+from typing import Any, Callable, Literal, cast
 
 import tomlkit
 
@@ -85,11 +85,10 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
         test_runner = detect_test_runner(member_root)
 
         if should_patch_snforge_std:
-            dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
-            if test_runner == "snforge" and "snforge_std" not in dev_dependencies:
-                patch_field(dev_dependencies, "snforge_std", foundry_version)
-            if test_runner == "cairo-test" and "cairo_test" not in dev_dependencies:
-                patch_field(dev_dependencies, "cairo_test", scarb_version)
+            if test_runner == "snforge":
+                add_dev_dependency_if_missing(manifest, "snforge_std", foundry_version)
+            if test_runner == "cairo-test":
+                add_dev_dependency_if_missing(manifest, "cairo_test", scarb_version)
 
         # Detect the test runner to use for this package and set the "test" script to run it.
         # We don't try to override test command if the package already sets one
@@ -113,6 +112,17 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
             "allow-prebuilt-plugins",
             "snforge_std",
         )
+
+
+def add_dev_dependency_if_missing(
+    manifest: tomlkit.TOMLDocument,
+    dependency: str,
+    version: str,
+):
+    dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
+    dependencies = manifest.setdefault("dependencies", tomlkit.table())
+    if dependency not in dev_dependencies and dependency not in dependencies:
+        patch_field(dev_dependencies, dependency, version)
 
 
 @cache
