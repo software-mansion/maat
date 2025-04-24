@@ -88,7 +88,7 @@ details {
         }
 
         &::marker {
-            content: "▶";
+            content: "▶ ";
         }
     }
 
@@ -110,7 +110,7 @@ details {
         border-top-right-radius: var(--border-radius);
 
         &::marker {
-            content: "▼";
+            content: "▼ ";
         }
     }
 

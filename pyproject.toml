@@ -13,6 +13,7 @@ dependencies = [
     "click>=8.1.8",
     "jinja2>=3.1.6",
     "jupyter>=1.1.1",
+    "minify-html>=0.16.4",
     "notebook>=7.3.3",
     "pydantic>=2.10.6",
     "python-on-whales>=0.75.1",

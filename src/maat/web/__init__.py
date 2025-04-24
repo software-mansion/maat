@@ -6,6 +6,8 @@ from pathlib import Path
 from typing import Iterator
 
 import jinja2
+import minify_html
+from pydantic import BaseModel
 
 from maat.model import Report, ReportMeta
 from maat.report.metrics import Metrics
@@ -32,8 +34,12 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
 
     vm = build_view_model(reports)
     with _jinja_env() as env:
-        index_html = env.get_template("index.html").render(**vm.model_dump())
-        (output / "index.html").write_text(index_html, encoding="utf-8")
+        _render_to(
+            template="index.html",
+            view_model=vm,
+            path=output / "index.html",
+            env=env,
+        )
 
 
 @contextmanager
@@ -54,6 +60,23 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
     )
 
     yield env
+
+
+def _render_to(
+    template: str,
+    view_model: BaseModel,
+    path: Path,
+    env: jinja2.Environment,
+):
+    template = env.get_template(template)
+    rendered = template.render(**view_model.model_dump())
+    minified = minify_html.minify(
+        rendered,
+        # These two keep `npx live-server` working, which is useful in development.
+        keep_html_and_head_opening_tags=True,
+        keep_closing_tags=True,
+    )
+    path.write_text(minified, encoding="utf-8")
 
 
 def _copy_traversable(traversable: Traversable, dest: Path):
