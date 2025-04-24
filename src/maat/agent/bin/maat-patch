@@ -90,6 +90,23 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
             if test_runner == "cairo-test":
                 add_dev_dependency_if_missing(manifest, "cairo_test", scarb_version)
 
+        # Try to borrow [dev-dependencies] from Scarb.orig.toml.
+        scarb_orig_toml_path = member_root / "Scarb.orig.toml"
+        if scarb_orig_toml_path.exists():
+            scarb_orig_toml = tomlkit.parse(scarb_orig_toml_path.read_text())
+            if orig_dev_dependencies := scarb_orig_toml.get("dev-dependencies"):
+                for dev_dependency, version_spec in orig_dev_dependencies.items():
+                    # If spec is a str, or `{ version = str, ... }` without a `registry` key,
+                    # we can safely copy it from orig toml and pull the dependency from scarbs.xyz.
+                    # Otherwise, we're doomed, and we can only assume `*` and cross fingers.
+                    if isinstance(version_spec, str):
+                        version = version_spec
+                    elif "version" in version_spec and "registry" not in version_spec:
+                        version = version_spec["version"]
+                    else:
+                        version = "*"
+                    add_dev_dependency_if_missing(manifest, dev_dependency, version)
+
         # Detect the test runner to use for this package and set the "test" script to run it.
         # We don't try to override test command if the package already sets one
         # or just sets it to something trivial.
