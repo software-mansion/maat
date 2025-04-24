@@ -80,6 +80,7 @@ details {
         padding: 0.4em 0.5em;
         position: relative;
         user-select: none;
+        list-style: none;
         z-index: 1;
 
         &:focus-visible {
@@ -87,15 +88,17 @@ details {
             box-shadow: inset 0 0 0 1px ActiveText;
         }
 
-        &::marker {
+        &::before {
             content: "▶ ";
+            display: inline-block;
+            margin-right: 0.5em;
         }
     }
 
     &.color-coded {
         border-color: var(--accent);
 
-        & > summary::marker {
+        & > summary::before {
             color: var(--accent);
         }
     }
@@ -109,7 +112,7 @@ details {
         border-top-left-radius: var(--border-radius);
         border-top-right-radius: var(--border-radius);
 
-        &::marker {
+        &::before {
             content: "▼ ";
         }
     }
