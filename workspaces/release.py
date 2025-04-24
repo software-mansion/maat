@@ -22,7 +22,14 @@ ecosystem: Ecosystem = [
             # patch, and it is much easier to compile them from the Git repository.
             re.compile("^openzeppelin_"),
             # Unmaintained packages that don't build on current Cairo language versions.
+            "carbon_v3",
             "cubit",
+            "erc4906",
+            "token_bound_accounts",
+            "tokentable_v2",
+            # Spam.
+            "dl_alexandria_storage",
+            "dl_alexandria_utils",
         ]
     ),
     github("EkuboProtocol/governance"),
