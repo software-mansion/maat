@@ -34,6 +34,10 @@ class Step(BaseModel):
     """
     Setup steps halt test on failure and progress bars behaves differently for these.
     """
+    checkout: bool = Field(default_factory=lambda data: data["setup"])
+    """
+    Whether this step is executed as part of checkout command.
+    """
 
 
 class Test(BaseModel):

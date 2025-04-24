@@ -258,18 +258,18 @@ def checkout(
             f"test '{test_name}' not found in workspace '{workspace.name}'"
         )
 
-    setup_steps = [step for step in test.steps if step.setup]
-    if not setup_steps:
-        raise RuntimeError(f"no setup steps found for test: {test_name}")
+    steps = [step for step in test.steps if step.checkout]
+    if not steps:
+        raise RuntimeError(f"no checkout steps found for test: {test_name}")
 
     checkout_dir = REPO / "checkouts" / test_name
 
     with (
-        console.status("Running setup steps...") as status,
+        console.status("Running checkout steps...") as status,
         ephemeral_volume(docker) as cache_volume,
         ephemeral_volume(docker) as workbench_volume,
     ):
-        for step in setup_steps:
+        for step in steps:
             status.update(step.name)
             docker_run_step(
                 docker=docker,

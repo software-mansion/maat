@@ -26,7 +26,7 @@ def _workflow() -> list[Step]:
     return [
         Step(run="maat-check-versions", setup=True),
         Step(run="maat-patch", setup=True),
-        Step(name="fetch", run="scarb fetch", setup=True),
+        Step(name="fetch", run="scarb fetch", setup=True, checkout=False),
         Step(name="build", run="scarb build --workspace --test"),
         Step(name="lint", run="scarb lint --workspace --deny-warnings"),
         Step(name="test", run="scarb test --workspace"),
