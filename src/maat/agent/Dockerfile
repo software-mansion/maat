@@ -27,12 +27,12 @@ EOF
 
 # Install Rust, this will use RUSTUP_TOOLCHAIN from environment.
 ENV RUST_BACKTRACE=1
-ARG RUSTUP_TOOLCHAIN=1.85
+ARG RUSTUP_TOOLCHAIN=1.86
 ENV RUSTUP_TOOLCHAIN="$RUSTUP_TOOLCHAIN"
 RUN rustup-init -y --no-modify-path && cargo --version
 
 # Install ASDF.
-ARG ASDF_VERSION=0.16.5
+ARG ASDF_VERSION=0.16.7
 ENV ASDF_VERSION="$ASDF_VERSION"
 RUN <<EOF
 set -eux
