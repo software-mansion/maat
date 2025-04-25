@@ -12,7 +12,7 @@ from pydantic import (
     model_serializer,
 )
 
-from maat.installation import REPO, this_maat_commit
+from maat.installation import this_maat_commit
 from maat.utils.shell import join_command
 from maat.utils.unique_id import unique_id
 
@@ -252,17 +252,13 @@ class Report(BaseModel):
     total_execution_time: timedelta
     tests: list[TestReport] = []
 
-    @property
-    def name(self) -> str:
-        return f"{self.workspace}-{self.scarb}-{self.foundry}"
+    def before_save(self):
+        """
+        Perform some cleaning up before saving the report.
 
-    def sort(self):
+        This method mutates the report object in place.
+        """
         self.tests.sort(key=lambda t: t.name)
-
-    def save(self):
-        self.sort()
-        with open(REPO / "reports" / f"{self.name}.json", "w") as f:
-            f.write(self.model_dump_json(indent=2) + "\n")
 
     def test(self, name: str) -> TestReport | None:
         for test in self.tests:

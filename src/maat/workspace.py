@@ -1,17 +1,23 @@
 import importlib.util
-from typing import Self
+from typing import Self, Callable
 
 from pydantic import BaseModel, ConfigDict
 from rich.console import Console
 
+from maat import Report
 from maat.ecosystem.spec import Ecosystem
 from maat.installation import REPO
 
 
+def _default_report_name_generator(report: Report) -> str:
+    return f"{report.workspace}-{report.scarb}-{report.foundry}"
+
+
 class WorkspaceSettings(BaseModel):
-    model_config = ConfigDict(strict=True)
+    model_config = ConfigDict(arbitrary_types_allowed=True, strict=True)
 
     ecosystem: Ecosystem
+    generate_report_name: Callable[[Report], str] = _default_report_name_generator
 
     @classmethod
     def load(cls, workspace_name: str) -> Self:

@@ -11,15 +11,16 @@ from python_on_whales import DockerClient
 from rich.console import Console
 
 from maat import sandbox, web
-from maat.workflow import build_test_suite
 from maat.installation import REPO
-from maat.model import Report, Semver, ReportMeta
+from maat.model import Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
+from maat.report.io import ReportCreator, ReportEditor
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.local import docker_run_step, execute_test_suite_locally
 from maat.utils.asdf import asdf_set
 from maat.utils.notify import send_notification
+from maat.workflow import build_test_suite
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -98,6 +99,7 @@ def run_local(
 ) -> None:
     console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
 
+    creator = ReportCreator(workspace)
     reporter = Reporter(workspace_name=workspace.name, scarb=scarb, foundry=foundry)
 
     sandbox_image = sandbox.build(
@@ -125,7 +127,7 @@ def run_local(
         console=console,
     )
 
-    report.save()
+    creator.save(report)
 
     send_notification(
         title="Ma'at Experiment Finished",
@@ -202,9 +204,9 @@ def open(
 @pass_console
 def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
     def reanalyse_file(report_file: Path):
-        report_obj: Report = Report.model_validate_json(report_file.read_bytes())
-        analyse_report(report=report_obj, console=console)
-        report_obj.save()
+        editor = ReportEditor.read(report_file)
+        analyse_report(report=editor.report, console=console)
+        editor.save()
 
     match (report, all):
         case (None, False):
