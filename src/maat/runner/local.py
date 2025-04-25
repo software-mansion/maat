@@ -1,5 +1,4 @@
 import os
-import re
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import timedelta
@@ -20,6 +19,7 @@ from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
+from maat.utils.docker import sanitize_for_docker
 from maat.utils.shell import split_command
 from maat.utils.unique_id import snowflake_id
 
@@ -249,10 +249,6 @@ def docker_run_step(
             step_reporter.set_exit_code(exit_code)
 
     return exit_code
-
-
-def sanitize_for_docker(name: str) -> str:
-    return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
 
 
 def truncate_with_ellipsis(text, max_length):

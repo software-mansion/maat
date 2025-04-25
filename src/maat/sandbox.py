@@ -4,6 +4,7 @@ from python_on_whales import DockerClient, Image
 from rich.console import Console
 
 from maat.model import Semver
+from maat.utils.docker import sanitize_for_docker
 
 SANDBOX_REPOSITORY = "maat/sandbox"
 MAAT_CACHE = "/mnt/maat-cache"
@@ -28,7 +29,7 @@ def build(
                 },
                 pull=True,
                 tags=[
-                    f"{SANDBOX_REPOSITORY}:scarb-{scarb}-foundry-{foundry}",
+                    f"{SANDBOX_REPOSITORY}:scarb-{sanitize_for_docker(scarb)}-foundry-{sanitize_for_docker(foundry)}",
                     # Tag this image as "latest" for easier access (no need to remember precise versions used)
                     # via Docker CLI when debugging.
                     f"{SANDBOX_REPOSITORY}:latest",
