@@ -1,4 +1,8 @@
+import importlib.resources
 from pathlib import Path
+from typing import Literal
+
+from python_on_whales import DockerClient, Image
 
 
 def asdf_set(context: Path, tool: str, version: str):
@@ -23,3 +27,19 @@ def asdf_set(context: Path, tool: str, version: str):
     spec = "\n".join(updated_spec)
 
     tool_versions.write_text(spec)
+
+
+def asdf_latest(
+    docker: DockerClient,
+    name: Literal["scarb", "starknet-foundry"],
+    version: str | None = None,
+) -> str:
+    with importlib.resources.path("maat.utils.asdf") as path:
+        image = docker.buildx.build(context_path=str(path), pull=True)
+        assert isinstance(image, Image)
+
+    command = ["latest", name]
+    if version is not None:
+        command.append(version)
+
+    return docker.container.run(image, command, remove=True)

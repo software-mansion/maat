@@ -18,7 +18,7 @@ from maat.report.io import ReportCreator, ReportEditor
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.local import docker_run_step, execute_test_suite_locally
-from maat.utils.asdf import asdf_set
+from maat.utils.asdf import asdf_latest, asdf_set
 from maat.utils.notify import send_notification
 from maat.workflow import build_test_suite
 from maat.workspace import Workspace
@@ -69,8 +69,9 @@ def load_workspace(f):
 
 
 def tool_versions(f):
+    @pass_docker
     @click.pass_context
-    def new_func(ctx, *args, **kwargs):
+    def new_func(ctx, docker: DockerClient, *args, **kwargs):
         workspace: Workspace | None = kwargs.get("workspace")
 
         if kwargs.get("scarb") is None:
@@ -81,6 +82,11 @@ def tool_versions(f):
                 scarb = default_scarb
             else:
                 scarb = click.prompt("Scarb version", type=Semver)
+
+            if scarb.startswith("latest"):
+                version = scarb.split(":", 1)[-1]
+                scarb = asdf_latest(docker, "scarb", version)
+
             kwargs["scarb"] = scarb
 
         if kwargs.get("foundry") is None:
@@ -91,6 +97,11 @@ def tool_versions(f):
                 foundry = default_foundry
             else:
                 foundry = click.prompt("Starknet Foundry version", type=Semver)
+
+            if foundry.startswith("latest"):
+                version = foundry.split(":", 1)[-1]
+                foundry = asdf_latest(docker, "starknet-foundry", version)
+
             kwargs["foundry"] = foundry
 
         return ctx.invoke(f, *args, **kwargs)
