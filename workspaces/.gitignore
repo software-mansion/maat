@@ -1,3 +1,4 @@
 *.py
 !release.py
 !local_example.py
+!nightly.py
