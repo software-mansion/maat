@@ -46,13 +46,11 @@ def tool_versions_options(f):
     f = click.option(
         "--scarb",
         envvar="MAAT_SCARB_VERSION",
-        prompt="Scarb version",
         help="Version of Scarb to experiment on.",
     )(f)
     f = click.option(
         "--foundry",
         envvar="MAAT_FOUNDRY_VERSION",
-        prompt="Starknet Foundry version",
         help="Version of Starknet Foundry to experiment on.",
     )(f)
     return f
@@ -66,6 +64,36 @@ def load_workspace(f):
             raise click.UsageError("--workspace is required")
         workspace = Workspace.load(workspace_name)
         return ctx.invoke(f, *args, **kwargs, workspace=workspace)
+
+    return functools.update_wrapper(new_func, f)
+
+
+def tool_versions(f):
+    @click.pass_context
+    def new_func(ctx, *args, **kwargs):
+        workspace: Workspace | None = kwargs.get("workspace")
+
+        if kwargs.get("scarb") is None:
+            if (
+                workspace is not None
+                and (default_scarb := workspace.settings.default_scarb) is not None
+            ):
+                scarb = default_scarb
+            else:
+                scarb = click.prompt("Scarb version", type=Semver)
+            kwargs["scarb"] = scarb
+
+        if kwargs.get("foundry") is None:
+            if (
+                workspace is not None
+                and (default_foundry := workspace.settings.default_foundry) is not None
+            ):
+                foundry = default_foundry
+            else:
+                foundry = click.prompt("Starknet Foundry version", type=Semver)
+            kwargs["foundry"] = foundry
+
+        return ctx.invoke(f, *args, **kwargs)
 
     return functools.update_wrapper(new_func, f)
 
@@ -87,6 +115,7 @@ def cli() -> None:
     default=None,
 )
 @load_workspace
+@tool_versions
 @pass_docker
 @pass_console
 def run_local(
@@ -234,6 +263,7 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
 @workspace_options
 @tool_versions_options
 @load_workspace
+@tool_versions
 @pass_docker
 @pass_console
 def checkout(

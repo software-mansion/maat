@@ -37,3 +37,6 @@ ecosystem: Ecosystem = [
     github("OpenZeppelin/cairo-contracts"),
     github("starkware-libs/starknet-staking"),
 ]
+
+default_scarb = "latest"
+default_foundry = "latest"

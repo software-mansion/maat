@@ -17,6 +17,8 @@ class WorkspaceSettings(BaseModel):
     model_config = ConfigDict(arbitrary_types_allowed=True, strict=True)
 
     ecosystem: Ecosystem
+    default_scarb: str | None = None
+    default_foundry: str | None = None
     generate_report_name: Callable[[Report], str] = _default_report_name_generator
 
     @classmethod
