@@ -28,10 +28,10 @@ class WorkspaceSettings(BaseModel):
         if not settings_script.exists():
             console = Console()
             console.log(
-                f"[yellow] Workspace [bold]{workspace_name}`[/bold] settings script not found, copying from [bold]release.py[/bold]..."
+                f"[yellow] Workspace [bold]{workspace_name}`[/bold] settings script not found, copying from [bold]local_example.py[/bold]..."
             )
             settings_script.write_text(
-                (REPO / "workspaces" / "release.py").read_text(), encoding="utf-8"
+                (REPO / "workspaces" / "local_example.py").read_text(), encoding="utf-8"
             )
 
         # Load the Python script as a module.

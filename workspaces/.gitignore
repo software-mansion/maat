@@ -1,2 +1,3 @@
 *.py
 !release.py
+!local_example.py

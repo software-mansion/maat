@@ -1,4 +1,5 @@
 import re
+import typing
 from abc import ABC, abstractmethod
 from collections.abc import Callable
 
@@ -8,6 +9,9 @@ import maat.ecosystem.git as _git
 import maat.ecosystem.registry as _registry
 import maat.ecosystem.scarbs_xyz as _scarbs_xyz
 from maat.model import Step
+
+if typing.TYPE_CHECKING:
+    from maat.workspace import WorkspaceSettings
 
 type Ecosystem = EcosystemProject | list[Ecosystem] | Callable[[], Ecosystem]
 
@@ -111,3 +115,9 @@ def entire_scarbs(*, blacklist: list[str | re.Pattern] = None) -> Ecosystem:
 
 def _human_url(url: str) -> str:
     return url.removeprefix("http://").removeprefix("https://").removesuffix("/")
+
+
+def import_workspace(name: str) -> "WorkspaceSettings":
+    from maat.workspace import WorkspaceSettings
+
+    return WorkspaceSettings.load(name)
