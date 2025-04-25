@@ -31,6 +31,10 @@ ARG RUSTUP_TOOLCHAIN=1.86
 ENV RUSTUP_TOOLCHAIN="$RUSTUP_TOOLCHAIN"
 RUN rustup-init -y --no-modify-path && cargo --version
 
+# Install UV and Python.
+COPY --from=ghcr.io/astral-sh/uv:0.6.13 /uv /uvx /root/.local/bin/
+RUN uv python install 3.13
+
 # Install ASDF.
 ARG ASDF_VERSION=0.16.7
 ENV ASDF_VERSION="$ASDF_VERSION"
@@ -41,11 +45,10 @@ export ARCH=$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/' -e 's/i[
 export DL_URL="https://github.com/asdf-vm/asdf/releases/download/v$ASDF_VERSION/asdf-v$ASDF_VERSION-linux-$ARCH.tar.gz"
 curl --proto '=https' --tlsv1.2 -sSfL "$DL_URL" | tar -xz --strip-components=0 -C /root/.local/bin asdf
 asdf --version
-EOF
 
-# Install UV and Python.
-COPY --from=ghcr.io/astral-sh/uv:0.6.13 /uv /uvx /root/.local/bin/
-RUN uv python install 3.13
+asdf plugin add scarb
+asdf plugin add starknet-foundry
+EOF
 
 # Install Scarb.
 ARG ASDF_SCARB_VERSION
@@ -56,7 +59,6 @@ if [ -z "$ASDF_SCARB_VERSION" ]; then
   echo "ERROR: ASDF_SCARB_VERSION must be specified"
   exit 1
 fi
-asdf plugin add scarb
 asdf install scarb
 scarb --version
 EOF
@@ -72,7 +74,6 @@ if [ -z "${ASDF_STARKNET-FOUNDRY_VERSION}" ]; then
   echo "ERROR: ASDF_STARKNET_FOUNDRY_VERSION must be specified"
   exit 1
 fi
-asdf plugin add starknet-foundry
 asdf install starknet-foundry
 snforge --version
 sncast --version
