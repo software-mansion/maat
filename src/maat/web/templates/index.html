@@ -56,10 +56,20 @@
     <title>Ma'at</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
+    <script>
+        function openAll() {
+            document.querySelectorAll("details").forEach(d => {
+                d.open = true;
+            });
+        }
+    </script>
 </head>
 <body>
 <header>
     <h1>Ma'at</h1>
+    <div class="actions">
+        <button onclick="openAll()">Open all</button>
+    </div>
 </header>
 <main>
     <details open>
