@@ -75,6 +75,7 @@ def _render_to(
         # These two keep `npx live-server` working, which is useful in development.
         keep_html_and_head_opening_tags=True,
         keep_closing_tags=True,
+        minify_js=True,
     )
     path.write_text(minified, encoding="utf-8")
 
