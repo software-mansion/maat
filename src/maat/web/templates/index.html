@@ -57,10 +57,12 @@
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
     <script>
-        function openAll() {
-            document.querySelectorAll("details").forEach(d => {
-                d.open = true;
-            });
+        function toggleAllSections() {
+            const details = document.querySelectorAll("details");
+            const shouldOpen = [...details].filter(d => d.open).length / details.length < 0.5;
+            for (const d of details) {
+                d.open = shouldOpen;
+            }
         }
     </script>
 </head>
@@ -68,7 +70,7 @@
 <header>
     <h1>Ma'at</h1>
     <div class="actions">
-        <button onclick="openAll()">Open all</button>
+        <button onclick="toggleAllSections()">Toggle all</button>
     </div>
 </header>
 <main>
