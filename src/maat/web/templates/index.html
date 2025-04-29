@@ -61,18 +61,17 @@
     <link rel="icon" href="_assets/favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="_assets/style.css">
     <script type="module">
-        import {setupDetailsMemory, toggleAll} from './_assets/details.js';
+        import {setupDetailsMemory, setupAltClickOnSummaries} from './_assets/details.js';
 
-        document.addEventListener('DOMContentLoaded', setupDetailsMemory);
-        window.toggleAll = toggleAll;
+        document.addEventListener('DOMContentLoaded', () => {
+            setupDetailsMemory();
+            setupAltClickOnSummaries();
+        });
     </script>
 </head>
 <body>
 <header>
     <h1>Ma'at</h1>
-    <div class="actions">
-        <button onclick="toggleAll()">Toggle all</button>
-    </div>
 </header>
 <main>
     <details id="details-metrics" open>

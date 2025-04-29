@@ -66,14 +66,6 @@ main {
     overflow: auto;
 }
 
-.actions {
-    max-width: 50em;
-    margin: 1em auto;
-    display: flex;
-    justify-content: center;
-    gap: 1em;
-}
-
 details {
     --border-radius: 0.5em;
 

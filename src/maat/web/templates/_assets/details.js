@@ -27,7 +27,28 @@ export function setupDetailsMemory() {
     observer.observe(document.body, {childList: true, subtree: true});
 }
 
-export function toggleAll() {
+export function setupAltClickOnSummaries() {
+    // macOS conventions differ from Windows/Linux.
+    // noinspection JSDeprecatedSymbols
+    const isMac = navigator.platform.startsWith("Mac") || navigator.platform === "iPhone";
+
+    for (const summary of document.querySelectorAll("summary")) {
+        // Add a tooltip explaining the shortcut.
+        summary.title = `${isMac ? "⌥" : "Ctrl"}+Click to expand/collapse all sections`;
+
+        // Add a click handler for the modifier key.
+        summary.addEventListener('click', (event) => {
+            const isModifierPressed = isMac ? event.altKey : event.ctrlKey;
+
+            if (isModifierPressed) {
+                event.preventDefault();
+                toggleAll();
+            }
+        });
+    }
+}
+
+function toggleAll() {
     const details = document.querySelectorAll("details");
     const shouldOpen = [...details].filter(d => d.open).length / details.length < 0.5;
     for (const d of details) {
