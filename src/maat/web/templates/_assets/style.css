@@ -3,6 +3,7 @@
     --color-background-alt: #F8F9FF;
     --color-text-primary: #001A72;
     --color-text-secondary: #33488E;
+    --color-text-dim: #919FCF;
     --color-border: #C1C6E5;
     --color-primary: #33488E;
     --color-primary-light: #EEF0FF;
@@ -32,6 +33,7 @@
         --color-background-alt: #30354A;
         --color-text-primary: #C1C6E5;
         --color-text-secondary: #EEF0FF;
+        --color-text-dim: #6676AA;
         --color-border: #444466;
         --color-primary: #4A5FA0;
         --color-primary-light: #1E2133;
@@ -64,6 +66,18 @@ main {
     width: 100%;
     padding-bottom: var(--details-spacing); /* Extra spacing for shadows to fit. */
     overflow: auto;
+}
+
+footer {
+    align-items: center;
+    color: var(--color-text-dim);
+    display: flex;
+    flex-direction: row;
+    font-size: 0.7em;
+    gap: 2em;
+    justify-content: center;
+    line-height: 1em;
+    padding: 3em 2em;
 }
 
 details {
@@ -240,6 +254,18 @@ table {
     font-weight: normal;
 }
 
+.text-primary {
+    color: var(--color-text-primary);
+}
+
+.text-secondary {
+    color: var(--color-text-secondary);
+}
+
+.text-dim {
+    color: var(--color-text-dim);
+}
+
 .text-sm {
     font-size: 0.8em;
 }
@@ -252,6 +278,10 @@ table {
     text-decoration: underline;
 }
 
+.no-underline {
+    text-decoration: none;
+}
+
 pre, code {
     font-family: var(--font-family-mono), monospace;
 }
@@ -262,6 +292,14 @@ pre, code {
 
 .text-right {
     text-align: right;
+}
+
+.fill-primary {
+    fill: var(--color-text-primary);
+}
+
+.fill-secondary {
+    fill: var(--color-text-secondary);
 }
 
 a:visited.no-visited {
