@@ -38,7 +38,7 @@
     }
 }
 
-* {
+*, ::before, ::after {
     box-sizing: border-box;
 }
 
@@ -273,9 +273,11 @@ button, select {
     border-radius: 0.375em;
     box-shadow: var(--box-shadow-md);
     padding: 0.5em 0.9em;
+    margin: 0;
     font-family: inherit;
     font-size: 0.9em;
     cursor: pointer;
+    line-height: 1.15;
 
     &:hover {
         background: var(--color-background-alt);
