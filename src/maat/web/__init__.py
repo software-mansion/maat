@@ -12,7 +12,7 @@ from pydantic import BaseModel
 from maat.model import Report, ReportMeta
 from maat.report.metrics import Metrics
 from maat.web import filters
-from maat.web.view_model import build_view_model, logs_txt_path
+from maat.web.view_model import ReportInfo, build_view_model, logs_txt_path
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
@@ -21,10 +21,10 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     output.mkdir(parents=True)
 
     reports = [
-        (
-            report,
-            meta,
-            Metrics.compute(report, meta),
+        ReportInfo(
+            report=report,
+            meta=meta,
+            metrics=Metrics.compute(report, meta),
         )
         for report, meta in reports
     ]
@@ -36,7 +36,7 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     with _jinja_env() as env:
         _render_to(
             template="index.html",
-            view_model=vm,
+            vm=vm,
             path=output / "index.html",
             env=env,
         )
@@ -64,12 +64,12 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
 
 def _render_to(
     template: str,
-    view_model: BaseModel,
+    vm: BaseModel,
     path: Path,
     env: jinja2.Environment,
 ):
     template = env.get_template(template)
-    rendered = template.render(**view_model.model_dump())
+    rendered = template.render(**vm.model_dump())
     minified = minify_html.minify(
         rendered,
         # These two keep `npx live-server` working, which is useful in development.
@@ -90,7 +90,7 @@ def _copy_traversable(traversable: Traversable, dest: Path):
             dest_child.write_bytes(child.read_bytes())
 
 
-def _write_logs(reports: list[tuple[Report, ReportMeta, Metrics]], output: Path):
+def _write_logs(reports: list[ReportInfo], output: Path):
     for report, meta, _ in reports:
         for test in report.tests:
             log_file = output / logs_txt_path(meta, test)

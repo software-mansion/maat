@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import NamedTuple
 
 from pydantic import BaseModel
 
@@ -42,8 +43,14 @@ class RootViewModel(BaseModel):
     label_groups: list[LabelGroupViewModel]
 
 
+class ReportInfo(NamedTuple):
+    report: Report
+    meta: ReportMeta
+    metrics: Metrics
+
+
 def build_view_model(
-    reports: list[tuple[Report, ReportMeta, Metrics]],
+    reports: list[ReportInfo],
 ) -> RootViewModel:
     reference_report_idx = -1
 
@@ -116,6 +123,5 @@ def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
     return Path() / meta.name / test.name_and_rev / "logs.txt"
 
 
-def _reports_sorting_key(report_tuple: tuple[Report, ReportMeta, Metrics]) -> list:
-    _, _, metrics = report_tuple
-    return smart_sort_key(metrics.meta.name)
+def _reports_sorting_key(info: ReportInfo) -> list:
+    return smart_sort_key(info.meta.name)
