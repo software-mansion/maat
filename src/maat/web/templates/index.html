@@ -78,7 +78,7 @@
     </div>
 </header>
 <main>
-    <details open>
+    <details id="details-metrics" open>
         <summary>Metrics</summary>
         <table>
             {{ header() }}
@@ -111,7 +111,8 @@
         </table>
     </details>
     {% for label_group in label_groups %}
-        <details class="{{ "color-coded"|clsx(label_group.category) }}">
+        <details id="details-{{ label_group.category }}"
+                 class="{{ "color-coded"|clsx(label_group.category) }}">
             <summary>
                 <abbr class="help bold"
                       title="{{ label_group.category.help }}">{{ label_group.category }}</abbr>
