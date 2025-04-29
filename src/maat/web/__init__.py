@@ -20,26 +20,29 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
+    # NOTE: The last report will be the reference, and thus it will be rendered as index.html.
     reports = [
         ReportInfo(
             report=report,
             meta=meta,
             metrics=Metrics.compute(report, meta),
+            pivot_path=pivot_path,
         )
-        for report, meta in reports
+        for (report, meta), pivot_path in zip(reports, _pivot_paths(reports))
     ]
 
     _copy_traversable(importlib.resources.files("maat.web.resources"), output)
     _write_logs(reports, output)
 
-    vm = build_view_model(reports)
-    with _jinja_env() as env:
-        _render_to(
-            template="index.html",
-            vm=vm,
-            path=output / "index.html",
-            env=env,
-        )
+    for i, reference_report in enumerate(reports):
+        vm = build_view_model(reports, reference_report_idx=i)
+        with _jinja_env() as env:
+            _render_to(
+                template="index.html",
+                vm=vm,
+                path=output / reference_report.pivot_path,
+                env=env,
+            )
 
 
 @contextmanager
@@ -60,6 +63,14 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
     )
 
     yield env
+
+
+def _pivot_paths(iterable: list) -> Iterator[str]:
+    for i in range(len(iterable)):
+        if i < len(iterable) - 1:
+            yield f"pivot-{i}.html"
+        else:
+            yield "index.html"
 
 
 def _render_to(
@@ -91,7 +102,7 @@ def _copy_traversable(traversable: Traversable, dest: Path):
 
 
 def _write_logs(reports: list[ReportInfo], output: Path):
-    for report, meta, _ in reports:
+    for report, meta, _, _ in reports:
         for test in report.tests:
             log_file = output / logs_txt_path(meta, test)
             log_file.parent.mkdir(parents=True, exist_ok=True)

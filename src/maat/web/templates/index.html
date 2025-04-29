@@ -11,13 +11,17 @@
     <tr>
         <th>{{ first_column }}</th>
         {% for rn in report_names %}
-            <th class="text-center">
-                {% if rn.is_reference %}
-                    <abbr class="help underline"
-                          title="This is the reference report. All comparative cells in other columns are compared with respective cells from this column.">{{ rn.title }}</abbr>
-                {% else %}
-                    {{ rn.title }}
-                {% endif %}
+            <th class="{{ "text-center"|clsx(reference=rn.is_reference) }}">
+                <a href="{{ rn.pivot_href }}" class="no-visited">
+                    {% if rn.is_reference %}
+                        <abbr class="help underline"
+                              title="This is the reference report. All comparative cells in other columns are compared with respective cells from this column.">
+                            {{- rn.title -}}
+                        </abbr>
+                    {% else %}
+                        {{- rn.title -}}
+                    {% endif %}
+                </a>
             </th>
         {% endfor %}
     </tr>

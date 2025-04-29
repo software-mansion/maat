@@ -6,6 +6,7 @@
     --color-border: #C1C6E5;
     --color-primary: #33488E;
     --color-primary-light: #EEF0FF;
+    --color-hightlight: #fef9c2;
 
     --color-broken: #e12afb;
     --color-error: #fb2c36;
@@ -35,6 +36,7 @@
         --color-primary: #4A5FA0;
         --color-primary-light: #1E2133;
         --color-shadow: #00000020;
+        --color-hightlight: #432004;
     }
 }
 
@@ -184,6 +186,10 @@ table {
         --cell-background: var(--color-primary-light);
         font-weight: bold;
     }
+
+    & th.reference {
+        --cell-background: var(--color-hightlight);
+    }
 }
 
 .help {
@@ -264,6 +270,10 @@ pre, code {
 
 .text-right {
     text-align: right;
+}
+
+a:visited.no-visited {
+    color: LinkText;
 }
 
 button, select {

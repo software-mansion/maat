@@ -10,6 +10,7 @@ from maat.utils.smart_sort import smart_sort_key
 
 class ReportNameViewModel(BaseModel):
     title: str
+    pivot_href: str
     is_reference: bool = False
 
 
@@ -47,21 +48,29 @@ class ReportInfo(NamedTuple):
     report: Report
     meta: ReportMeta
     metrics: Metrics
+    pivot_path: str
 
 
 def build_view_model(
     reports: list[ReportInfo],
+    reference_report_idx: int,
 ) -> RootViewModel:
-    reference_report_idx = -1
-
     reports.sort(key=_reports_sorting_key)
 
-    metrics_transposed = MetricsTransposed.new([metrics for _, _, metrics in reports])
+    metrics_transposed = MetricsTransposed.new(
+        [metrics for _, _, metrics, _ in reports]
+    )
 
-    report_names = [ReportNameViewModel(title=m.name) for m in metrics_transposed.meta]
+    report_names = [
+        ReportNameViewModel(
+            title=meta.name,
+            pivot_href=pivot_path,
+        )
+        for _, meta, _, pivot_path in reports
+    ]
     report_names[reference_report_idx].is_reference = True
 
-    reference_report, _, reference_metrics = reports[reference_report_idx]
+    reference_report, _, reference_metrics, _ = reports[reference_report_idx]
 
     label_groups = []
     for category in LabelCategory:
@@ -74,14 +83,14 @@ def build_view_model(
 
         tests_by_report_idx_and_name: dict[tuple[int, str], TestReport] = {
             (report_idx, test.name): test
-            for report_idx, (report, _, _) in enumerate(reports)
+            for report_idx, (report, _, _, _) in enumerate(reports)
             for test in report.tests
         }
 
         rows = []
         for test_name in relevant_test_names:
             cells = []
-            for report_idx, (_, report_meta, _) in enumerate(reports):
+            for report_idx, (_, report_meta, _, _) in enumerate(reports):
                 if test := tests_by_report_idx_and_name.get((report_idx, test_name)):
                     logs_href = str(logs_txt_path(report_meta, test))
 
