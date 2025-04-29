@@ -1,7 +1,7 @@
 import enum
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Literal, Self
+from typing import Any, Callable, Literal, Self, Iterator
 from collections.abc import MutableSet
 
 from pydantic import (
@@ -76,7 +76,7 @@ class LabelCategory(enum.StrEnum):
             self.BUILD_FAIL: "Build failed.",
             self.TEST_FAIL: "Build succeeded but tests failed.",
             self.TEST_PASS: 'Build succeeded and tests passed. This is the "clean" state.',
-            self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable .",
+            self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable.",
         }[self]
 
 
@@ -133,7 +133,7 @@ class Labels(MutableSet[Label], RootModel):
 
         return item in self.root
 
-    def __iter__(self):
+    def __iter__(self) -> Iterator[Label]:
         return iter(self.root)
 
     def add(self, label: Label):
