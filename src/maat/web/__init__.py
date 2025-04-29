@@ -31,7 +31,10 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         for (report, meta), pivot_path in zip(reports, _pivot_paths(reports))
     ]
 
-    _copy_traversable(importlib.resources.files("maat.web.resources"), output)
+    _copy_traversable(
+        importlib.resources.files("maat.web.templates._assets"),
+        output / "_assets",
+    )
     _write_logs(reports, output)
 
     for i, reference_report in enumerate(reports):

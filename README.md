@@ -1,7 +1,7 @@
 <div align="center">
   <picture>
     <img alt="An artistic depiction of Ma'at, the ancient Egyptian goddess, overseeing a balanced ecosystem as experiments unfold, symbolizing harmony and testing."
-         src="src/maat/web/resources/logo.png"
+         src="src/maat/web/templates/_assets/logo.png"
          height="256" width="256">
   </picture>
 
