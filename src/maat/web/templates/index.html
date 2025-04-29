@@ -60,14 +60,11 @@
     <title>Ma'at</title>
     <link rel="icon" href="favicon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="style.css">
-    <script>
-        function toggleAll() {
-            const details = document.querySelectorAll("details");
-            const shouldOpen = [...details].filter(d => d.open).length / details.length < 0.5;
-            for (const d of details) {
-                d.open = shouldOpen;
-            }
-        }
+    <script type="module">
+        import {setupDetailsMemory, toggleAll} from './details.js';
+
+        document.addEventListener('DOMContentLoaded', setupDetailsMemory);
+        window.toggleAll = toggleAll;
     </script>
 </head>
 <body>
