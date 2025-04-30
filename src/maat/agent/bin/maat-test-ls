@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+set -eu
+SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
+exec npm --prefix "$SCRIPT_DIR/maat-test-ls-src" start

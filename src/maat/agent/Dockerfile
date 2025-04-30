@@ -50,6 +50,17 @@ asdf plugin add scarb
 asdf plugin add starknet-foundry
 EOF
 
+# Install Node.js.
+ARG ASDF_NODEJS_VERSION=23.11.0
+ENV ASDF_NODEJS_VERSION="$ASDF_NODEJS_VERSION"
+RUN <<EOF
+set -eux
+asdf plugin add nodejs
+asdf install nodejs
+node --version
+npm --version
+EOF
+
 # Install Scarb.
 ARG ASDF_SCARB_VERSION
 ENV ASDF_SCARB_VERSION="$ASDF_SCARB_VERSION"
