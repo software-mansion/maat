@@ -16,10 +16,7 @@ import {
     type WorkspaceFolder,
 } from "vscode-languageserver-protocol";
 
-const ls = spawnCairoLS();
-try {
-    const connection = await acquireResource(ls);
-
+const exitCode = await withCairoLS(async (connection) => {
     const rootUri = `file://${process.env.PWD}`;
     await initialize(connection, rootUri, baseCapabilities());
 
@@ -28,10 +25,13 @@ try {
     } finally {
         await terminate(connection);
     }
-} finally {
-    await ls.return();
-}
+});
 
+process.exit(exitCode);
+
+/**
+ * Calls `cairo/viewAnalyzedCrates` and console-logs the result.
+ */
 async function viewAnalysedCrates(connection: MessageConnection) {
     const SEPARATOR = "==============================";
     const result = await connection.sendRequest("cairo/viewAnalyzedCrates");
@@ -40,14 +40,18 @@ async function viewAnalysedCrates(connection: MessageConnection) {
     console.log(SEPARATOR);
 }
 
-async function* spawnCairoLS(): AsyncGenerator<MessageConnection, void, void> {
+async function withCairoLS(
+    callback: (connection: MessageConnection) => Promise<void>,
+): Promise<number> {
+    const exitPromise = defer<number>();
+
     const serverProcess = childProcess.spawn("scarb", ["cairo-language-server"], {
         stdio: ["pipe", "pipe", "inherit"],
     });
 
     serverProcess.on("close", (code) => {
         console.log(`CairoLS process exited with code: ${code}`);
-        process.exit(code || 0);
+        exitPromise.resolve(code || 0);
     });
 
     try {
@@ -58,21 +62,15 @@ async function* spawnCairoLS(): AsyncGenerator<MessageConnection, void, void> {
 
         try {
             connection.listen();
-            yield connection;
+            await callback(connection);
         } finally {
             connection.dispose();
         }
     } finally {
         serverProcess.kill();
     }
-}
 
-async function acquireResource<T>(resource: AsyncGenerator<T, unknown, void>): Promise<T> {
-    const result = await resource.next();
-    if (result.done === true) {
-        throw new Error("Resource exhausted");
-    }
-    return result.value;
+    return await exitPromise.promise;
 }
 
 /**
@@ -80,7 +78,7 @@ async function acquireResource<T>(resource: AsyncGenerator<T, unknown, void>): P
  *
  * Tests will most often need to extend these with test-specific additions.
  */
-export function baseCapabilities(): ClientCapabilities {
+function baseCapabilities(): ClientCapabilities {
     return {
         workspace: {
             configuration: false,
@@ -97,7 +95,7 @@ export function baseCapabilities(): ClientCapabilities {
  * @param rootUri The workspace root URI (string)
  * @param capabilities Client capabilities
  */
-export async function initialize(
+async function initialize(
     connection: MessageConnection,
     rootUri: string,
     capabilities: ClientCapabilities,
@@ -109,6 +107,7 @@ export async function initialize(
         },
     ];
 
+    // noinspection JSDeprecatedSymbols
     const params: InitializeParams = {
         processId: process.pid,
         capabilities,
@@ -135,10 +134,23 @@ export async function initialize(
  * Performs the `shutdown`/`exit` handshake with the server.
  * @param connection An active MessageConnection to the server
  */
-export async function terminate(connection: MessageConnection): Promise<void> {
+async function terminate(connection: MessageConnection): Promise<void> {
     // Send `shutdown` request
     await connection.sendRequest(ShutdownRequest.method);
 
     // Send `exit` notification
     await connection.sendNotification(ExitNotification.method);
+}
+
+interface DeferredPromise<T> {
+    promise: Promise<T>;
+    resolve: (value: T | PromiseLike<T>) => void;
+}
+
+function defer<T>(): DeferredPromise<T> {
+    let resolve: (value: T | PromiseLike<T>) => void;
+    const promise = new Promise<T>((r) => {
+        resolve = r;
+    });
+    return { promise, resolve };
 }
