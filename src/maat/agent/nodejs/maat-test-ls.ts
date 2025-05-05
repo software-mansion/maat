@@ -1,6 +1,7 @@
 import * as childProcess from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import pDefer from "p-defer";
 import {
     createMessageConnection,
     type MessageConnection,
@@ -18,22 +19,29 @@ import {
     type WorkspaceFolder,
 } from "vscode-languageserver-protocol";
 
-const exitCode = await withCairoLS(async (connection) => {
-    const rootUri = `file://${process.env.PWD}`;
-    await initialize(connection, rootUri, baseCapabilities());
-
-    try {
-        for await (const libCairoFile of findAllLibCairoFiles()) {
-            console.log(libCairoFile);
-        }
-
-        await viewAnalysedCrates(connection);
-    } finally {
-        await terminate(connection);
-    }
+main().catch((err) => {
+    console.error(err);
+    process.exit(1);
 });
 
-process.exit(exitCode);
+async function main(): Promise<void> {
+    const exitCode = await withCairoLS(async (connection) => {
+        const rootUri = `file://${process.env.PWD}`;
+        await initialize(connection, rootUri, baseCapabilities());
+
+        try {
+            for await (const libCairoFile of findAllLibCairoFiles()) {
+                console.log(libCairoFile);
+            }
+
+            await viewAnalysedCrates(connection);
+        } finally {
+            await terminate(connection);
+        }
+    });
+
+    process.exit(exitCode);
+}
 
 /**
  * Finds any `lib.cairo` files in PWD recursively.
@@ -68,7 +76,7 @@ async function viewAnalysedCrates(connection: MessageConnection) {
 async function withCairoLS(
     callback: (connection: MessageConnection) => Promise<void>,
 ): Promise<number> {
-    const exitPromise = defer<number>();
+    const exitPromise = pDefer<number>();
 
     const serverProcess = childProcess.spawn("scarb", ["cairo-language-server"], {
         stdio: ["pipe", "pipe", "inherit"],
@@ -165,17 +173,4 @@ async function terminate(connection: MessageConnection): Promise<void> {
 
     // Send `exit` notification
     await connection.sendNotification(ExitNotification.method);
-}
-
-interface DeferredPromise<T> {
-    promise: Promise<T>;
-    resolve: (value: T | PromiseLike<T>) => void;
-}
-
-function defer<T>(): DeferredPromise<T> {
-    let resolve: (value: T | PromiseLike<T>) => void;
-    const promise = new Promise<T>((r) => {
-        resolve = r;
-    });
-    return { promise, resolve };
 }

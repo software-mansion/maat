@@ -1,5 +1,10 @@
 #!/usr/bin/env bash
 set -eu
+
+# This is debug-only implementation of this binary.
+# In agent image, it is replaced with built script directly.
+
 SCRIPT_DIR="$(dirname "$(readlink -f "${BASH_SOURCE[0]}")")"
-npm --prefix "$SCRIPT_DIR/maat-test-ls-src" install
-exec node "$SCRIPT_DIR/maat-test-ls-src/index.ts"
+NODEJS_DIR="$(dirname "$SCRIPT_DIR")/nodejs"
+npm --prefix "$NODEJS_DIR" run build
+exec "$NODEJS_DIR/out/maat-test-ls.js"

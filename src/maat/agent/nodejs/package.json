@@ -1,0 +1,22 @@
+{
+    "name": "maat-nodejs-codebase",
+    "version": "1.0.0",
+    "private": true,
+    "description": "Node.js codebase of Ma'at agent.",
+    "scripts": {
+        "build": "esbuild *.ts --bundle --platform=node --outdir=out '--banner:js=#!/usr/bin/env node' --external:util && chmod +x out/*"
+    },
+    "prettier": {},
+    "dependencies": {
+        "p-defer": "^4.0.1",
+        "vscode-jsonrpc": "9.0.0-next.7",
+        "vscode-languageserver-protocol": "3.17.6-next.1"
+    },
+    "devDependencies": {
+        "@tsconfig/node23": "23.0.1",
+        "@types/node": "22.15.3",
+        "esbuild": "0.25.3",
+        "prettier": "3.5.3",
+        "typescript": "5.8.3"
+    }
+}
