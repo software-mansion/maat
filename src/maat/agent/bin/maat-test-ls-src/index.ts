@@ -1,4 +1,6 @@
-import * as childProcess from "child_process";
+import * as childProcess from "node:child_process";
+import * as fs from "node:fs/promises";
+import * as path from "node:path";
 import {
     createMessageConnection,
     type MessageConnection,
@@ -21,6 +23,10 @@ const exitCode = await withCairoLS(async (connection) => {
     await initialize(connection, rootUri, baseCapabilities());
 
     try {
+        for await (const libCairoFile of findAllLibCairoFiles()) {
+            console.log(libCairoFile);
+        }
+
         await viewAnalysedCrates(connection);
     } finally {
         await terminate(connection);
@@ -28,6 +34,25 @@ const exitCode = await withCairoLS(async (connection) => {
 });
 
 process.exit(exitCode);
+
+/**
+ * Finds any `lib.cairo` files in PWD recursively.
+ */
+async function* findAllLibCairoFiles(): AsyncGenerator<string> {
+    async function* findInDir(dir: string): AsyncGenerator<string> {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                yield* findInDir(fullPath);
+            } else if (entry.name === "lib.cairo") {
+                yield fullPath;
+            }
+        }
+    }
+
+    yield* findInDir(".");
+}
 
 /**
  * Calls `cairo/viewAnalyzedCrates` and console-logs the result.
