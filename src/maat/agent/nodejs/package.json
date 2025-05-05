@@ -8,7 +8,6 @@
     },
     "prettier": {},
     "dependencies": {
-        "p-defer": "^4.0.1",
         "vscode-jsonrpc": "9.0.0-next.7",
         "vscode-languageserver-protocol": "3.17.6-next.1"
     },

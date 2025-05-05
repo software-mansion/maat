@@ -1,7 +1,6 @@
 import * as childProcess from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
-import pDefer from "p-defer";
 import {
     createMessageConnection,
     type MessageConnection,
@@ -98,7 +97,7 @@ async function viewAnalysedCrates(connection: MessageConnection) {
 async function withCairoLS(
     callback: (connection: MessageConnection) => Promise<void>,
 ): Promise<number> {
-    const exitPromise = pDefer<number>();
+    const exitPromise = Promise.withResolvers<number>();
 
     const serverProcess = childProcess.spawn("scarb", ["cairo-language-server"], {
         stdio: ["pipe", "pipe", "inherit"],
