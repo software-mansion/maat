@@ -4,9 +4,6 @@
     "private": true,
     "description": "Tests CairoLS",
     "type": "module",
-    "scripts": {
-        "start": "node index.ts"
-    },
     "prettier": {},
     "dependencies": {
         "@types/node": "^22.15.3",
