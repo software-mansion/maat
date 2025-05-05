@@ -1,7 +1,6 @@
 {
     "extends": "@tsconfig/node23/tsconfig.json",
     "compilerOptions": {
-        "noEmit": true,
-        "erasableSyntaxOnly": true
+        "noEmit": true
     }
 }
