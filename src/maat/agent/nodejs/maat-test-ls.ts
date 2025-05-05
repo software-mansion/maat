@@ -30,8 +30,11 @@ async function main(): Promise<void> {
         await initialize(connection, rootUri, baseCapabilities());
 
         try {
-            for await (const libCairoFile of findAllLibCairoFiles()) {
-                console.log(libCairoFile);
+            let libCairoFiles = await findAllLibCairoFiles();
+            for (const libCairoFile of libCairoFiles) {
+                let fileUrl = path2url(libCairoFile);
+                console.log(`Opening ${fileUrl}`);
+                await openFile(fileUrl, connection);
             }
 
             await viewAnalysedCrates(connection);
@@ -46,20 +49,39 @@ async function main(): Promise<void> {
 /**
  * Finds any `lib.cairo` files in PWD recursively.
  */
-async function* findAllLibCairoFiles(): AsyncGenerator<string> {
-    async function* findInDir(dir: string): AsyncGenerator<string> {
+async function findAllLibCairoFiles(): Promise<string[]> {
+    async function visit(dir: string): Promise<string[]> {
+        const results: string[] = [];
         const entries = await fs.readdir(dir, { withFileTypes: true });
+
         for (const entry of entries) {
             const fullPath = path.join(dir, entry.name);
             if (entry.isDirectory()) {
-                yield* findInDir(fullPath);
+                results.push(...(await visit(fullPath)));
             } else if (entry.name === "lib.cairo") {
-                yield fullPath;
+                results.push(fullPath);
             }
         }
+
+        return results;
     }
 
-    yield* findInDir(".");
+    return visit(".");
+}
+
+/**
+ * Opens a file in the LS.
+ */
+async function openFile(url: string, connection: MessageConnection): Promise<void> {
+    let filePath = url2path(url);
+    await connection.sendNotification("textDocument/didOpen", {
+        textDocument: {
+            uri: url,
+            languageId: path.extname(filePath).slice(1),
+            version: 0,
+            text: await fs.readFile(filePath, "utf-8"),
+        },
+    });
 }
 
 /**
@@ -136,7 +158,7 @@ async function initialize(
     const workspaceFolders: WorkspaceFolder[] = [
         {
             uri: rootUri,
-            name: new URL(rootUri).pathname.split("/").filter(Boolean).pop() || "maat",
+            name: url2path(rootUri).split("/").filter(Boolean).pop() || "maat",
         },
     ];
 
@@ -173,4 +195,20 @@ async function terminate(connection: MessageConnection): Promise<void> {
 
     // Send `exit` notification
     await connection.sendNotification(ExitNotification.method);
+}
+
+/**
+ * Converts a file URL into a file system path.
+ */
+function url2path(fileUrl: string): string {
+    return new URL(fileUrl).pathname;
+}
+
+/**
+ * Converts a file system path to a file URL.
+ *
+ * Path is resolved before constructing the URL.
+ */
+function path2url(filePath: string): string {
+    return new URL(path.resolve(filePath), "file://").href;
 }
