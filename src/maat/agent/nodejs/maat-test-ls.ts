@@ -26,7 +26,7 @@ import {
     WorkspaceFolder,
 } from "vscode-languageserver-protocol";
 
-const SEPARATOR = "==============================";
+const SEPARATOR = "\n==============================";
 
 const ViewAnalyzedCrates = new RequestType0<{}, {}>("cairo/viewAnalyzedCrates");
 
@@ -37,43 +37,39 @@ interface ServerStatusParams {
 
 const ServerStatus = new NotificationType<ServerStatusParams>("cairo/serverStatus");
 
-main().catch((err) => {
-    console.error(err);
-    process.exit(1);
-});
+withCairoLS(async (connection) => {
+    const rootUri = `file://${process.env.PWD}`;
+    await initialize(connection, rootUri, baseCapabilities());
 
-async function main(): Promise<void> {
-    const exitCode = await withCairoLS(async (connection) => {
-        const rootUri = `file://${process.env.PWD}`;
-        await initialize(connection, rootUri, baseCapabilities());
+    try {
+        // Install various probes.
+        const analysisAwaiter = startAnalysisAwaiter(connection);
+        const diagnosticsCollector = DiagnosticsCollector.start(connection);
 
-        try {
-            // Install various probes.
-            const analysisAwaiter = startAnalysisAwaiter(connection);
-            const diagnosticsCollector = DiagnosticsCollector.start(connection);
-
-            // Open any lib.cairo file we can find to ensure all packages in the project will be opened and analysed.
-            let libCairoFiles = await findAllLibCairoFiles();
-            for (const libCairoFile of libCairoFiles) {
-                let fileUrl = path2url(libCairoFile);
-                console.log(`Opening ${fileUrl}`);
-                await openFile(fileUrl, connection);
-            }
-
-            // Wait for project analysis to finish.
-            // Assume some healthy timeout in case LS hangs.
-            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
-            const diags = diagnosticsCollector.stop();
-
-            await viewAnalysedCrates(connection);
-            showDiagnostics(diags);
-        } finally {
-            await terminate(connection);
+        // Open any lib.cairo file we can find to ensure
+        // all packages in the project will be opened and analysed.
+        let libCairoFiles = await findAllLibCairoFiles();
+        for (const libCairoFile of libCairoFiles) {
+            let fileUrl = path2url(libCairoFile);
+            console.log(`Opening ${fileUrl}`);
+            await openFile(fileUrl, connection);
         }
-    });
 
-    process.exit(exitCode);
-}
+        // Wait for project analysis to finish.
+        // Assume some healthy timeout in case LS hangs.
+        console.log(SEPARATOR);
+        await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+        const diags = diagnosticsCollector.stop();
+
+        await viewAnalysedCrates(connection);
+        showDiagnostics(diags);
+    } finally {
+        await terminate(connection);
+    }
+}).catch((err) => {
+    console.error(err);
+    process.exitCode = 1;
+});
 
 /**
  * Finds any `lib.cairo` files in PWD recursively.
@@ -124,16 +120,20 @@ async function viewAnalysedCrates(connection: MessageConnection) {
 
 async function withCairoLS(
     callback: (connection: MessageConnection) => Promise<void>,
-): Promise<number> {
-    const exitPromise = Promise.withResolvers<number>();
+): Promise<void> {
+    const exitPromise = Promise.withResolvers<void>();
 
     const serverProcess = childProcess.spawn("scarb", ["cairo-language-server"], {
         stdio: ["pipe", "pipe", "inherit"],
     });
 
-    serverProcess.on("close", (code) => {
-        console.log(`CairoLS process exited with code: ${code}`);
-        exitPromise.resolve(code || 0);
+    serverProcess.on("close", (code, signal) => {
+        console.log(SEPARATOR);
+        console.log(`CairoLS process exited with code: ${code ?? signal}`);
+        if (code != null && code !== 0) {
+            process.exitCode = code;
+        }
+        exitPromise.resolve();
     });
 
     try {
@@ -149,7 +149,11 @@ async function withCairoLS(
             connection.dispose();
         }
     } finally {
-        serverProcess.kill();
+        setTimeout(() => {
+            if (!serverProcess.killed) {
+                serverProcess.kill();
+            }
+        }, ms("3 seconds")).unref();
     }
 
     return await exitPromise.promise;
@@ -250,7 +254,7 @@ function startAnalysisAwaiter(connection: MessageConnection): Promise<void> {
             idleTimer = setTimeout(() => {
                 console.log("Analysis completed, server is idle.");
                 defer.resolve();
-            }, ms("3 seconds"));
+            }, ms("3 seconds")).unref();
         }
     });
     return defer.promise;
@@ -261,7 +265,7 @@ function startAnalysisAwaiter(connection: MessageConnection): Promise<void> {
  */
 function timeout(ms: number, operation: string = "operation"): Promise<void> {
     return new Promise((_, reject) =>
-        setTimeout(() => reject(new Error(`${operation} timed out`)), ms),
+        setTimeout(() => reject(new Error(`${operation} timed out`)), ms).unref(),
     );
 }
 
