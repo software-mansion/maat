@@ -30,4 +30,5 @@ def _workflow() -> list[Step]:
         Step(name="build", run="scarb build --workspace --test"),
         Step(name="lint", run="scarb lint --workspace --deny-warnings"),
         Step(name="test", run="scarb test --workspace"),
+        Step(name="ls", run="maat-test-ls"),
     ]
