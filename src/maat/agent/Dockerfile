@@ -1,3 +1,10 @@
+FROM node:23.11.0 AS nodejs-builder
+WORKDIR /nodejs
+ADD nodejs /nodejs
+RUN npm ci
+RUN npm run build
+
+
 FROM fedora:42
 LABEL maintainer="Software Mansion <contact@swmansion.com>"
 
@@ -92,3 +99,4 @@ EOF
 
 # Add all agent binaries to /root/.local/bin.
 ADD --chmod=0755 bin/* /root/.local/bin
+COPY --from=nodejs-builder /nodejs/out/maat-test-ls.js /root/.local/bin/maat-test-ls
