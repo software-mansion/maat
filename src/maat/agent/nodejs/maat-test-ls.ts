@@ -4,22 +4,29 @@ import * as path from "node:path";
 import ms from "ms";
 import {
     createMessageConnection,
-    type MessageConnection,
+    Disposable,
+    MessageConnection,
     NotificationType,
     RequestType0,
     StreamMessageReader,
     StreamMessageWriter,
 } from "vscode-jsonrpc/node";
 import {
-    type ClientCapabilities,
+    ClientCapabilities,
+    DiagnosticSeverity,
+    DocumentUri,
     ExitNotification,
     InitializedNotification,
-    type InitializeParams,
+    InitializeParams,
     InitializeRequest,
+    PublishDiagnosticsNotification,
+    PublishDiagnosticsParams,
     RegistrationRequest,
     ShutdownRequest,
-    type WorkspaceFolder,
+    WorkspaceFolder,
 } from "vscode-languageserver-protocol";
+
+const SEPARATOR = "==============================";
 
 const ViewAnalyzedCrates = new RequestType0<{}, {}>("cairo/viewAnalyzedCrates");
 
@@ -41,7 +48,9 @@ async function main(): Promise<void> {
         await initialize(connection, rootUri, baseCapabilities());
 
         try {
+            // Install various probes.
             const analysisAwaiter = startAnalysisAwaiter(connection);
+            const diagnosticsCollector = DiagnosticsCollector.start(connection);
 
             // Open any lib.cairo file we can find to ensure all packages in the project will be opened and analysed.
             let libCairoFiles = await findAllLibCairoFiles();
@@ -54,8 +63,10 @@ async function main(): Promise<void> {
             // Wait for project analysis to finish.
             // Assume some healthy timeout in case LS hangs.
             await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+            const diags = diagnosticsCollector.stop();
 
             await viewAnalysedCrates(connection);
+            showDiagnostics(diags);
         } finally {
             await terminate(connection);
         }
@@ -106,11 +117,9 @@ async function openFile(url: string, connection: MessageConnection): Promise<voi
  * Calls `cairo/viewAnalyzedCrates` and console-logs the result.
  */
 async function viewAnalysedCrates(connection: MessageConnection) {
-    const SEPARATOR = "==============================";
     const result = await connection.sendRequest(ViewAnalyzedCrates);
     console.log(SEPARATOR);
     console.log(result);
-    console.log(SEPARATOR);
 }
 
 async function withCairoLS(
@@ -256,10 +265,107 @@ function timeout(ms: number, operation: string = "operation"): Promise<void> {
     );
 }
 
+class DiagnosticsCollector {
+    private constructor(
+        private readonly store: Map<DocumentUri, PublishDiagnosticsParams>,
+        private readonly notificationListener: Disposable,
+    ) {}
+
+    public static start(connection: MessageConnection): DiagnosticsCollector {
+        const store = new Map<DocumentUri, PublishDiagnosticsParams>();
+        const notificationListener = connection.onNotification(
+            PublishDiagnosticsNotification.method,
+            (incoming: PublishDiagnosticsParams) => {
+                const current = store.get(incoming.uri);
+                // Store incoming diagnostics only if...
+                if (
+                    // we didn't store anything yet, or...
+                    current == null ||
+                    // diagnostics are unversioned, or...
+                    current.version == null ||
+                    incoming.version == null ||
+                    // incoming diagnostics' version is higher than stored ones'.
+                    current.version < incoming.version
+                ) {
+                    store.set(incoming.uri, incoming);
+                }
+            },
+        );
+        return new DiagnosticsCollector(store, notificationListener);
+    }
+
+    public stop(): PublishDiagnosticsParams[] {
+        // Stop listening to new diagnostics.
+        this.notificationListener.dispose();
+
+        // Consume all diagnostics that have been accumulated.
+        const entries: PublishDiagnosticsParams[] = [];
+        for (const params of this.store.values()) {
+            if (params.diagnostics.length > 0) {
+                entries.push(params);
+            }
+        }
+        this.store.clear();
+
+        // Try to stabilise the output.
+        entries.sort((a, b) => a.uri.localeCompare(b.uri));
+
+        return entries;
+    }
+}
+
+/**
+ * Pretty prints diagnostics via `console.log`.
+ */
+function showDiagnostics(diags: PublishDiagnosticsParams[]): void {
+    let totals = {
+        [DiagnosticSeverity.Error]: 0,
+        [DiagnosticSeverity.Warning]: 0,
+        [DiagnosticSeverity.Information]: 0,
+        [DiagnosticSeverity.Hint]: 0,
+    };
+
+    console.log(SEPARATOR);
+
+    for (const { uri, diagnostics } of diags) {
+        console.log(`${uri} (${diagnostics.length})`);
+        for (const diag of diagnostics) {
+            const severityIcon = {
+                [DiagnosticSeverity.Error]: "(E)",
+                [DiagnosticSeverity.Warning]: "(W)",
+                [DiagnosticSeverity.Information]: "(i)",
+                [DiagnosticSeverity.Hint]: "(h)",
+                null: "( )",
+            }[diag.severity ?? "null"];
+
+            if (diag.severity != null) {
+                totals[diag.severity]++;
+            }
+
+            console.log(
+                indent(
+                    putAfterFirstLine(
+                        indent(`${severityIcon} ${diag.message}`),
+                        ` [Ln ${diag.range.start.line}, Col ${diag.range.start.character}]`,
+                    ),
+                    true,
+                ),
+            );
+        }
+    }
+
+    console.log(
+        `total: ${totals[DiagnosticSeverity.Error]} errors, ` +
+            `${totals[DiagnosticSeverity.Warning]} warnings, ` +
+            `${totals[DiagnosticSeverity.Information]} infos, ` +
+            `${totals[DiagnosticSeverity.Hint]} hints`,
+    );
+}
+
 /**
  * Converts a file URL into a file system path.
  */
-function url2path(fileUrl: string): string {
+function url2path(fileUrl: DocumentUri): string {
     return new URL(fileUrl).pathname;
 }
 
@@ -268,6 +374,25 @@ function url2path(fileUrl: string): string {
  *
  * Path is resolved before constructing the URL.
  */
-function path2url(filePath: string): string {
+function path2url(filePath: string): DocumentUri {
     return new URL(path.resolve(filePath), "file://").href;
+}
+
+/**
+ * Indents each line of text.
+ */
+function indent(text: string, first: boolean = false): string {
+    const INDENT = "  ";
+    text = text.replace(/\n(?=.+)/g, `\n${INDENT}`);
+    if (first) {
+        text = INDENT + text;
+    }
+    return text;
+}
+
+/**
+ * Inserts a specified string immediately after the first line of the provided text.
+ */
+function putAfterFirstLine(text: string, after: string): string {
+    return text.replace(/^(.*?)(\n|$)/, `$1${after}$2`);
 }
