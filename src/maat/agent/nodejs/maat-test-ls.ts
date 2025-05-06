@@ -1,9 +1,12 @@
 import * as childProcess from "node:child_process";
 import * as fs from "node:fs/promises";
 import * as path from "node:path";
+import ms from "ms";
 import {
     createMessageConnection,
     type MessageConnection,
+    NotificationType,
+    RequestType0,
     StreamMessageReader,
     StreamMessageWriter,
 } from "vscode-jsonrpc/node";
@@ -18,6 +21,15 @@ import {
     type WorkspaceFolder,
 } from "vscode-languageserver-protocol";
 
+const ViewAnalyzedCrates = new RequestType0<{}, {}>("cairo/viewAnalyzedCrates");
+
+interface ServerStatusParams {
+    event: "AnalysisStarted" | "AnalysisFinished";
+    idle: boolean;
+}
+
+const ServerStatus = new NotificationType<ServerStatusParams>("cairo/serverStatus");
+
 main().catch((err) => {
     console.error(err);
     process.exit(1);
@@ -29,12 +41,19 @@ async function main(): Promise<void> {
         await initialize(connection, rootUri, baseCapabilities());
 
         try {
+            const analysisAwaiter = startAnalysisAwaiter(connection);
+
+            // Open any lib.cairo file we can find to ensure all packages in the project will be opened and analysed.
             let libCairoFiles = await findAllLibCairoFiles();
             for (const libCairoFile of libCairoFiles) {
                 let fileUrl = path2url(libCairoFile);
                 console.log(`Opening ${fileUrl}`);
                 await openFile(fileUrl, connection);
             }
+
+            // Wait for project analysis to finish.
+            // Assume some healthy timeout in case LS hangs.
+            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
 
             await viewAnalysedCrates(connection);
         } finally {
@@ -88,7 +107,7 @@ async function openFile(url: string, connection: MessageConnection): Promise<voi
  */
 async function viewAnalysedCrates(connection: MessageConnection) {
     const SEPARATOR = "==============================";
-    const result = await connection.sendRequest("cairo/viewAnalyzedCrates");
+    const result = await connection.sendRequest(ViewAnalyzedCrates);
     console.log(SEPARATOR);
     console.log(result);
     console.log(SEPARATOR);
@@ -194,6 +213,47 @@ async function terminate(connection: MessageConnection): Promise<void> {
 
     // Send `exit` notification
     await connection.sendNotification(ExitNotification.method);
+}
+
+/**
+ * Starts listening for `cairo/serverStatus` notifications
+ * and returns a promise that resolves when CairoLS becomes truly idle.
+ */
+function startAnalysisAwaiter(connection: MessageConnection): Promise<void> {
+    const defer = Promise.withResolvers<void>();
+    let idleTimer: NodeJS.Timeout | null = null;
+
+    connection.onNotification(ServerStatus, ({ idle }) => {
+        // CairoLS notifies about its idle state:
+        // - During analysis: idle = false
+        // - After analysis: idle = true
+        //
+        // LS tends to spuriously go from busy to idle to busy state again in,
+        // so we debounce the idle = true state for some small chunk of time
+        // before considering the analysis truly complete.
+
+        if (idleTimer) {
+            clearTimeout(idleTimer);
+            idleTimer = null;
+        }
+
+        if (idle) {
+            idleTimer = setTimeout(() => {
+                console.log("Analysis completed, server is idle.");
+                defer.resolve();
+            }, ms("3 seconds"));
+        }
+    });
+    return defer.promise;
+}
+
+/**
+ * Returns a Promise that rejects after a specified timeout period with an error indicating the operation timed out.
+ */
+function timeout(ms: number, operation: string = "operation"): Promise<void> {
+    return new Promise((_, reject) =>
+        setTimeout(() => reject(new Error(`${operation} timed out`)), ms),
+    );
 }
 
 /**
