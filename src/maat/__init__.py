@@ -321,6 +321,7 @@ def checkout(
                 cache_volume=cache_volume,
                 workbench_volume=workbench_volume,
                 raise_on_nonzero_exit=True,
+                env=step.env,
             )
 
         status.update("Copying workbench contents...")

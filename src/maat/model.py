@@ -1,8 +1,8 @@
 import enum
+from collections.abc import MutableSet
 from datetime import datetime, timedelta
 from pathlib import Path
-from typing import Any, Callable, Literal, Self, Iterator
-from collections.abc import MutableSet
+from typing import Any, Callable, Iterator, Literal, Self
 
 from pydantic import (
     BaseModel,
@@ -13,7 +13,7 @@ from pydantic import (
 )
 
 from maat.installation import this_maat_commit
-from maat.utils.shell import join_command
+from maat.utils.shell import join_command, inline_env
 from maat.utils.unique_id import unique_id
 
 type Semver = str
@@ -37,6 +37,10 @@ class Step(BaseModel):
     checkout: bool = Field(default_factory=lambda data: data["setup"])
     """
     Whether this step is executed as part of checkout command.
+    """
+    env: dict[str, str] = {}
+    """
+    Environment variables to be set for this step.
     """
 
 
@@ -186,7 +190,7 @@ class StepReport(BaseModel):
         return cls(
             id=step.id,
             name=step.name,
-            run=join_command(step.run),
+            run=inline_env(join_command(step.run), step.env),
             exit_code=None,
             execution_time=None,
             log=None,

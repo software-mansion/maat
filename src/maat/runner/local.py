@@ -135,6 +135,7 @@ def execute_test_locally(
                     workbench_volume=workbench_volume,
                     ct=ct,
                     step_reporter=step_reporter,
+                    env=step.env,
                 )
 
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
@@ -208,6 +209,7 @@ def docker_run_step(
     ct: CancellationToken | None = None,
     step_reporter: StepReporter | None = None,
     raise_on_nonzero_exit: bool = False,
+    env: dict[str, str] | None = None,
 ) -> int:
     exit_code = 0
 
@@ -222,6 +224,7 @@ def docker_run_step(
         stream = docker.container.run(
             image=image,
             command=command,
+            envs=env or {},
             name=container_name,
             labels=labels,
             remove=True,
