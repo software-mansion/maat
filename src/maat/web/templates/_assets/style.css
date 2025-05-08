@@ -15,6 +15,7 @@
     --color-test-fail: #2b7fff;
     --color-test-pass: #00c950;
     --color-lint-fail: #79716b;
+    --color-ls-fail: #00bba7;
 
     --font-family-main: system-ui, sans-serif;
     --font-family-fancy: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
@@ -244,6 +245,10 @@ table {
 
 .lint-fail {
     --accent: var(--color-lint-fail);
+}
+
+.ls-fail {
+    --accent: var(--color-ls-fail);
 }
 
 .bullet {

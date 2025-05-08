@@ -92,6 +92,17 @@ def label(test: TestReport):
             lbl = _test_label(ts)
             labels.add(lbl)
 
+        # Check if CairoLS reports errors while building succeeded.
+        if (ls := test.step("ls")) and ls.was_executed:
+            if lbl := _ls_label(ls, build_failed=False):
+                labels.add(lbl)
+
+    else:
+        # Build failed, check if CairoLS reports no errors.
+        if (ls := test.step("ls")) and ls.was_executed:
+            if lbl := _ls_label(ls, build_failed=True):
+                labels.add(lbl)
+
     assert labels, f"no labels were finally assigned for {test.name}"
     test.analyses.labels = labels
 
@@ -168,3 +179,27 @@ def _fatal_panic(step: StepReport) -> Label | None:
     else:
         source = "unknown"
     return Label.new(LabelCategory.BROKEN, f"{source} panic")
+
+
+def _ls_label(ls: StepReport, build_failed: bool) -> Label | None:
+    """
+    Creates a label based on language server diagnostics and build status.
+    Returns a label only when there's an inconsistency between build and LS statuses.
+    """
+    has_errors = _ls_has_errors(ls)
+
+    if ls.exit_code != 0:
+        return Label.new(LabelCategory.LS_FAIL, "ls crashed")
+    elif build_failed and not has_errors:
+        return Label.new(LabelCategory.LS_FAIL, "build failed but ls didn't")
+    elif not build_failed and has_errors:
+        return Label.new(LabelCategory.LS_FAIL, "ls failed but build didn't")
+    else:
+        # No inconsistency so no labels to add.
+        return None
+
+
+def _ls_has_errors(ls: StepReport) -> bool:
+    # Check for total errors count greater than 0.
+    match = re.search(r"total: (\d+) errors", ls.log_str, re.M)
+    return match and int(match.group(1)) > 0

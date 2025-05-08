@@ -64,6 +64,8 @@ class TestSuite(BaseModel):
 
 @enum.unique
 class LabelCategory(enum.StrEnum):
+    # NOTE: If adding a new category, remember to add new CSS styles associated with it.
+
     # The higher the category here, the higher the priority when sorting for human presentation.
     BROKEN = "broken"
     ERROR = "error"
@@ -71,6 +73,7 @@ class LabelCategory(enum.StrEnum):
     TEST_FAIL = "test-fail"
     TEST_PASS = "test-pass"
     LINT_FAIL = "lint-fail"
+    LS_FAIL = "ls-fail"
 
     @enum.property
     def help(self) -> str:
@@ -81,6 +84,7 @@ class LabelCategory(enum.StrEnum):
             self.TEST_FAIL: "Build succeeded but tests failed.",
             self.TEST_PASS: 'Build succeeded and tests passed. This is the "clean" state.',
             self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable.",
+            self.LS_FAIL: 'Build succeeded but CairoLS reports errors or vice versa. We expect CairoLS to produce same diagnostics as "scarb build".',
         }[self]
 
 
