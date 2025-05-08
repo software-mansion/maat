@@ -67,24 +67,28 @@ class LabelCategory(enum.StrEnum):
     # NOTE: If adding a new category, remember to add new CSS styles associated with it.
 
     # The higher the category here, the higher the priority when sorting for human presentation.
-    BROKEN = "broken"
     ERROR = "error"
     BUILD_FAIL = "build-fail"
     TEST_FAIL = "test-fail"
     TEST_PASS = "test-pass"
     LINT_FAIL = "lint-fail"
     LS_FAIL = "ls-fail"
+    BROKEN = "broken"
+    LINT_BROKEN = "lint-broken"
+    LS_BROKEN = "ls-broken"
 
     @enum.property
     def help(self) -> str:
         return {
-            self.BROKEN: "Something is broken for this project in Ma'at context. This is either Ma'at bug, Cairo compiler panic or runtime error, like OOM.",
             self.ERROR: "A serious error occurred before project could be built.",
             self.BUILD_FAIL: "Build failed.",
             self.TEST_FAIL: "Build succeeded but tests failed.",
             self.TEST_PASS: 'Build succeeded and tests passed. This is the "clean" state.',
             self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable.",
             self.LS_FAIL: 'Build succeeded but CairoLS reports errors or vice versa. We expect CairoLS to produce same diagnostics as "scarb build".',
+            self.BROKEN: "Something is broken in a known way for this project in Ma'at context, this should be probably ignored.",
+            self.LINT_BROKEN: "Linting is broken in a known way for this project in Ma'at context, this should be probably ignored.",
+            self.LS_BROKEN: "CairoLS is broken in a known way for this project in Ma'at context, this should be probably ignored.",
         }[self]
 
 

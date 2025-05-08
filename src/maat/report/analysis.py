@@ -75,22 +75,25 @@ def label(test: TestReport):
     """
     labels = Labels()
 
-    if (fetch := test.step("fetch")) and fetch.was_executed and fetch.exit_code != 0:
-        labels.add(_fetch_label(fetch))
+    if (fetch := test.step("fetch")) and fetch.was_executed:
+        if lbl := _fetch_label(fetch):
+            labels.add(lbl)
 
-    if (build := test.step("build")) and build.was_executed and build.exit_code != 0:
-        labels.add(_build_label(build))
+    if (build := test.step("build")) and build.was_executed:
+        if lbl := _build_label(build):
+            labels.add(lbl)
 
     if not any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels):
         # Don't add these labels if more critical failures have been identified.
 
-        if (lint := test.step("lint")) and lint.was_executed and lint.exit_code != 0:
-            labels.add(_lint_label(lint))
+        if (lint := test.step("lint")) and lint.was_executed:
+            if lbl := _lint_label(lint):
+                labels.add(lbl)
 
         # Test summary is populated only if a test step has been executed, not checking twice.
         if ts := test.analyses.tests_summary:
-            lbl = _test_label(ts)
-            labels.add(lbl)
+            if lbl := _test_label(ts):
+                labels.add(lbl)
 
         # Check if CairoLS reports errors while building succeeded.
         if (ls := test.step("ls")) and ls.was_executed:
@@ -107,7 +110,10 @@ def label(test: TestReport):
     test.analyses.labels = labels
 
 
-def _fetch_label(fetch: StepReport) -> Label:
+def _fetch_label(fetch: StepReport) -> Label | None:
+    if fetch.exit_code == 0:
+        return None
+
     if lbl := _fatal_panic(fetch):
         return lbl
 
@@ -128,10 +134,13 @@ def _fetch_label(fetch: StepReport) -> Label:
     ):
         return Label.new(LabelCategory.BROKEN, "pubgrub required")
 
-    return Label.new(LabelCategory.BROKEN, "unknown deps error")
+    return Label.new(LabelCategory.ERROR, "unknown deps error")
 
 
 def _build_label(build: StepReport) -> Label | None:
+    if build.exit_code == 0:
+        return None
+
     if lbl := _fatal_panic(build):
         return lbl
 
@@ -140,20 +149,23 @@ def _build_label(build: StepReport) -> Label | None:
         build.log_str,
         re.M,
     ):
-        return Label.new(LabelCategory.BUILD_FAIL, "compiler error")
+        return Label.new(LabelCategory.BUILD_FAIL, "compilation error")
 
-    return Label.new(LabelCategory.BROKEN, "broken build")
+    return Label.new(LabelCategory.ERROR, "build errored")
 
 
 def _lint_label(lint: StepReport) -> Label:
+    if lbl := _fatal_panic(lint, category=LabelCategory.LINT_FAIL):
+        return lbl
+
     if (
         b"[out] error: scarb was not compiled with the `lint` command enabled"
         in lint.log
     ) or b"[out] error: no such command: `lint`" in lint.log:
-        return Label.new(LabelCategory.LINT_FAIL, "no linter")
+        return Label.new(LabelCategory.LINT_BROKEN, "no linter")
 
     if b"[err] error: unexpected argument '--deny-warnings' found" in lint.log:
-        return Label.new(LabelCategory.LINT_FAIL, "no --deny-warnings")
+        return Label.new(LabelCategory.LINT_BROKEN, "no --deny-warnings")
 
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
@@ -165,35 +177,38 @@ def _test_label(ts: TestsSummary) -> Label:
         return Label.new(LabelCategory.TEST_PASS, "tests passed")
 
 
-def _fatal_panic(step: StepReport) -> Label | None:
-    m = re.search(r"^\[err] thread '.*' panicked at (?P<path>.*):", step.log_str, re.M)
+def _fatal_panic(
+    step: StepReport,
+    category: LabelCategory = LabelCategory.ERROR,
+) -> Label | None:
+    if m := re.search(
+        r"^\[err] thread '.*' panicked at (?P<path>.*):", step.log_str, re.M
+    ):
+        path = m.group("path")
+        if "cairo-lang-" in path:
+            source = "compiler"
+        elif "scarb" in path:
+            source = "scarb"
+        else:
+            source = "unknown"
+        return Label.new(category, f"{step.name}: {source} panic")
 
-    if not m:
-        return None
-
-    path = m.group("path")
-    if "cairo-lang-" in path:
-        source = "compiler"
-    elif "scarb" in path:
-        source = "scarb"
-    else:
-        source = "unknown"
-    return Label.new(LabelCategory.BROKEN, f"{source} panic")
+    return None
 
 
 def _ls_label(ls: StepReport, build_failed: bool) -> Label | None:
     """
     Creates a label based on language server diagnostics and build status.
-    Returns a label only when there's an inconsistency between build and LS statuses.
+    Returns a label only when there is an inconsistency between build and LS statuses.
     """
     has_errors = _ls_has_errors(ls)
 
-    if ls.exit_code != 0:
-        return Label.new(LabelCategory.LS_FAIL, "ls crashed")
+    if lbl := _fatal_panic(ls, category=LabelCategory.LS_FAIL):
+        return lbl
     elif build_failed and not has_errors:
-        return Label.new(LabelCategory.LS_FAIL, "build failed but ls didn't")
+        return Label.new(LabelCategory.LS_FAIL, "ls misses errors")
     elif not build_failed and has_errors:
-        return Label.new(LabelCategory.LS_FAIL, "ls failed but build didn't")
+        return Label.new(LabelCategory.LS_FAIL, "ls has new errors")
     else:
         # No inconsistency so no labels to add.
         return None

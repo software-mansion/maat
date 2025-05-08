@@ -9,13 +9,16 @@
     --color-primary-light: #EEF0FF;
     --color-hightlight: #fef9c2;
 
-    --color-broken: #e12afb;
+    /* Tailwind Colors v4, https://tailwindcolor.com/ */
     --color-error: #fb2c36;
     --color-build-fail: #ff6900;
     --color-test-fail: #2b7fff;
     --color-test-pass: #00c950;
-    --color-lint-fail: #79716b;
-    --color-ls-fail: #00bba7;
+    --color-lint-fail: #8e51ff;
+    --color-ls-fail: #e12afb;
+    --color-broken: #a6a09b;
+    --color-lint-broken: #c4b4ff;
+    --color-ls-broken: #f4a8ff;
 
     --font-family-main: system-ui, sans-serif;
     --font-family-fancy: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
@@ -40,6 +43,10 @@
         --color-primary-light: #1E2133;
         --color-shadow: #00000020;
         --color-hightlight: #432004;
+
+        --color-broken: #57534d;
+        --color-lint-broken: #8200db;
+        --color-ls-broken: #a800b7;
     }
 }
 
@@ -223,10 +230,6 @@ table {
     }
 }
 
-.broken {
-    --accent: var(--color-broken);
-}
-
 .error {
     --accent: var(--color-error);
 }
@@ -249,6 +252,18 @@ table {
 
 .ls-fail {
     --accent: var(--color-ls-fail);
+}
+
+.broken {
+    --accent: var(--color-broken);
+}
+
+.lint-broken {
+    --accent: var(--color-lint-broken);
+}
+
+.ls-broken {
+    --accent: var(--color-ls-broken);
 }
 
 .bullet {
