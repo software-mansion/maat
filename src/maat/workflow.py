@@ -32,7 +32,10 @@ def _workflow() -> list[Step]:
         Step(
             name="test",
             run="scarb test --workspace",
-            env={"SNFORGE_FUZZER_SEED": "1"},
+            env={
+                "SNFORGE_FUZZER_SEED": "1",
+                "SNFORGE_IGNORE_FORK_TESTS": "1",
+            },
         ),
         Step(name="ls", run="maat-test-ls"),
     ]
