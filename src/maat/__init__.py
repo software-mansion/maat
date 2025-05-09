@@ -139,12 +139,15 @@ def run_local(
 ) -> None:
     console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
 
-    creator = ReportCreator(workspace)
-    reporter = Reporter(workspace_name=workspace.name, scarb=scarb, foundry=foundry)
-
     sandbox_image = sandbox.build(
         scarb=scarb, foundry=foundry, docker=docker, console=console
     )
+
+    scarb: Semver = sandbox_image.config.labels["maat.scarb.version"]
+    foundry: Semver = sandbox_image.config.labels["maat.foundry.version"]
+
+    creator = ReportCreator(workspace)
+    reporter = Reporter(workspace_name=workspace.name, scarb=scarb, foundry=foundry)
 
     test_suite = build_test_suite(
         ecosystem=workspace.settings.ecosystem,
