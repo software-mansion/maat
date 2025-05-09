@@ -68,45 +68,56 @@ def load_workspace(f):
     return functools.update_wrapper(new_func, f)
 
 
-def tool_versions(f):
-    @pass_docker
-    @click.pass_context
-    def new_func(ctx, docker: DockerClient, *args, **kwargs):
-        workspace: Workspace | None = kwargs.get("workspace")
+def tool_versions(f=None, /, optional: bool = False):
+    def decorator(f):
+        @pass_docker
+        @click.pass_context
+        def new_func(ctx, docker: DockerClient, *args, **kwargs):
+            workspace: Workspace | None = kwargs.get("workspace")
 
-        if kwargs.get("scarb") is None:
-            if (
-                workspace is not None
-                and (default_scarb := workspace.settings.default_scarb) is not None
-            ):
-                scarb = default_scarb
-            else:
-                scarb = click.prompt("Scarb version", type=Semver)
+            if kwargs.get("scarb") is None:
+                if optional:
+                    scarb = None
+                elif (
+                    workspace is not None
+                    and (default_scarb := workspace.settings.default_scarb) is not None
+                ):
+                    scarb = default_scarb
+                else:
+                    scarb = click.prompt("Scarb version", type=Semver)
 
-            if scarb.startswith("latest"):
-                version = scarb.split(":", 1)[-1]
-                scarb = asdf_latest(docker, "scarb", version)
+                if scarb is not None and scarb.startswith("latest"):
+                    version = scarb.split(":", 1)[-1]
+                    scarb = asdf_latest(docker, "scarb", version)
 
-            kwargs["scarb"] = scarb
+                kwargs["scarb"] = scarb
 
-        if kwargs.get("foundry") is None:
-            if (
-                workspace is not None
-                and (default_foundry := workspace.settings.default_foundry) is not None
-            ):
-                foundry = default_foundry
-            else:
-                foundry = click.prompt("Starknet Foundry version", type=Semver)
+            if kwargs.get("foundry") is None:
+                if optional:
+                    foundry = None
+                elif (
+                    workspace is not None
+                    and (default_foundry := workspace.settings.default_foundry)
+                    is not None
+                ):
+                    foundry = default_foundry
+                else:
+                    foundry = click.prompt("Starknet Foundry version", type=Semver)
 
-            if foundry.startswith("latest"):
-                version = foundry.split(":", 1)[-1]
-                foundry = asdf_latest(docker, "starknet-foundry", version)
+                if foundry is not None and foundry.startswith("latest"):
+                    version = foundry.split(":", 1)[-1]
+                    foundry = asdf_latest(docker, "starknet-foundry", version)
 
-            kwargs["foundry"] = foundry
+                kwargs["foundry"] = foundry
 
-        return ctx.invoke(f, *args, **kwargs)
+            return ctx.invoke(f, *args, **kwargs)
 
-    return functools.update_wrapper(new_func, f)
+        return functools.update_wrapper(new_func, f)
+
+    # This allows the decorator to be used with or without arguments
+    if f is None:
+        return decorator
+    return decorator(f)
 
 
 @click.group(help="Run experimental software builds across Cairo language ecosystem.")
@@ -118,6 +129,10 @@ def cli() -> None:
 @workspace_options
 @tool_versions_options
 @click.option(
+    "--pull",
+    help="Pull the sandbox image instead of building it. Format: NAME[:TAG|@DIGEST]",
+)
+@click.option(
     "-j",
     "--jobs",
     metavar="N",
@@ -126,22 +141,34 @@ def cli() -> None:
     default=None,
 )
 @load_workspace
-@tool_versions
+@tool_versions(optional=True)
 @pass_docker
 @pass_console
 def run_local(
     console: Console,
     docker: DockerClient,
     workspace: Workspace,
-    scarb: Semver,
-    foundry: Semver,
+    scarb: Semver | None,
+    foundry: Semver | None,
+    pull: str | None,
     jobs: int | None,
 ) -> None:
+    # Validate that either --pull is specified or both --scarb and --foundry are specified
+    if pull is None and (scarb is None or foundry is None):
+        raise click.UsageError(
+            "either --pull or both --scarb and --foundry must be specified"
+        )
+
     console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
 
-    sandbox_image = sandbox.build(
-        scarb=scarb, foundry=foundry, docker=docker, console=console
-    )
+    if pull:
+        with console.status(f"Pulling sandbox image: {pull}..."):
+            sandbox_image = docker.image.pull(pull)
+            console.log(f":rocket: Successfully pulled sandbox image: {pull}")
+    else:
+        sandbox_image = sandbox.build(
+            scarb=scarb, foundry=foundry, docker=docker, console=console
+        )
 
     scarb, foundry = sandbox.tool_versions(sandbox_image)
 
@@ -179,18 +206,7 @@ def run_local(
 
 
 @cli.command(help="Build the sandbox image for the given environment.")
-@click.option(
-    "--scarb",
-    envvar="MAAT_SCARB_VERSION",
-    prompt="Scarb version",
-    help="Version of Scarb to experiment on.",
-)
-@click.option(
-    "--foundry",
-    envvar="MAAT_FOUNDRY_VERSION",
-    prompt="Starknet Foundry version",
-    help="Version of Starknet Foundry to experiment on.",
-)
+@tool_versions_options
 @click.option(
     "--cache-from",
     help="External cache sources (e.g., 'user/app:cache', 'type=local,src=path/to/dir')",
@@ -213,6 +229,7 @@ def run_local(
     is_flag=True,
     help="Push the image to registry",
 )
+@tool_versions
 @pass_docker
 @pass_console
 def build_sandbox(
