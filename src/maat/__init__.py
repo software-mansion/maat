@@ -189,6 +189,28 @@ def run_local(
     prompt="Starknet Foundry version",
     help="Version of Starknet Foundry to experiment on.",
 )
+@click.option(
+    "--cache-from",
+    help="External cache sources (e.g., 'user/app:cache', 'type=local,src=path/to/dir')",
+)
+@click.option(
+    "--cache-to",
+    help="Cache export destinations (e.g., 'user/app:cache', 'type=local,dest=path/to/dir')",
+)
+@click.option(
+    "--cache/--no-cache",
+    default=True,
+    help="Use build cache",
+)
+@click.option(
+    "--output",
+    help="Output destination (e.g., 'type=local,dest=path/to/dir')",
+)
+@click.option(
+    "--push",
+    is_flag=True,
+    help="Push the image to registry",
+)
 @pass_docker
 @pass_console
 def build_sandbox(
@@ -196,8 +218,23 @@ def build_sandbox(
     docker: DockerClient,
     scarb: Semver,
     foundry: Semver,
+    cache_from: str = None,
+    cache_to: str = None,
+    cache: bool = True,
+    output: str = None,
+    push: bool = False,
 ) -> None:
-    sandbox.build(scarb=scarb, foundry=foundry, docker=docker, console=console)
+    sandbox.build(
+        scarb=scarb,
+        foundry=foundry,
+        docker=docker,
+        console=console,
+        cache_from=cache_from,
+        cache_to=cache_to,
+        cache=cache,
+        output=output,
+        push=push,
+    )
 
 
 @cli.command(help="Build web frontend and optionally open it in browser.")
@@ -286,7 +323,15 @@ def checkout(
     foundry: Semver,
 ) -> None:
     sandbox_image = sandbox.build(
-        scarb=scarb, foundry=foundry, docker=docker, console=console
+        scarb=scarb,
+        foundry=foundry,
+        docker=docker,
+        console=console,
+        cache_from=None,
+        cache_to=None,
+        cache=True,
+        output={},
+        push=False,
     )
 
     test_suite = build_test_suite(

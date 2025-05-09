@@ -16,7 +16,25 @@ def build(
     foundry: Semver,
     docker: DockerClient,
     console: Console,
+    cache_from: str | dict[str, str] | list[dict[str, str]] | None = None,
+    cache_to: str | dict[str, str] | None = None,
+    cache: bool = True,
+    output: str | dict[str, str] = None,
+    push: bool = False,
 ) -> Image:
+    output_dict: dict[str, str] = {}
+    match output:
+        case str():
+            # Parse output string into a dictionary
+            for part in output.split(","):
+                if "=" in part:
+                    key, value = part.split("=", 1)
+                    output_dict[key] = value
+                else:
+                    output_dict["type"] = part
+        case dict():
+            output_dict = output
+
     with console.status("Building sandbox image..."):
         with importlib.resources.path("maat.agent") as path:
             image = docker.buildx.build(
@@ -34,6 +52,11 @@ def build(
                     # via Docker CLI when debugging.
                     f"{SANDBOX_REPOSITORY}:latest",
                 ],
+                cache_from=cache_from,
+                cache_to=cache_to,
+                cache=cache,
+                output=output_dict,
+                push=push,
             )
             assert isinstance(image, Image)
 
