@@ -84,7 +84,7 @@ build & lint & test & ls -.-> reportJson
 You can then compare two reports with the following invocation to detect regressions:
 
 ```shell
-./maat open old_report.json report.json
+./maat web old_report.json report.json
 ```
 
 ## Debugging reports

@@ -200,7 +200,7 @@ def build_sandbox(
     sandbox.build(scarb=scarb, foundry=foundry, docker=docker, console=console)
 
 
-@cli.command(help="Open and display one or more reports in a web browser.")
+@cli.command(help="Build web frontend and optionally open it in browser.")
 @click.argument("reports", type=PathParamType, nargs=-1, required=True)
 @click.option(
     "-o",
@@ -209,7 +209,7 @@ def build_sandbox(
     help="Write output to directory instead of opening in browser.",
 )
 @pass_console
-def open(
+def web(
     console: Console,
     reports: tuple[Path, ...],
     output: Path | None = None,
