@@ -14,6 +14,7 @@ from pydantic import (
 
 from maat.installation import this_maat_commit
 from maat.utils.shell import join_command, inline_env
+from maat.utils.smart_sort import smart_sort_key
 from maat.utils.unique_id import unique_id
 
 type Semver = str
@@ -280,6 +281,22 @@ class Report(BaseModel):
 
     def tests_by_name(self) -> dict[str, TestReport]:
         return {test.name: test for test in self.tests}
+
+    @property
+    def used_stable_tooling(self) -> bool:
+        for bad_char in "+-":
+            for v in (self.scarb, self.foundry):
+                if bad_char in v:
+                    return False
+        return True
+
+    @property
+    def by_version_preferring_scarb(self):
+        return smart_sort_key(self.scarb), smart_sort_key(self.foundry)
+
+    @property
+    def by_version_preferring_foundry(self):
+        return smart_sort_key(self.foundry), smart_sort_key(self.scarb)
 
 
 class ReportMeta(BaseModel):
