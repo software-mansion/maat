@@ -84,7 +84,7 @@ def tool_versions(f=None, /, optional: bool = False):
                 ):
                     scarb = default_scarb
                 else:
-                    scarb = click.prompt("Scarb version", type=Semver)
+                    scarb = click.prompt("Scarb version", type=str)
 
                 if scarb is not None and scarb.startswith("latest"):
                     version = scarb.split(":", 1)[-1]
@@ -102,7 +102,7 @@ def tool_versions(f=None, /, optional: bool = False):
                 ):
                     foundry = default_foundry
                 else:
-                    foundry = click.prompt("Starknet Foundry version", type=Semver)
+                    foundry = click.prompt("Starknet Foundry version", type=str)
 
                 if foundry is not None and foundry.startswith("latest"):
                     version = foundry.split(":", 1)[-1]
