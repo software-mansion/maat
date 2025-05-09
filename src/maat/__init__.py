@@ -10,8 +10,7 @@ import rich.traceback
 from python_on_whales import DockerClient
 from rich.console import Console
 
-import maat.web
-from maat import sandbox
+from maat import sandbox, web
 from maat.installation import REPO
 from maat.model import Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
@@ -210,7 +209,7 @@ def build_sandbox(
     help="Write output to directory instead of opening in browser.",
 )
 @pass_console
-def web(
+def build_web(
     console: Console,
     reports: tuple[Path, ...],
     output: Path | None = None,
@@ -229,7 +228,7 @@ def web(
         else:
             output_dir = output
 
-        maat.web.build(reports=report_tuples, output=output_dir)
+        web.build(reports=report_tuples, output=output_dir)
 
         if output is None:
             console.log("Report generated at:", output_dir.name)
