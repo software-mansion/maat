@@ -1,4 +1,5 @@
 import importlib.resources
+from typing import NamedTuple
 
 from python_on_whales import DockerClient, Image
 from rich.console import Console
@@ -65,3 +66,15 @@ def build(
     )
 
     return image
+
+
+class ToolVersions(NamedTuple):
+    scarb: Semver
+    foundry: Semver
+
+
+def tool_versions(image: Image) -> ToolVersions:
+    return ToolVersions(
+        scarb=image.config.labels["maat.scarb.version"],
+        foundry=image.config.labels["maat.foundry.version"],
+    )
