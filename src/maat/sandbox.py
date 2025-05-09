@@ -6,7 +6,7 @@ from rich.console import Console
 from maat.model import Semver
 from maat.utils.docker import sanitize_for_docker
 
-SANDBOX_REPOSITORY = "maat/sandbox"
+SANDBOX_REPOSITORY = "ghcr.io/software-mansion/maat/sandbox"
 MAAT_CACHE = "/mnt/maat-cache"
 MAAT_WORKBENCH = "/mnt/maat-workbench"
 
