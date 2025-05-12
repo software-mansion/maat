@@ -101,7 +101,7 @@
         <details id="details-{{ label_group.category }}"
                  class="{{ "color-coded"|clsx(label_group.category) }}">
             <summary>
-                <abbr class="help bold"
+                <abbr class="help font-bold"
                       title="{{ label_group.category.help }}">{{ label_group.category }}</abbr>
                 ({{ label_group.count }},
                 <abbr class="help"
@@ -112,7 +112,12 @@
                 <tbody>
                 {% for row in label_group.rows %}
                     <tr>
-                        <td>{{ row.project }}</td>
+                        <td>
+                            {{- row.project -}}
+                            {% if row.uniform_rev %}
+                                <span class="font-normal text-dim">({{ row.uniform_rev }})</span>
+                            {% endif %}
+                        </td>
                         {% for cell in row.cells %}
                             <td class="text-center">
                                 {% if cell.missing and cell.logs_href %}
@@ -124,6 +129,10 @@
                                     <a href="{{ cell.logs_href }}">
                                         {{- cell.label.comment or cell.label.category -}}
                                     </a>
+                                {% endif %}
+                                {% if not row.uniform_rev %}
+                                    <br/>
+                                    <span class="text-sm text-dim">({{ cell.rev }})</span>
                                 {% endif %}
                             </td>
                         {% endfor %}

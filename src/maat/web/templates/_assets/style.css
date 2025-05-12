@@ -290,7 +290,11 @@ table {
     font-size: 0.8em;
 }
 
-.bold {
+.font-normal {
+    font-weight: normal;
+}
+
+.font-bold {
     font-weight: bold;
 }
 

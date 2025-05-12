@@ -18,16 +18,35 @@ class TestCellViewModel(BaseModel):
     missing: bool = False
     label: Label
     logs_href: str
+    rev: str | None = None
 
 
 class MissingTestCellViewModel(BaseModel):
     missing: bool = True
     logs_href: str | None = None
+    rev: str | None = None
 
 
 class LabelGroupRowViewModel(BaseModel):
     project: str
     cells: list[TestCellViewModel | MissingTestCellViewModel]
+
+    @property
+    def uniform_rev(self) -> str | None:
+        """
+        Returns rev string shared by all cells in this row, or None if they differ,
+        or none of the cells has rev.
+        """
+
+        expected: str | None = None
+        for cell in self.cells:
+            if cell.rev is None:
+                continue
+            if expected is None:
+                expected = cell.rev
+            elif cell.rev != expected:
+                return None
+        return expected
 
 
 class LabelGroupViewModel(BaseModel):
@@ -95,9 +114,13 @@ def build_view_model(
                         cell = TestCellViewModel(
                             label=label,
                             logs_href=logs_href,
+                            rev=test.rev,
                         )
                     else:
-                        cell = MissingTestCellViewModel(logs_href=logs_href)
+                        cell = MissingTestCellViewModel(
+                            logs_href=logs_href,
+                            rev=test.rev,
+                        )
                 else:
                     cell = MissingTestCellViewModel()
 
