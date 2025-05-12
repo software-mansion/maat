@@ -86,7 +86,7 @@ def _render_to(
     env: jinja2.Environment,
 ):
     template = env.get_template(template)
-    rendered = template.render(**vm.model_dump())
+    rendered = template.render(**dict(vm))
     minified = minify_html.minify(
         rendered,
         # These two keep `npx live-server` working, which is useful in development.

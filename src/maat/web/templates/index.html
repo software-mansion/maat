@@ -120,8 +120,10 @@
                                 {% elif cell.missing %}
                                     &mdash;
                                 {% else %}
-                                    {{ bullet(cell.category) }}
-                                    <a href="{{ cell.logs_href }}">{{ cell.label }}</a>
+                                    {{ bullet(cell.label.category) }}
+                                    <a href="{{ cell.logs_href }}">
+                                        {{- cell.label.comment or cell.label.category -}}
+                                    </a>
                                 {% endif %}
                             </td>
                         {% endfor %}

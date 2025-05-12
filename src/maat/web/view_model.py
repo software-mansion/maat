@@ -3,7 +3,7 @@ from typing import NamedTuple
 
 from pydantic import BaseModel
 
-from maat.model import LabelCategory, Report, ReportMeta, TestReport
+from maat.model import Label, LabelCategory, Report, ReportMeta, TestReport
 from maat.report.metrics import Metrics, MetricsTransposed
 from maat.utils.smart_sort import smart_sort_key
 
@@ -16,8 +16,7 @@ class ReportNameViewModel(BaseModel):
 
 class TestCellViewModel(BaseModel):
     missing: bool = False
-    label: str
-    category: str
+    label: Label
     logs_href: str
 
 
@@ -94,8 +93,7 @@ def build_view_model(
 
                     if label := test.analyses.labels.prioritize(category)[0]:
                         cell = TestCellViewModel(
-                            label=label.comment or label.category,
-                            category=label.category,
+                            label=label,
                             logs_href=logs_href,
                         )
                     else:
