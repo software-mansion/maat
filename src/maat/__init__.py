@@ -148,12 +148,12 @@ def run_local(
 
     test_suite = build_test_suite(
         ecosystem=workspace.settings.ecosystem,
-        sandbox=sandbox_image.id,
         console=console,
     )
 
     execute_test_suite_locally(
         test_suite=test_suite,
+        sandbox=sandbox_image.id,
         jobs=jobs,
         docker=docker,
         reporter=reporter,
@@ -291,7 +291,6 @@ def checkout(
 
     test_suite = build_test_suite(
         ecosystem=workspace.settings.ecosystem,
-        sandbox=sandbox_image.id,
         console=console,
     )
 

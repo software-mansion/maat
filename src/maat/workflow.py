@@ -2,16 +2,15 @@ from rich.console import Console
 
 from maat.ecosystem.spec import Ecosystem
 from maat.ecosystem.utils import flatten_ecosystem
-from maat.model import ImageId, Step, Test, TestSuite
+from maat.model import Step, Test, TestSuite
 
 
 def build_test_suite(
     ecosystem: Ecosystem,
-    sandbox: ImageId,
     console: Console,
 ) -> TestSuite:
     with console.status("Collecting ecosystem..."):
-        suite = TestSuite(sandbox=sandbox)
+        suite = TestSuite()
 
         for project in flatten_ecosystem(ecosystem):
             steps = project.setup() + _workflow()

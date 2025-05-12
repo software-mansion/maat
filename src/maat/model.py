@@ -52,7 +52,6 @@ class Test(BaseModel):
 
 
 class TestSuite(BaseModel):
-    sandbox: ImageId
     tests: list[Test] = []
 
     def test_by_name(self, name: str) -> Test | None:

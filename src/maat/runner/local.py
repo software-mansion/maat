@@ -26,6 +26,7 @@ from maat.utils.unique_id import snowflake_id
 
 def execute_test_suite_locally(
     test_suite: TestSuite,
+    sandbox: Image | str,
     jobs: int | None,
     docker: DockerClient,
     reporter: Reporter,
@@ -56,7 +57,7 @@ def execute_test_suite_locally(
             try:
                 execute_test_locally(
                     test=current_test,
-                    sandbox=test_suite.sandbox,
+                    sandbox=sandbox,
                     cache_volume=cache_volume,
                     ct=ct,
                     docker=docker,
