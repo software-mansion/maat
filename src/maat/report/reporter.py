@@ -46,7 +46,6 @@ class TestReporter:
         self._report = report
 
         self._test_report = test_report = TestReport(
-            id=test.id,
             name=test.name,
             rev=test.rev,
             steps=[StepReport.blueprint(step) for step in test.steps],
@@ -55,10 +54,10 @@ class TestReporter:
 
     def step(self, step: Step) -> StepReporter:
         step_report = next(
-            (sr for sr in self._test_report.steps if sr.id == step.id), None
+            (sr for sr in self._test_report.steps if sr.name == step.name), None
         )
         assert step_report is not None, (
-            f"step with ID {step.id} not found in the report"
+            f"step with name {step.name} not found in the report"
         )
         return StepReporter(step_report)
 

@@ -8,7 +8,7 @@ from pydantic import BaseModel, RootModel
 from maat.ecosystem import scarbs_xyz
 from maat.model import Step
 from maat.utils.smart_sort import smart_sort_key
-from maat.utils.unique_id import unique_id
+from maat.utils.unique_id import snowflake_id
 
 
 def fetch_version(registry_url: str, package: str) -> str:
@@ -25,7 +25,7 @@ def setup_registry(registry_url: str, package: str) -> list[Step]:
     dl_url = registry_config.expand_dl(package, latest)
 
     # Using unique IDs to reduce risks of potential conflicts with archive contents.
-    dl_path = f"archive-{unique_id()}.tar.zstd"
+    dl_path = f"archive-{snowflake_id()}.tar.zstd"
 
     return [
         Step(run=["curl", "-sSLf", dl_url, "-o", dl_path], setup=True),

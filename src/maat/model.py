@@ -14,7 +14,6 @@ from pydantic import (
 
 from maat.installation import this_maat_commit
 from maat.utils.shell import join_command, inline_env
-from maat.utils.unique_id import unique_id
 
 type Semver = str
 type ImageId = str
@@ -27,7 +26,6 @@ EXIT_RUNNER_SKIPPED = -1
 
 
 class Step(BaseModel):
-    id: int = Field(default_factory=unique_id)
     run: str | list[str]
     name: str = Field(default_factory=lambda data: join_command(data["run"]))
     setup: bool = False
@@ -45,7 +43,6 @@ class Step(BaseModel):
 
 
 class Test(BaseModel):
-    id: int = Field(default_factory=unique_id)
     name: str
     rev: str
     steps: list[Step]
@@ -183,7 +180,6 @@ class Analyses(BaseModel):
 
 
 class StepReport(BaseModel):
-    id: int
     name: str
     run: str
     exit_code: int | None
@@ -195,7 +191,6 @@ class StepReport(BaseModel):
     @classmethod
     def blueprint(cls, step: Step):
         return cls(
-            id=step.id,
             name=step.name,
             run=inline_env(join_command(step.run), step.env),
             exit_code=None,
@@ -215,7 +210,6 @@ class StepReport(BaseModel):
 
 
 class TestReport(BaseModel):
-    id: int
     name: str
     rev: str | None = None
     steps: list[StepReport] = []

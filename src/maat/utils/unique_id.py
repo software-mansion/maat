@@ -3,18 +3,6 @@ import socket
 import os
 import threading
 
-_current_id = 0
-
-
-def unique_id() -> int:
-    """
-    Generates a process-wide unique integer ID.
-    The ID will always be greater than `0`.
-    """
-    global _current_id
-    _current_id += 1
-    return _current_id
-
 
 # Constants for the Snowflake algorithm.
 EPOCH = 1609459200000  # Custom epoch (January 1, 2021 in milliseconds).
