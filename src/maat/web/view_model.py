@@ -55,8 +55,6 @@ def build_view_model(
     reports: list[ReportInfo],
     reference_report_idx: int,
 ) -> RootViewModel:
-    reports.sort(key=_reports_sorting_key)
-
     metrics_transposed = MetricsTransposed.new(
         [metrics for _, _, metrics, _ in reports]
     )
@@ -130,7 +128,3 @@ def build_view_model(
 
 def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
     return Path() / meta.name / test.name_and_rev / "logs.txt"
-
-
-def _reports_sorting_key(info: ReportInfo) -> list:
-    return smart_sort_key(info.meta.name)

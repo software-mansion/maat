@@ -11,6 +11,7 @@ from pydantic import BaseModel
 
 from maat.model import Report, ReportMeta
 from maat.report.metrics import Metrics
+from maat.utils.smart_sort import smart_sort_key
 from maat.web import filters
 from maat.web.view_model import ReportInfo, build_view_model, logs_txt_path
 
@@ -19,6 +20,8 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     if output.exists():
         shutil.rmtree(output)
     output.mkdir(parents=True)
+
+    reports.sort(key=lambda t: smart_sort_key(t[1].name))
 
     # NOTE: The last report will be the reference, and thus it will be rendered as index.html.
     reports = [
