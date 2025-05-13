@@ -15,6 +15,7 @@ from maat.installation import REPO
 from maat.model import Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
 from maat.report.io import ReportEditor, save_report
+import sys
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan
@@ -426,6 +427,50 @@ def prune_cache(console: Console) -> None:
     cache_to_disk.delete_disk_caches_for_function("fetch_all_packages")
     cache_to_disk.delete_disk_caches_for_function("fetch_commit_hash")
     cache_to_disk.delete_disk_caches_for_function("fetch")
+
+
+@cli.command(help="Prepare a Plan and serialize it to JSON.")
+@workspace_options
+@sandbox_options
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(path_type=Path),
+    default="maat-plan.json",
+    help="Output file path. Use '-' for stdout.",
+)
+@click.option(
+    "-p",
+    "--partitions",
+    type=int,
+    default=1,
+    help="Number of partitions.",
+)
+@load_workspace
+@tool_versions
+@load_sandbox_image
+@pass_docker
+@pass_console
+def plan(
+    console: Console,
+    docker: DockerClient,
+    workspace: Workspace,
+    sandbox_image: Image,
+    output: Path,
+    partitions: int,
+) -> None:
+    plan = prepare_plan(
+        workspace=workspace,
+        sandbox=sandbox_image,
+        partitions=partitions,
+        docker=docker,
+        console=console,
+    )
+
+    json_data = plan.model_dump_json(indent=2) + "\n"
+
+    with click.open_file(output, "w") as f:
+        f.write(json_data)
 
 
 if __name__ == "__main__":
