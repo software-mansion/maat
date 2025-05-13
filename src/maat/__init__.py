@@ -12,13 +12,12 @@ from rich.console import Console
 
 from maat import sandbox, web
 from maat.installation import REPO
-from maat.model import Report, ReportMeta, Semver
+from maat.model import Plan, PlanPartitionView, Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
 from maat.report.io import ReportEditor, save_report
-import sys
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
-from maat.runner.executor import docker_run_step, execute_plan
+from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
 from maat.runner.planner import prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
 from maat.utils.notify import send_notification
@@ -471,6 +470,72 @@ def plan(
 
     with click.open_file(output, "w") as f:
         f.write(json_data)
+
+
+@cli.command(help="Run a pre-generated plan.")
+@click.argument("plan_file", type=PathParamType, required=True)
+@click.option(
+    "-p",
+    "--partition",
+    type=int,
+    help="Partition number to run. Required if the plan has multiple partitions.",
+)
+@click.option(
+    "-j",
+    "--jobs",
+    metavar="N",
+    help="Allow N jobs at once; defaults to number of CPUs.",
+    type=int,
+    default=None,
+)
+@pass_docker
+@pass_console
+def run_plan(
+    console: Console,
+    docker: DockerClient,
+    plan_file: Path,
+    partition: int | None,
+    jobs: int | None,
+) -> None:
+    console.log(f":test_tube: Running plan from file: [bold]{plan_file}")
+
+    plan = Plan.model_validate_json(plan_file.read_bytes())
+
+    if len(plan.partitions) > 1 and partition is None:
+        raise click.UsageError(
+            f"Plan has {len(plan.partitions)} partitions. Please specify a partition with -p/--partition."
+        )
+
+    # If partition is not specified and there is only one partition, use the first one.
+    if partition is None:
+        partition = 0
+
+    # Validate that the partition index is valid and raise readable error.
+    if not (0 <= partition < len(plan.partitions)):
+        raise click.UsageError(
+            f"Partition index out of range. Plan has {len(plan.partitions)} partitions (0-{len(plan.partitions) - 1})."
+        )
+
+    partition_view = PlanPartitionView(plan=plan, partition=partition)
+
+    reporter = Reporter(plan)
+
+    execute_plan_partition(
+        partition=partition_view,
+        jobs=jobs,
+        docker=docker,
+        reporter=reporter,
+        console=console,
+    )
+
+    report = reporter.finish()
+
+    analyse_report(
+        report=report,
+        console=console,
+    )
+
+    save_report(report, plan.report_path(partition=partition))
 
 
 if __name__ == "__main__":
