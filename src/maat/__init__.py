@@ -14,7 +14,7 @@ from maat import sandbox, web
 from maat.installation import REPO
 from maat.model import Plan, PlanPartitionView, Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
-from maat.report.io import ReportEditor, save_report
+from maat.report.io import ReportEditor, read_report, save_report
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
@@ -536,6 +536,38 @@ def run_plan(
     )
 
     save_report(report, plan.report_path(partition=partition))
+
+
+@cli.command(help="Merge multiple reports into a single report.")
+@click.option(
+    "-o",
+    "--output",
+    required=True,
+    type=click.Path(path_type=Path),
+    help="Output report path.",
+)
+@click.argument(
+    "paths",
+    type=click.Path(exists=True, path_type=Path),
+    nargs=-1,
+    required=True,
+)
+@pass_console
+def merge_reports(
+    console: Console,
+    output: Path,
+    paths: tuple[Path, ...],
+) -> None:
+    console.log(
+        f":test_tube: Merging reports: [bold]{', '.join(str(p) for p in paths)}"
+    )
+
+    reports = [read_report(path) for path in paths]
+
+    merged_report = Report.merge(reports)
+
+    with click.open_file(output, "w") as f:
+        save_report(merged_report, f)
 
 
 if __name__ == "__main__":
