@@ -331,9 +331,21 @@ class Plan(BaseModel):
             for i in range(len(self.partitions))
         ]
 
-    @property
-    def report_path(self) -> Path:
-        return REPO / "reports" / f"{self.report_name}.json"
+    def report_path(
+        self,
+        base: Path | str | None = None,
+        partition: int | None = None,
+    ) -> Path:
+        if base is None:
+            base = REPO / "reports"
+        base = Path(base)
+
+        if partition is not None:
+            file_name = f"{self.report_name}-{partition}.json"
+        else:
+            file_name = f"{self.report_name}.json"
+
+        return base / file_name
 
 
 class PlanPartitionView(BaseModel):
