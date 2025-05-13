@@ -4,13 +4,12 @@ from typing import Self, Callable
 from pydantic import BaseModel, ConfigDict
 from rich.console import Console
 
-from maat import Report
-from maat.ecosystem.spec import Ecosystem
+from maat.ecosystem.spec import Ecosystem, ReportNameGenerationContext
 from maat.installation import REPO
 
 
-def _default_report_name_generator(report: Report) -> str:
-    return f"{report.workspace}-{report.scarb}-{report.foundry}"
+def _default_report_name_generator(ctx: ReportNameGenerationContext) -> str:
+    return f"{ctx.workspace}-{ctx.scarb}-{ctx.foundry}"
 
 
 class WorkspaceSettings(BaseModel):
@@ -19,7 +18,9 @@ class WorkspaceSettings(BaseModel):
     ecosystem: Ecosystem
     default_scarb: str | None = None
     default_foundry: str | None = None
-    generate_report_name: Callable[[Report], str] = _default_report_name_generator
+    generate_report_name: Callable[[ReportNameGenerationContext], str] = (
+        _default_report_name_generator
+    )
 
     @classmethod
     def load(cls, workspace_name: str) -> Self:
