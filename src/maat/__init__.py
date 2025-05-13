@@ -222,7 +222,7 @@ def run_local(
         console=console,
     )
 
-    save_report(report, plan.report_path)
+    save_report(report, plan.report_path())
 
     send_notification(
         title="Ma'at Experiment Finished",
