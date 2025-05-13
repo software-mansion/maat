@@ -42,6 +42,24 @@ class Step(BaseModel):
     Environment variables to be set for this step.
     """
 
+    @model_serializer(mode="wrap")
+    def serialize_model(self, nxt: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        """Skip serialising fields which aren't required and have default values."""
+
+        data = nxt(self)
+        model_fields = self.__class__.model_fields
+
+        return {
+            k: v
+            for k, v in data.items()
+            if model_fields[k].is_required()
+            or v
+            != model_fields[k].get_default(
+                call_default_factory=True,
+                validated_data=data,
+            )
+        }
+
 
 class Test(BaseModel):
     name: str
