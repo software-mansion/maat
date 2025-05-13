@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Self
+from typing import IO, Self
 
 from maat.model import Report
 
@@ -8,9 +8,13 @@ def read_report(path: Path) -> Report:
     return Report.model_validate_json(path.read_bytes())
 
 
-def save_report(report: Report, path: Path):
+def save_report(report: Report, output: Path | IO):
     report.before_save()
-    path.write_text(report.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    json = report.model_dump_json(indent=2) + "\n"
+    if isinstance(output, Path):
+        output.write_text(json, encoding="utf-8")
+    else:
+        output.write(json)
 
 
 class ReportEditor:

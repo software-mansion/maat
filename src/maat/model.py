@@ -13,7 +13,7 @@ from pydantic import (
     model_validator,
 )
 
-from maat.installation import this_maat_commit, REPO
+from maat.installation import REPO, this_maat_commit
 from maat.utils.shell import inline_env, join_command
 
 type Semver = str
@@ -286,6 +286,44 @@ class Report(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     total_execution_time: timedelta
     tests: list[TestReport] = []
+
+    @model_validator(mode="after")
+    def validate_unique_test_names(self) -> Self:
+        test_names = [test.name for test in self.tests]
+        if len(test_names) != len(set(test_names)):
+            duplicates = [
+                name for name in set(test_names) if test_names.count(name) > 1
+            ]
+            duplicates.sort()
+            limit = 3
+            if len(duplicates) > limit:
+                msg = f"duplicate tests found: {', '.join(duplicates[:limit])} ({len(duplicates) - limit} more)"
+            else:
+                msg = f"duplicate tests found: {', '.join(duplicates)}"
+            raise ValueError(msg)
+        return self
+
+    @classmethod
+    def merge(cls, reports: list[Self]) -> Self:
+        assert len(reports) > 0
+
+        for field in ["workspace", "scarb", "foundry", "maat_commit"]:
+            if not all(
+                getattr(r, field) == getattr(reports[0], field) for r in reports
+            ):
+                raise ValueError(f"cannot merge reports with varying '{field}' values")
+
+        return Report(
+            workspace=reports[0].workspace,
+            scarb=reports[0].scarb,
+            foundry=reports[0].foundry,
+            maat_commit=reports[0].maat_commit,
+            created_at=max(r.created_at for r in reports),
+            total_execution_time=sum(
+                (r.total_execution_time for r in reports), timedelta()
+            ),
+            tests=[t for r in reports for t in r.tests],
+        )
 
     def before_save(self):
         """
