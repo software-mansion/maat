@@ -7,7 +7,7 @@ from pathlib import Path
 import cache_to_disk
 import click
 import rich.traceback
-from python_on_whales import DockerClient
+from python_on_whales import DockerClient, Image
 from rich.console import Console
 
 from maat import sandbox, web
@@ -42,18 +42,29 @@ def workspace_options(f):
     return f
 
 
-def tool_versions_options(f):
-    f = click.option(
-        "--scarb",
-        envvar="MAAT_SCARB_VERSION",
-        help="Version of Scarb to experiment on.",
-    )(f)
-    f = click.option(
-        "--foundry",
-        envvar="MAAT_FOUNDRY_VERSION",
-        help="Version of Starknet Foundry to experiment on.",
-    )(f)
-    return f
+def sandbox_options(f=None, /, pull: bool = True):
+    def decorator(f):
+        f = click.option(
+            "--scarb",
+            envvar="MAAT_SCARB_VERSION",
+            help="Version of Scarb to experiment on.",
+        )(f)
+        f = click.option(
+            "--foundry",
+            envvar="MAAT_FOUNDRY_VERSION",
+            help="Version of Starknet Foundry to experiment on.",
+        )(f)
+        if pull:
+            f = click.option(
+                "--pull",
+                help="Pull the sandbox image instead of building it. Format: NAME[:TAG|@DIGEST]",
+            )(f)
+        return f
+
+    # This allows the decorator to be used with or without arguments.
+    if f is None:
+        return decorator
+    return decorator(f)
 
 
 def load_workspace(f):
@@ -114,10 +125,45 @@ def tool_versions(f=None, /, optional: bool = False):
 
         return functools.update_wrapper(new_func, f)
 
-    # This allows the decorator to be used with or without arguments
+    # This allows the decorator to be used with or without arguments.
     if f is None:
         return decorator
     return decorator(f)
+
+
+def load_sandbox_image(f):
+    @pass_docker
+    @pass_console
+    @click.pass_context
+    def new_func(
+        ctx,
+        console: Console,
+        docker: DockerClient,
+        *args,
+        pull: str | None,
+        scarb: Semver | None,
+        foundry: Semver | None,
+        **kwargs,
+    ):
+        # Validate that either --pull is specified or both --scarb and --foundry are specified.
+        if pull is None and (scarb is None or foundry is None):
+            raise click.UsageError(
+                "either --pull or both --scarb and --foundry must be specified"
+            )
+
+        if pull:
+            with console.status(f"Pulling sandbox image: {pull}..."):
+                sandbox_image = docker.image.pull(pull)
+                console.log(f":rocket: Successfully pulled sandbox image: {pull}")
+        else:
+            sandbox_image = sandbox.build(
+                scarb=scarb, foundry=foundry, docker=docker, console=console
+            )
+
+        kwargs["sandbox_image"] = sandbox_image
+        return ctx.invoke(f, *args, **kwargs)
+
+    return functools.update_wrapper(new_func, f)
 
 
 @click.group(help="Run experimental software builds across Cairo language ecosystem.")
@@ -127,11 +173,7 @@ def cli() -> None:
 
 @cli.command(help="Run an experiment locally.")
 @workspace_options
-@tool_versions_options
-@click.option(
-    "--pull",
-    help="Pull the sandbox image instead of building it. Format: NAME[:TAG|@DIGEST]",
-)
+@sandbox_options
 @click.option(
     "-j",
     "--jobs",
@@ -142,33 +184,17 @@ def cli() -> None:
 )
 @load_workspace
 @tool_versions(optional=True)
+@load_sandbox_image
 @pass_docker
 @pass_console
 def run_local(
     console: Console,
     docker: DockerClient,
     workspace: Workspace,
-    scarb: Semver | None,
-    foundry: Semver | None,
-    pull: str | None,
+    sandbox_image: Image,
     jobs: int | None,
 ) -> None:
-    # Validate that either --pull is specified or both --scarb and --foundry are specified
-    if pull is None and (scarb is None or foundry is None):
-        raise click.UsageError(
-            "either --pull or both --scarb and --foundry must be specified"
-        )
-
     console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
-
-    if pull:
-        with console.status(f"Pulling sandbox image: {pull}..."):
-            sandbox_image = docker.image.pull(pull)
-            console.log(f":rocket: Successfully pulled sandbox image: {pull}")
-    else:
-        sandbox_image = sandbox.build(
-            scarb=scarb, foundry=foundry, docker=docker, console=console
-        )
 
     plan = prepare_plan(
         workspace=workspace,
@@ -205,7 +231,7 @@ def run_local(
 
 
 @cli.command(help="Build the sandbox image for the given environment.")
-@tool_versions_options
+@sandbox_options(pull=False)
 @click.option(
     "--cache-from",
     help="External cache sources (e.g., 'user/app:cache', 'type=local,src=path/to/dir')",
@@ -327,31 +353,19 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
 )
 @click.argument("test_name", required=True)
 @workspace_options
-@tool_versions_options
+@sandbox_options
 @load_workspace
 @tool_versions
+@load_sandbox_image
 @pass_docker
 @pass_console
 def checkout(
     console: Console,
     docker: DockerClient,
     workspace: Workspace,
+    sandbox_image: Image,
     test_name: str,
-    scarb: Semver,
-    foundry: Semver,
 ) -> None:
-    sandbox_image = sandbox.build(
-        scarb=scarb,
-        foundry=foundry,
-        docker=docker,
-        console=console,
-        cache_from=None,
-        cache_to=None,
-        cache=True,
-        output={},
-        push=False,
-    )
-
     plan = prepare_plan(
         workspace=workspace,
         sandbox=sandbox_image,
@@ -400,8 +414,8 @@ def checkout(
             destination=checkout_dir,
         )
 
-    asdf_set(checkout_dir, "scarb", scarb)
-    asdf_set(checkout_dir, "starknet-foundry", foundry)
+    asdf_set(checkout_dir, "scarb", plan.scarb)
+    asdf_set(checkout_dir, "starknet-foundry", plan.foundry)
 
     console.log(f":file_folder: Checked out {checkout_dir}")
 
