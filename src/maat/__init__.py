@@ -170,7 +170,7 @@ def run_local(
             scarb=scarb, foundry=foundry, docker=docker, console=console
         )
 
-    scarb, foundry = sandbox.tool_versions(sandbox_image)
+    scarb, foundry = sandbox.tool_versions(sandbox_image, docker)
 
     creator = ReportCreator(workspace)
     reporter = Reporter(workspace_name=workspace.name, scarb=scarb, foundry=foundry)

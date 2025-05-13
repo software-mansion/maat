@@ -5,7 +5,7 @@ from python_on_whales import DockerClient, Image
 from rich.console import Console
 
 from maat.model import Semver
-from maat.utils.docker import sanitize_for_docker
+from maat.utils.docker import sanitize_for_docker, inspect_image
 
 SANDBOX_REPOSITORY = "ghcr.io/software-mansion/maat/sandbox"
 MAAT_CACHE = "/mnt/maat-cache"
@@ -73,7 +73,8 @@ class ToolVersions(NamedTuple):
     foundry: Semver
 
 
-def tool_versions(image: Image) -> ToolVersions:
+def tool_versions(image: Image | str, docker: DockerClient) -> ToolVersions:
+    image = inspect_image(image, docker)
     return ToolVersions(
         scarb=image.config.labels["maat.scarb.version"],
         foundry=image.config.labels["maat.foundry.version"],
