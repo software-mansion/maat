@@ -10,10 +10,11 @@ from pydantic import (
     RootModel,
     SerializerFunctionWrapHandler,
     model_serializer,
+    model_validator,
 )
 
-from maat.installation import this_maat_commit
-from maat.utils.shell import join_command, inline_env
+from maat.installation import this_maat_commit, REPO
+from maat.utils.shell import inline_env, join_command
 
 type Semver = str
 type ImageId = str
@@ -56,6 +57,17 @@ class TestSuite(BaseModel):
             if test.name == name:
                 return test
         return None
+
+    def partition(self, n: int) -> list[Self]:
+        assert n > 0
+
+        if n == 1:
+            return [self]
+
+        buckets: list[list[Test]] = [[] for _ in range(n)]
+        for idx, test in enumerate(self.tests):
+            buckets[idx % n].append(test)
+        return [self.__class__(tests=bucket) for bucket in buckets]
 
 
 @enum.unique
@@ -283,3 +295,40 @@ class ReportMeta(BaseModel):
     @classmethod
     def new(cls, path: Path) -> Self:
         return cls(name=path.stem)
+
+
+class Plan(BaseModel):
+    workspace: str
+    scarb: Semver
+    foundry: Semver
+
+    report_name: str
+    sandbox: str
+
+    partitions: list[TestSuite]
+
+    def partition_views(self) -> list["PlanPartitionView"]:
+        return [
+            PlanPartitionView(plan=self, partition=i)
+            for i in range(len(self.partitions))
+        ]
+
+    @property
+    def report_path(self) -> Path:
+        return REPO / "reports" / f"{self.report_name}.json"
+
+
+class PlanPartitionView(BaseModel):
+    plan: Plan
+    partition: int
+
+    @model_validator(mode="after")
+    def validate_partition(self) -> Self:
+        assert 0 <= self.partition < len(self.plan.partitions), (
+            "partition index out of range"
+        )
+        return self
+
+    @property
+    def test_suite(self) -> TestSuite:
+        return self.plan.partitions[self.partition]
