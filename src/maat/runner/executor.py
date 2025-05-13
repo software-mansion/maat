@@ -14,7 +14,7 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from maat.model import Step, Test, TestSuite, EXIT_RUNNER_SKIPPED
+from maat.model import EXIT_RUNNER_SKIPPED, Plan, Step, Test, PlanPartitionView
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
@@ -24,9 +24,25 @@ from maat.utils.shell import split_command
 from maat.utils.unique_id import snowflake_id
 
 
-def execute_test_suite_locally(
-    test_suite: TestSuite,
-    sandbox: Image | str,
+def execute_plan(
+    plan: Plan,
+    jobs: int | None,
+    docker: DockerClient,
+    reporter: Reporter,
+    console: Console,
+):
+    for partition in plan.partition_views():
+        execute_plan_partition(
+            partition=partition,
+            jobs=jobs,
+            docker=docker,
+            reporter=reporter,
+            console=console,
+        )
+
+
+def execute_plan_partition(
+    partition: PlanPartitionView,
     jobs: int | None,
     docker: DockerClient,
     reporter: Reporter,
@@ -47,7 +63,7 @@ def execute_test_suite_locally(
         ThreadPoolExecutor(max_workers=jobs) as pool,
         ephemeral_volume(docker) as cache_volume,
     ):
-        task = progress.add_task("Experimenting", total=len(test_suite.tests))
+        task = progress.add_task("Experimenting", total=len(partition.test_suite.tests))
 
         def elapsed() -> timedelta:
             return timedelta(seconds=progress.tasks[task].finished_time or 0)
@@ -55,9 +71,9 @@ def execute_test_suite_locally(
         def worker_main(current_test: Test):
             # noinspection PyBroadException
             try:
-                execute_test_locally(
+                _execute_test(
                     test=current_test,
-                    sandbox=sandbox,
+                    sandbox=partition.plan.sandbox,
                     cache_volume=cache_volume,
                     ct=ct,
                     docker=docker,
@@ -70,7 +86,7 @@ def execute_test_suite_locally(
             except Exception:
                 progress.console.print_exception()
 
-        for test in test_suite.tests:
+        for test in partition.test_suite.tests:
             pool.submit(worker_main, test)
 
         try:
@@ -96,7 +112,7 @@ def execute_test_suite_locally(
         )
 
 
-def execute_test_locally(
+def _execute_test(
     test: Test,
     sandbox: Image | str,
     cache_volume: Volume,

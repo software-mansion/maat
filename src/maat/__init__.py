@@ -14,13 +14,13 @@ from maat import sandbox, web
 from maat.installation import REPO
 from maat.model import Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
-from maat.report.io import ReportCreator, ReportEditor
+from maat.report.io import ReportEditor, save_report
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
-from maat.runner.local import docker_run_step, execute_test_suite_locally
+from maat.runner.executor import docker_run_step, execute_plan
+from maat.runner.planner import prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
 from maat.utils.notify import send_notification
-from maat.workflow import build_test_suite
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -170,19 +170,18 @@ def run_local(
             scarb=scarb, foundry=foundry, docker=docker, console=console
         )
 
-    scarb, foundry = sandbox.tool_versions(sandbox_image, docker)
-
-    creator = ReportCreator(workspace)
-    reporter = Reporter(workspace_name=workspace.name, scarb=scarb, foundry=foundry)
-
-    test_suite = build_test_suite(
-        ecosystem=workspace.settings.ecosystem,
+    plan = prepare_plan(
+        workspace=workspace,
+        sandbox=sandbox_image,
+        partitions=1,
+        docker=docker,
         console=console,
     )
 
-    execute_test_suite_locally(
-        test_suite=test_suite,
-        sandbox=sandbox_image.id,
+    reporter = Reporter(plan)
+
+    execute_plan(
+        plan=plan,
         jobs=jobs,
         docker=docker,
         reporter=reporter,
@@ -196,12 +195,12 @@ def run_local(
         console=console,
     )
 
-    creator.save(report)
+    save_report(report, plan.report_path)
 
     send_notification(
         title="Ma'at Experiment Finished",
-        message=f"Experiment in workspace '{workspace.name}' on Scarb {scarb} and \
-                  Starknet Foundry {foundry} has completed.",
+        message=f"Experiment in workspace '{workspace.name}' on Scarb {plan.scarb} and \
+                  Starknet Foundry {plan.foundry} has completed.",
     )
 
 
@@ -353,12 +352,15 @@ def checkout(
         push=False,
     )
 
-    test_suite = build_test_suite(
-        ecosystem=workspace.settings.ecosystem,
+    plan = prepare_plan(
+        workspace=workspace,
+        sandbox=sandbox_image,
+        partitions=1,
+        docker=docker,
         console=console,
     )
 
-    test = test_suite.test_by_name(test_name)
+    test = plan.partitions[0].test_by_name(test_name)
     if test is None:
         raise click.UsageError(
             f"test '{test_name}' not found in workspace '{workspace.name}'"
