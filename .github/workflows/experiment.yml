@@ -1,0 +1,27 @@
+name: Experiment
+
+on:
+  workflow_dispatch:
+    inputs:
+      workspace:
+        required: true
+        description: Workspace
+        type: choice
+        options: [ release, nightly ]
+        default: release
+      scarb:
+        # If this input is not specified, then don't pass the --scarb option
+        # to ./maat and let use the default provided by the workspace.
+        required: false
+        description: Scarb version
+        type: string
+      foundry:
+        # If this input is not specified, then don't pass the --foundry option
+        # to ./maat and let use the default provided by the workspace.
+        required: false
+        description: Starknet Foundry version
+        type: string
+
+jobs:
+  plan:
+    runs-on: ubuntu-latest
