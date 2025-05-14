@@ -21,6 +21,9 @@ running experiments on Cairo ecosystem projects using Docker containers.
 - `workspaces/`: Cairo ecosystem project definitions
 - `checkouts/`: Local copies of ecosystem projects
 
+This project uses the Click library.
+All `./maat COMMAND` commands are defined as functions (`-` becomes `_`) in `src/maat/__init__.py`.
+
 ## Guidelines
 
 1. No automated tests exist; verify CLI commands work as expected
