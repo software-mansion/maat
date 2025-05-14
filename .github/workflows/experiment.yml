@@ -22,6 +22,180 @@ on:
         description: Starknet Foundry version
         type: string
 
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}/${{ inputs.workspace }}/${{ inputs.scarb }}/${{ inputs.foundry }}
+  cancel-in-progress: true
+
+run-name: >-
+  experiment
+  w=${{ inputs.workspace }}
+  ${{ inputs.scarb && format('scarb={0}', inputs.scarb) }}
+  ${{ inputs.foundry && format('foundry={0}', inputs.foundry) }}
+
+env:
+  PARTITIONS_COUNT: 4
+  UV_FROZEN: 1
+
 jobs:
   plan:
+    permissions:
+      packages: write
     runs-on: ubuntu-latest
+    outputs:
+      partition-array: ${{ steps.generate-partitions.outputs.partition-array }}
+      sandbox-digest: ${{ steps.sandbox-digest.outputs.sandbox-digest }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build sandbox image
+        run: >-
+          ./maat build-sandbox
+          --workspace "${{ inputs.workspace }}"
+          ${{ inputs.scarb && format('--scarb "{0}"', inputs.scarb) }}
+          ${{ inputs.foundry && format('--foundry "{0}"', inputs.foundry) }}
+          --iidfile iidfile.txt
+          --cache-from "type=gha"
+          --cache-to "type=gha,mode=max,ghtoken=${{ secrets.GITHUB_TOKEN }}"
+
+      - name: Push sandbox image to GitHub Container Registry
+        run: docker push --all-tags ghcr.io/software-mansion/maat/sandbox
+
+      - name: Get sandbox image digest
+        id: sandbox-digest
+        run: |
+          IMAGE_ID="$(cat iidfile.txt)"
+          DIGEST="$(docker inspect --format='{{index .RepoDigests 0}}' $IMAGE_ID)"
+          echo "SANDBOX_DIGEST=$DIGEST" >> $GITHUB_ENV
+          echo "sandbox-digest=$DIGEST" >> $GITHUB_OUTPUT
+
+      - name: Create plan
+        run:
+          ./maat plan
+          --workspace "${{ inputs.workspace }}"
+          --pull "${{ env.SANDBOX_DIGEST }}"
+          --output maat-plan.json
+          --partitions ${{ env.PARTITIONS_COUNT }}
+
+      - name: Generate partition array
+        id: generate-partitions
+        run: |
+          # Generate a JSON array of numbers from 0 to PARTITIONS_COUNT-1.
+          ARRAY=$(python -c "import json; print(json.dumps(list(range(${{ env.PARTITIONS_COUNT }}))))")
+          echo "partition-array=$ARRAY" >> $GITHUB_OUTPUT
+
+      - name: Upload plan artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: maat-plan
+          path: maat-plan.json
+
+  run:
+    permissions:
+      packages: read
+    runs-on: ubuntu-latest
+    needs: plan
+    strategy:
+      matrix:
+        # Dynamically generated array based on PARTITIONS_COUNT
+        partition: ${{ fromJSON(needs.plan.outputs.partition-array) }}
+      fail-fast: true
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull sandbox image from GitHub Container Registry
+        run: docker pull "${{ needs.plan.outputs.sandbox-digest }}"
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: maat-plan
+          path: .
+
+      - name: Run plan partition
+        run: ./maat run-plan --partition ${{ matrix.partition }} --jobs 1 maat-plan.json
+
+      - name: Find generated partial report
+        run: |
+          REPORT_NAME=$(jq -r '.report_name' maat-plan.json)
+          REPORT_PATH="reports/${REPORT_NAME}-${{ matrix.partition }}.json"
+          if [ ! -f "$REPORT_PATH" ]; then
+            echo "Error: Report file not found at $REPORT_PATH"
+            exit 1
+          fi
+          echo "REPORT_PATH=$REPORT_PATH" >> $GITHUB_ENV
+
+      - name: Upload partial report
+        uses: actions/upload-artifact@v4
+        with:
+          name: maat-report-part-${{ matrix.partition }}
+          path: ${{ env.REPORT_PATH }}
+
+  commit:
+    permissions:
+      contents: write
+      id-token: write
+    needs: run
+    runs-on: ubuntu-latest
+    env:
+      PARTIAL_REPORTS_PATH: /tmp/maat-reports
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+
+      - name: Set up Git configuration
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - name: Download plan artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: maat-plan
+          path: .
+
+      - name: Download all partial reports
+        uses: actions/download-artifact@v4
+        with:
+          pattern: maat-report-part-*
+          path: ${{ env.PARTIAL_REPORTS_PATH }}
+          merge-multiple: true
+
+      - name: Extract report name from plan
+        run: |
+          # Get the report name from the plan file
+          REPORT_NAME=$(jq -r '.report_name' maat-plan.json)
+          echo "REPORT_NAME=$REPORT_NAME" >> $GITHUB_ENV
+
+      - name: Merge reports
+        run: >-
+          ./maat merge-reports
+          --output "${{ env.PARTIAL_REPORTS_PATH }}/${{ env.REPORT_NAME }}.json"
+          $(find ${{ env.PARTIAL_REPORTS_PATH }} -name "*.json" | tr '\n' ' ')
+
+      - run: git pull --ff-only
+      - run: mv "${{ env.PARTIAL_REPORTS_PATH }}/${{ env.REPORT_NAME }}.json" "reports/${{ env.REPORT_NAME }}.json"
+      - run: git add "reports/${{ env.REPORT_NAME }}.json"
+      - run: "git commit -m 'experiment: ${{ env.REPORT_NAME }}'"
+      - run: git push
