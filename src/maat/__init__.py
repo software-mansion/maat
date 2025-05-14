@@ -263,9 +263,9 @@ def run_local(
     help="Output destination (e.g., 'type=local,dest=path/to/dir')",
 )
 @click.option(
-    "--push",
-    is_flag=True,
-    help="Push the image to registry",
+    "--iidfile",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Write the image ID to the file.",
 )
 @load_workspace(optional=True)
 @tool_versions
@@ -281,7 +281,7 @@ def build_sandbox(
     cache_to: str = None,
     cache: bool = True,
     output: str = None,
-    push: bool = False,
+    iidfile: Path = None,
 ) -> None:
     sandbox.build(
         scarb=scarb,
@@ -292,7 +292,7 @@ def build_sandbox(
         cache_to=cache_to,
         cache=cache,
         output=output,
-        push=push,
+        iidfile=iidfile,
     )
 
 

@@ -1,4 +1,5 @@
 import importlib.resources
+from pathlib import Path
 from typing import NamedTuple
 
 from python_on_whales import DockerClient, Image
@@ -21,7 +22,7 @@ def build(
     cache_to: str | dict[str, str] | None = None,
     cache: bool = True,
     output: str | dict[str, str] = None,
-    push: bool = False,
+    iidfile: Path | None = None,
 ) -> Image:
     output_dict: dict[str, str] = {}
     match output:
@@ -57,9 +58,11 @@ def build(
                 cache_to=cache_to,
                 cache=cache,
                 output=output_dict,
-                push=push,
             )
             assert isinstance(image, Image)
+
+    if iidfile:
+        iidfile.write_text(image.id)
 
     console.log(
         f":rocket: Successfully built sandbox image: {' or '.join(image.repo_tags)}"
