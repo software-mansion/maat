@@ -330,7 +330,7 @@ a:visited.no-visited {
     color: LinkText;
 }
 
-button, select {
+button, select, a.button {
     background: var(--color-background);
     color: var(--color-text-primary);
     border: 1px solid var(--color-border);
@@ -363,6 +363,10 @@ button, select {
         cursor: not-allowed;
         opacity: 0.7;
     }
+}
+
+a.button.current {
+    background: var(--color-hightlight);
 }
 
 select {

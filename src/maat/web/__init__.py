@@ -13,7 +13,7 @@ from maat.model import Report, ReportMeta
 from maat.report.metrics import Metrics
 from maat.utils.smart_sort import smart_sort_key
 from maat.web import filters
-from maat.web.view_model import ReportInfo, build_view_model, logs_txt_path
+from maat.web.view_model import ReportInfo, build_view_model, logs_txt_path, make_slices
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
@@ -23,15 +23,13 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
 
     reports.sort(key=lambda t: smart_sort_key(t[1].name))
 
-    # NOTE: The last report will be the reference, and thus it will be rendered as index.html.
     reports = [
         ReportInfo(
             report=report,
             meta=meta,
             metrics=Metrics.compute(report, meta),
-            pivot_path=pivot_path,
         )
-        for (report, meta), pivot_path in zip(reports, _pivot_paths(reports))
+        for report, meta in reports
     ]
 
     _copy_traversable(
@@ -40,15 +38,23 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     )
     _write_logs(reports, output)
 
-    for i, reference_report in enumerate(reports):
-        vm = build_view_model(reports, reference_report_idx=i)
-        with _jinja_env() as env:
-            _render_to(
-                template="index.html",
-                vm=vm,
-                path=output / reference_report.pivot_path,
-                env=env,
+    slices = make_slices(reports)
+    for slice_idx, slice in enumerate(slices):
+        for report_idx, reference_report in enumerate(slice.reports):
+            vm = build_view_model(
+                slice.reports,
+                reference_report_idx=report_idx,
+                slices=slices,
+                curr_slice_idx=slice_idx,
             )
+
+            with _jinja_env() as env:
+                _render_to(
+                    template="index.html",
+                    vm=vm,
+                    path=output / vm.report_names[report_idx].pivot_href,
+                    env=env,
+                )
 
 
 @contextmanager
@@ -69,14 +75,6 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
     )
 
     yield env
-
-
-def _pivot_paths(iterable: list) -> Iterator[str]:
-    for i in range(len(iterable)):
-        if i < len(iterable) - 1:
-            yield f"pivot-{i}.html"
-        else:
-            yield "index.html"
 
 
 def _render_to(
@@ -108,7 +106,7 @@ def _copy_traversable(traversable: Traversable, dest: Path):
 
 
 def _write_logs(reports: list[ReportInfo], output: Path):
-    for report, meta, _, _ in reports:
+    for report, meta, _ in reports:
         for test in report.tests:
             log_file = output / logs_txt_path(meta, test)
             log_file.parent.mkdir(parents=True, exist_ok=True)
