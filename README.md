@@ -87,21 +87,6 @@ You can then compare two reports with the following invocation to detect regress
 ./maat build-web old_report.json report.json
 ```
 
-## Notifications
-
-`./maat run-local` can emit a notification upon finish on macOS (via `osascript`) and Linux (via
-`notify-send`).
-On macOS, by default scripts have no privileges granted to send notifications,
-and this results in no notifications appearing from Ma'at.
-To fix this, open `Script Editor.app` and run the following script:
-
-```applescript
-display notification "world" with title "hello"
-```
-
-This should result in a notification permission request for Script Editor to appear which you need
-to accept—after this, Ma'at will successfully notify on experiment completion.
-
 [cairo]: https://www.cairo-lang.org/
 
 [crater]: https://github.com/rust-lang/crater

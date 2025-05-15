@@ -20,7 +20,6 @@ from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
 from maat.runner.planner import prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
-from maat.utils.notify import send_notification
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -234,12 +233,6 @@ def run_local(
     )
 
     save_report(report, plan.report_path())
-
-    send_notification(
-        title="Ma'at Experiment Finished",
-        message=f"Experiment in workspace '{workspace.name}' on Scarb {plan.scarb} and \
-                  Starknet Foundry {plan.foundry} has completed.",
-    )
 
 
 @cli.command(help="Build the sandbox image for the given environment.")
