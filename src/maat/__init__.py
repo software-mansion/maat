@@ -30,16 +30,22 @@ pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
 PathParamType = click.Path(exists=True, dir_okay=False, readable=True, path_type=Path)
 
 
-def workspace_options(f):
-    f = click.option(
-        "-w",
-        "--workspace",
-        envvar="MAAT_WORKSPACE",
-        default="local",
-        help="Workspace name.",
-        metavar="WORKSPACE",
-    )(f)
-    return f
+def workspace_options(f=None, /, optional: bool = False):
+    def decorator(f):
+        f = click.option(
+            "-w",
+            "--workspace",
+            envvar="MAAT_WORKSPACE",
+            default="local" if not optional else None,
+            help="Workspace name.",
+            metavar="WORKSPACE",
+        )(f)
+        return f
+
+    # This allows the decorator to be used with or without arguments.
+    if f is None:
+        return decorator
+    return decorator(f)
 
 
 def sandbox_options(f=None, /, pull: bool = True):
@@ -67,16 +73,22 @@ def sandbox_options(f=None, /, pull: bool = True):
     return decorator(f)
 
 
-def load_workspace(f):
-    @click.pass_context
-    def new_func(ctx, *args, **kwargs):
-        workspace_name: str | None = kwargs.pop("workspace", None)
-        if not workspace_name:
-            raise click.UsageError("--workspace is required")
-        workspace = Workspace.load(workspace_name)
-        return ctx.invoke(f, *args, **kwargs, workspace=workspace)
+def load_workspace(f=None, /, optional: bool = False):
+    def decorator(f):
+        @click.pass_context
+        def new_func(ctx, *args, **kwargs):
+            workspace_name: str | None = kwargs.pop("workspace", None)
+            if not workspace_name and not optional:
+                raise click.UsageError("--workspace is required")
+            workspace = None if not workspace_name else Workspace.load(workspace_name)
+            return ctx.invoke(f, *args, **kwargs, workspace=workspace)
 
-    return functools.update_wrapper(new_func, f)
+        return functools.update_wrapper(new_func, f)
+
+    # This allows the decorator to be used with or without arguments.
+    if f is None:
+        return decorator
+    return decorator(f)
 
 
 def tool_versions(f=None, /, optional: bool = False):
@@ -231,6 +243,7 @@ def run_local(
 
 
 @cli.command(help="Build the sandbox image for the given environment.")
+@workspace_options(optional=True)
 @sandbox_options(pull=False)
 @click.option(
     "--cache-from",
@@ -254,12 +267,14 @@ def run_local(
     is_flag=True,
     help="Push the image to registry",
 )
+@load_workspace(optional=True)
 @tool_versions
 @pass_docker
 @pass_console
 def build_sandbox(
     console: Console,
     docker: DockerClient,
+    workspace: Workspace,
     scarb: Semver,
     foundry: Semver,
     cache_from: str = None,
