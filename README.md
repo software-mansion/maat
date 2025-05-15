@@ -87,14 +87,6 @@ You can then compare two reports with the following invocation to detect regress
 ./maat build-web old_report.json report.json
 ```
 
-## Debugging reports
-
-With Jupter Notebooks or Python REPL it is fairly easy to inspect reports and look for some traces
-of errors.
-Check out [`sample_notebook.ipynb`](./sample_notebook.ipynb) file for examples.
-The `maat.model.Report` class provides a fully typed representation of report files.
-The `maat.repl` module provides some handy utilities.
-
 ## Notifications
 
 `./maat run-local` can emit a notification upon finish on macOS (via `osascript`) and Linux (via
