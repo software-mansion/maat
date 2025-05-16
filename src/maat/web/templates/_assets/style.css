@@ -63,11 +63,27 @@ body {
     overflow-x: auto;
 }
 
+header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    margin: 1em 0;
+}
+
 h1 {
     font-family: var(--font-family-fancy), serif;
     font-size: 3em;
     font-weight: 200;
     text-align: center;
+    margin: 0;
+}
+
+#slices {
+    list-style-type: none;
+    display: flex;
+    gap: 1em;
+    justify-content: center;
 }
 
 main {
@@ -342,6 +358,7 @@ button, select, a.button {
     font-size: 0.9em;
     cursor: pointer;
     line-height: 1.15;
+    text-wrap: nowrap;
 
     &:hover {
         background: var(--color-background-alt);
@@ -371,11 +388,4 @@ a.button.current {
 
 select {
     appearance: base-select;
-}
-
-#slices {
-    list-style-type: none;
-    display: flex;
-    gap: 1em;
-    justify-content: center;
 }
