@@ -1,5 +1,8 @@
 name: Web
 
+env:
+  UV_FROZEN: 1
+
 on:
   push:
     branches: [ main ]
@@ -18,9 +21,9 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: astral-sh/setup-uv@v5
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
 
-      # TODO: Maybe include only 10-ish recently commited reports?
       - run: ./maat build-web -o web/ reports/*
 
       - uses: actions/configure-pages@v5

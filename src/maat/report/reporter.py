@@ -3,7 +3,7 @@ from datetime import timedelta
 from typing import Literal, Self
 
 from maat import Report
-from maat.model import Semver, Step, StepReport, Test, TestReport
+from maat.model import Step, StepReport, Test, TestReport, Plan
 
 
 class StepReporter:
@@ -63,16 +63,11 @@ class TestReporter:
 
 
 class Reporter:
-    def __init__(
-        self,
-        workspace_name: str,
-        scarb: Semver,
-        foundry: Semver,
-    ):
+    def __init__(self, plan: Plan):
         self._report = Report(
-            workspace=workspace_name,
-            scarb=scarb,
-            foundry=foundry,
+            workspace=plan.workspace,
+            scarb=plan.scarb,
+            foundry=plan.foundry,
             total_execution_time=timedelta.max,
         )
         self._timer = _ExecutionTimer()

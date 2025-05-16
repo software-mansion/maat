@@ -10,9 +10,10 @@ from pydantic import (
     RootModel,
     SerializerFunctionWrapHandler,
     model_serializer,
+    model_validator,
 )
 
-from maat.installation import this_maat_commit
+from maat.installation import REPO, this_maat_commit
 from maat.utils.shell import join_command, inline_env
 from maat.utils.smart_sort import smart_sort_key
 
@@ -42,6 +43,24 @@ class Step(BaseModel):
     Environment variables to be set for this step.
     """
 
+    @model_serializer(mode="wrap")
+    def serialize_model(self, nxt: SerializerFunctionWrapHandler) -> dict[str, Any]:
+        """Skip serialising fields which aren't required and have default values."""
+
+        data = nxt(self)
+        model_fields = self.__class__.model_fields
+
+        return {
+            k: v
+            for k, v in data.items()
+            if model_fields[k].is_required()
+            or v
+            != model_fields[k].get_default(
+                call_default_factory=True,
+                validated_data=data,
+            )
+        }
+
 
 class Test(BaseModel):
     name: str
@@ -57,6 +76,17 @@ class TestSuite(BaseModel):
             if test.name == name:
                 return test
         return None
+
+    def partition(self, n: int) -> list[Self]:
+        assert n > 0
+
+        if n == 1:
+            return [self]
+
+        buckets: list[list[Test]] = [[] for _ in range(n)]
+        for idx, test in enumerate(self.tests):
+            buckets[idx % n].append(test)
+        return [self.__class__(tests=bucket) for bucket in buckets]
 
 
 @enum.unique
@@ -274,6 +304,44 @@ class Report(BaseModel):
     def by_version_preferring_foundry(self):
         return smart_sort_key(self.foundry), smart_sort_key(self.scarb)
 
+    @model_validator(mode="after")
+    def validate_unique_test_names(self) -> Self:
+        test_names = [test.name for test in self.tests]
+        if len(test_names) != len(set(test_names)):
+            duplicates = [
+                name for name in set(test_names) if test_names.count(name) > 1
+            ]
+            duplicates.sort()
+            limit = 3
+            if len(duplicates) > limit:
+                msg = f"duplicate tests found: {', '.join(duplicates[:limit])} ({len(duplicates) - limit} more)"
+            else:
+                msg = f"duplicate tests found: {', '.join(duplicates)}"
+            raise ValueError(msg)
+        return self
+
+    @classmethod
+    def merge(cls, reports: list[Self]) -> Self:
+        assert len(reports) > 0
+
+        for field in ["workspace", "scarb", "foundry", "maat_commit"]:
+            if not all(
+                getattr(r, field) == getattr(reports[0], field) for r in reports
+            ):
+                raise ValueError(f"cannot merge reports with varying '{field}' values")
+
+        return Report(
+            workspace=reports[0].workspace,
+            scarb=reports[0].scarb,
+            foundry=reports[0].foundry,
+            maat_commit=reports[0].maat_commit,
+            created_at=max(r.created_at for r in reports),
+            total_execution_time=sum(
+                (r.total_execution_time for r in reports), timedelta()
+            ),
+            tests=[t for r in reports for t in r.tests],
+        )
+
     def before_save(self):
         """
         Perform some cleaning up before saving the report.
@@ -300,3 +368,52 @@ class ReportMeta(BaseModel):
     @classmethod
     def new(cls, path: Path) -> Self:
         return cls(name=path.stem)
+
+
+class Plan(BaseModel):
+    workspace: str
+    scarb: Semver
+    foundry: Semver
+
+    report_name: str
+    sandbox: str
+
+    partitions: list[TestSuite]
+
+    def partition_views(self) -> list["PlanPartitionView"]:
+        return [
+            PlanPartitionView(plan=self, partition=i)
+            for i in range(len(self.partitions))
+        ]
+
+    def report_path(
+        self,
+        base: Path | str | None = None,
+        partition: int | None = None,
+    ) -> Path:
+        if base is None:
+            base = REPO / "reports"
+        base = Path(base)
+
+        if partition is not None:
+            file_name = f"{self.report_name}-{partition}.json"
+        else:
+            file_name = f"{self.report_name}.json"
+
+        return base / file_name
+
+
+class PlanPartitionView(BaseModel):
+    plan: Plan
+    partition: int
+
+    @model_validator(mode="after")
+    def validate_partition(self) -> Self:
+        assert 0 <= self.partition < len(self.plan.partitions), (
+            "partition index out of range"
+        )
+        return self
+
+    @property
+    def test_suite(self) -> TestSuite:
+        return self.plan.partitions[self.partition]

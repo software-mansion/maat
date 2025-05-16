@@ -2,6 +2,7 @@ import re
 import typing
 from abc import ABC, abstractmethod
 from collections.abc import Callable
+from typing import Protocol
 
 from pydantic import BaseModel
 
@@ -121,3 +122,9 @@ def import_workspace(name: str) -> "WorkspaceSettings":
     from maat.workspace import WorkspaceSettings
 
     return WorkspaceSettings.load(name)
+
+
+class ReportNameGenerationContext(Protocol):
+    workspace: str
+    scarb: str
+    foundry: str

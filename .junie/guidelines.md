@@ -17,6 +17,7 @@ running experiments on Cairo ecosystem projects using Docker containers.
     - `utils/`: Helper utilities
     - `web/`: Web interface components
     - `workspace.py`: Workspace management
+- `docs/`: Documentation
 - `reports/`: Experiment reports storage
 - `workspaces/`: Cairo ecosystem project definitions
 - `checkouts/`: Local copies of ecosystem projects
@@ -27,3 +28,8 @@ running experiments on Cairo ecosystem projects using Docker containers.
 2. Avoid `./maat run-local` (very slow); use `./maat reanalyse --all` for analysis work
 3. Use Pydantic V2 models, PEP 8 style, type hints, and proper docstrings
 4. Maintain Docker compatibility and consistent JSON report formats (with sorted lists)
+
+## Notes
+
+This project uses the Click library.
+All `./maat COMMAND` commands are defined as functions (`-` becomes `_`) in `src/maat/__init__.py`.
