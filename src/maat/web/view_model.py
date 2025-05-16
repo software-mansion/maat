@@ -107,14 +107,14 @@ def build_view_model(
 
     slices_view = [
         SliceViewModel(
-            title=slice.title,
+            title=sl.title,
             href=_get_href(
                 slice_name=slices[i].title,
                 index=(len(slices[i].reports) - 1),
                 is_default=slices[i].default,
             ),
         )
-        for i, slice in enumerate(slices)
+        for i, sl in enumerate(slices)
     ]
     slices_view[curr_slice_idx].is_current = True
     assert sum(sv.is_current for sv in slices_view) == 1, (
@@ -288,7 +288,7 @@ def unique_by_at_most[T, K](
             yield item
 
 
-# NOTE: The last report for default slice will be the reference,
+# NOTE: The last report for the default slice will be the reference,
 # and thus it will be rendered as index.html.
 def _get_href(slice_name: str, index: int, is_default: bool) -> str:
     return (
