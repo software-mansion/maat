@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from maat.model import Label, LabelCategory, ReportMeta, TestReport
 from maat.report.metrics import MetricsTransposed
+from maat.utils.slugify import slugify
 from maat.utils.smart_sort import smart_sort_key
 from maat.web.report_info import ReportInfo
 from maat.web.slices import Slice
@@ -177,9 +178,5 @@ def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
 # and thus it will be rendered as index.html.
 def _get_href(slice_name: str, index: int, is_default: bool) -> str:
     return (
-        f"{_slugify(slice_name)}-pivot-{index}.html" if not is_default else "index.html"
+        f"{slugify(slice_name)}-pivot-{index}.html" if not is_default else "index.html"
     )
-
-
-def _slugify(text: str) -> str:
-    return text.lower().replace(" ", "-")

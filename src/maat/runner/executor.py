@@ -19,7 +19,7 @@ from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
-from maat.utils.docker import sanitize_for_docker
+from maat.utils.slugify import slugify
 from maat.utils.shell import split_command
 from maat.utils.unique_id import snowflake_id
 
@@ -147,7 +147,7 @@ def _execute_test(
                     docker=docker,
                     image=sandbox,
                     command=split_command(step.run),
-                    container_name=f"maat-{sanitize_for_docker(test.name)}-{sanitize_for_docker(step.name)}-{snowflake_id()}",
+                    container_name=f"maat-{slugify(test.name)}-{slugify(step.name)}-{snowflake_id()}",
                     cache_volume=cache_volume,
                     workbench_volume=workbench_volume,
                     ct=ct,

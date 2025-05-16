@@ -1,10 +1,4 @@
-import re
-
 from python_on_whales import Image, DockerClient
-
-
-def sanitize_for_docker(name: str) -> str:
-    return re.sub(r"[^a-zA-Z0-9_.-]", "_", name)
 
 
 def inspect_image(image: Image | str, docker: DockerClient) -> Image:
