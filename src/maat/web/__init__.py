@@ -40,13 +40,13 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     )
     _write_logs(reports, output)
 
-    slices = make_slices(reports)
-    for slice_idx, slice in enumerate(slices):
-        for report_idx, reference_report in enumerate(slice.reports):
+    sls = make_slices(reports)
+    for slice_idx, sl in enumerate(sls):
+        for report_idx, reference_report in enumerate(sl.reports):
             vm = build_view_model(
-                slice.reports,
+                sl.reports,
                 reference_report_idx=report_idx,
-                slices=slices,
+                slices=sls,
                 curr_slice_idx=slice_idx,
             )
 
