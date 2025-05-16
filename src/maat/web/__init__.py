@@ -13,7 +13,9 @@ from maat.model import Report, ReportMeta
 from maat.report.metrics import Metrics
 from maat.utils.smart_sort import smart_sort_key
 from maat.web import filters
-from maat.web.view_model import ReportInfo, build_view_model, logs_txt_path, make_slices
+from maat.web.report_info import ReportInfo
+from maat.web.slices import make_slices
+from maat.web.view_model import build_view_model, logs_txt_path
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
