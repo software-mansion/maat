@@ -372,3 +372,10 @@ a.button.current {
 select {
     appearance: base-select;
 }
+
+#slices {
+    list-style-type: none;
+    display: flex;
+    gap: 1em;
+    justify-content: center;
+}

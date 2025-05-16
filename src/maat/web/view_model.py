@@ -117,6 +117,9 @@ def build_view_model(
         for i, slice in enumerate(slices)
     ]
     slices_view[curr_slice_idx].is_current = True
+    assert sum(sv.is_default for sv in slices_view) == 1, (
+        "only one slice can be the default"
+    )
 
     reference_report, _, reference_metrics = reports[reference_report_idx]
 
