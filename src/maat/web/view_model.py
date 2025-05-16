@@ -1,11 +1,13 @@
 from pathlib import Path
-from typing import NamedTuple
 
 from pydantic import BaseModel
 
-from maat.model import Label, LabelCategory, Report, ReportMeta, TestReport
-from maat.report.metrics import Metrics, MetricsTransposed
+from maat.model import Label, LabelCategory, ReportMeta, TestReport
+from maat.report.metrics import MetricsTransposed
+from maat.utils.slugify import slugify
 from maat.utils.smart_sort import smart_sort_key
+from maat.web.report_info import ReportInfo
+from maat.web.slices import Slice
 
 
 class ReportNameViewModel(BaseModel):
@@ -56,37 +58,57 @@ class LabelGroupViewModel(BaseModel):
     ratio: float
 
 
+class SliceViewModel(BaseModel):
+    title: str
+    href: str
+    is_current: bool = False
+
+
 class RootViewModel(BaseModel):
     report_names: list[ReportNameViewModel]
     metrics: MetricsTransposed
     label_groups: list[LabelGroupViewModel]
-
-
-class ReportInfo(NamedTuple):
-    report: Report
-    meta: ReportMeta
-    metrics: Metrics
-    pivot_path: str
+    slices: list[SliceViewModel]
 
 
 def build_view_model(
     reports: list[ReportInfo],
     reference_report_idx: int,
+    slices: list[Slice],
+    curr_slice_idx: int,
 ) -> RootViewModel:
-    metrics_transposed = MetricsTransposed.new(
-        [metrics for _, _, metrics, _ in reports]
-    )
+    metrics_transposed = MetricsTransposed.new([metrics for _, _, metrics in reports])
 
     report_names = [
         ReportNameViewModel(
-            title=meta.name,
-            pivot_href=pivot_path,
+            title=report.meta.name,
+            pivot_href=_get_href(
+                slice_name=slices[curr_slice_idx].title,
+                index=i,
+                is_default=(slices[curr_slice_idx].default and i == len(reports) - 1),
+            ),
         )
-        for _, meta, _, pivot_path in reports
+        for i, report in enumerate(reports)
     ]
     report_names[reference_report_idx].is_reference = True
 
-    reference_report, _, reference_metrics, _ = reports[reference_report_idx]
+    slices_view = [
+        SliceViewModel(
+            title=sl.title,
+            href=_get_href(
+                slice_name=slices[i].title,
+                index=(len(slices[i].reports) - 1),
+                is_default=slices[i].default,
+            ),
+        )
+        for i, sl in enumerate(slices)
+    ]
+    slices_view[curr_slice_idx].is_current = True
+    assert sum(sv.is_current for sv in slices_view) == 1, (
+        "only one slice can be the default"
+    )
+
+    reference_report, _, reference_metrics = reports[reference_report_idx]
 
     label_groups = []
     for category in LabelCategory:
@@ -99,14 +121,14 @@ def build_view_model(
 
         tests_by_report_idx_and_name: dict[tuple[int, str], TestReport] = {
             (report_idx, test.name): test
-            for report_idx, (report, _, _, _) in enumerate(reports)
+            for report_idx, (report, _, _) in enumerate(reports)
             for test in report.tests
         }
 
         rows = []
         for test_name in relevant_test_names:
             cells = []
-            for report_idx, (_, report_meta, _, _) in enumerate(reports):
+            for report_idx, (_, report_meta, _) in enumerate(reports):
                 if test := tests_by_report_idx_and_name.get((report_idx, test_name)):
                     logs_href = str(logs_txt_path(report_meta, test))
 
@@ -144,8 +166,17 @@ def build_view_model(
         report_names=report_names,
         metrics=metrics_transposed,
         label_groups=label_groups,
+        slices=slices_view,
     )
 
 
 def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
     return Path() / meta.name / test.name_and_rev / "logs.txt"
+
+
+# NOTE: The last report for the default slice will be the reference,
+# and thus it will be rendered as index.html.
+def _get_href(slice_name: str, index: int, is_default: bool) -> str:
+    return (
+        f"{slugify(slice_name)}-pivot-{index}.html" if not is_default else "index.html"
+    )

@@ -14,7 +14,8 @@ from pydantic import (
 )
 
 from maat.installation import REPO, this_maat_commit
-from maat.utils.shell import inline_env, join_command
+from maat.utils.shell import join_command, inline_env
+from maat.utils.smart_sort import smart_sort_key
 
 type Semver = str
 type ImageId = str
@@ -286,6 +287,22 @@ class Report(BaseModel):
     created_at: datetime = Field(default_factory=datetime.now)
     total_execution_time: timedelta
     tests: list[TestReport] = []
+
+    @property
+    def used_stable_tooling(self) -> bool:
+        for bad_char in "+-":
+            for v in (self.scarb, self.foundry):
+                if bad_char in v:
+                    return False
+        return True
+
+    @property
+    def by_version_preferring_scarb(self):
+        return smart_sort_key(self.scarb), smart_sort_key(self.foundry)
+
+    @property
+    def by_version_preferring_foundry(self):
+        return smart_sort_key(self.foundry), smart_sort_key(self.scarb)
 
     @model_validator(mode="after")
     def validate_unique_test_names(self) -> Self:

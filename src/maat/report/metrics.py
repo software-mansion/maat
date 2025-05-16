@@ -22,7 +22,6 @@ class Metrics(pydantic.BaseModel):
     avg_lint_time: timedelta
     avg_test_time: timedelta
 
-
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
         # Initialize counters and accumulators.
@@ -55,7 +54,6 @@ class Metrics(pydantic.BaseModel):
         avg_build_time = sum(build_times, timedelta()) / max(len(build_times), 1)
         avg_lint_time = sum(lint_times, timedelta()) / max(len(lint_times), 1)
         avg_test_time = sum(test_times, timedelta()) / max(len(test_times), 1)
-
 
         # Create and return the Metrics object
         return cls(

@@ -63,6 +63,16 @@
 <body>
 <header>
     <h1>Ma'at</h1>
+    <ul id="slices">
+    {% for slice in slices %}
+        <li>
+            <a href="{{ slice.href }}"
+               class="{{ "button"|clsx(current=slice.is_current) }}">
+                {{- slice.title -}}
+            </a>
+        </li>
+    {% endfor %}
+    </ul>
 </header>
 <main>
     <details id="details-metrics" open>
