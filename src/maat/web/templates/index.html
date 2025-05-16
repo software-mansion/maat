@@ -67,7 +67,7 @@
     {% for slice in slices %}
         <li>
             <a href="{{ slice.href }}"
-                class="{{ "button"|clsx(current=slice.is_current) }}">
+               class="{{ "button"|clsx(current=slice.is_current) }}">
                 {{- slice.title -}}
             </a>
         </li>
