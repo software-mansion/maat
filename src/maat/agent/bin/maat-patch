@@ -72,8 +72,8 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
     patch_field(scarbs_patch_table, "starknet", scarb_version)
     patch_field(scarbs_patch_table, "cairo_test", scarb_version)
     if should_patch_snforge_std:
-        patch_field(scarbs_patch_table, "snforge_std", foundry_version)
-        patch_field(scarbs_patch_table, "snforge_scarb_plugin", foundry_version)
+        patch_field(scarbs_patch_table, "snforge_std", foundry_dep_spec)
+        patch_field(scarbs_patch_table, "snforge_scarb_plugin", foundry_dep_spec)
 
 
 def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
@@ -86,7 +86,7 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
 
         if should_patch_snforge_std:
             if test_runner == "snforge":
-                add_dev_dependency_if_missing(manifest, "snforge_std", foundry_version)
+                add_dev_dependency_if_missing(manifest, "snforge_std", foundry_dep_spec)
             if test_runner == "cairo-test":
                 add_dev_dependency_if_missing(manifest, "cairo_test", scarb_version)
 
@@ -134,12 +134,12 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
 def add_dev_dependency_if_missing(
     manifest: tomlkit.TOMLDocument,
     dependency: str,
-    version: str,
+    spec: Any,
 ):
     dev_dependencies = manifest.setdefault("dev-dependencies", tomlkit.table())
     dependencies = manifest.setdefault("dependencies", tomlkit.table())
     if dependency not in dev_dependencies and dependency not in dependencies:
-        patch_field(dev_dependencies, dependency, version)
+        patch_field(dev_dependencies, dependency, spec)
 
 
 @cache
@@ -197,6 +197,15 @@ if __name__ == "__main__":
     is_snforge_std = '[package]\nname = "snforge_std' in Path("Scarb.toml").read_text()
 
     should_patch_snforge_std = not is_snforge_std
+
+    if "nightly" in foundry_version:
+        foundry_dep_spec = (
+            tomlkit.inline_table()
+            .append("version", foundry_version)
+            .append("registry", "https://scarbs.dev/")
+        )
+    else:
+        foundry_dep_spec = foundry_version
 
     ensure_clean_git_repo()
     patch("Scarb.toml", patch_root)
