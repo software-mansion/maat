@@ -14,6 +14,9 @@ _WORKFLOW = [
     Step(run="maat-check-versions", setup=True),
     Step(run="maat-patch", setup=True),
     Step(name="fetch", run="scarb fetch", setup=True, checkout=False),
+    # Show what dependencies were resolved in logs.
+    # This is just for debugging purposes, so it doesn't make sense for it to be a setup step.
+    Step(name="tree", run="scarb tree -q --workspace"),
     Step(name="build", run="scarb build --workspace --test"),
     Step(name="lint", run="scarb lint --workspace --deny-warnings"),
     Step(
