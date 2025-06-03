@@ -90,12 +90,15 @@ def load_workspace(f=None, /, optional: bool = False):
     return decorator(f)
 
 
-def tool_versions(f=None, /, optional: bool = False):
+def tool_versions(f=None, /, optional_if_pull: bool = False):
     def decorator(f):
         @pass_docker
         @click.pass_context
         def new_func(ctx, docker: DockerClient, *args, **kwargs):
             workspace: Workspace | None = kwargs.get("workspace")
+            pull: bool = kwargs.get("pull", False)
+
+            optional = optional_if_pull and pull
 
             if kwargs.get("scarb") is None:
                 if optional:
@@ -194,7 +197,7 @@ def cli() -> None:
     default=None,
 )
 @load_workspace
-@tool_versions(optional=True)
+@tool_versions(optional_if_pull=True)
 @load_sandbox_image
 @pass_docker
 @pass_console
@@ -409,6 +412,7 @@ def checkout(
                 workbench_volume=workbench_volume,
                 raise_on_nonzero_exit=True,
                 env=step.env,
+                workdir=step.workdir,
             )
 
         status.update("Copying workbench contents...")
