@@ -2,6 +2,7 @@ import os
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
 from datetime import timedelta
+from pathlib import Path
 
 from python_on_whales import DockerClient, DockerException, Image, Volume
 from rich.console import Console
@@ -14,13 +15,13 @@ from rich.progress import (
     TimeElapsedColumn,
 )
 
-from maat.model import EXIT_RUNNER_SKIPPED, Plan, Step, Test, PlanPartitionView
+from maat.model import EXIT_RUNNER_SKIPPED, Plan, PlanPartitionView, Step, Test
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
-from maat.utils.slugify import slugify
 from maat.utils.shell import split_command
+from maat.utils.slugify import slugify
 from maat.utils.unique_id import snowflake_id
 
 
@@ -153,6 +154,7 @@ def _execute_test(
                     ct=ct,
                     step_reporter=step_reporter,
                     env=step.env,
+                    workdir=step.workdir,
                 )
 
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
@@ -227,6 +229,7 @@ def docker_run_step(
     step_reporter: StepReporter | None = None,
     raise_on_nonzero_exit: bool = False,
     env: dict[str, str] | None = None,
+    workdir: str | None = None,
 ) -> int:
     exit_code = 0
 
@@ -236,6 +239,15 @@ def docker_run_step(
     labels = {}
     if ct is not None:
         labels.update(ct.container_labels)
+
+    real_workdir: str
+    if isinstance(workdir, str):
+        if Path(workdir).is_absolute():
+            real_workdir = workdir
+        else:
+            real_workdir = str(Path(MAAT_WORKBENCH) / workdir)
+    else:
+        real_workdir = MAAT_WORKBENCH
 
     try:
         stream = docker.container.run(
@@ -249,7 +261,7 @@ def docker_run_step(
                 (cache_volume, MAAT_CACHE, "rw"),
                 (workbench_volume, MAAT_WORKBENCH, "rw"),
             ],
-            workdir=MAAT_WORKBENCH,
+            workdir=real_workdir,
             stream=True,
         )
         for source, line in stream:

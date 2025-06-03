@@ -18,6 +18,8 @@ type Ecosystem = EcosystemProject | list[Ecosystem] | Callable[[], Ecosystem]
 
 
 class EcosystemProject(BaseModel, ABC):
+    workdir: str | None = None
+
     @property
     @abstractmethod
     def name(self) -> str:
@@ -75,12 +77,12 @@ class _Registry(EcosystemProject):
         )
 
 
-def git(repo: str) -> Ecosystem:
-    return _Git(repo=repo)
+def git(repo: str, /, workdir: str | None = None) -> Ecosystem:
+    return _Git(repo=repo, workdir=workdir)
 
 
-def github(repo: str) -> Ecosystem:
-    return git(f"https://github.com/{repo}")
+def github(repo: str, /, workdir: str | None = None) -> Ecosystem:
+    return git(f"https://github.com/{repo}", workdir=workdir)
 
 
 def registry(registry_url: str, package: str) -> Ecosystem:

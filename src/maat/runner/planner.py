@@ -3,32 +3,49 @@ from dataclasses import dataclass
 from python_on_whales import DockerClient, Image
 from rich.console import Console
 
-from maat.ecosystem.spec import ReportNameGenerationContext
+from maat.ecosystem.spec import ReportNameGenerationContext, EcosystemProject
 from maat.ecosystem.utils import flatten_ecosystem
 from maat.model import Plan, Step, Test, TestSuite
 from maat.sandbox import tool_versions
 from maat.utils.docker import image_id
 from maat.workspace import Workspace
 
-_WORKFLOW = [
-    Step(run="maat-check-versions", setup=True),
-    Step(run="maat-patch", setup=True),
-    Step(name="fetch", run="scarb fetch", setup=True, checkout=False),
-    # Show what dependencies were resolved in logs.
-    # This is just for debugging purposes, so it doesn't make sense for it to be a setup step.
-    Step(name="tree", run="scarb tree -q --workspace"),
-    Step(name="build", run="scarb build --workspace --test"),
-    Step(name="lint", run="scarb lint --workspace --deny-warnings"),
-    Step(
-        name="test",
-        run="scarb test --workspace",
-        env={
-            "SNFORGE_FUZZER_SEED": "1",
-            "SNFORGE_IGNORE_FORK_TESTS": "1",
-        },
-    ),
-    Step(name="ls", run="maat-test-ls"),
-]
+
+def _workflow(project: EcosystemProject) -> list[Step]:
+    return [
+        Step(run="maat-check-versions", setup=True, workdir=project.workdir),
+        Step(run="maat-patch", setup=True, workdir=project.workdir),
+        Step(
+            name="fetch",
+            run="scarb fetch",
+            setup=True,
+            checkout=False,
+            workdir=project.workdir,
+        ),
+        # Show what dependencies were resolved in logs.
+        # This is just for debugging purposes, so it doesn't make sense for it to be a setup step.
+        Step(name="tree", run="scarb tree -q --workspace", workdir=project.workdir),
+        Step(
+            name="build",
+            run="scarb build --workspace --test",
+            workdir=project.workdir,
+        ),
+        Step(
+            name="lint",
+            run="scarb lint --workspace --deny-warnings",
+            workdir=project.workdir,
+        ),
+        Step(
+            name="test",
+            run="scarb test --workspace",
+            env={
+                "SNFORGE_FUZZER_SEED": "1",
+                "SNFORGE_IGNORE_FORK_TESTS": "1",
+            },
+            workdir=project.workdir,
+        ),
+        Step(name="ls", run="maat-test-ls", workdir=project.workdir),
+    ]
 
 
 def prepare_plan(
@@ -42,7 +59,7 @@ def prepare_plan(
         suite = TestSuite()
 
         for project in flatten_ecosystem(workspace.settings.ecosystem):
-            steps = project.setup() + _WORKFLOW
+            steps = project.setup() + _workflow(project)
             test = Test(name=project.name, rev=project.fetch_rev(), steps=steps)
             suite.tests.append(test)
 

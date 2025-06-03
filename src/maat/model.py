@@ -14,7 +14,7 @@ from pydantic import (
 )
 
 from maat.installation import REPO, this_maat_commit
-from maat.utils.shell import join_command, inline_env
+from maat.utils.shell import join_command, inline_env, add_workdir
 from maat.utils.smart_sort import smart_sort_key
 
 type Semver = str
@@ -41,6 +41,10 @@ class Step(BaseModel):
     env: dict[str, str] = {}
     """
     Environment variables to be set for this step.
+    """
+    workdir: str | None = None
+    """
+    Working directory for this step. If None, the default working directory is used.
     """
 
     @model_serializer(mode="wrap")
@@ -223,7 +227,7 @@ class StepReport(BaseModel):
     def blueprint(cls, step: Step):
         return cls(
             name=step.name,
-            run=inline_env(join_command(step.run), step.env),
+            run=inline_env(join_command(step.run), add_workdir(step.env, step.workdir)),
             exit_code=None,
             execution_time=None,
             log=None,
