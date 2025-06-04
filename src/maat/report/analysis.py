@@ -106,7 +106,10 @@ def label(test: TestReport):
             if lbl := _ls_label(ls, build_failed=True):
                 labels.add(lbl)
 
-    assert labels, f"no labels were finally assigned for {test.name}"
+    if not labels:
+        lbl = Label.new(LabelCategory.ERROR, ":monkas:")
+        labels.add(lbl)
+
     test.analyses.labels = labels
 
 
