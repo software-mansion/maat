@@ -156,6 +156,9 @@
                 {% call(value) metrics_row("Avg. Test Time", metrics.avg_test_time) %}
                     {{ value|timedeltaformat }}
                 {% endcall %}
+                {% call(value) metrics_row("Avg. LS Time", metrics.avg_ls_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
             {% endcall %}
             </tbody>
         </table>
