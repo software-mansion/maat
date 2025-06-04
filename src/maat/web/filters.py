@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 
+
 type ClassNames = (
     str | None | list[str | None] | tuple[str | None] | dict[str, bool | None]
 )
