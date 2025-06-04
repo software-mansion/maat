@@ -20,9 +20,6 @@ class Trend(enum.Enum):
     HIGHER = enum.auto()
     """The value is higher than the reference value."""
 
-    NONE = enum.auto()
-    """No trend information is available."""
-
     @enum.property
     def symbol(self) -> str:
         match self:
@@ -36,8 +33,6 @@ class Trend(enum.Enum):
                 return "↓"
             case self.HIGHER:
                 return "↑"
-            case self.NONE:
-                return ""
             case _:
                 raise ValueError(f"invalid trend: {self}")
 
@@ -67,10 +62,7 @@ def trends_row(row: list[timedelta], reference_idx: int) -> list[Trend]:
         elif value == max_value:
             trend = Trend.HIGHEST
         elif value == reference_value:
-            if value != min_value and value != max_value:
-                trend = Trend.REFERENCE
-            else:
-                trend = Trend.NONE
+            trend = Trend.REFERENCE
         elif value < reference_value:
             trend = Trend.LOWER
         else:  # value > reference_value
