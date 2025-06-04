@@ -30,22 +30,23 @@ def datetimeformat(value: datetime) -> str:
 
 
 def timedeltaformat(value: timedelta, /, precision=2) -> str:
-    mm, ss = divmod(value.seconds, 60)
-    hh, mm = divmod(mm, 60)
-    s = f"{hh:d}:{mm:02d}:{ss:02d}"
+    # Round to the nearest second.
+    total_seconds = round(value.total_seconds())
 
-    if value.days:
+    # Recalculate days, hours, minutes, seconds.
+    days, remainder = divmod(total_seconds, 86400)  # 86400 seconds in a day
+    hours, remainder = divmod(remainder, 3600)  # 3600 seconds in an hour
+    minutes, seconds = divmod(remainder, 60)  # 60 seconds in a minute
 
-        def plural(n):
-            return n, abs(n) != 1 and "s" or ""
+    # Build the string with only non-zero parts.
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if minutes:
+        parts.append(f"{minutes}m")
+    if seconds or not parts:  # Always include seconds if no other parts.
+        parts.append(f"{seconds}s")
 
-        s = ("%d day%s, " % plural(value.days)) + s
-
-    if value.microseconds:
-        # Round to the nearest 1/(10**precision)th of a second.
-        # For example, 0:07:12.211526 -> 0:07:12.21 (when precision = 2).
-        ms = round(value.microseconds / 10**6, precision)
-        # Add fractional seconds, omit leading `0` with that `[1:]`.
-        s += f"{ms:.{precision}f}"[1:]
-
-    return s
+    return " ".join(parts)
