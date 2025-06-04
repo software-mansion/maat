@@ -45,8 +45,8 @@
 {% macro metrics_row_with_trends(title, values, trends) %}
     {% call(t) metrics_row(title, zip(values, trends)) %}
         {% set value, trend = t %}
-        {{ value|timedeltaformat }}
-        <span>{{ trend.symbol }}</span>
+        {{- value|timedeltaformat -}}
+        <span class="select-none"> {{ trend.symbol }}</span>
     {% endcall %}
 {% endmacro %}
 
