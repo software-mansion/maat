@@ -41,6 +41,16 @@ class Trend(enum.Enum):
             case _:
                 raise ValueError(f"invalid trend: {self}")
 
+    @enum.property
+    def color_class(self) -> str:
+        match self:
+            case self.LOWER | self.LOWEST:
+                return "text-positive"
+            case self.HIGHER | self.HIGHEST:
+                return "text-negative"
+            case _:
+                return "text-neutral"
+
 
 def trends_row(row: list[timedelta], reference_idx: int) -> list[Trend]:
     trends = []

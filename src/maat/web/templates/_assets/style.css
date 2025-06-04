@@ -334,6 +334,18 @@ pre, code {
     text-align: right;
 }
 
+.text-positive {
+    color: var(--color-test-pass);
+}
+
+.text-negative {
+    color: var(--color-error);
+}
+
+.text-neutral {
+    color: var(--color-broken);
+}
+
 .fill-primary {
     fill: var(--color-text-primary);
 }
