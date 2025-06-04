@@ -42,6 +42,14 @@
     {% call(value) metrics_row(title, values) %}{{ value }}{% endcall %}
 {% endmacro %}
 
+{% macro metrics_row_with_trends(title, values, trends) %}
+    {% call(t) metrics_row(title, zip(values, trends)) %}
+        {% set value, trend = t %}
+        {{ value|timedeltaformat }}
+        <span>{{ trend.symbol }}</span>
+    {% endcall %}
+{% endmacro %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,9 +96,11 @@
                 {% call(value) metrics_row("Created At", metrics.created_at) %}
                     {{ value|datetimeformat }}
                 {% endcall %}
-                {% call(value) metrics_row("Total Execution Time", metrics.total_execution_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
+                {{ metrics_row_with_trends(
+                    "Total Execution Time",
+                    metrics.total_execution_time,
+                    metrics_trends.total_execution_time
+                ) }}
                 {{ metrics_row_s("Total Projects", metrics.total_projects) }}
             {% endcall %}
             </tbody>
@@ -147,18 +157,26 @@
             {{ header() }}
             <tbody>
             {% call table_section("Summary") %}
-                {% call(value) metrics_row("Avg. Build Time", metrics.avg_build_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. Lint Time", metrics.avg_lint_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. Test Time", metrics.avg_test_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. LS Time", metrics.avg_ls_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
+                {{ metrics_row_with_trends(
+                    "Avg. Build Time",
+                    metrics.avg_build_time,
+                    metrics_trends.avg_build_time
+                ) }}
+                {{ metrics_row_with_trends(
+                    "Avg. Lint Time",
+                    metrics.avg_lint_time,
+                    metrics_trends.avg_lint_time
+                ) }}
+                {{ metrics_row_with_trends(
+                    "Avg. Test Time",
+                    metrics.avg_test_time,
+                    metrics_trends.avg_test_time
+                ) }}
+                {{ metrics_row_with_trends(
+                    "Avg. LS Time",
+                    metrics.avg_ls_time,
+                    metrics_trends.avg_ls_time
+                ) }}
             {% endcall %}
             </tbody>
         </table>

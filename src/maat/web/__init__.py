@@ -67,6 +67,8 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
         undefined=jinja2.StrictUndefined,
     )
 
+    env.globals["zip"] = zip
+
     # Create a dictionary of filter functions from the filters module
     env.filters.update(
         {
