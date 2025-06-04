@@ -64,14 +64,14 @@
 <header>
     <h1>Ma'at</h1>
     <ul id="slices">
-    {% for slice in slices %}
-        <li>
-            <a href="{{ slice.href }}"
-               class="{{ "button"|clsx(current=slice.is_current) }}">
-                {{- slice.title -}}
-            </a>
-        </li>
-    {% endfor %}
+        {% for slice in slices %}
+            <li>
+                <a href="{{ slice.href }}"
+                   class="{{ "button"|clsx(current=slice.is_current) }}">
+                    {{- slice.title -}}
+                </a>
+            </li>
+        {% endfor %}
     </ul>
 </header>
 <main>
@@ -92,17 +92,6 @@
                     {{ value|timedeltaformat }}
                 {% endcall %}
                 {{ metrics_row_s("Total Projects", metrics.total_projects) }}
-            {% endcall %}
-            {% call table_section("Timings") %}
-                {% call(value) metrics_row("Avg. Build Time", metrics.avg_build_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. Lint Time", metrics.avg_lint_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. Test Time", metrics.avg_test_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
             {% endcall %}
             </tbody>
         </table>
@@ -152,6 +141,25 @@
             </table>
         </details>
     {% endfor %}
+    <details id="details-timings">
+        <summary class="font-bold">Timings</summary>
+        <table>
+            {{ header() }}
+            <tbody>
+            {% call table_section("Summary") %}
+                {% call(value) metrics_row("Avg. Build Time", metrics.avg_build_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+                {% call(value) metrics_row("Avg. Lint Time", metrics.avg_lint_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+                {% call(value) metrics_row("Avg. Test Time", metrics.avg_test_time) %}
+                    {{ value|timedeltaformat }}
+                {% endcall %}
+            {% endcall %}
+            </tbody>
+        </table>
+    </details>
 </main>
 <footer>
     <a class="swm no-underline" href="https://swmansion.com/"
