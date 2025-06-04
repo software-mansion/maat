@@ -45,18 +45,13 @@ def ensure_in_array(table: Any, key: str, value: Any):
 
 
 def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
-    members = []
-
     patch_member(manifest, project_root)
-    if "package" in manifest:
-        members.append(Path("."))
 
     if (workspace := manifest.get("workspace")) is not None:
         if "members" in workspace:
             for member in workspace["members"]:
-                member_path = Path(member)
-                members.append(member_path)
-                patch(member_path / "Scarb.toml", patch_member)
+                for member_path in project_root.glob(member):
+                    patch(member_path / "Scarb.toml", patch_member)
 
     # Use [patch.scarbs-xyz] to enforce particular dependency versions to match Ma'at environment.
     patch_table = manifest.setdefault("patch", tomlkit.table())
