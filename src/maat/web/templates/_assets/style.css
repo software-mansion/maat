@@ -342,6 +342,10 @@ pre, code {
     fill: var(--color-text-secondary);
 }
 
+.select-none {
+    user-select: none;
+}
+
 a:visited.no-visited {
     color: LinkText;
 }
