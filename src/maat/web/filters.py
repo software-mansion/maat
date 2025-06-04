@@ -29,9 +29,15 @@ def datetimeformat(value: datetime) -> str:
     return value.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def timedeltaformat(value: timedelta, /, precision=2) -> str:
-    # Round to the nearest second.
-    total_seconds = round(value.total_seconds())
+def timedeltaformat(value: timedelta) -> str:
+    total_seconds = value.total_seconds()
+
+    # If less than 1 second, show milliseconds with 2 digits precision
+    if total_seconds < 1:
+        return f"{total_seconds:.2f}s"
+
+    # Round to the nearest second for durations >= 1 second.
+    total_seconds = round(total_seconds)
 
     # Recalculate days, hours, minutes, seconds.
     days, remainder = divmod(total_seconds, 86400)  # 86400 seconds in a day
