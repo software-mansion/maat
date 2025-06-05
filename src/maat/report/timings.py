@@ -1,4 +1,6 @@
+import statistics
 from datetime import timedelta
+from itertools import islice
 
 from pydantic import BaseModel
 
@@ -10,6 +12,21 @@ from maat.web import ReportInfo
 class ProjectTimings(BaseModel):
     values: list[timedelta | None]
     trends: list[Trend | None]
+
+    def variance(self, expected_value_idx: int) -> float:
+        """
+        Computes sample variance for this record, taking one of the values as the expected value.
+        This is useful for comparing how various ProjectTimings vary from the reference.
+        """
+
+        if (td := self.values[expected_value_idx]) is not None:
+            xbar = td.total_seconds()
+        else:
+            xbar = 0.0
+
+        sample = [td.total_seconds() if td is not None else 0.0 for td in self.values]
+
+        return statistics.variance(sample, xbar)
 
 
 type ProjectName = str
@@ -26,11 +43,15 @@ class FullTimings(BaseModel):
 def collect_timings(
     reports: list[ReportInfo],
     reference_report_idx: int,
+    limit: int = 10,
 ) -> FullTimings:
     all_tests_by_names: list[dict[str, TestReport]] = [
         report.tests_by_name() for report, _, _ in reports
     ]
     reference_tests_by_names = all_tests_by_names[reference_report_idx]
+
+    def step_timing_sorting_key(st: tuple[ProjectName, ProjectTimings]):
+        return st[1].variance(reference_report_idx), st[0]
 
     kwargs = {}
     for step_name in ["build", "lint", "test", "ls"]:
@@ -55,6 +76,17 @@ def collect_timings(
             )
             step_timings[project] = project_timings
 
-        kwargs[step_name] = step_timings
+        selected_step_timings = dict(
+            islice(
+                sorted(
+                    step_timings.items(),
+                    key=step_timing_sorting_key,
+                    reverse=True,
+                ),
+                limit,
+            )
+        )
+
+        kwargs[step_name] = selected_step_timings
 
     return FullTimings(**kwargs)
