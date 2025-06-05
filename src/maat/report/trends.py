@@ -52,7 +52,9 @@ def trends_row_with_optionals(
     row: list[timedelta | None],
     reference_idx: int,
 ) -> list[Trend | None]:
-    assert row[reference_idx] is not None, "reference value must be present"
+    if row[reference_idx] is None:
+        return [None] * len(row)
+
     trends = []
     reference_value = row[reference_idx]
     min_value, max_value = _find_extremes(row)
