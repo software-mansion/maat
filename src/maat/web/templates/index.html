@@ -171,6 +171,15 @@
                         metrics_trends["avg_%s_time" % step]
                     ) }}
                 {% endcall %}
+                {% call table_section("Per project") %}
+                    {% for project, timing in full_timings[step].items() %}
+                        {{ metrics_row_with_trends(
+                            project,
+                            timing.values,
+                            timing.trends
+                        ) }}
+                    {% endfor %}
+                {% endcall %}
                 </tbody>
             </table>
         </details>
