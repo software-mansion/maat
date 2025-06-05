@@ -4,6 +4,7 @@ from pydantic import BaseModel
 
 from maat.model import Label, LabelCategory, ReportMeta, TestReport
 from maat.report.metrics import MetricsTransposed
+from maat.report.timings import FullTimings, collect_timings
 from maat.report.trends import Trend, trends_row
 from maat.utils.slugify import slugify
 from maat.utils.smart_sort import smart_sort_key
@@ -80,6 +81,7 @@ class RootViewModel(BaseModel):
     label_groups: list[LabelGroupViewModel]
     slices: list[SliceViewModel]
     reference_report_idx: int
+    full_timings: FullTimings
 
 
 def build_view_model(
@@ -134,6 +136,8 @@ def build_view_model(
         ),
         avg_ls_time=trends_row(metrics_transposed.avg_ls_time, reference_report_idx),
     )
+
+    full_timings = collect_timings(reports, reference_report_idx)
 
     reference_report, _, reference_metrics = reports[reference_report_idx]
 
@@ -196,6 +200,7 @@ def build_view_model(
         label_groups=label_groups,
         slices=slices_view,
         reference_report_idx=reference_report_idx,
+        full_timings=full_timings,
     )
 
 
