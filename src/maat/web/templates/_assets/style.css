@@ -290,6 +290,10 @@ table {
     font-weight: normal;
 }
 
+.block {
+    display: block;
+}
+
 .text-primary {
     color: var(--color-text-primary);
 }
@@ -304,6 +308,10 @@ table {
 
 .text-sm {
     font-size: 0.8em;
+}
+
+.text-xs {
+    font-size: 0.7em;
 }
 
 .font-normal {
