@@ -9,7 +9,7 @@ from maat.web import ReportInfo
 
 class ProjectTimings(BaseModel):
     values: list[timedelta | None]
-    trends: list[Trend]
+    trends: list[Trend | None]
 
 
 type ProjectName = str
@@ -40,9 +40,12 @@ def collect_timings(
             values: list[timedelta | None] = []
             for tests_by_names in all_tests_by_names:
                 value: timedelta | None = None
-                if test := tests_by_names.get(project):
-                    if step := test.step(step_name):
-                        value = step.execution_time
+                if (
+                    (test := tests_by_names.get(project))
+                    and (step := test.step(step_name))
+                    and step.exit_code == 0
+                ):
+                    value = step.execution_time
 
                 values.append(value)
 
