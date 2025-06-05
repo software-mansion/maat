@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta
 from typing import Self
 
-import pydantic
 from pydantic import BaseModel
 
 from maat.model import Report, ReportMeta
 
 
-class Metrics(pydantic.BaseModel):
+class Metrics(BaseModel):
     meta: ReportMeta
     workspace: str
     scarb_version: str
