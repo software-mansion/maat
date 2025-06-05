@@ -19,6 +19,9 @@ class ProjectTimings(BaseModel):
         This is useful for comparing how various ProjectTimings vary from the reference.
         """
 
+        if all(v is None for v in self.values):
+            return 0.0
+
         if (td := self.values[expected_value_idx]) is not None:
             xbar = td.total_seconds()
         else:
@@ -51,7 +54,7 @@ def collect_timings(
     reference_tests_by_names = all_tests_by_names[reference_report_idx]
 
     def step_timing_sorting_key(st: tuple[ProjectName, ProjectTimings]):
-        return st[1].variance(reference_report_idx), st[0]
+        return -st[1].variance(reference_report_idx), st[0]
 
     kwargs = {}
     for step_name in ["build", "lint", "test", "ls"]:
@@ -74,14 +77,20 @@ def collect_timings(
                 values=values,
                 trends=trends_row_with_optionals(values, reference_report_idx),
             )
+
+            # Ignore rows where there are no timings or only one.
+            # These don't make sense from the perspective of comparing timings.
+            if sum(1 for trend in project_timings.trends if trend is not None) < 2:
+                continue
+
             step_timings[project] = project_timings
 
+        # Pick at most `limit` rows, preferring ones with the highest variance (relative to the reference value).
         selected_step_timings = dict(
             islice(
                 sorted(
                     step_timings.items(),
                     key=step_timing_sorting_key,
-                    reverse=True,
                 ),
                 limit,
             )
