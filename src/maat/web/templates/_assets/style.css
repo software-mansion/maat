@@ -290,10 +290,6 @@ table {
     font-weight: normal;
 }
 
-.block {
-    display: block;
-}
-
 .text-primary {
     color: var(--color-text-primary);
 }
@@ -308,10 +304,6 @@ table {
 
 .text-sm {
     font-size: 0.8em;
-}
-
-.text-xs {
-    font-size: 0.7em;
 }
 
 .font-normal {
@@ -362,10 +354,6 @@ pre, code {
     fill: var(--color-text-secondary);
 }
 
-.select-none {
-    user-select: none;
-}
-
 a:visited.no-visited {
     color: LinkText;
 }
@@ -413,4 +401,10 @@ a.button.current {
 
 select {
     appearance: base-select;
+}
+
+.trend {
+    display: block;
+    font-size: 0.7em;
+    user-select: none;
 }

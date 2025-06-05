@@ -46,12 +46,12 @@
     {% call(t) metrics_row(title, zip(values, trends)) %}
         {% set value, trend = t %}
         {{- value|timedeltaformat -}}
-        <span class="{{ "block select-none text-xs"|clsx(trend.color_class) }}">
-        {% if trend.ratio != 0.0 %}
-            {{ trend.symbol }}&nbsp;{{ round(trend.ratio * 100) }}%
-        {% else %}
-            {{ trend.symbol }}
-        {% endif %}
+        <span class="{{ "trend"|clsx(trend.color_class) }}">
+            {%- if trend.ratio != 0.0 -%}
+                {{ trend.symbol }}&nbsp;{{ round(trend.ratio * 100) }}%
+            {%- else -%}
+                {{ trend.symbol }}
+            {%- endif -%}
         </span>
     {% endcall %}
 {% endmacro %}
