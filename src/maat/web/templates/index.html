@@ -157,36 +157,24 @@
             </table>
         </details>
     {% endfor %}
-    <details id="details-timings">
-        <summary class="font-bold">Timings</summary>
-        <table>
-            {{ header() }}
-            <tbody>
-            {% call table_section("Summary") %}
-                {{ metrics_row_with_trends(
-                    "Avg. Build Time",
-                    metrics.avg_build_time,
-                    metrics_trends.avg_build_time
-                ) }}
-                {{ metrics_row_with_trends(
-                    "Avg. Lint Time",
-                    metrics.avg_lint_time,
-                    metrics_trends.avg_lint_time
-                ) }}
-                {{ metrics_row_with_trends(
-                    "Avg. Test Time",
-                    metrics.avg_test_time,
-                    metrics_trends.avg_test_time
-                ) }}
-                {{ metrics_row_with_trends(
-                    "Avg. LS Time",
-                    metrics.avg_ls_time,
-                    metrics_trends.avg_ls_time
-                ) }}
-            {% endcall %}
-            </tbody>
-        </table>
-    </details>
+    {% for human_step in ["Build", "Lint", "Test", "LS"] %}
+        {% set step = human_step|lower %}
+        <details id="details-timings-{{ step }}">
+            <summary class="font-bold">{{ human_step }} Timings</summary>
+            <table>
+                {{ header() }}
+                <tbody>
+                {% call table_section("Summary") %}
+                    {{ metrics_row_with_trends(
+                        "Average",
+                        metrics["avg_%s_time" % step],
+                        metrics_trends["avg_%s_time" % step]
+                    ) }}
+                {% endcall %}
+                </tbody>
+            </table>
+        </details>
+    {% endfor %}
 </main>
 <footer>
     <a class="swm no-underline" href="https://swmansion.com/"
