@@ -18,10 +18,10 @@ class Metrics(BaseModel):
     total_projects: int
     """Total number of projects tested in the experiment."""
 
-    avg_build_time: timedelta
-    avg_lint_time: timedelta
-    avg_test_time: timedelta
-    avg_ls_time: timedelta
+    mean_build_time: timedelta
+    mean_lint_time: timedelta
+    mean_test_time: timedelta
+    mean_ls_time: timedelta
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
@@ -40,10 +40,10 @@ class Metrics(BaseModel):
                 total_tests += summary.total
                 failed_tests += summary.failed
 
-        avg_build_time = _timedelta_mean(times["build"])
-        avg_lint_time = _timedelta_mean(times["lint"])
-        avg_test_time = _timedelta_mean(times["test"])
-        avg_ls_time = _timedelta_mean(times["ls"])
+        mean_build_time = _timedelta_mean(times["build"])
+        mean_lint_time = _timedelta_mean(times["lint"])
+        mean_test_time = _timedelta_mean(times["test"])
+        mean_ls_time = _timedelta_mean(times["ls"])
 
         return cls(
             meta=meta,
@@ -54,10 +54,10 @@ class Metrics(BaseModel):
             created_at=report.created_at,
             total_execution_time=report.total_execution_time,
             total_projects=len(report.tests),
-            avg_build_time=avg_build_time,
-            avg_lint_time=avg_lint_time,
-            avg_test_time=avg_test_time,
-            avg_ls_time=avg_ls_time,
+            mean_build_time=mean_build_time,
+            mean_lint_time=mean_lint_time,
+            mean_test_time=mean_test_time,
+            mean_ls_time=mean_ls_time,
         )
 
 
@@ -70,10 +70,10 @@ class MetricsTransposed(BaseModel):
     created_at: list[datetime]
     total_execution_time: list[timedelta]
     total_projects: list[int]
-    avg_build_time: list[timedelta]
-    avg_lint_time: list[timedelta]
-    avg_test_time: list[timedelta]
-    avg_ls_time: list[timedelta]
+    mean_build_time: list[timedelta]
+    mean_lint_time: list[timedelta]
+    mean_test_time: list[timedelta]
+    mean_ls_time: list[timedelta]
 
     @classmethod
     def new(cls, metrics_list: list[Metrics]) -> Self:

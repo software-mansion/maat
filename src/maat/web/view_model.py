@@ -68,10 +68,10 @@ class SliceViewModel(BaseModel):
 
 class MetricsTrendsViewModel(BaseModel):
     total_execution_time: list[Trend]
-    avg_build_time: list[Trend]
-    avg_lint_time: list[Trend]
-    avg_test_time: list[Trend]
-    avg_ls_time: list[Trend]
+    mean_build_time: list[Trend]
+    mean_lint_time: list[Trend]
+    mean_test_time: list[Trend]
+    mean_ls_time: list[Trend]
 
 
 class RootViewModel(BaseModel):
@@ -125,16 +125,16 @@ def build_view_model(
         total_execution_time=trends_row(
             metrics_transposed.total_execution_time, reference_report_idx
         ),
-        avg_build_time=trends_row(
-            metrics_transposed.avg_build_time, reference_report_idx
+        mean_build_time=trends_row(
+            metrics_transposed.mean_build_time, reference_report_idx
         ),
-        avg_lint_time=trends_row(
-            metrics_transposed.avg_lint_time, reference_report_idx
+        mean_lint_time=trends_row(
+            metrics_transposed.mean_lint_time, reference_report_idx
         ),
-        avg_test_time=trends_row(
-            metrics_transposed.avg_test_time, reference_report_idx
+        mean_test_time=trends_row(
+            metrics_transposed.mean_test_time, reference_report_idx
         ),
-        avg_ls_time=trends_row(metrics_transposed.avg_ls_time, reference_report_idx),
+        mean_ls_time=trends_row(metrics_transposed.mean_ls_time, reference_report_idx),
     )
 
     full_timings = collect_timings(reports, reference_report_idx)
