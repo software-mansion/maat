@@ -15,10 +15,16 @@
     </thead>
 {% endmacro %}
 
-{% macro table_section(title) %}
+{% macro table_section(title, help=None) %}
     <!-- region {{ title }} Section -->
     <tr class="section-header">
-        <td>{{ title }}</td>
+        <td>
+            {%- if help -%}
+                <abbr class="help" title="{{ help }}">{{ title }}</abbr>
+            {%- else -%}
+                {{- title -}}
+            {%- endif -%}
+        </td>
         <td colspan="{{ report_names|length }}"></td>
     </tr>
     {{ caller() }}
@@ -160,7 +166,12 @@
     {% for human_step in ["Build", "Lint", "Test", "LS"] %}
         {% set step = human_step|lower %}
         <details id="details-timings-{{ step }}">
-            <summary class="font-bold">{{ human_step }} Timings</summary>
+            <summary>
+                <abbr class="help font-bold"
+                      title="Execution time information for {{ step }} steps. Only successful runs are considered, i.e. ones for which the exit code is 0.">
+                    {{- "%s Timings" % human_step -}}
+                </abbr>
+            </summary>
             <table>
                 {{ header() }}
                 <tbody>
@@ -172,7 +183,10 @@
                     ) }}
                 {% endcall %}
                 {% if full_timings[step] %}
-                    {% call table_section("Top %d most variable projects" % len(full_timings[step])) %}
+                    {% call table_section(
+                        title="Top %d most variable projects" % len(full_timings[step]),
+                        help="Ma'at shows the top 10 projects with the most variable timing performance compared to a reference report. Projects are sorted by variance (highest first), then alphabetically. Only projects with at least 2 valid timing measurements are included. Variance is calculated using the reference report's timing as the expected value, measuring how much other timings deviate from this baseline."
+                    ) %}
                         {% for project, timing in full_timings[step].items() %}
                             {{ metrics_row_with_trends(
                                 project,
