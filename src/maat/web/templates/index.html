@@ -49,7 +49,7 @@
             {{- value|timedeltaformat -}}
             <span class="{{ "trend"|clsx(trend.color_class) }}">
                 {%- if trend.ratio != 0.0 -%}
-                    {{ trend.symbol }}&nbsp;{{ round(trend.ratio * 100) }}%
+                    {{ trend.symbol }}&nbsp;{{ trend.percentage }}
                 {%- else -%}
                     {{ trend.symbol }}
                 {%- endif -%}

@@ -28,6 +28,15 @@ class Trend(BaseModel):
             return "∗"
 
     @property
+    def percentage(self) -> str:
+        if self.ratio == float("inf"):
+            return "∞"
+        elif self.ratio == float("-inf"):
+            return "-∞"
+        else:
+            return f"{round(self.ratio * 100)}%"
+
+    @property
     def color_class(self) -> str:
         if self.ratio < 0.0:
             return "text-positive"
@@ -87,7 +96,18 @@ def _calculate_trend(
     """Calculate trend for a single value."""
     ref_secs = reference_value.total_seconds()
     value_secs = value.total_seconds()
+
+    if ref_secs == 0.0:
+        if value_secs == 0.0:
+            ratio = 0.0  # No change: 0 → 0.
+        elif value_secs > 0.0:
+            ratio = float("inf")  # Infinite increase: 0 → positive.
+        else:
+            ratio = float("-inf")  # Infinite decrease: 0 → negative.
+    else:
+        ratio = (value_secs - ref_secs) / ref_secs
+
     return Trend(
-        ratio=(value_secs - ref_secs) / ref_secs,
+        ratio=ratio,
         is_extreme=value == min_value or value == max_value,
     )
