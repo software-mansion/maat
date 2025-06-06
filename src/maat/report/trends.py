@@ -25,7 +25,7 @@ class Trend(BaseModel):
             else:
                 return "↑"
         else:
-            return "∗"
+            return "="
 
     @property
     def percentage(self) -> str:
