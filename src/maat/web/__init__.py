@@ -67,6 +67,7 @@ def _jinja_env() -> Iterator[jinja2.Environment]:
         undefined=jinja2.StrictUndefined,
     )
 
+    env.globals["len"] = len
     env.globals["round"] = round
     env.globals["zip"] = zip
 
