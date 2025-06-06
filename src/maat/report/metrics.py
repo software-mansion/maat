@@ -1,3 +1,4 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Self
 
@@ -24,44 +25,26 @@ class Metrics(BaseModel):
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
-        # Initialize counters and accumulators.
-        build_times = []
-        lint_times = []
-        test_times = []
-        ls_times = []
+        times: dict[str, list[timedelta]] = defaultdict(list)
 
         total_tests = 0
         failed_tests = 0
 
-        # Process each test and step
         for test in report.tests:
-            if step := test.step("build"):
-                if step.execution_time:
-                    build_times.append(step.execution_time)
-
-            if step := test.step("lint"):
-                if step.execution_time:
-                    lint_times.append(step.execution_time)
-
-            if step := test.step("test"):
-                if step.execution_time:
-                    test_times.append(step.execution_time)
-
-            if step := test.step("ls"):
-                if step.execution_time:
-                    ls_times.append(step.execution_time)
+            for step_name in ["build", "lint", "test", "ls"]:
+                if step := test.step(step_name):
+                    if step.exit_code == 0 and step.execution_time:
+                        times[step_name].append(step.execution_time)
 
             if summary := test.analyses.tests_summary:
                 total_tests += summary.total
                 failed_tests += summary.failed
 
-        # Calculate averages
-        avg_build_time = sum(build_times, timedelta()) / max(len(build_times), 1)
-        avg_lint_time = sum(lint_times, timedelta()) / max(len(lint_times), 1)
-        avg_test_time = sum(test_times, timedelta()) / max(len(test_times), 1)
-        avg_ls_time = sum(ls_times, timedelta()) / max(len(ls_times), 1)
+        avg_build_time = _timedelta_mean(times["build"])
+        avg_lint_time = _timedelta_mean(times["lint"])
+        avg_test_time = _timedelta_mean(times["test"])
+        avg_ls_time = _timedelta_mean(times["ls"])
 
-        # Create and return the Metrics object
         return cls(
             meta=meta,
             workspace=report.workspace,
@@ -115,3 +98,7 @@ def _assert_transposed_fields():
 
 
 _assert_transposed_fields()
+
+
+def _timedelta_mean(tds: list[timedelta], /) -> timedelta:
+    return sum(tds, timedelta()) / max(len(tds), 1)
