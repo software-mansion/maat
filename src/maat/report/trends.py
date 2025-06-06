@@ -1,4 +1,5 @@
 from datetime import timedelta
+from typing import Self
 
 from pydantic import BaseModel
 
@@ -11,6 +12,33 @@ class Trend(BaseModel):
 
     is_extreme: bool
     """States whether this value was the lowest/highest in the input set."""
+
+    @classmethod
+    def new(
+        cls,
+        value: timedelta,
+        reference_value: timedelta,
+        min_value: timedelta | None,
+        max_value: timedelta | None,
+    ) -> Self:
+        """Calculate trend for a single value."""
+        ref_secs = reference_value.total_seconds()
+        value_secs = value.total_seconds()
+
+        if ref_secs == 0.0:
+            if value_secs == 0.0:
+                ratio = 0.0  # No change: 0 → 0.
+            elif value_secs > 0.0:
+                ratio = float("inf")  # Infinite increase: 0 → positive.
+            else:
+                ratio = float("-inf")  # Infinite decrease: 0 → negative.
+        else:
+            ratio = (value_secs - ref_secs) / ref_secs
+
+        return cls(
+            ratio=ratio,
+            is_extreme=value == min_value or value == max_value,
+        )
 
     @property
     def symbol(self) -> str:
@@ -52,7 +80,7 @@ def trends_row(row: list[timedelta], reference_idx: int) -> list[Trend]:
     min_value, max_value = _find_extremes(row)
 
     for value in row:
-        trend = _calculate_trend(value, reference_value, min_value, max_value)
+        trend = Trend.new(value, reference_value, min_value, max_value)
         trends.append(trend)
     return trends
 
@@ -72,7 +100,7 @@ def trends_row_with_optionals(
         if value is None:
             trends.append(None)
         else:
-            trend = _calculate_trend(value, reference_value, min_value, max_value)
+            trend = Trend.new(value, reference_value, min_value, max_value)
             trends.append(trend)
     return trends
 
@@ -85,29 +113,3 @@ def _find_extremes(
     if not non_none_values:
         return None, None
     return min(non_none_values), max(non_none_values)
-
-
-def _calculate_trend(
-    value: timedelta,
-    reference_value: timedelta,
-    min_value: timedelta | None,
-    max_value: timedelta | None,
-) -> Trend:
-    """Calculate trend for a single value."""
-    ref_secs = reference_value.total_seconds()
-    value_secs = value.total_seconds()
-
-    if ref_secs == 0.0:
-        if value_secs == 0.0:
-            ratio = 0.0  # No change: 0 → 0.
-        elif value_secs > 0.0:
-            ratio = float("inf")  # Infinite increase: 0 → positive.
-        else:
-            ratio = float("-inf")  # Infinite decrease: 0 → negative.
-    else:
-        ratio = (value_secs - ref_secs) / ref_secs
-
-    return Trend(
-        ratio=ratio,
-        is_extreme=value == min_value or value == max_value,
-    )
