@@ -2,6 +2,7 @@
 
 from datetime import datetime, timedelta
 
+
 type ClassNames = (
     str | None | list[str | None] | tuple[str | None] | dict[str, bool | None]
 )
@@ -28,23 +29,30 @@ def datetimeformat(value: datetime) -> str:
     return value.strftime("%Y-%m-%d %H:%M:%S")
 
 
-def timedeltaformat(value: timedelta, /, precision=2) -> str:
-    mm, ss = divmod(value.seconds, 60)
-    hh, mm = divmod(mm, 60)
-    s = f"{hh:d}:{mm:02d}:{ss:02d}"
+def timedeltaformat(value: timedelta) -> str:
+    total_seconds = value.total_seconds()
 
-    if value.days:
+    # If less than 1 second, show milliseconds with 2 digits precision
+    if total_seconds < 1:
+        return f"{total_seconds:.2f}s"
 
-        def plural(n):
-            return n, abs(n) != 1 and "s" or ""
+    # Round to the nearest second for durations >= 1 second.
+    total_seconds = round(total_seconds)
 
-        s = ("%d day%s, " % plural(value.days)) + s
+    # Recalculate days, hours, minutes, seconds.
+    days, remainder = divmod(total_seconds, 86400)  # 86400 seconds in a day
+    hours, remainder = divmod(remainder, 3600)  # 3600 seconds in an hour
+    minutes, seconds = divmod(remainder, 60)  # 60 seconds in a minute
 
-    if value.microseconds:
-        # Round to the nearest 1/(10**precision)th of a second.
-        # For example, 0:07:12.211526 -> 0:07:12.21 (when precision = 2).
-        ms = round(value.microseconds / 10**6, precision)
-        # Add fractional seconds, omit leading `0` with that `[1:]`.
-        s += f"{ms:.{precision}f}"[1:]
+    # Build the string with only non-zero parts.
+    parts = []
+    if days:
+        parts.append(f"{days}d")
+    if hours:
+        parts.append(f"{hours}h")
+    if minutes:
+        parts.append(f"{minutes}m")
+    if seconds or not parts:  # Always include seconds if no other parts.
+        parts.append(f"{seconds}s")
 
-    return s
+    return " ".join(parts)

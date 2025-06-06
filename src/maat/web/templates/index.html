@@ -1,7 +1,3 @@
-{% macro q(help) %}
-    <abbr class="help" title="{{ help }}">?</abbr>
-{% endmacro %}
-
 {% macro bullet(category) %}
     <span class="{{ "bullet"|clsx(category) }}" title="{{ category }}">&#x2756;</span>
 {% endmacro %}
@@ -19,10 +15,16 @@
     </thead>
 {% endmacro %}
 
-{% macro table_section(title) %}
+{% macro table_section(title, help=None) %}
     <!-- region {{ title }} Section -->
     <tr class="section-header">
-        <td>{{ title }}</td>
+        <td>
+            {%- if help -%}
+                <abbr class="help" title="{{ help }}">{{ title }}</abbr>
+            {%- else -%}
+                {{- title -}}
+            {%- endif -%}
+        </td>
         <td colspan="{{ report_names|length }}"></td>
     </tr>
     {{ caller() }}
@@ -40,6 +42,24 @@
 
 {% macro metrics_row_s(title, values) %}
     {% call(value) metrics_row(title, values) %}{{ value }}{% endcall %}
+{% endmacro %}
+
+{% macro metrics_row_with_trends(title, values, trends) %}
+    {% call(t) metrics_row(title, zip(values, trends)) %}
+        {% set value, trend = t %}
+        {%- if trend -%}
+            {{- value|timedeltaformat -}}
+            <span class="{{ "trend"|clsx(trend.color_class) }}">
+                {%- if trend.ratio != 0.0 -%}
+                    {{ trend.symbol }}&nbsp;{{ trend.percentage }}
+                {%- else -%}
+                    {{ trend.symbol }}
+                {%- endif -%}
+            </span>
+        {%- else -%}
+            &mdash;
+        {%- endif -%}
+    {% endcall %}
 {% endmacro %}
 
 <!DOCTYPE html>
@@ -64,14 +84,14 @@
 <header>
     <h1>Ma'at</h1>
     <ul id="slices">
-    {% for slice in slices %}
-        <li>
-            <a href="{{ slice.href }}"
-               class="{{ "button"|clsx(current=slice.is_current) }}">
-                {{- slice.title -}}
-            </a>
-        </li>
-    {% endfor %}
+        {% for slice in slices %}
+            <li>
+                <a href="{{ slice.href }}"
+                   class="{{ "button"|clsx(current=slice.is_current) }}">
+                    {{- slice.title -}}
+                </a>
+            </li>
+        {% endfor %}
     </ul>
 </header>
 <main>
@@ -88,21 +108,12 @@
                 {% call(value) metrics_row("Created At", metrics.created_at) %}
                     {{ value|datetimeformat }}
                 {% endcall %}
-                {% call(value) metrics_row("Total Execution Time", metrics.total_execution_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
+                {{ metrics_row_with_trends(
+                    "Total Execution Time",
+                    metrics.total_execution_time,
+                    metrics_trends.total_execution_time
+                ) }}
                 {{ metrics_row_s("Total Projects", metrics.total_projects) }}
-            {% endcall %}
-            {% call table_section("Timings") %}
-                {% call(value) metrics_row("Avg. Build Time", metrics.avg_build_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. Lint Time", metrics.avg_lint_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
-                {% call(value) metrics_row("Avg. Test Time", metrics.avg_test_time) %}
-                    {{ value|timedeltaformat }}
-                {% endcall %}
             {% endcall %}
             </tbody>
         </table>
@@ -148,6 +159,43 @@
                         {% endfor %}
                     </tr>
                 {% endfor %}
+                </tbody>
+            </table>
+        </details>
+    {% endfor %}
+    {% for human_step in ["Build", "Lint", "Test", "LS"] %}
+        {% set step = human_step|lower %}
+        <details id="details-timings-{{ step }}">
+            <summary>
+                <abbr class="help font-bold"
+                      title="Execution time information for {{ step }} steps. Only successful runs are considered, i.e. ones for which the exit code is 0.">
+                    {{- "%s Timings" % human_step -}}
+                </abbr>
+            </summary>
+            <table>
+                {{ header() }}
+                <tbody>
+                {% call table_section("Summary") %}
+                    {{ metrics_row_with_trends(
+                        "Successful Runs Mean",
+                        metrics["mean_%s_time" % step],
+                        metrics_trends["mean_%s_time" % step]
+                    ) }}
+                {% endcall %}
+                {% if full_timings[step] %}
+                    {% call table_section(
+                        title="Top %d most variable projects" % len(full_timings[step]),
+                        help="Ma'at shows the top 10 projects with the most variable timing performance compared to a reference report. Projects are sorted by variance (highest first), then alphabetically. Only projects with at least 2 valid timing measurements are included. Variance is calculated using the reference report's timing as the expected value, measuring how much other timings deviate from this baseline."
+                    ) %}
+                        {% for project, timing in full_timings[step].items() %}
+                            {{ metrics_row_with_trends(
+                                project,
+                                timing.values,
+                                timing.trends
+                            ) }}
+                        {% endfor %}
+                    {% endcall %}
+                {% endif %}
                 </tbody>
             </table>
         </details>

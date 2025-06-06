@@ -1,13 +1,13 @@
+from collections import defaultdict
 from datetime import datetime, timedelta
 from typing import Self
 
-import pydantic
 from pydantic import BaseModel
 
 from maat.model import Report, ReportMeta
 
 
-class Metrics(pydantic.BaseModel):
+class Metrics(BaseModel):
     meta: ReportMeta
     workspace: str
     scarb_version: str
@@ -18,44 +18,33 @@ class Metrics(pydantic.BaseModel):
     total_projects: int
     """Total number of projects tested in the experiment."""
 
-    avg_build_time: timedelta
-    avg_lint_time: timedelta
-    avg_test_time: timedelta
+    mean_build_time: timedelta
+    mean_lint_time: timedelta
+    mean_test_time: timedelta
+    mean_ls_time: timedelta
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
-        # Initialize counters and accumulators.
-        build_times = []
-        lint_times = []
-        test_times = []
+        times: dict[str, list[timedelta]] = defaultdict(list)
 
         total_tests = 0
         failed_tests = 0
 
-        # Process each test and step
         for test in report.tests:
-            if step := test.step("build"):
-                if step.execution_time:
-                    build_times.append(step.execution_time)
-
-            if step := test.step("lint"):
-                if step.execution_time:
-                    lint_times.append(step.execution_time)
-
-            if step := test.step("test"):
-                if step.execution_time:
-                    test_times.append(step.execution_time)
+            for step_name in ["build", "lint", "test", "ls"]:
+                if step := test.step(step_name):
+                    if step.exit_code == 0 and step.execution_time:
+                        times[step_name].append(step.execution_time)
 
             if summary := test.analyses.tests_summary:
                 total_tests += summary.total
                 failed_tests += summary.failed
 
-        # Calculate averages
-        avg_build_time = sum(build_times, timedelta()) / max(len(build_times), 1)
-        avg_lint_time = sum(lint_times, timedelta()) / max(len(lint_times), 1)
-        avg_test_time = sum(test_times, timedelta()) / max(len(test_times), 1)
+        mean_build_time = _timedelta_mean(times["build"])
+        mean_lint_time = _timedelta_mean(times["lint"])
+        mean_test_time = _timedelta_mean(times["test"])
+        mean_ls_time = _timedelta_mean(times["ls"])
 
-        # Create and return the Metrics object
         return cls(
             meta=meta,
             workspace=report.workspace,
@@ -65,9 +54,10 @@ class Metrics(pydantic.BaseModel):
             created_at=report.created_at,
             total_execution_time=report.total_execution_time,
             total_projects=len(report.tests),
-            avg_build_time=avg_build_time,
-            avg_lint_time=avg_lint_time,
-            avg_test_time=avg_test_time,
+            mean_build_time=mean_build_time,
+            mean_lint_time=mean_lint_time,
+            mean_test_time=mean_test_time,
+            mean_ls_time=mean_ls_time,
         )
 
 
@@ -80,9 +70,10 @@ class MetricsTransposed(BaseModel):
     created_at: list[datetime]
     total_execution_time: list[timedelta]
     total_projects: list[int]
-    avg_build_time: list[timedelta]
-    avg_lint_time: list[timedelta]
-    avg_test_time: list[timedelta]
+    mean_build_time: list[timedelta]
+    mean_lint_time: list[timedelta]
+    mean_test_time: list[timedelta]
+    mean_ls_time: list[timedelta]
 
     @classmethod
     def new(cls, metrics_list: list[Metrics]) -> Self:
@@ -107,3 +98,7 @@ def _assert_transposed_fields():
 
 
 _assert_transposed_fields()
+
+
+def _timedelta_mean(tds: list[timedelta], /) -> timedelta:
+    return sum(tds, timedelta()) / max(len(tds), 1)

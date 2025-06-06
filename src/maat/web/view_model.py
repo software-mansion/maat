@@ -4,6 +4,8 @@ from pydantic import BaseModel
 
 from maat.model import Label, LabelCategory, ReportMeta, TestReport
 from maat.report.metrics import MetricsTransposed
+from maat.report.timings import FullTimings, collect_timings
+from maat.report.trends import Trend, trends_row
 from maat.utils.slugify import slugify
 from maat.utils.smart_sort import smart_sort_key
 from maat.web.report_info import ReportInfo
@@ -64,11 +66,22 @@ class SliceViewModel(BaseModel):
     is_current: bool = False
 
 
+class MetricsTrendsViewModel(BaseModel):
+    total_execution_time: list[Trend]
+    mean_build_time: list[Trend]
+    mean_lint_time: list[Trend]
+    mean_test_time: list[Trend]
+    mean_ls_time: list[Trend]
+
+
 class RootViewModel(BaseModel):
     report_names: list[ReportNameViewModel]
     metrics: MetricsTransposed
+    metrics_trends: MetricsTrendsViewModel
     label_groups: list[LabelGroupViewModel]
     slices: list[SliceViewModel]
+    reference_report_idx: int
+    full_timings: FullTimings
 
 
 def build_view_model(
@@ -107,6 +120,24 @@ def build_view_model(
     assert sum(sv.is_current for sv in slices_view) == 1, (
         "only one slice can be the default"
     )
+
+    metrics_trends = MetricsTrendsViewModel(
+        total_execution_time=trends_row(
+            metrics_transposed.total_execution_time, reference_report_idx
+        ),
+        mean_build_time=trends_row(
+            metrics_transposed.mean_build_time, reference_report_idx
+        ),
+        mean_lint_time=trends_row(
+            metrics_transposed.mean_lint_time, reference_report_idx
+        ),
+        mean_test_time=trends_row(
+            metrics_transposed.mean_test_time, reference_report_idx
+        ),
+        mean_ls_time=trends_row(metrics_transposed.mean_ls_time, reference_report_idx),
+    )
+
+    full_timings = collect_timings(reports, reference_report_idx)
 
     reference_report, _, reference_metrics = reports[reference_report_idx]
 
@@ -165,8 +196,11 @@ def build_view_model(
     return RootViewModel(
         report_names=report_names,
         metrics=metrics_transposed,
+        metrics_trends=metrics_trends,
         label_groups=label_groups,
         slices=slices_view,
+        reference_report_idx=reference_report_idx,
+        full_timings=full_timings,
     )
 
 
