@@ -170,7 +170,7 @@
                 <tbody>
                 {% call table_section("Summary") %}
                     {{ metrics_row_with_trends(
-                        "Average",
+                        "Successful runs mean",
                         metrics["avg_%s_time" % step],
                         metrics_trends["avg_%s_time" % step]
                     ) }}
