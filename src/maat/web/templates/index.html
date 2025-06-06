@@ -171,8 +171,8 @@
                 {% call table_section("Summary") %}
                     {{ metrics_row_with_trends(
                         "Successful runs mean",
-                        metrics["avg_%s_time" % step],
-                        metrics_trends["avg_%s_time" % step]
+                        metrics["mean_%s_time" % step],
+                        metrics_trends["mean_%s_time" % step]
                     ) }}
                 {% endcall %}
                 {% call table_section("Per project") %}
