@@ -170,20 +170,22 @@
                 <tbody>
                 {% call table_section("Summary") %}
                     {{ metrics_row_with_trends(
-                        "Successful runs mean",
+                        "Successful Runs Mean",
                         metrics["mean_%s_time" % step],
                         metrics_trends["mean_%s_time" % step]
                     ) }}
                 {% endcall %}
-                {% call table_section("Per project") %}
-                    {% for project, timing in full_timings[step].items() %}
-                        {{ metrics_row_with_trends(
-                            project,
-                            timing.values,
-                            timing.trends
-                        ) }}
-                    {% endfor %}
-                {% endcall %}
+                {% if full_timings[step] %}
+                    {% call table_section("Top %d most variable projects" % len(full_timings[step])) %}
+                        {% for project, timing in full_timings[step].items() %}
+                            {{ metrics_row_with_trends(
+                                project,
+                                timing.values,
+                                timing.trends
+                            ) }}
+                        {% endfor %}
+                    {% endcall %}
+                {% endif %}
                 </tbody>
             </table>
         </details>
