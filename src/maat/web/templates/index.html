@@ -1,7 +1,3 @@
-{% macro q(help) %}
-    <abbr class="help" title="{{ help }}">?</abbr>
-{% endmacro %}
-
 {% macro bullet(category) %}
     <span class="{{ "bullet"|clsx(category) }}" title="{{ category }}">&#x2756;</span>
 {% endmacro %}
