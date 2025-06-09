@@ -5,7 +5,7 @@ from pydantic import BaseModel
 from maat.model import Label, LabelCategory, ReportMeta, TestReport
 from maat.report.metrics import MetricsTransposed
 from maat.report.timings import FullTimings, collect_timings
-from maat.report.trends import Trend, trends_row
+from maat.report.trends import Trend, trends_row, trends_row_with_optionals
 from maat.utils.slugify import slugify
 from maat.utils.smart_sort import smart_sort_key
 from maat.web.report_info import ReportInfo
@@ -68,14 +68,14 @@ class SliceViewModel(BaseModel):
 
 class MetricsTrendsViewModel(BaseModel):
     total_execution_time: list[Trend]
-    mean_build_time: list[Trend]
-    mean_lint_time: list[Trend]
-    mean_test_time: list[Trend]
-    mean_ls_time: list[Trend]
-    median_build_time: list[Trend]
-    median_lint_time: list[Trend]
-    median_test_time: list[Trend]
-    median_ls_time: list[Trend]
+    mean_build_time: list[Trend | None]
+    mean_lint_time: list[Trend | None]
+    mean_test_time: list[Trend | None]
+    mean_ls_time: list[Trend | None]
+    median_build_time: list[Trend | None]
+    median_lint_time: list[Trend | None]
+    median_test_time: list[Trend | None]
+    median_ls_time: list[Trend | None]
 
 
 class RootViewModel(BaseModel):
@@ -129,26 +129,26 @@ def build_view_model(
         total_execution_time=trends_row(
             metrics_transposed.total_execution_time, reference_report_idx
         ),
-        mean_build_time=trends_row(
+        mean_build_time=trends_row_with_optionals(
             metrics_transposed.mean_build_time, reference_report_idx
         ),
-        mean_lint_time=trends_row(
+        mean_lint_time=trends_row_with_optionals(
             metrics_transposed.mean_lint_time, reference_report_idx
         ),
-        mean_test_time=trends_row(
+        mean_test_time=trends_row_with_optionals(
             metrics_transposed.mean_test_time, reference_report_idx
         ),
-        mean_ls_time=trends_row(metrics_transposed.mean_ls_time, reference_report_idx),
-        median_build_time=trends_row(
+        mean_ls_time=trends_row_with_optionals(metrics_transposed.mean_ls_time, reference_report_idx),
+        median_build_time=trends_row_with_optionals(
             metrics_transposed.median_build_time, reference_report_idx
         ),
-        median_lint_time=trends_row(
+        median_lint_time=trends_row_with_optionals(
             metrics_transposed.median_lint_time, reference_report_idx
         ),
-        median_test_time=trends_row(
+        median_test_time=trends_row_with_optionals(
             metrics_transposed.median_test_time, reference_report_idx
         ),
-        median_ls_time=trends_row(metrics_transposed.median_ls_time, reference_report_idx),
+        median_ls_time=trends_row_with_optionals(metrics_transposed.median_ls_time, reference_report_idx),
     )
 
     full_timings = collect_timings(reports, reference_report_idx)

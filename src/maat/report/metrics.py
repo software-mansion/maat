@@ -19,15 +19,15 @@ class Metrics(BaseModel):
     total_projects: int
     """Total number of projects tested in the experiment."""
 
-    mean_build_time: timedelta
-    mean_lint_time: timedelta
-    mean_test_time: timedelta
-    mean_ls_time: timedelta
+    mean_build_time: timedelta | None
+    mean_lint_time: timedelta | None
+    mean_test_time: timedelta | None
+    mean_ls_time: timedelta | None
 
-    median_build_time: timedelta
-    median_lint_time: timedelta
-    median_test_time: timedelta
-    median_ls_time: timedelta
+    median_build_time: timedelta | None
+    median_lint_time: timedelta | None
+    median_test_time: timedelta | None
+    median_ls_time: timedelta | None
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
@@ -85,14 +85,14 @@ class MetricsTransposed(BaseModel):
     created_at: list[datetime]
     total_execution_time: list[timedelta]
     total_projects: list[int]
-    mean_build_time: list[timedelta]
-    mean_lint_time: list[timedelta]
-    mean_test_time: list[timedelta]
-    mean_ls_time: list[timedelta]
-    median_build_time: list[timedelta]
-    median_lint_time: list[timedelta]
-    median_test_time: list[timedelta]
-    median_ls_time: list[timedelta]
+    mean_build_time: list[timedelta | None]
+    mean_lint_time: list[timedelta | None]
+    mean_test_time: list[timedelta | None]
+    mean_ls_time: list[timedelta | None]
+    median_build_time: list[timedelta | None]
+    median_lint_time: list[timedelta | None]
+    median_test_time: list[timedelta | None]
+    median_ls_time: list[timedelta | None]
 
     @classmethod
     def new(cls, metrics_list: list[Metrics]) -> Self:
@@ -119,15 +119,15 @@ def _assert_transposed_fields():
 _assert_transposed_fields()
 
 
-def _timedelta_mean(tds: list[timedelta], /) -> timedelta:
+def _timedelta_mean(tds: list[timedelta], /) -> timedelta | None:
     if not tds:
-        return timedelta()
+        return None
     seconds = [td.total_seconds() for td in tds]
     return timedelta(seconds=statistics.mean(seconds))
 
 
-def _timedelta_median(tds: list[timedelta], /) -> timedelta:
+def _timedelta_median(tds: list[timedelta], /) -> timedelta | None:
     if not tds:
-        return timedelta()
+        return None
     seconds = [td.total_seconds() for td in tds]
     return timedelta(seconds=statistics.median(seconds))
