@@ -181,6 +181,11 @@
                         metrics["mean_%s_time" % step],
                         metrics_trends["mean_%s_time" % step]
                     ) }}
+                    {{ metrics_row_with_trends(
+                        "Successful Runs Median",
+                        metrics["median_%s_time" % step],
+                        metrics_trends["median_%s_time" % step]
+                    ) }}
                 {% endcall %}
                 {% if full_timings[step] %}
                     {% call table_section(
