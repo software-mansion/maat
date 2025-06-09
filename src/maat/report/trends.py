@@ -26,6 +26,7 @@ class Trend(BaseModel):
 
         if reference_value is None:
             # If reference represents a failure, then any value is an infinite improvement.
+            # Hence, the infinity here is negative, so that it will be shown green to the reader.
             ratio = float("-inf")
         else:
             ref_secs = reference_value.total_seconds()
