@@ -48,7 +48,11 @@
     {% call(t) metrics_row(title, zip(values, trends)) %}
         {% set value, trend = t %}
         {%- if trend -%}
-            {{- value|timedeltaformat -}}
+            {%- if value is none -%}
+                &mdash;
+            {%- else -%}
+                {{- value|timedeltaformat -}}
+            {%- endif -%}
             <span class="{{ "trend"|clsx(trend.color_class) }}">
                 {%- if trend.ratio != 0.0 -%}
                     {{ trend.symbol }}&nbsp;{{ trend.percentage }}
