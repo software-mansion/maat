@@ -17,23 +17,27 @@ class Trend(BaseModel):
     def new(
         cls,
         value: timedelta,
-        reference_value: timedelta,
+        reference_value: timedelta | None,
         min_value: timedelta | None,
         max_value: timedelta | None,
     ) -> Self:
         """Calculate trend for a single value."""
-        ref_secs = reference_value.total_seconds()
         value_secs = value.total_seconds()
 
-        if ref_secs == 0.0:
-            if value_secs == 0.0:
-                ratio = 0.0  # No change: 0 → 0.
-            elif value_secs > 0.0:
-                ratio = float("inf")  # Infinite increase: 0 → positive.
-            else:
-                ratio = float("-inf")  # Infinite decrease: 0 → negative.
+        if reference_value is None:
+            # If reference represents a failure, then any value is an infinite improvement.
+            ratio = float("-inf")
         else:
-            ratio = (value_secs - ref_secs) / ref_secs
+            ref_secs = reference_value.total_seconds()
+            if ref_secs == 0.0:
+                if value_secs == 0.0:
+                    ratio = 0.0  # No change: 0 → 0.
+                elif value_secs > 0.0:
+                    ratio = float("inf")  # Infinite increase: 0 → positive.
+                else:
+                    ratio = float("-inf")  # Infinite decrease: 0 → negative.
+            else:
+                ratio = (value_secs - ref_secs) / ref_secs
 
         return cls(
             ratio=ratio,
@@ -89,9 +93,6 @@ def trends_row_with_optionals(
     row: list[timedelta | None],
     reference_idx: int,
 ) -> list[Trend | None]:
-    if row[reference_idx] is None:
-        return [None] * len(row)
-
     trends = []
     reference_value = row[reference_idx]
     min_value, max_value = _find_extremes(row)
