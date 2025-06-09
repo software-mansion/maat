@@ -72,6 +72,10 @@ class MetricsTrendsViewModel(BaseModel):
     mean_lint_time: list[Trend]
     mean_test_time: list[Trend]
     mean_ls_time: list[Trend]
+    median_build_time: list[Trend]
+    median_lint_time: list[Trend]
+    median_test_time: list[Trend]
+    median_ls_time: list[Trend]
 
 
 class RootViewModel(BaseModel):
@@ -135,6 +139,16 @@ def build_view_model(
             metrics_transposed.mean_test_time, reference_report_idx
         ),
         mean_ls_time=trends_row(metrics_transposed.mean_ls_time, reference_report_idx),
+        median_build_time=trends_row(
+            metrics_transposed.median_build_time, reference_report_idx
+        ),
+        median_lint_time=trends_row(
+            metrics_transposed.median_lint_time, reference_report_idx
+        ),
+        median_test_time=trends_row(
+            metrics_transposed.median_test_time, reference_report_idx
+        ),
+        median_ls_time=trends_row(metrics_transposed.median_ls_time, reference_report_idx),
     )
 
     full_timings = collect_timings(reports, reference_report_idx)
