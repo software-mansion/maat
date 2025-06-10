@@ -15,11 +15,14 @@ from maat.installation import REPO
 from maat.model import Plan, PlanPartitionView, Report, ReportMeta, Semver
 from maat.report.analysis import analyse_report
 from maat.report.io import ReportEditor, read_report, save_report
+from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
 from maat.runner.planner import prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
+from maat.web.report_info import ReportInfo
+from maat.web.slices import make_slices, Slice
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -438,6 +441,58 @@ def prune_cache(console: Console) -> None:
     cache_to_disk.delete_disk_caches_for_function("fetch_all_packages")
     cache_to_disk.delete_disk_caches_for_function("fetch_commit_hash")
     cache_to_disk.delete_disk_caches_for_function("fetch")
+
+
+@cli.command(help="Remove report files that are not included in any slice (apart from 'All').")
+@pass_console
+def gc_reports(console: Console) -> None:
+    reports_dir = REPO / "reports"
+    report_files = list(reports_dir.glob("*.json"))
+
+    if not report_files:
+        console.log("No reports found in the reports directory.")
+        return
+
+    # Load all reports
+    report_infos = []
+    for report_file in report_files:
+        try:
+            report = read_report(report_file)
+            meta = ReportMeta.new(report_file)
+            metrics = Metrics.compute(report, meta)
+            report_infos.append(ReportInfo(report=report, meta=meta, metrics=metrics))
+        except Exception as e:
+            console.log(f"Error loading report {report_file.name}: {e}")
+            continue
+
+    # Create slices
+    slices = make_slices(report_infos)
+
+    # Find reports that are only in the "All" slice
+    reports_in_slices = set()
+    for sl in slices:
+        if sl.title != "All":
+            for report_info in sl.reports:
+                reports_in_slices.add(report_info.meta.name)
+
+    # Identify reports to remove
+    reports_to_remove = []
+    for report_file in report_files:
+        report_name = report_file.stem
+        if report_name not in reports_in_slices:
+            reports_to_remove.append(report_file)
+
+    # Remove reports
+    if not reports_to_remove:
+        console.log("No unused reports found.")
+        return
+
+    console.log(f"Found {len(reports_to_remove)} unused reports:")
+    for report_file in reports_to_remove:
+        console.log(f"  - {report_file.name}")
+        report_file.unlink()
+
+    console.log(f"Removed {len(reports_to_remove)} unused reports.")
 
 
 @cli.command(help="Prepare a Plan and serialize it to JSON.")
