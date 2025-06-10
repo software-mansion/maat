@@ -3,15 +3,24 @@ from dataclasses import dataclass
 from python_on_whales import DockerClient, Image
 from rich.console import Console
 
-from maat.ecosystem.spec import ReportNameGenerationContext, EcosystemProject
+from maat.ecosystem.spec import EcosystemProject, ReportNameGenerationContext
 from maat.ecosystem.utils import flatten_ecosystem
 from maat.model import Plan, Step, Test, TestSuite
 from maat.sandbox import tool_versions
 from maat.utils.docker import image_id
+from maat.utils.semver import is_unstable_semver
 from maat.workspace import Workspace
 
 
-def _workflow(project: EcosystemProject) -> list[Step]:
+def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
+    env: dict[str, str] = {}
+
+    # We need to disable cairo-version checks for unstable versions, as otherwise scarb would reject
+    # building dependencies that require stable Cairo versions (which is majority out there).
+    # Only dependencies matter here because toplevel packages are already patched.
+    if is_unstable_semver(scarb):
+        env["SCARB_IGNORE_CAIRO_VERSION"] = "1"
+
     return [
         Step(run="maat-check-versions", setup=True, workdir=project.workdir),
         Step(run="maat-patch", setup=True, workdir=project.workdir),
@@ -29,22 +38,25 @@ def _workflow(project: EcosystemProject) -> list[Step]:
             name="build",
             run="scarb build --workspace --test",
             workdir=project.workdir,
+            env=env,
         ),
         Step(
             name="lint",
             run="scarb lint --workspace --deny-warnings",
             workdir=project.workdir,
+            env=env,
         ),
         Step(
             name="test",
             run="scarb test --workspace",
             env={
+                **env,
                 "SNFORGE_FUZZER_SEED": "1",
                 "SNFORGE_IGNORE_FORK_TESTS": "1",
             },
             workdir=project.workdir,
         ),
-        Step(name="ls", run="maat-test-ls", workdir=project.workdir),
+        Step(name="ls", run="maat-test-ls", workdir=project.workdir, env=env),
     ]
 
 
@@ -55,15 +67,15 @@ def prepare_plan(
     docker: DockerClient,
     console: Console,
 ) -> Plan:
+    scarb, foundry = tool_versions(sandbox, docker)
+
     with console.status("Collecting ecosystem..."):
         suite = TestSuite()
 
         for project in flatten_ecosystem(workspace.settings.ecosystem):
-            steps = project.setup() + _workflow(project)
+            steps = project.setup() + _workflow(project=project, scarb=scarb)
             test = Test(name=project.name, rev=project.fetch_rev(), steps=steps)
             suite.tests.append(test)
-
-    scarb, foundry = tool_versions(sandbox, docker)
 
     report_name = workspace.settings.generate_report_name(
         _PlanningReportNameGenerationContext(
