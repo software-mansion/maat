@@ -1,4 +1,6 @@
+import csv
 import importlib.resources
+import json
 import shutil
 from contextlib import contextmanager
 from importlib.resources.abc import Traversable
@@ -15,7 +17,13 @@ from maat.utils.smart_sort import smart_sort_key
 from maat.web import filters
 from maat.web.report_info import ReportInfo
 from maat.web.slices import make_slices
-from maat.web.view_model import build_view_model, logs_txt_path
+from maat.web.view_model import (
+    archives_path,
+    build_view_model,
+    ecosystem_csv_path,
+    ecosystem_json_path,
+    logs_txt_path,
+)
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
@@ -39,6 +47,7 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         output / "_assets",
     )
     _write_logs(reports, output)
+    _write_archives(reports, output)
 
     sls = make_slices(reports)
     for slice_idx, sl in enumerate(sls):
@@ -117,3 +126,26 @@ def _write_logs(reports: list[ReportInfo], output: Path):
             log_file = output / logs_txt_path(meta, test)
             log_file.parent.mkdir(parents=True, exist_ok=True)
             log_file.write_bytes(test.combined_log())
+
+
+def _write_archives(reports: list[ReportInfo], output: Path):
+    # Ensure the archives directory exists.
+    (output / archives_path).mkdir(parents=True, exist_ok=True)
+
+    for report, meta, _ in reports:
+        ecosystem = [
+            {"project": test.name, "revision": test.rev} for test in report.tests
+        ]
+
+        # Create the ecosystem CSV archive.
+        with open(
+            output / ecosystem_csv_path(meta), "w", newline="", encoding="utf-8"
+        ) as f:
+            if ecosystem:
+                writer = csv.DictWriter(f, fieldnames=ecosystem[0].keys())
+                writer.writeheader()
+                writer.writerows(ecosystem)
+
+        # Create the JSON archive.
+        with open(output / ecosystem_json_path(meta), "w", encoding="utf-8") as f:
+            json.dump(ecosystem, f)

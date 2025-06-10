@@ -16,6 +16,8 @@ class ReportNameViewModel(BaseModel):
     title: str
     pivot_href: str
     is_reference: bool = False
+    ecosystem_csv_href: str = ""
+    ecosystem_json_href: str = ""
 
 
 class TestCellViewModel(BaseModel):
@@ -104,6 +106,8 @@ def build_view_model(
                 index=i,
                 is_default=(slices[curr_slice_idx].default and i == len(reports) - 1),
             ),
+            ecosystem_csv_href=str(ecosystem_csv_path(report.meta)),
+            ecosystem_json_href=str(ecosystem_json_path(report.meta)),
         )
         for i, report in enumerate(reports)
     ]
@@ -138,7 +142,9 @@ def build_view_model(
         mean_test_time=trends_row_with_optionals(
             metrics_transposed.mean_test_time, reference_report_idx
         ),
-        mean_ls_time=trends_row_with_optionals(metrics_transposed.mean_ls_time, reference_report_idx),
+        mean_ls_time=trends_row_with_optionals(
+            metrics_transposed.mean_ls_time, reference_report_idx
+        ),
         median_build_time=trends_row_with_optionals(
             metrics_transposed.median_build_time, reference_report_idx
         ),
@@ -148,7 +154,9 @@ def build_view_model(
         median_test_time=trends_row_with_optionals(
             metrics_transposed.median_test_time, reference_report_idx
         ),
-        median_ls_time=trends_row_with_optionals(metrics_transposed.median_ls_time, reference_report_idx),
+        median_ls_time=trends_row_with_optionals(
+            metrics_transposed.median_ls_time, reference_report_idx
+        ),
     )
 
     full_timings = collect_timings(reports, reference_report_idx)
@@ -220,6 +228,17 @@ def build_view_model(
 
 def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
     return Path() / meta.name / test.name_and_rev / "logs.txt"
+
+
+archives_path = Path() / "archives"
+
+
+def ecosystem_csv_path(meta: ReportMeta) -> Path:
+    return archives_path / f"{meta.name}-ecosystem.csv"
+
+
+def ecosystem_json_path(meta: ReportMeta) -> Path:
+    return archives_path / f"{meta.name}-ecosystem.json"
 
 
 # NOTE: The last report for the default slice will be the reference,

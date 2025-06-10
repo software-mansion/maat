@@ -209,6 +209,29 @@
             </table>
         </details>
     {% endfor %}
+    <details id="details-downloads">
+        <summary class="font-bold">Downloads</summary>
+        <table>
+            {{ header() }}
+            <tbody>
+            {% call table_section("Data exports") %}
+                {% for title, href_name in [
+                    ('Ecosystem (CSV)', 'ecosystem_csv_href'),
+                    ('Ecosystem (JSON)', 'ecosystem_json_href')
+                ] %}
+                    <tr>
+                        <td>{{ title }}</td>
+                        {% for rn in report_names %}
+                            <td class="text-center">
+                                <a href="{{ rn[href_name] }}">Download</a>
+                            </td>
+                        {% endfor %}
+                    </tr>
+                {% endfor %}
+            {% endcall %}
+            </tbody>
+        </table>
+    </details>
 </main>
 <footer>
     <a class="swm no-underline" href="https://swmansion.com/"
