@@ -1,29 +1,26 @@
-import requests
+import subprocess
+
 from cache_to_disk import cache_to_disk
 
 from maat.model import Step
 
-GITHUB_URL = "https://github.com/"
-
 
 @cache_to_disk(1)
 def fetch_commit_hash(repo: str) -> str:
-    if repo.startswith(GITHUB_URL):
-        # Make a GET request to GitHub API, which is faster than calling Git.
-        repo_path = repo.split("github.com/")[-1].rstrip("/")
-
-        # Get the latest commit from the default branch (no branch specified = default branch).
-        response = requests.get(
-            f"https://api.github.com/repos/{repo_path}/commits",
-            params={"per_page": 1},  # Only get the latest commit.
+    try:
+        result = subprocess.run(
+            ["git", "ls-remote", repo, "HEAD"],
+            capture_output=True,
+            text=True,
+            timeout=30,
         )
-        response.raise_for_status()
-        commits = response.json()
-        if not commits:
-            raise ValueError(f"no commits found for repo: {repo}")
-        return commits[0]["sha"][:9]
-    else:
-        raise NotImplementedError
+        if result.returncode == 0 and result.stdout:
+            commit_hash = result.stdout.split()[0]
+            return commit_hash[:9]
+        else:
+            raise ValueError(f"failed to get commit hash via git: {result.stderr}")
+    except subprocess.TimeoutExpired:
+        raise ValueError("git command timed out")
 
 
 def setup_git(repo: str) -> list[Step]:

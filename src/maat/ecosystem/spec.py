@@ -39,8 +39,9 @@ class _Git(EcosystemProject):
 
     @property
     def name(self) -> str:
-        if self.repo.startswith(_git.GITHUB_URL):
-            return self.repo.removeprefix(_git.GITHUB_URL).removesuffix("/")
+        github_url = "https://github.com/"
+        if self.repo.startswith(github_url):
+            return self.repo.removeprefix(github_url).removesuffix("/")
         else:
             return _human_url(self.repo)
 
