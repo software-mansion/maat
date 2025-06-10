@@ -293,14 +293,6 @@ class Report(BaseModel):
     tests: list[TestReport] = []
 
     @property
-    def used_stable_tooling(self) -> bool:
-        for bad_char in "+-":
-            for v in (self.scarb, self.foundry):
-                if bad_char in v:
-                    return False
-        return True
-
-    @property
     def by_version_preferring_scarb(self):
         return smart_sort_key(self.scarb), smart_sort_key(self.foundry)
 
