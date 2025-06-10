@@ -1,5 +1,6 @@
 import functools
 import shutil
+import subprocess
 import tempfile
 from contextlib import ExitStack
 from pathlib import Path
@@ -21,8 +22,9 @@ from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
 from maat.runner.planner import prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
+from maat.utils.shell import join_command
 from maat.web.report_info import ReportInfo
-from maat.web.slices import make_slices, Slice
+from maat.web.slices import make_slices
 from maat.workspace import Workspace
 
 pass_console = click.make_pass_decorator(Console, ensure=True)
@@ -443,7 +445,9 @@ def prune_cache(console: Console) -> None:
     cache_to_disk.delete_disk_caches_for_function("fetch")
 
 
-@cli.command(help="Remove report files that are not included in any slice (apart from 'All').")
+@cli.command(
+    help="Remove report files that are not included in any slice (apart from 'All')."
+)
 @pass_console
 def gc_reports(console: Console) -> None:
     reports_dir = REPO / "reports"
@@ -635,6 +639,33 @@ def merge_reports(
 
     with click.open_file(output, "w") as f:
         save_report(merged_report, f)
+
+
+@cli.command(help="Rerun experiments from report files with the same parameters.")
+@click.argument("reports", type=PathParamType, nargs=-1, required=True)
+@pass_console
+def rerun_all(
+    console: Console,
+    reports: tuple[Path, ...],
+) -> None:
+    for report_path in reports:
+        report = read_report(report_path)
+
+        cmd = [
+            "gh",
+            "workflow",
+            "run",
+            "experiment.yml",
+            "-f",
+            f"workspace={report.workspace}",
+            "-f",
+            f"scarb={report.scarb}",
+            "-f",
+            f"foundry={report.foundry}",
+        ]
+
+        console.log(">", join_command(cmd))
+        subprocess.run(cmd, check=True)
 
 
 if __name__ == "__main__":
