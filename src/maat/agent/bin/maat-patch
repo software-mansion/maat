@@ -63,12 +63,17 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
     else:
         scarbs_patch_table = patch_table.setdefault("scarbs-xyz", tomlkit.table())
 
-    patch_field(scarbs_patch_table, "assert_macros", scarb_version)
-    patch_field(scarbs_patch_table, "starknet", scarb_version)
-    patch_field(scarbs_patch_table, "cairo_test", scarb_version)
+    foundry_patch_table = patch_table.setdefault(
+        "https://github.com/foundry-rs/starknet-foundry.git", tomlkit.table()
+    )
+
+    for dep in ["assert_macros", "starknet", "cairo_test"]:
+        patch_field(scarbs_patch_table, dep, scarb_version)
+
     if should_patch_snforge_std:
-        patch_field(scarbs_patch_table, "snforge_std", foundry_dep_spec)
-        patch_field(scarbs_patch_table, "snforge_scarb_plugin", foundry_dep_spec)
+        for dep in ["snforge_std", "snforge_scarb_plugin"]:
+            for table in [scarbs_patch_table, foundry_patch_table]:
+                patch_field(table, dep, foundry_dep_spec)
 
 
 def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
