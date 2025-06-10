@@ -204,3 +204,5 @@ jobs:
       - name: Trigger Web workflow
         if: github.ref == 'refs/heads/main'
         run: gh workflow run web.yml --ref "${{ github.ref }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
