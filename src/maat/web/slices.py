@@ -92,12 +92,11 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
 
 
 def unique_by[T, K](iterable: Iterable[T], /, key: Callable[[T], K]) -> Iterator[T]:
-    seen = set()
+    buckets: dict[K, T] = {}
     for item in iterable:
         k = key(item)
-        if k not in seen:
-            seen.add(k)
-            yield item
+        buckets[k] = item
+    yield from buckets.values()
 
 
 def unique_by_at_most[T, K](
