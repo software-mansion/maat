@@ -19,7 +19,8 @@ def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
     # building dependencies that require stable Cairo versions (which is majority out there).
     # Only dependencies matter here because toplevel packages are already patched.
     if is_unstable_semver(scarb):
-        env["SCARB_IGNORE_CAIRO_VERSION"] = "1"
+        # NOTE: Scarb doesn't accept `1` here, weird.
+        env["SCARB_IGNORE_CAIRO_VERSION"] = "true"
 
     return [
         Step(run="maat-check-versions", setup=True, workdir=project.workdir),
