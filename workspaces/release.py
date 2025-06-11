@@ -32,20 +32,19 @@ ecosystem: Ecosystem = [
             "dl_alexandria_utils",
         ]
     ),
-    github("CarmineOptions/konoha"),
-    github("DLC-link/ibtc-cairo", workdir="contracts"),
+    # github("CarmineOptions/konoha"), # Depends on ancient OZ
+    # github("DLC-link/ibtc-cairo", workdir="contracts"), # Depends on ancient OZ
     github("EkuboProtocol/abis"),
     github("EkuboProtocol/governance"),
     github("EkuboProtocol/revenue-buybacks"),
     github("HerodotusDev/integrity"),
     github("OpenZeppelin/cairo-contracts"),
-    github("argentlabs/argent-contracts-starknet"),
+    # github("argentlabs/argent-contracts-starknet"), # Depends on ancient OZ
     github("avnu-labs/avnu-contracts-v2"),
-    github("carbonable-labs/carbon-protocol-v3"),
     github("dojoengine/origami"),
-    github("horuslabsio/TBA"),
-    github("horuslabsio/coloniz-core"),
-    github("keep-starknet-strange/art-peace", workdir="onchain"),
+    # github("horuslabsio/TBA"), # Depends on ancient OZ
+    # github("horuslabsio/coloniz-core"), # Depends on ancient OZ
+    # github("keep-starknet-strange/art-peace", workdir="onchain"), # Depends on ancient snforge_std
     github("keep-starknet-strange/garaga"),
     github("keep-starknet-strange/memecoin-staking"),
     github("keep-starknet-strange/raito"),
@@ -53,7 +52,7 @@ ecosystem: Ecosystem = [
     github("keep-starknet-strange/scaffold-garaga", workdir="contracts"),
     github("keep-starknet-strange/shinigami"),
     github("keep-starknet-strange/tokenized-bond"),
-    github("keep-starknet-strange/unruggable.meme", workdir="packages/contracts"),
+    # github("keep-starknet-strange/unruggable.meme", workdir="packages/contracts"), # Depends on ancient OZ
     github("starkware-libs/starknet-staking"),
 ]
 
