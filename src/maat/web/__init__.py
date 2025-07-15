@@ -46,7 +46,9 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         importlib.resources.files("maat.web.templates._assets"),
         output / "_assets",
     )
-    _write_robots_txt(output)
+    # Copy robots.txt from templates to output root
+    robots_txt_file = importlib.resources.files("maat.web.templates") / "robots.txt"
+    (output / "robots.txt").write_bytes(robots_txt_file.read_bytes())
     _write_logs(reports, output)
     _write_archives(reports, output)
 
@@ -120,14 +122,6 @@ def _copy_traversable(traversable: Traversable, dest: Path):
             dest_child = dest / child.name
             dest_child.write_bytes(child.read_bytes())
 
-
-def _write_robots_txt(output: Path):
-    """Write robots.txt file to block all web crawlers."""
-    robots_content = """User-agent: *
-Disallow: /
-"""
-    robots_file = output / "robots.txt"
-    robots_file.write_text(robots_content, encoding="utf-8")
 
 
 def _write_logs(reports: list[ReportInfo], output: Path):
