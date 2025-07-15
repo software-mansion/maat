@@ -46,9 +46,11 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         importlib.resources.files("maat.web.templates._assets"),
         output / "_assets",
     )
-    # Copy robots.txt from templates to output root
+
+    # Copy robots.txt from templates to output root.
     robots_txt_file = importlib.resources.files("maat.web.templates") / "robots.txt"
     (output / "robots.txt").write_bytes(robots_txt_file.read_bytes())
+
     _write_logs(reports, output)
     _write_archives(reports, output)
 
