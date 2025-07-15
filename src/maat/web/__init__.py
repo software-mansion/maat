@@ -125,7 +125,6 @@ def _copy_traversable(traversable: Traversable, dest: Path):
             dest_child.write_bytes(child.read_bytes())
 
 
-
 def _write_logs(reports: list[ReportInfo], output: Path):
     for report, meta, _ in reports:
         for test in report.tests:
