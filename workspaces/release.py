@@ -45,11 +45,11 @@ ecosystem: Ecosystem = [
     # github("horuslabsio/TBA"), # Depends on ancient OZ
     # github("horuslabsio/coloniz-core"), # Depends on ancient OZ
     # github("keep-starknet-strange/art-peace", workdir="onchain"), # Depends on ancient snforge_std
-    # github("keep-starknet-strange/garaga"), # TODO(wawel37): Enable after lint is fixed.
+    github("keep-starknet-strange/garaga"),
     github("keep-starknet-strange/memecoin-staking"),
     github("keep-starknet-strange/raito"),
     github("keep-starknet-strange/s2morrow"),
-    # github("keep-starknet-strange/scaffold-garaga", workdir="contracts"), # TODO(wawel37): Enable after lint is fixed.
+    github("keep-starknet-strange/scaffold-garaga", workdir="contracts"),
     github("keep-starknet-strange/shinigami"),
     github("keep-starknet-strange/tokenized-bond"),
     # github("keep-starknet-strange/unruggable.meme", workdir="packages/contracts"), # Depends on ancient OZ
