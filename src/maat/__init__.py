@@ -304,18 +304,27 @@ def build_sandbox(
     help="Write output to directory instead of opening in browser.",
     required=True,
 )
+@click.option(
+    "--view-model",
+    is_flag=True,
+    help="Only build the view model, useful for frontend development.",
+)
 @pass_console
 def build_web(
     console: Console,
     reports: tuple[Path, ...],
     output: Path,
+    view_model: bool = False,
 ) -> None:
     report_tuples = [
         (Report.model_validate_json(path.read_bytes()), ReportMeta.new(path))
         for path in reports
     ]
 
-    web.build(reports=report_tuples, output=output)
+    if view_model:
+        web.build_view_model(reports=report_tuples, output=output)
+    else:
+        web.build(reports=report_tuples, output=output)
 
 
 @cli.command(help="Reanalyse an existing report and update it.")
