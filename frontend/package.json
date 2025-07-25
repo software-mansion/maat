@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "../maat build-web --view-model -o public/vm-dev ../reports/* && vite",
     "build": "tsc -b && vite build",
     "fmt": "prettier . --write",
     "lint": "eslint .",
@@ -13,6 +13,7 @@
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
     "daisyui": "^5.0.46",
+    "jotai": "^2.12.5",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "tailwindcss": "^4.1.11"
