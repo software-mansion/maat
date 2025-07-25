@@ -1,8 +1,6 @@
 import functools
 import shutil
 import subprocess
-import tempfile
-from contextlib import ExitStack
 from pathlib import Path
 
 import cache_to_disk
@@ -304,33 +302,20 @@ def build_sandbox(
     "--output",
     type=click.Path(dir_okay=True, file_okay=False, path_type=Path),
     help="Write output to directory instead of opening in browser.",
+    required=True,
 )
 @pass_console
 def build_web(
     console: Console,
     reports: tuple[Path, ...],
-    output: Path | None = None,
+    output: Path,
 ) -> None:
     report_tuples = [
         (Report.model_validate_json(path.read_bytes()), ReportMeta.new(path))
         for path in reports
     ]
 
-    with ExitStack() as stack:
-        output_dir: Path
-        if output is None:
-            output_dir = Path(
-                stack.enter_context(tempfile.TemporaryDirectory(delete=False))
-            )
-        else:
-            output_dir = output
-
-        web.build(reports=report_tuples, output=output_dir)
-
-        if output is None:
-            console.log("Report generated at:", output_dir.name)
-            console.log("Opening report in browser...")
-            click.launch(str(output_dir / "index.html"))
+    web.build(reports=report_tuples, output=output)
 
 
 @cli.command(help="Reanalyse an existing report and update it.")
