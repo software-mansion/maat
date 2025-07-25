@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="text-secondary flex items-center justify-center gap-6 px-12 py-8 text-xs leading-none">
+    <footer className="text-base-content/50 flex items-center justify-center gap-6 px-12 py-8 text-xs leading-none">
       <a href="https://swmansion.com/" rel="noopener noreferrer" target="_blank">
         <svg
           fill="none"

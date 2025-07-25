@@ -12,7 +12,28 @@ export function App() {
       </header>
       <ErrorBoundary FallbackComponent={Fallback}>
         <Suspense fallback={<Loading />}>
-          <PreviewViewModel />
+          <main className="flex flex-col gap-4 px-4">
+            <PreviewViewModel />
+            <div className="collapse-arrow border-base-300 bg-base-100 collapse overflow-hidden border">
+              <input type="checkbox" />
+              <div className="collapse-title font-bold select-none">Downloads</div>
+              <table className="collapse-content table-pin-rows table-pin-cols table">
+                <thead>
+                  <tr>
+                    <th>Data exports</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <th>Ecosystem (CSV)</th>
+                  </tr>
+                  <tr>
+                    <th>Ecosystem (JSON)</th>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </main>
         </Suspense>
       </ErrorBoundary>
       <Footer />
