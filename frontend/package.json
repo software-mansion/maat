@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.1.11",
+    "clsx": "^2.1.1",
     "daisyui": "^5.0.46",
     "jotai": "^2.12.5",
     "react": "^19.1.0",
