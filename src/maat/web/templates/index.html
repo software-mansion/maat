@@ -66,6 +66,45 @@
     {% endcall %}
 {% endmacro %}
 
+{% macro timing_row(timing_row) %}
+    <tr>
+        <td>
+            {{- timing_row.project -}}
+            {% if timing_row.uniform_rev %}
+                <span class="font-normal text-dim">({{ timing_row.uniform_rev }})</span>
+            {% endif %}
+        </td>
+        {% for cell in timing_row.cells %}
+            <td class="text-right">
+                {%- if cell.trend -%}
+                    {%- if cell.value is none -%}
+                        &mdash;
+                    {%- else -%}
+                        {{- cell.value|timedeltaformat -}}
+                    {%- endif -%}
+                    <span class="{{ "trend"|clsx(cell.trend.color_class) }}">
+                        {%- if cell.trend.ratio != 0.0 -%}
+                            {{ cell.trend.symbol }}&nbsp;{{ cell.trend.percentage }}
+                        {%- else -%}
+                            {{ cell.trend.symbol }}
+                        {%- endif -%}
+                    </span>
+                    {% if not timing_row.uniform_rev and cell.rev %}
+                        <br/>
+                        <span class="text-sm text-dim">({{ cell.rev }})</span>
+                    {% endif %}
+                {%- else -%}
+                    &mdash;
+                    {% if not timing_row.uniform_rev and cell.rev %}
+                        <br/>
+                        <span class="text-sm text-dim">({{ cell.rev }})</span>
+                    {% endif %}
+                {%- endif -%}
+            </td>
+        {% endfor %}
+    </tr>
+{% endmacro %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -191,17 +230,13 @@
                         metrics_trends["median_%s_time" % step]
                     ) }}
                 {% endcall %}
-                {% if full_timings[step] %}
+                {% if timing_rows[step] %}
                     {% call table_section(
-                        title="Top %d most variable projects" % len(full_timings[step]),
+                        title="Top %d most variable projects" % len(timing_rows[step]),
                         help="Ma'at shows the top 10 projects with the most variable timing performance compared to a reference report. Projects are sorted by variance (highest first), then alphabetically. Only projects with at least 2 valid timing measurements are included. Variance is calculated using the reference report's timing as the expected value, measuring how much other timings deviate from this baseline."
                     ) %}
-                        {% for project, timing in full_timings[step].items() %}
-                            {{ metrics_row_with_trends(
-                                project,
-                                timing.values,
-                                timing.trends
-                            ) }}
+                        {% for row in timing_rows[step] %}
+                            {{ timing_row(row) }}
                         {% endfor %}
                     {% endcall %}
                 {% endif %}

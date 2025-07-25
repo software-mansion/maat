@@ -1,4 +1,5 @@
 from pathlib import Path
+from datetime import timedelta
 
 from pydantic import BaseModel
 
@@ -31,6 +32,34 @@ class MissingTestCellViewModel(BaseModel):
     missing: bool = True
     logs_href: str | None = None
     rev: str | None = None
+
+
+class TimingCellViewModel(BaseModel):
+    value: timedelta | None
+    trend: Trend | None
+    rev: str | None = None
+
+
+class TimingRowViewModel(BaseModel):
+    project: str
+    cells: list[TimingCellViewModel]
+
+    @property
+    def uniform_rev(self) -> str | None:
+        """
+        Returns rev string shared by all cells in this row, or None if they differ,
+        or none of the cells has rev.
+        """
+
+        expected: str | None = None
+        for cell in self.cells:
+            if cell.rev is None:
+                continue
+            if expected is None:
+                expected = cell.rev
+            elif cell.rev != expected:
+                return None
+        return expected
 
 
 class LabelGroupRowViewModel(BaseModel):
@@ -88,6 +117,7 @@ class RootViewModel(BaseModel):
     slices: list[SliceViewModel]
     reference_report_idx: int
     full_timings: FullTimings
+    timing_rows: dict[str, list[TimingRowViewModel]]
 
 
 def build_view_model(
@@ -161,6 +191,26 @@ def build_view_model(
 
     full_timings = collect_timings(reports, reference_report_idx)
 
+    # Build timing rows with revision information
+    timing_rows = {}
+    for step_name in ["build", "lint", "test", "ls"]:
+        step_timings = getattr(full_timings, step_name)
+        timing_rows[step_name] = []
+        
+        for project, timing in step_timings.items():
+            cells = []
+            for i, (value, trend, rev) in enumerate(zip(timing.values, timing.trends, timing.revisions)):
+                cells.append(TimingCellViewModel(
+                    value=value,
+                    trend=trend,
+                    rev=rev,
+                ))
+            
+            timing_rows[step_name].append(TimingRowViewModel(
+                project=project,
+                cells=cells,
+            ))
+
     reference_report, _, reference_metrics = reports[reference_report_idx]
 
     label_groups = []
@@ -223,6 +273,7 @@ def build_view_model(
         slices=slices_view,
         reference_report_idx=reference_report_idx,
         full_timings=full_timings,
+        timing_rows=timing_rows,
     )
 
 

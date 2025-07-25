@@ -12,6 +12,7 @@ from maat.web import ReportInfo
 class ProjectTimings(BaseModel):
     values: list[timedelta | None]
     trends: list[Trend | None]
+    revisions: list[str | None]
 
     def variance(self, expected_value_idx: int) -> float:
         """
@@ -62,20 +63,25 @@ def collect_timings(
 
         for project in reference_tests_by_names.keys():
             values: list[timedelta | None] = []
+            revisions: list[str | None] = []
             for tests_by_names in all_tests_by_names:
                 value: timedelta | None = None
+                revision: str | None = None
                 if (
                     (test := tests_by_names.get(project))
                     and (step := test.step(step_name))
                     and step.exit_code == 0
                 ):
                     value = step.execution_time
+                    revision = test.rev
 
                 values.append(value)
+                revisions.append(revision)
 
             project_timings = ProjectTimings(
                 values=values,
                 trends=trends_row_with_optionals(values, reference_report_idx),
+                revisions=revisions,
             )
 
             # Ignore rows where there are no timings or only one.
