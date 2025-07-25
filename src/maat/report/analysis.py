@@ -43,7 +43,11 @@ def tests_summary(test: TestReport):
         return
 
     # Find all test summary lines.
-    matches = re.findall(r"^\[out]\s*(?:Tests: |test result: ).*", step.log_str, re.M)
+    matches = re.findall(
+        r"^\[(?:out|err)]\s*(?:Error:\s*)?(?:Tests: |test result: ).*",
+        step.log_str,
+        re.M,
+    )
 
     passed, failed, skipped, ignored = 0, 0, 0, 0
     for line in matches:
@@ -90,9 +94,8 @@ def label(test: TestReport):
             if lbl := _lint_label(lint):
                 labels.add(lbl)
 
-        # Test summary is populated only if a test step has been executed, not checking twice.
-        if ts := test.analyses.tests_summary:
-            if lbl := _test_label(ts):
+        if (rep := test.step("test")) and rep.was_executed:
+            if lbl := _test_label(rep, test.analyses.tests_summary):
                 labels.add(lbl)
 
         # Check if CairoLS reports errors while building succeeded.
@@ -173,8 +176,19 @@ def _lint_label(lint: StepReport) -> Label:
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
 
-def _test_label(ts: TestsSummary) -> Label:
-    if ts.failed > 0:
+def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
+    if ts is None:
+        if b"Not enough gas to call function." in rep.log:
+            return Label.new(LabelCategory.TEST_ERROR, "cairo-test: not enough gas")
+        elif b"[ERROR] Error while calling RPC method" in rep.log:
+            return Label.new(LabelCategory.TEST_ERROR, "snforge: rpc error")
+        elif b"Error: Failed setting up runner." in rep.log:
+            return Label.new(
+                LabelCategory.TEST_ERROR, "cairo-test: failed setting up runner"
+            )
+        else:
+            return Label.new(LabelCategory.TEST_ERROR, "unknown test runner error")
+    elif ts.failed > 0:
         return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
     else:
         return Label.new(LabelCategory.TEST_PASS, "tests passed")

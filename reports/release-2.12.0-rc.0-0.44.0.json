@@ -231,6 +231,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(snforge: rpc error)",
           "lint-fail(lint violations)"
         ]
       }
@@ -828,6 +829,7 @@
       "analyses": {
         "labels": [
           "error(build: unknown panic)",
+          "test-error(unknown test runner error)",
           "lint-fail(lint violations)"
         ]
       }
@@ -1784,6 +1786,7 @@
       "analyses": {
         "labels": [
           "error(build: compiler panic)",
+          "test-error(unknown test runner error)",
           "lint-fail(lint violations)"
         ]
       }
@@ -1947,6 +1950,7 @@
       "analyses": {
         "labels": [
           "error(build: unknown panic)",
+          "test-error(unknown test runner error)",
           "lint-fail(lint violations)"
         ]
       }

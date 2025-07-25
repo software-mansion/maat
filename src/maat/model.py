@@ -100,6 +100,7 @@ class LabelCategory(enum.StrEnum):
     # The higher the category here, the higher the priority when sorting for human presentation.
     ERROR = "error"
     BUILD_FAIL = "build-fail"
+    TEST_ERROR = "test-error"
     TEST_FAIL = "test-fail"
     TEST_PASS = "test-pass"
     LINT_FAIL = "lint-fail"
@@ -113,6 +114,7 @@ class LabelCategory(enum.StrEnum):
         return {
             self.ERROR: "A serious error occurred before project could be built.",
             self.BUILD_FAIL: "Build failed.",
+            self.TEST_ERROR: "Test execution failed. This is a serious error and should be investigated.",
             self.TEST_FAIL: "Build succeeded but tests failed.",
             self.TEST_PASS: 'Build succeeded and tests passed. This is the "clean" state.',
             self.LINT_FAIL: "Build succeeded but linting failed. Take these results with grain of salt because cairo-lint is not reliable.",

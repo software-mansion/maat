@@ -231,6 +231,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(snforge: rpc error)",
           "lint-fail(lint violations)"
         ]
       }
@@ -651,6 +652,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(cairo-test: not enough gas)",
           "lint-fail(lint violations)"
         ]
       }
@@ -732,6 +734,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(cairo-test: not enough gas)",
           "lint-fail(lint violations)"
         ]
       }
@@ -813,6 +816,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(cairo-test: failed setting up runner)",
           "lint-fail(lint violations)"
         ]
       }
@@ -1070,6 +1074,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(cairo-test: not enough gas)",
           "lint-fail(lint violations)"
         ]
       }
@@ -1151,8 +1156,15 @@
       ],
       "analyses": {
         "labels": [
+          "test-fail(1 failed)",
           "lint-fail(lint violations)"
-        ]
+        ],
+        "tests_summary": {
+          "passed": 6,
+          "failed": 1,
+          "skipped": 0,
+          "ignored": 0
+        }
       }
     },
     {
@@ -1232,8 +1244,15 @@
       ],
       "analyses": {
         "labels": [
+          "test-fail(1 failed)",
           "lint-fail(lint violations)"
-        ]
+        ],
+        "tests_summary": {
+          "passed": 30,
+          "failed": 1,
+          "skipped": 0,
+          "ignored": 0
+        }
       }
     },
     {
@@ -1313,8 +1332,15 @@
       ],
       "analyses": {
         "labels": [
+          "test-fail(2 failed)",
           "lint-fail(lint violations)"
-        ]
+        ],
+        "tests_summary": {
+          "passed": 26,
+          "failed": 2,
+          "skipped": 0,
+          "ignored": 0
+        }
       }
     },
     {
@@ -1909,12 +1935,12 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-fail(2 failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
-          "passed": 111,
-          "failed": 0,
+          "passed": 117,
+          "failed": 2,
           "skipped": 0,
           "ignored": 0
         }
@@ -2255,6 +2281,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ]
@@ -2567,6 +2594,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-fail(lint violations)"
         ]
       }

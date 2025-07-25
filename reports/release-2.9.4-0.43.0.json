@@ -238,6 +238,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(snforge: rpc error)",
           "lint-broken(no linter)"
         ]
       }
@@ -556,6 +557,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-broken(no linter)"
         ]
       }
@@ -882,6 +884,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-broken(no linter)"
         ]
       }
@@ -1134,6 +1137,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-broken(no linter)"
         ]
       }
@@ -1216,6 +1220,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-broken(no linter)"
         ]
       }
@@ -1298,6 +1303,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-broken(no linter)"
         ]
       }
@@ -1380,6 +1386,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
+          "test-error(unknown test runner error)",
           "lint-broken(no linter)"
         ]
       }

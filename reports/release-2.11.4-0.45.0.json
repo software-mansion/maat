@@ -2387,6 +2387,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(unknown test runner error)",
           "ls-fail(ls has new errors)",
           "lint-broken(no --deny-warnings)"
         ]
@@ -3381,6 +3382,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(unknown test runner error)",
           "ls-fail(ls has new errors)",
           "lint-broken(no --deny-warnings)"
         ]
@@ -3544,6 +3546,7 @@
       ],
       "analyses": {
         "labels": [
+          "test-error(unknown test runner error)",
           "lint-broken(no --deny-warnings)"
         ]
       }

@@ -12,6 +12,7 @@
     /* Tailwind Colors v4, https://tailwindcolor.com/ */
     --color-error: #fb2c36;
     --color-build-fail: #ff6900;
+    --color-test-error: #f0b100;
     --color-test-fail: #2b7fff;
     --color-test-pass: #00c950;
     --color-lint-fail: #8e51ff;
@@ -252,6 +253,10 @@ table {
 
 .build-fail {
     --accent: var(--color-build-fail);
+}
+
+.test-error {
+    --accent: var(--color-test-error);
 }
 
 .test-fail {
