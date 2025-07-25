@@ -1,0 +1,11 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+:root {
+  @apply bg-base-200;
+}
+
+.font-fancy {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+}

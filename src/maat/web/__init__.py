@@ -19,11 +19,12 @@ from maat.web.report_info import ReportInfo
 from maat.web.slices import make_slices
 from maat.web.view_model import (
     archives_path,
-    build_view_model,
+    build_view_model as build_view_model_old,
     ecosystem_csv_path,
     ecosystem_json_path,
     logs_txt_path,
 )
+from maat.web.view_model2 import ViewModel
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
@@ -57,7 +58,7 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
     sls = make_slices(reports)
     for slice_idx, sl in enumerate(sls):
         for report_idx, reference_report in enumerate(sl.reports):
-            vm = build_view_model(
+            vm = build_view_model_old(
                 sl.reports,
                 reference_report_idx=report_idx,
                 slices=sls,
@@ -71,6 +72,34 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
                     path=output / vm.report_names[report_idx].pivot_href,
                     env=env,
                 )
+
+
+def build_view_model(reports: list[tuple[Report, ReportMeta]], output: Path):
+    if output.exists():
+        shutil.rmtree(output)
+    output.mkdir(parents=True)
+
+    reports.sort(key=lambda t: smart_sort_key(t[1].name))
+
+    reports = [
+        ReportInfo(
+            report=report,
+            meta=meta,
+            metrics=Metrics.compute(report, meta),
+        )
+        for report, meta in reports
+    ]
+
+    _write_logs(reports, output)
+    _write_archives(reports, output)
+
+    sls = make_slices(reports)
+
+    vm = ViewModel.new(reports, sls)
+
+    (output / "vm.json").write_text(
+        vm.model_dump_json(indent=2, by_alias=True), encoding="utf-8"
+    )
 
 
 @contextmanager
