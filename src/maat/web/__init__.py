@@ -11,7 +11,7 @@ import jinja2
 import minify_html
 from pydantic import BaseModel
 
-from maat.model import Report, ReportMeta
+from maat.model import Report, ReportMeta, logs_txt_path
 from maat.report.metrics import Metrics
 from maat.utils.smart_sort import smart_sort_key
 from maat.web import filters
@@ -22,7 +22,6 @@ from maat.web.view_model import (
     build_view_model,
     ecosystem_csv_path,
     ecosystem_json_path,
-    logs_txt_path,
 )
 
 

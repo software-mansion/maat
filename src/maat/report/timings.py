@@ -4,7 +4,7 @@ from itertools import islice
 
 from pydantic import BaseModel
 
-from maat.model import TestReport
+from maat.model import TestReport, logs_txt_path
 from maat.report.trends import Trend, trends_row_with_optionals
 from maat.web import ReportInfo
 
@@ -12,6 +12,7 @@ from maat.web import ReportInfo
 class ProjectTimings(BaseModel):
     values: list[timedelta | None]
     trends: list[Trend | None]
+    log_links: list[str | None]
 
     def variance(self, expected_value_idx: int) -> float:
         """
@@ -62,20 +63,26 @@ def collect_timings(
 
         for project in reference_tests_by_names.keys():
             values: list[timedelta | None] = []
-            for tests_by_names in all_tests_by_names:
+            log_links: list[str | None] = []
+            for report_idx, (_, report_meta, _) in enumerate(reports):
+                tests_by_names = all_tests_by_names[report_idx]
                 value: timedelta | None = None
+                log_link: str | None = None
                 if (
                     (test := tests_by_names.get(project))
                     and (step := test.step(step_name))
                     and step.exit_code == 0
                 ):
                     value = step.execution_time
+                    log_link = str(logs_txt_path(report_meta, test))
 
                 values.append(value)
+                log_links.append(log_link)
 
             project_timings = ProjectTimings(
                 values=values,
                 trends=trends_row_with_optionals(values, reference_report_idx),
+                log_links=log_links,
             )
 
             # Ignore rows where there are no timings or only one.

@@ -44,14 +44,17 @@
     {% call(value) metrics_row(title, values) %}{{ value }}{% endcall %}
 {% endmacro %}
 
-{% macro metrics_row_with_trends(title, values, trends) %}
-    {% call(t) metrics_row(title, zip(values, trends)) %}
-        {% set value, trend = t %}
+{% macro metrics_row_with_trends(title, values, trends, log_links=None) %}
+    {% call(t) metrics_row(title, zip(values, trends, log_links or ([None] * values|length))) %}
+        {% set value, trend, log_link = t %}
         {%- if trend -%}
             {%- if value is none -%}
                 &mdash;
             {%- else -%}
                 {{- value|timedeltaformat -}}
+                {%- if log_link -%}
+                    &nbsp;<a href="{{ log_link }}">&#x2398;</a>
+                {%- endif -%}
             {%- endif -%}
             <span class="{{ "trend"|clsx(trend.color_class) }}">
                 {%- if trend.ratio != 0.0 -%}
@@ -200,7 +203,8 @@
                             {{ metrics_row_with_trends(
                                 project,
                                 timing.values,
-                                timing.trends
+                                timing.trends,
+                                timing.log_links
                             ) }}
                         {% endfor %}
                     {% endcall %}

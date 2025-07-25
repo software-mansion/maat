@@ -413,3 +413,8 @@ class PlanPartitionView(BaseModel):
     @property
     def test_suite(self) -> TestSuite:
         return self.plan.partitions[self.partition]
+
+
+def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
+    """Generate the path to the logs file for a given test."""
+    return Path() / meta.name / test.name_and_rev / "logs.txt"

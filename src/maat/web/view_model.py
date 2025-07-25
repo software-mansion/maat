@@ -2,7 +2,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
-from maat.model import Label, LabelCategory, ReportMeta, TestReport
+from maat.model import Label, LabelCategory, ReportMeta, TestReport, logs_txt_path
 from maat.report.metrics import MetricsTransposed
 from maat.report.timings import FullTimings, collect_timings
 from maat.report.trends import Trend, trends_row, trends_row_with_optionals
@@ -224,10 +224,6 @@ def build_view_model(
         reference_report_idx=reference_report_idx,
         full_timings=full_timings,
     )
-
-
-def logs_txt_path(meta: ReportMeta, test: TestReport) -> Path:
-    return Path() / meta.name / test.name_and_rev / "logs.txt"
 
 
 archives_path = Path() / "archives"
