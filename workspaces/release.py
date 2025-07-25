@@ -54,6 +54,7 @@ ecosystem: Ecosystem = [
     github("keep-starknet-strange/tokenized-bond"),
     # github("keep-starknet-strange/unruggable.meme", workdir="packages/contracts"), # Depends on ancient OZ
     github("starkware-libs/starknet-staking"),
+    github("x10xchange/starknet-perpetual"),
 ]
 
 default_scarb = "latest"
