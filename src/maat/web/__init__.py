@@ -24,6 +24,7 @@ from maat.web.view_model import (
     ecosystem_json_path,
     logs_txt_path,
 )
+from maat.web.view_model2 import ViewModel
 
 
 def build(reports: list[tuple[Report, ReportMeta]], output: Path):
@@ -78,7 +79,27 @@ def build_view_model(reports: list[tuple[Report, ReportMeta]], output: Path):
         shutil.rmtree(output)
     output.mkdir(parents=True)
 
-    (output / "vm.json").write_text("{}\n", encoding="utf-8")
+    reports.sort(key=lambda t: smart_sort_key(t[1].name))
+
+    reports = [
+        ReportInfo(
+            report=report,
+            meta=meta,
+            metrics=Metrics.compute(report, meta),
+        )
+        for report, meta in reports
+    ]
+
+    _write_logs(reports, output)
+    _write_archives(reports, output)
+
+    sls = make_slices(reports)
+
+    vm = ViewModel.new(reports, sls)
+
+    (output / "vm.json").write_text(
+        vm.model_dump_json(indent=2, by_alias=True), encoding="utf-8"
+    )
 
 
 @contextmanager
