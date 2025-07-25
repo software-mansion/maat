@@ -31,4 +31,5 @@ jobs:
           node-version-file: .tool-versions
           cache: 'npm'
           cache-dependency-path: '**/package-lock.json'
+      - run: npm ci --prefix frontend
       - run: npm ci --prefix src/maat/agent/nodejs

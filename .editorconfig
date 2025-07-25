@@ -7,5 +7,5 @@ insert_final_newline = true
 max_line_length = 100
 trim_trailing_whitespace = true
 
-[{*.yaml,*.yml}]
+[{*.yaml,*.yml,*.js,*.jsx,*.ts,*.tsx,*.json,*.md,*.css,*.scss,*.html,*.vue,*.jsonc}]
 indent_size = 2

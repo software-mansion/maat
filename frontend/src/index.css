@@ -1,0 +1,77 @@
+@import "tailwindcss";
+
+@plugin "daisyui";
+
+@plugin "daisyui/theme" {
+  name: "swmlight";
+  default: true;
+  prefersdark: false;
+  color-scheme: "light";
+  --color-base-100: #ffffff;
+  --color-base-200: #FCFCFF;
+  --color-base-300: #F8F9FF;
+  --color-base-content: #001A72;
+  --color-primary: #001A72;
+  --color-primary-content: #F8F9FF;
+  --color-secondary: #6676AA;
+  --color-secondary-content: #F8F9FF;
+  --color-accent: #782AEB;
+  --color-accent-content: #F5EEFF;
+  --color-neutral: #30354A;
+  --color-neutral-content: #F8F9FF;
+  --color-info: #38ACDD;
+  --color-info-content: #E1F3FA;
+  --color-success: #57B495;
+  --color-success-content: #EBFCF7;
+  --color-warning: #FFD61E;
+  --color-warning-content: #5A553A;
+  --color-error: #FF6259;
+  --color-error-content: #FFEDF0;
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+  name: "swmdark";
+  default: false;
+  prefersdark: true;
+  color-scheme: "dark";
+  --color-base-100: #232736;
+  --color-base-200: #272B3C;
+  --color-base-300: #30354A;
+  --color-base-content: #F8F9FF;
+  --color-primary: #ABBCF5;
+  --color-primary-content: #001A72;
+  --color-secondary: #7485BD;
+  --color-secondary-content: #EEF0FF;
+  --color-accent: #6A539A;
+  --color-accent-content: #E9DBFF;
+  --color-neutral: #30354A;
+  --color-neutral-content: #F8F9FF;
+  --color-info: #126893;
+  --color-info-content: #D7F0FA;
+  --color-success: #31775D;
+  --color-success-content: #D3F5E4;
+  --color-warning: #91823D;
+  --color-warning-content: #FFF9DB;
+  --color-error: #914F55;
+  --color-error-content: #FFDCDB;
+  --radius-selector: 1rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 0;
+  --noise: 0;
+}
+
+.font-fancy {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+}
