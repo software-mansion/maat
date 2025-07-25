@@ -183,15 +183,21 @@
                 {{ header() }}
                 <tbody>
                 {% call table_section("Summary") %}
+                    {% set summary_log_links = [] %}
+                    {% for rn in report_names %}
+                        {{ summary_log_links.append(rn.ecosystem_json_href) or "" }}
+                    {% endfor %}
                     {{ metrics_row_with_trends(
                         "Successful Runs Mean",
                         metrics["mean_%s_time" % step],
-                        metrics_trends["mean_%s_time" % step]
+                        metrics_trends["mean_%s_time" % step],
+                        summary_log_links
                     ) }}
                     {{ metrics_row_with_trends(
                         "Successful Runs Median",
                         metrics["median_%s_time" % step],
-                        metrics_trends["median_%s_time" % step]
+                        metrics_trends["median_%s_time" % step],
+                        summary_log_links
                     ) }}
                 {% endcall %}
                 {% if full_timings[step] %}
