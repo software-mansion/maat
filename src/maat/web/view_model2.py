@@ -16,13 +16,17 @@ ViewModelConfig = ConfigDict(
 )
 
 
+class MetricsViewModel(Metrics):
+    model_config = ViewModelConfig
+
+
 class ReportViewModel(BaseModel):
     model_config = ViewModelConfig
 
     title: str
     ecosystem_csv_href: str
     ecosystem_json_href: str
-    metrics: Metrics
+    metrics: MetricsViewModel
 
     @classmethod
     def new(cls, report_info: ReportInfo) -> Self:
@@ -30,7 +34,7 @@ class ReportViewModel(BaseModel):
             title=report_info.meta.name,
             ecosystem_csv_href=str(ecosystem_csv_path(report_info.meta)),
             ecosystem_json_href=str(ecosystem_json_path(report_info.meta)),
-            metrics=report_info.metrics,
+            metrics=MetricsViewModel(**report_info.metrics.model_dump()),
         )
 
 
