@@ -1,6 +1,6 @@
 import enum
 from collections.abc import MutableSet
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Callable, Iterator, Literal, Self
 
@@ -290,7 +290,7 @@ class Report(BaseModel):
     scarb: Semver
     foundry: Semver
     maat_commit: str = Field(default_factory=this_maat_commit)
-    created_at: datetime = Field(default_factory=datetime.now)
+    created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total_execution_time: timedelta
     tests: list[TestReport] = []
 
