@@ -8,15 +8,15 @@ running experiments on Cairo ecosystem projects using Docker containers.
 ## Key Structure
 
 - `src/maat/`: Main package with CLI, models, and core functionality
-    - `model.py`: Core data models
-    - `workflow.py`: Predefined workflows for operations
-    - `ecosystem/`: Cairo ecosystem project management
-    - `report/`: Report generation, metrics, and analysis
-    - `runner/`: Experiment execution engines
-    - `agent/`: Docker container configuration
-    - `utils/`: Helper utilities
-    - `web/`: Web interface components
-    - `workspace.py`: Workspace management
+  - `model.py`: Core data models
+  - `workflow.py`: Predefined workflows for operations
+  - `ecosystem/`: Cairo ecosystem project management
+  - `report/`: Report generation, metrics, and analysis
+  - `runner/`: Experiment execution engines
+  - `agent/`: Docker container configuration
+  - `utils/`: Helper utilities
+  - `web/`: Web interface components
+  - `workspace.py`: Workspace management
 - `docs/`: Documentation
 - `reports/`: Experiment reports storage
 - `workspaces/`: Cairo ecosystem project definitions
@@ -33,3 +33,25 @@ running experiments on Cairo ecosystem projects using Docker containers.
 
 This project uses the Click library.
 All `./maat COMMAND` commands are defined as functions (`-` becomes `_`) in `src/maat/__init__.py`.
+
+## Frontend migration
+
+This project is in a phase of rewriting the frontend.
+The old frontend was a python code generator that used jinja and a `view_model`.
+The new one uses python code generator only to create `view_model2` and then dumps it as JSON.
+Then, there is a vite/react app that consumes this data.
+View models should differ fundamentally because the new one is going to be serialised.
+Notice that new view model uses IDs for example.
+DO NOT share any code between `view_model` and `view_model2`; parts that can be reused MUST be
+copy-pasted.
+
+To build the old frontend, run:
+
+```shell
+ ./maat build-web -o web reports/*
+```
+
+This will generate HTML files in the `web` directory.
+
+To build the new frontend, run `npm --prefix frontend run dev &`. This command will start Vite dev
+server which will listen to on `http://localhost:5173/`. Remember to kill this process afterwards!
