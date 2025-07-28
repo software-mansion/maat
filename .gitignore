@@ -14,6 +14,8 @@ wheels/
 
 # Web directory
 /web/
+# Claude loves generating web builds to this directory.
+/web-test/
 
 # Maat plans
 maat-plan.json
