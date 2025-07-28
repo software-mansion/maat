@@ -7,7 +7,7 @@ import {
   selectionAtom,
   viewModelAtom,
 } from "./atoms";
-import clsx from "clsx";
+import type { ReactNode } from "react";
 
 export function Slicer() {
   const vm = useAtomValue(viewModelAtom);
@@ -17,48 +17,56 @@ export function Slicer() {
   const [pivot, setPivot] = useAtom(pivotAtom);
 
   return (
-    <section className="grid grid-cols-[auto_minmax(0,_1fr)] items-baseline gap-3">
-      <Row title="Pivot:">
+    <form className="grid grid-cols-[auto_minmax(0,_1fr)] items-baseline gap-3">
+      <Fieldset title="Pivot:">
         {vm.reports.map((report, reportId) => {
           if (!isSelected(reportId, selection)) {
             return null;
           }
 
           return (
-            <button
+            <input
               key={report.title}
-              className={clsx("btn btn-xs", pivot === reportId && "btn-active")}
-              onClick={() => setPivot(reportId)}
-            >
-              {report.title}
-            </button>
+              type="radio"
+              name="pivot"
+              className="btn btn-xs"
+              aria-label={report.title}
+              checked={pivot === reportId}
+              onChange={() => setPivot(reportId)}
+            />
           );
         })}
-      </Row>
+      </Fieldset>
 
-      <Row title="Use a predefined slice:">
+      <Fieldset title="Use a predefined slice:">
         {vm.slices.map((slice, sliceId) => {
           const isActive = "predefined" in selectedSlice && selectedSlice.predefined === sliceId;
           return (
-            <button
+            <input
               key={slice.title}
-              className={clsx("btn btn-xs", isActive && "btn-active")}
-              onClick={() => setSelectedSlice({ predefined: sliceId })}
-            >
-              {slice.title}
-            </button>
+              type="radio"
+              name="predefined-slice"
+              className="btn btn-xs"
+              aria-label={slice.title}
+              checked={isActive}
+              onChange={() => setSelectedSlice({ predefined: sliceId })}
+            />
           );
         })}
-      </Row>
+      </Fieldset>
 
-      <Row title="Or compose your own:">
+      <Fieldset title="Or compose your own:">
         {vm.reports.map((report, reportId) => {
           const isActive = "custom" in selectedSlice && selectedSlice.custom.includes(reportId);
           return (
-            <button
+            <input
               key={report.title}
-              className={clsx("btn btn-xs", isActive && "btn-active")}
-              onClick={() => {
+              type="checkbox"
+              name="custom-slice"
+              className="btn btn-xs"
+              aria-label={report.title}
+              checked={isActive}
+              onChange={() => {
                 let custom: ReportId[] = [];
                 if ("custom" in selectedSlice) {
                   custom = [...selectedSlice.custom];
@@ -71,21 +79,19 @@ export function Slicer() {
                 custom.sort();
                 setSelectedSlice({ custom });
               }}
-            >
-              {report.title}
-            </button>
+            />
           );
         })}
-      </Row>
-    </section>
+      </Fieldset>
+    </form>
   );
 }
 
-function Row({ title, children }: { title: string; children: React.ReactNode }) {
+function Fieldset({ title, children }: { title: string; children: ReactNode }) {
   return (
-    <>
-      <aside className="text-sm text-nowrap">{title}</aside>
+    <fieldset className="contents">
+      <legend className="text-sm text-nowrap">{title}</legend>
       <div className="flex flex-wrap gap-1">{children}</div>
-    </>
+    </fieldset>
   );
 }
