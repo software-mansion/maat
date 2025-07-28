@@ -12,10 +12,12 @@ export function DownloadsSection() {
           <ReportTableRow
             title="Ecosystem (CSV)"
             cell={(props) => <DownloadLink field="ecosystemCsvHref" {...props} />}
+            textAlign="center"
           />
           <ReportTableRow
             title="Ecosystem (JSON)"
             cell={(props) => <DownloadLink field="ecosystemJsonHref" {...props} />}
+            textAlign="center"
           />
         </tbody>
       </SectionTable>

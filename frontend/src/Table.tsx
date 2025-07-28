@@ -31,7 +31,7 @@ export function ReportTableHead({ title }: ReportTableHead) {
           return (
             <td
               key={report.title}
-              className={clsx(isPivot && "text-primary border-primary border-b")}
+              className={clsx("text-center", isPivot && "text-primary border-primary border-b")}
             >
               {report.title}
             </td>
@@ -45,11 +45,18 @@ export function ReportTableHead({ title }: ReportTableHead) {
 export interface ReportTableRowProps {
   title: ReactNode;
   cell: (props: { report: Report; reportId: ReportId }) => ReactNode;
+  textAlign?: "left" | "right" | "center";
 }
 
-export function ReportTableRow({ title, cell }: ReportTableRowProps) {
+export function ReportTableRow({ title, cell, textAlign }: ReportTableRowProps) {
   const vm = useAtomValue(viewModelAtom);
   const selection = useAtomValue(selectionAtom);
+
+  const textAlignClass = {
+    left: "text-left",
+    right: "text-right",
+    center: "text-center",
+  }[textAlign ?? "right"];
 
   return (
     <tr>
@@ -58,7 +65,11 @@ export function ReportTableRow({ title, cell }: ReportTableRowProps) {
         if (!isSelected(reportId, selection)) {
           return null;
         } else {
-          return <td key={report.title}>{cell({ report, reportId })}</td>;
+          return (
+            <td key={report.title} className={textAlignClass}>
+              {cell({ report, reportId })}
+            </td>
+          );
         }
       })}
     </tr>
