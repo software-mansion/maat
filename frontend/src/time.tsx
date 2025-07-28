@@ -13,7 +13,7 @@ export function DateTime({ value }: TimeComponentProps) {
 }
 
 export function Duration({ value }: TimeComponentProps) {
-  const duration = parseDuration(value);
+  const duration = durationRoundToSeconds(parseDuration(value));
   return durationFormat.format(duration);
 }
 
@@ -104,4 +104,28 @@ export function durationTotal(
     BigInt(duration.nanoseconds ?? 0) * toNanoseconds.nanoseconds;
 
   return total / toNanoseconds[unit];
+}
+
+function durationRoundToSeconds(duration: Intl.DurationType): Intl.DurationType {
+  const result: Intl.DurationType = {
+    years: duration.years,
+    months: duration.months,
+    weeks: duration.weeks,
+    days: duration.days,
+    hours: duration.hours,
+    minutes: duration.minutes,
+    seconds: duration.seconds ?? 0,
+  };
+
+  // Convert smaller units to fractional seconds
+  const additionalSeconds =
+    (duration.milliseconds ?? 0) / 1000 +
+    (duration.microseconds ?? 0) / 1_000_000 +
+    (duration.nanoseconds ?? 0) / 1_000_000_000;
+
+  if (additionalSeconds > 0) {
+    result.seconds = (result.seconds ?? 0) + Math.round(additionalSeconds);
+  }
+
+  return result;
 }
