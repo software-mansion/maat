@@ -35,14 +35,6 @@ export interface Slice {
   default?: boolean;
 }
 
-export interface Trend {
-  ratio: number;
-  isExtreme: boolean;
-  symbol: string;
-  percentage: string;
-  colorClass: string;
-}
-
 export interface ViewModel {
   reports: Report[];
   slices: Slice[];
