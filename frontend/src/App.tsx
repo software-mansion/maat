@@ -3,7 +3,7 @@ import { Suspense } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Slicer } from "./Slicer.tsx";
 import { MetricsSection } from "./Metrics.tsx";
-import { TimingsSection } from "./Timings.tsx";
+import { TimingSections } from "./Timings.tsx";
 import { DownloadsSection } from "./Downloads.tsx";
 
 export function App() {
@@ -17,7 +17,7 @@ export function App() {
           <main className="flex flex-col gap-4 px-4">
             <Slicer />
             <MetricsSection />
-            <TimingsSection />
+            <TimingSections />
             <DownloadsSection />
           </main>
         </Suspense>
