@@ -23,7 +23,13 @@ export function DownloadsSection() {
   );
 }
 
-function DownloadLink({ report, field }: { report: Report; field: keyof Report }) {
+function DownloadLink({
+  report,
+  field,
+}: {
+  report: Report;
+  field: "ecosystemCsvHref" | "ecosystemJsonHref";
+}) {
   return (
     <a href={urlOf(report[field])} className="link">
       Download
