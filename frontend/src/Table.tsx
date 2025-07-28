@@ -11,7 +11,7 @@ import clsx from "clsx";
 import type { ReactNode } from "react";
 
 export interface ReportTableHead {
-  title: string;
+  title?: string;
 }
 
 export function ReportTableHead({ title }: ReportTableHead) {
@@ -22,7 +22,7 @@ export function ReportTableHead({ title }: ReportTableHead) {
   return (
     <thead>
       <tr>
-        <th>{title}</th>
+        <th>{title ?? ""}</th>
         {vm.reports.map((report, reportId) => {
           if (!isSelected(reportId, selection)) {
             return null;
@@ -37,6 +37,22 @@ export function ReportTableHead({ title }: ReportTableHead) {
             </td>
           );
         })}
+      </tr>
+    </thead>
+  );
+}
+
+export interface ReportTableSectionProps {
+  title: string;
+}
+
+export function ReportTableSection({ title }: ReportTableSectionProps) {
+  const selection = useAtomValue(selectionAtom);
+  return (
+    <thead>
+      <tr>
+        <th className="bg-base-200">{title}</th>
+        <td colSpan={selection.length} className="bg-base-200" />
       </tr>
     </thead>
   );

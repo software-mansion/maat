@@ -1,7 +1,7 @@
 import { useAtomValue } from "jotai";
 import { applySelection, pivotAtom, selectionAtom, viewModelAtom } from "./atoms.ts";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
-import { ReportTableHead, ReportTableRow } from "./Table.tsx";
+import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import { DateTime } from "./time.tsx";
 import { durationTrend, MetricWithTrend } from "./trends.tsx";
 
@@ -17,7 +17,8 @@ export function MetricsSection() {
     <Section defaultOpen>
       <SectionTitle>Metrics</SectionTitle>
       <SectionTable>
-        <ReportTableHead title="Parameters" />
+        <ReportTableHead />
+        <ReportTableSection title="Metadata" />
         <tbody>
           <ReportTableRow title="Workspace" cell={({ report }) => report.metrics.workspace} />
           <ReportTableRow
@@ -36,6 +37,9 @@ export function MetricsSection() {
             title="Created At"
             cell={({ report }) => <DateTime value={report.metrics.createdAt} />}
           />
+        </tbody>
+        <ReportTableSection title="Totals" />
+        <tbody>
           <ReportTableRow
             title="Total Execution Time"
             cell={({ report }) => {
@@ -44,12 +48,7 @@ export function MetricsSection() {
                 pivotReport.metrics.totalExecutionTime,
                 selectedReports.map((r) => r.metrics.totalExecutionTime),
               );
-              return (
-                <MetricWithTrend
-                  value={report.metrics.totalExecutionTime}
-                  trend={trend}
-                />
-              );
+              return <MetricWithTrend value={report.metrics.totalExecutionTime} trend={trend} />;
             }}
           />
           <ReportTableRow
