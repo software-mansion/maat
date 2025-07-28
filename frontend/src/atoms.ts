@@ -4,16 +4,43 @@ import { atomWithDefault, unwrap } from "jotai/utils";
 export type SliceId = number;
 export type ReportId = number;
 
+export interface Metrics {
+  workspace: string;
+  scarbVersion: string;
+  foundryVersion: string;
+  maatCommit: string;
+  createdAt: string;
+  totalExecutionTime: string;
+  totalProjects: number;
+  meanBuildTime: string | null;
+  meanLintTime: string | null;
+  meanTestTime: string | null;
+  meanLsTime: string | null;
+  medianBuildTime: string | null;
+  medianLintTime: string | null;
+  medianTestTime: string | null;
+  medianLsTime: string | null;
+}
+
 export interface Report {
   title: string;
   ecosystemCsvHref: string;
   ecosystemJsonHref: string;
+  metrics: Metrics;
 }
 
 export interface Slice {
   title: string;
   reportIds: ReportId[];
   default?: boolean;
+}
+
+export interface Trend {
+  ratio: number;
+  isExtreme: boolean;
+  symbol: string;
+  percentage: string;
+  colorClass: string;
 }
 
 export interface ViewModel {

@@ -5,6 +5,7 @@ from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
 from maat.model import ReportMeta
+from maat.report.metrics import Metrics
 from maat.web.report_info import ReportInfo
 from maat.web.slices import Slice
 
@@ -21,6 +22,7 @@ class ReportViewModel(BaseModel):
     title: str
     ecosystem_csv_href: str
     ecosystem_json_href: str
+    metrics: Metrics
 
     @classmethod
     def new(cls, report_info: ReportInfo) -> Self:
@@ -28,6 +30,7 @@ class ReportViewModel(BaseModel):
             title=report_info.meta.name,
             ecosystem_csv_href=str(ecosystem_csv_path(report_info.meta)),
             ecosystem_json_href=str(ecosystem_json_path(report_info.meta)),
+            metrics=report_info.metrics,
         )
 
 

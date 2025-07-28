@@ -2,6 +2,7 @@ import { Footer } from "./Footer.tsx";
 import { Suspense } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { Slicer } from "./Slicer.tsx";
+import { MetricsSection } from "./Metrics.tsx";
 import { DownloadsSection } from "./Downloads.tsx";
 
 export function App() {
@@ -14,6 +15,7 @@ export function App() {
         <Suspense fallback={<Loading />}>
           <main className="flex flex-col gap-4 px-4">
             <Slicer />
+            <MetricsSection />
             <DownloadsSection />
           </main>
         </Suspense>
