@@ -13,7 +13,7 @@ export function DateTime({ value }: TimeComponentProps) {
 }
 
 export function Duration({ value }: TimeComponentProps) {
-  const duration = parseDurationAsTemporal(value);
+  const duration = parseDuration(value);
   return durationFormat.format(duration);
 }
 
@@ -41,7 +41,7 @@ declare namespace Intl {
   }
 }
 
-function parseDurationAsTemporal(value: string): Intl.DurationType {
+export function parseDuration(value: string): Intl.DurationType {
   const duration = tinyduration.parse(value);
   const normalized: Intl.DurationType = {};
 
@@ -72,4 +72,36 @@ function parseDurationAsTemporal(value: string): Intl.DurationType {
   }
 
   return normalized;
+}
+
+export function durationTotal(
+  duration: Intl.DurationType,
+  unit: Intl.DurationTimeFormatUnit,
+): bigint {
+  const toNanoseconds = {
+    years: 365n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
+    months: 30n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
+    weeks: 7n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
+    days: 24n * 60n * 60n * 1000n * 1000n * 1000n,
+    hours: 60n * 60n * 1000n * 1000n * 1000n,
+    minutes: 60n * 1000n * 1000n * 1000n,
+    seconds: 1000n * 1000n * 1000n,
+    milliseconds: 1000n * 1000n,
+    microseconds: 1000n,
+    nanoseconds: 1n,
+  } as const;
+
+  let total =
+    BigInt(duration.years ?? 0) * toNanoseconds.years +
+    BigInt(duration.months ?? 0) * toNanoseconds.months +
+    BigInt(duration.weeks ?? 0) * toNanoseconds.weeks +
+    BigInt(duration.days ?? 0) * toNanoseconds.days +
+    BigInt(duration.hours ?? 0) * toNanoseconds.hours +
+    BigInt(duration.minutes ?? 0) * toNanoseconds.minutes +
+    BigInt(duration.seconds ?? 0) * toNanoseconds.seconds +
+    BigInt(duration.milliseconds ?? 0) * toNanoseconds.milliseconds +
+    BigInt(duration.microseconds ?? 0) * toNanoseconds.microseconds +
+    BigInt(duration.nanoseconds ?? 0) * toNanoseconds.nanoseconds;
+
+  return total / toNanoseconds[unit];
 }
