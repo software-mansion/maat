@@ -17,3 +17,5 @@ wheels/
 
 # Maat plans
 maat-plan.json
+*.backup
+reports/*.json
