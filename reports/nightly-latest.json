@@ -2512,7 +2512,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-error(cairo-test: failed setting up runner)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2669,7 +2669,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-error(cairo-test: failed setting up runner)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {

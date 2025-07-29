@@ -177,7 +177,8 @@ def _lint_label(lint: StepReport) -> Label:
 
 
 def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
-    if ts is None:
+    has_missing_summaries = _has_missing_test_summaries(rep)
+    if ts is None or has_missing_summaries:
         if b"Not enough gas to call function." in rep.log:
             return Label.new(LabelCategory.TEST_ERROR, "cairo-test: not enough gas")
         elif b"[ERROR] Error while calling RPC method" in rep.log:
@@ -192,6 +193,31 @@ def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
         return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
     else:
         return Label.new(LabelCategory.TEST_PASS, "tests passed")
+
+
+def _has_missing_test_summaries(step: StepReport) -> bool:
+    """
+    Check if workspace tests failed to produce summaries by comparing
+    the number of test runs with the number of test summaries found.
+    """
+    if step.log_str is None:
+        return False
+
+    # Find all test summary lines
+    matches = re.findall(
+        r"^\[(?:out|err)]\s*(?:Error:\s*)?(?:Tests: |test result: ).*",
+        step.log_str,
+        re.M,
+    )
+
+    # Look for "Running test" lines to identify individual test runs
+    test_runs = re.findall(
+        r"^\[out]\s+Running test\s+.*",
+        step.log_str,
+        re.M,
+    )
+
+    return len(test_runs) > len(matches) if test_runs else False
 
 
 def _fatal_panic(
