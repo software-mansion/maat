@@ -231,7 +231,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(snforge: rpc error)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -652,7 +652,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: not enough gas)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -734,7 +734,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: not enough gas)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -816,7 +816,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: failed setting up runner)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -1074,7 +1074,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: not enough gas)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -2281,7 +2281,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
-          "test-error(unknown test runner error)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ]
@@ -2512,7 +2512,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2594,7 +2594,7 @@
       "analyses": {
         "labels": [
           "error(build errored)",
-          "test-error(unknown test runner error)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -2669,7 +2669,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {

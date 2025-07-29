@@ -37,26 +37,46 @@ def analyse_report(report: Report, console: Console):
 def tests_summary(test: TestReport):
     """
     Analyses the test output to extract the number of passed, failed, and ignored tests.
+    For workspace projects, tracks whether all package runs produced test summaries.
     """
     step = test.step("test")
     if step is None:
         return
 
+    # Check if this is a workspace run by looking for "Running test" markers
+    workspace_runs = re.findall(
+        r"^\[out]\s*Running test ([^\s]+)",
+        step.log_str,
+        re.M,
+    )
+    
     # Find all test summary lines.
-    matches = re.findall(
+    summary_matches = re.findall(
         r"^\[(?:out|err)]\s*(?:Error:\s*)?(?:Tests: |test result: ).*",
         step.log_str,
         re.M,
     )
 
     passed, failed, skipped, ignored = 0, 0, 0, 0
-    for line in matches:
+    for line in summary_matches:
         passed += _extract_count(r"(\d+)\s+passed", line, 0)
         failed += _extract_count(r"(\d+)\s+failed", line, 0)
         skipped += _extract_count(r"(\d+)\s+skipped", line, 0)
         ignored += _extract_count(r"(\d+)\s+ignored", line, 0)
 
-    if matches:
+    # Store information for workspace run analysis
+    # We'll store this as a custom attribute on the test object for use in labeling
+    if workspace_runs:
+        # This is a workspace run - check if number of summaries matches number of runs
+        test._workspace_run_info = {
+            'package_count': len(workspace_runs),
+            'summary_count': len(summary_matches),
+            'packages': workspace_runs,
+        }
+    else:
+        test._workspace_run_info = None
+
+    if summary_matches:
         test.analyses.tests_summary = TestsSummary(
             passed=passed,
             failed=failed,
@@ -95,7 +115,7 @@ def label(test: TestReport):
                 labels.add(lbl)
 
         if (rep := test.step("test")) and rep.was_executed:
-            if lbl := _test_label(rep, test.analyses.tests_summary):
+            if lbl := _test_label(rep, test.analyses.tests_summary, test):
                 labels.add(lbl)
 
         # Check if CairoLS reports errors while building succeeded.
@@ -176,7 +196,16 @@ def _lint_label(lint: StepReport) -> Label:
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
 
-def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
+def _test_label(rep: StepReport, ts: TestsSummary | None, test: TestReport) -> Label:
+    # Check if any workspace runs failed to produce summaries
+    workspace_info = getattr(test, '_workspace_run_info', None)
+    
+    # For workspace runs, check if all packages produced test summaries
+    if workspace_info and workspace_info['package_count'] > workspace_info['summary_count']:
+        # Some workspace packages failed to produce test summaries
+        missing_count = workspace_info['package_count'] - workspace_info['summary_count']
+        return Label.new(LabelCategory.TEST_ERROR, f"{missing_count} workspace packages failed")
+    
     if ts is None:
         if b"Not enough gas to call function." in rep.log:
             return Label.new(LabelCategory.TEST_ERROR, "cairo-test: not enough gas")

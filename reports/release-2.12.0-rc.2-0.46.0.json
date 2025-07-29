@@ -3,7 +3,7 @@
   "scarb": "2.12.0-rc.2",
   "foundry": "0.46.0",
   "maat_commit": "2b95021",
-  "created_at": "2025-07-23T09:41:55.926183+00:00",
+  "created_at": "2025-07-23T09:41:55.926183Z",
   "total_execution_time": "PT40M31.088826S",
   "tests": [
     {
@@ -231,7 +231,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(snforge: rpc error)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -651,7 +651,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: not enough gas)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -733,7 +733,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: not enough gas)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -815,7 +815,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: failed setting up runner)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -1073,7 +1073,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-error(cairo-test: not enough gas)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ]
       }
@@ -2434,7 +2434,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2515,7 +2515,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-error(1 workspace packages failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
