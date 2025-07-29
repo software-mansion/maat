@@ -73,6 +73,24 @@ def _extract_count(pattern: str, text: str, default: int | None = None) -> int:
         return int(m.group(1)) if m else default
 
 
+def _detect_workspace_test_runs(step: StepReport) -> list[str]:
+    """
+    Detect workspace test runs by looking for 'Running test' lines.
+    Returns a list of test run names.
+    """
+    if step.log_str is None:
+        return []
+    
+    # Look for lines like: [out]      Running test <package_name> (scarb cairo-test)
+    matches = re.findall(
+        r"^\[out]\s+Running test (\S+)",
+        step.log_str,
+        re.M,
+    )
+    
+    return matches
+
+
 def label(test: TestReport):
     """
     Assign various labels to the test.
@@ -191,6 +209,18 @@ def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
     elif ts.failed > 0:
         return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
     else:
+        # Check for workspace test run errors even when we have test summaries
+        workspace_test_runs = _detect_workspace_test_runs(rep)
+        if workspace_test_runs:
+            # Count test summary lines to see if any test runs didn't produce summaries
+            summary_matches = re.findall(
+                r"^\[(?:out|err)]\s*(?:Error:\s*)?(?:Tests: |test result: ).*",
+                rep.log_str or "",
+                re.M,
+            )
+            if len(workspace_test_runs) > len(summary_matches):
+                return Label.new(LabelCategory.TEST_ERROR, "workspace test crashes")
+        
         return Label.new(LabelCategory.TEST_PASS, "tests passed")
 
 
