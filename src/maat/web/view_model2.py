@@ -9,6 +9,9 @@ from maat.report.metrics import Metrics
 from maat.web.report_info import ReportInfo
 from maat.web.slices import Slice
 
+type ReportTitle = str
+type SliceTitle = str
+
 ViewModelConfig = ConfigDict(
     validate_by_name=True,
     validate_by_alias=True,
@@ -42,14 +45,14 @@ class SliceViewModel(BaseModel):
     model_config = ViewModelConfig
 
     title: str
-    report_ids: list[int] = Field(min_length=1)
+    reports: list[str] = Field(min_length=1)
     default: bool = False
 
     @classmethod
-    def new(cls, slice: Slice, reports: list[ReportInfo]) -> Self:
+    def new(cls, slice: Slice) -> Self:
         return cls(
             title=slice.title,
-            report_ids=[reports.index(r) for r in slice.reports],
+            reports=[r.meta.name for r in slice.reports],
             default=slice.default,
         )
 
@@ -57,14 +60,14 @@ class SliceViewModel(BaseModel):
 class ViewModel(BaseModel):
     model_config = ViewModelConfig
 
-    reports: list[ReportViewModel]
-    slices: list[SliceViewModel]
+    reports: dict[str, ReportViewModel]
+    slices: dict[str, SliceViewModel]
 
     @classmethod
     def new(cls, reports: list[ReportInfo], slices: list[Slice]) -> Self:
         return cls(
-            reports=[ReportViewModel.new(r) for r in reports],
-            slices=[SliceViewModel.new(s, reports) for s in slices],
+            reports={r.meta.name: ReportViewModel.new(r) for r in reports},
+            slices={s.title: SliceViewModel.new(s) for s in slices},
         )
 
 

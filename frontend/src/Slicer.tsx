@@ -2,7 +2,7 @@ import { useAtom, useAtomValue } from "jotai";
 import {
   isSelected,
   pivotAtom,
-  type ReportId,
+  type ReportTitle,
   selectedSliceAtom,
   selectionAtom,
   viewModelAtom,
@@ -19,8 +19,8 @@ export function Slicer() {
   return (
     <form className="grid grid-cols-[auto_minmax(0,_1fr)] items-baseline gap-3">
       <Fieldset title="Pivot:">
-        {vm.reports.map((report, reportId) => {
-          if (!isSelected(reportId, selection)) {
+        {Object.values(vm.reports).map((report) => {
+          if (!isSelected(report.title, selection)) {
             return null;
           }
 
@@ -31,16 +31,17 @@ export function Slicer() {
               name="pivot"
               className="btn btn-xs"
               aria-label={report.title}
-              checked={pivot === reportId}
-              onChange={() => setPivot(reportId)}
+              checked={pivot === report.title}
+              onChange={() => setPivot(report.title)}
             />
           );
         })}
       </Fieldset>
 
       <Fieldset title="Use a predefined slice:">
-        {vm.slices.map((slice, sliceId) => {
-          const isActive = "predefined" in selectedSlice && selectedSlice.predefined === sliceId;
+        {Object.values(vm.slices).map((slice) => {
+          const isActive =
+            "predefined" in selectedSlice && selectedSlice.predefined === slice.title;
           return (
             <input
               key={slice.title}
@@ -49,15 +50,15 @@ export function Slicer() {
               className="btn btn-xs"
               aria-label={slice.title}
               checked={isActive}
-              onChange={() => setSelectedSlice({ predefined: sliceId })}
+              onChange={() => setSelectedSlice({ predefined: slice.title })}
             />
           );
         })}
       </Fieldset>
 
       <Fieldset title="Or compose your own:">
-        {vm.reports.map((report, reportId) => {
-          const isActive = "custom" in selectedSlice && selectedSlice.custom.includes(reportId);
+        {Object.values(vm.reports).map((report) => {
+          const isActive = "custom" in selectedSlice && selectedSlice.custom.includes(report.title);
           return (
             <input
               key={report.title}
@@ -67,14 +68,14 @@ export function Slicer() {
               aria-label={report.title}
               checked={isActive}
               onChange={() => {
-                let custom: ReportId[] = [];
+                let custom: ReportTitle[] = [];
                 if ("custom" in selectedSlice) {
                   custom = [...selectedSlice.custom];
                 }
                 if (isActive) {
-                  custom = custom.filter((id) => id !== reportId);
+                  custom = custom.filter((title) => title !== report.title);
                 } else {
-                  custom.push(reportId);
+                  custom.push(report.title);
                 }
                 custom.sort();
                 setSelectedSlice({ custom });

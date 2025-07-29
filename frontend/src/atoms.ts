@@ -1,8 +1,8 @@
-import { atom, useAtomValue } from "jotai";
+import { atom } from "jotai";
 import { atomWithDefault, unwrap } from "jotai/utils";
 
-export type SliceId = number;
-export type ReportId = number;
+export type ReportTitle = string;
+export type SliceTitle = string;
 
 export interface Metrics {
   workspace: string;
@@ -23,21 +23,21 @@ export interface Metrics {
 }
 
 export interface Report {
-  title: string;
+  title: ReportTitle;
   ecosystemCsvHref: string;
   ecosystemJsonHref: string;
   metrics: Metrics;
 }
 
 export interface Slice {
-  title: string;
-  reportIds: ReportId[];
+  title: SliceTitle;
+  reports: ReportTitle[];
   default?: boolean;
 }
 
 export interface ViewModel {
-  reports: Report[];
-  slices: Slice[];
+  reports: Record<ReportTitle, Report>;
+  slices: Record<SliceTitle, Slice>;
 }
 
 export function urlOf(viewModelUrl: string): string {
@@ -51,7 +51,7 @@ export const viewModelAtom = atom<Promise<ViewModel>>(async (_get, { signal }) =
 
 const unwrappedViewModelAtom = unwrap(viewModelAtom);
 
-export type SelectedSlice = { predefined: SliceId } | { custom: ReportId[] };
+export type SelectedSlice = { predefined: SliceTitle } | { custom: ReportTitle[] };
 
 export const selectedSliceAtom = atomWithDefault<SelectedSlice>((get) => {
   const vm = get(unwrappedViewModelAtom);
@@ -59,42 +59,37 @@ export const selectedSliceAtom = atomWithDefault<SelectedSlice>((get) => {
     return { custom: [] };
   }
 
-  const predefined = vm.slices.findIndex((slice) => slice.default);
-  if (predefined >= 0) {
-    return { predefined };
+  const defaultSlice = Object.values(vm.slices).find((slice) => slice.default);
+  if (defaultSlice) {
+    return { predefined: defaultSlice.title };
   } else {
     return { custom: [] };
   }
 });
 
-export const selectionAtom = atom<ReportId[]>((get) => {
+export const selectionAtom = atom<ReportTitle[]>((get) => {
   const selectedSlice = get(selectedSliceAtom);
   if ("predefined" in selectedSlice) {
     const vm = get(unwrappedViewModelAtom);
     if (!vm) {
       return [];
     } else {
-      return vm.slices[selectedSlice.predefined].reportIds;
+      return vm.slices[selectedSlice.predefined].reports;
     }
   } else {
     return selectedSlice.custom;
   }
 });
 
-export function isSelected(itemId: number, selection: number[]) {
-  return selection.includes(itemId);
+export function isSelected(itemTitle: string, selection: string[]) {
+  return selection.includes(itemTitle);
 }
 
-export function applySelection<T>(values: T[], selection: number[]): T[] {
-  return values.filter((_, i) => isSelected(i, selection));
+export function applySelection<T>(values: Record<string, T>, selection: string[]): T[] {
+  return selection.map((title) => values[title]).filter(Boolean);
 }
 
-export const pivotAtom = atomWithDefault<ReportId>((get) => {
+export const pivotAtom = atomWithDefault<ReportTitle>((get) => {
   const selection = get(selectionAtom);
-  return selection.length > 0 ? selection[0] : 0;
+  return selection.length > 0 ? selection[0] : "";
 });
-
-export function useReportById(reportId: ReportId): Report {
-  const vm = useAtomValue(viewModelAtom);
-  return vm.reports[reportId];
-}

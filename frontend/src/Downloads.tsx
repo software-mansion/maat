@@ -11,12 +11,12 @@ export function DownloadsSection() {
         <tbody>
           <ReportTableRow
             title="Ecosystem (CSV)"
-            cell={(props) => <DownloadLink field="ecosystemCsvHref" {...props} />}
+            cell={(report) => <DownloadLink field="ecosystemCsvHref" report={report} />}
             textAlign="center"
           />
           <ReportTableRow
             title="Ecosystem (JSON)"
-            cell={(props) => <DownloadLink field="ecosystemJsonHref" {...props} />}
+            cell={(report) => <DownloadLink field="ecosystemJsonHref" report={report} />}
             textAlign="center"
           />
         </tbody>

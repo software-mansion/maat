@@ -20,29 +20,29 @@ export function MetricsSection() {
         <ReportTableHead />
         <ReportTableSection title="Metadata" />
         <tbody>
-          <ReportTableRow title="Workspace" cell={({ report }) => report.metrics.workspace} />
+          <ReportTableRow title="Workspace" cell={(report) => report.metrics.workspace} />
           <ReportTableRow
             title="Scarb Version"
-            cell={({ report }) => <code>{report.metrics.scarbVersion}</code>}
+            cell={(report) => <code>{report.metrics.scarbVersion}</code>}
           />
           <ReportTableRow
             title="Foundry Version"
-            cell={({ report }) => <code>{report.metrics.foundryVersion}</code>}
+            cell={(report) => <code>{report.metrics.foundryVersion}</code>}
           />
           <ReportTableRow
             title="Ma'at Commit"
-            cell={({ report }) => <code>{report.metrics.maatCommit}</code>}
+            cell={(report) => <code>{report.metrics.maatCommit}</code>}
           />
           <ReportTableRow
             title="Created At"
-            cell={({ report }) => <DateTime value={report.metrics.createdAt} />}
+            cell={(report) => <DateTime value={report.metrics.createdAt} />}
           />
         </tbody>
         <ReportTableSection title="Totals" />
         <tbody>
           <ReportTableRow
             title="Total Execution Time"
-            cell={({ report }) => {
+            cell={(report) => {
               const trend = durationTrend(
                 report.metrics.totalExecutionTime,
                 pivotReport.metrics.totalExecutionTime,
@@ -53,7 +53,7 @@ export function MetricsSection() {
           />
           <ReportTableRow
             title="Total Projects"
-            cell={({ report }) => `${report.metrics.totalProjects}`}
+            cell={(report) => `${report.metrics.totalProjects}`}
           />
         </tbody>
       </SectionTable>

@@ -50,7 +50,7 @@ function TimingSection({ stepName }: { stepName: keyof typeof Steps }) {
         <tbody>
           <ReportTableRow
             title="Successful Runs Mean"
-            cell={({ report }) => {
+            cell={(report) => {
               const value = report.metrics[Steps[stepName].meanKey];
               const pivotValue = pivotReport.metrics[Steps[stepName].meanKey];
               const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].meanKey]);
@@ -60,7 +60,7 @@ function TimingSection({ stepName }: { stepName: keyof typeof Steps }) {
           />
           <ReportTableRow
             title="Successful Runs Median"
-            cell={({ report }) => {
+            cell={(report) => {
               const value = report.metrics[Steps[stepName].medianKey];
               const pivotValue = pivotReport.metrics[Steps[stepName].medianKey];
               const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].medianKey]);
