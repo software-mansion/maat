@@ -3,7 +3,7 @@
   "scarb": "2.11.4",
   "foundry": "nightly-2025-06-18",
   "maat_commit": "ddada1d",
-  "created_at": "2025-06-25T09:56:24.034988+00:00",
+  "created_at": "2025-06-25T09:56:24.034988Z",
   "total_execution_time": "PT1H2M14.328056S",
   "tests": [
     {

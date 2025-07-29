@@ -3,7 +3,7 @@
   "scarb": "2.12.0-rc.2",
   "foundry": "0.46.0",
   "maat_commit": "2b95021",
-  "created_at": "2025-07-23T09:41:55.926183+00:00",
+  "created_at": "2025-07-23T09:41:55.926183Z",
   "total_execution_time": "PT40M31.088826S",
   "tests": [
     {
