@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { applySelection, pivotAtom, selectionAtom, viewModelAtom } from "./atoms.ts";
+import { pivotAtom, selectedReportsAtom, viewModelAtom } from "./atoms.ts";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import { durationTrend, MetricWithTrend } from "./trends.tsx";
@@ -35,12 +35,9 @@ export function TimingSections() {
 
 function TimingSection({ stepName }: { stepName: keyof typeof Steps }) {
   const vm = useAtomValue(viewModelAtom);
-  const selection = useAtomValue(selectionAtom);
+  const selectedReports = useAtomValue(selectedReportsAtom);
   const pivot = useAtomValue(pivotAtom);
-
-  const selectedReports = applySelection(vm.reports, selection);
   const pivotReport = vm.reports[pivot];
-
   return (
     <Section>
       <SectionTitle>{stepName} Timings</SectionTitle>

@@ -84,13 +84,16 @@ export const selectionAtom = atom<ReportTitle[]>((get) => {
   }
 });
 
-export function isSelected(itemTitle: string, selection: string[]) {
-  return selection.includes(itemTitle);
-}
-
-export function applySelection<T>(values: Record<string, T>, selection: string[]): T[] {
-  return selection.map((title) => values[title]).filter(Boolean);
-}
+export const selectedReportsAtom = atom((get) => {
+  const vm = get(unwrappedViewModelAtom);
+  if (!vm) {
+    return [];
+  } else {
+    return get(selectionAtom)
+      .map((title) => vm.reports[title])
+      .filter(Boolean);
+  }
+});
 
 export const pivotAtom = atomWithDefault<ReportTitle>((get) => {
   const [first] = get(selectionAtom);

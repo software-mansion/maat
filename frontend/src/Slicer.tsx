@@ -1,10 +1,9 @@
 import { useAtom, useAtomValue } from "jotai";
 import {
-  isSelected,
   pivotAtom,
   type ReportTitle,
+  selectedReportsAtom,
   selectedSliceAtom,
-  selectionAtom,
   viewModelAtom,
 } from "./atoms";
 import type { ReactNode } from "react";
@@ -12,30 +11,23 @@ import type { ReactNode } from "react";
 export function Slicer() {
   const vm = useAtomValue(viewModelAtom);
   const [selectedSlice, setSelectedSlice] = useAtom(selectedSliceAtom);
-
-  const selection = useAtomValue(selectionAtom);
+  const selectedReports = useAtomValue(selectedReportsAtom);
   const [pivot, setPivot] = useAtom(pivotAtom);
 
   return (
     <form className="grid grid-cols-[auto_minmax(0,_1fr)] items-baseline gap-3">
       <Fieldset title="Pivot:">
-        {Object.values(vm.reports).map((report) => {
-          if (!isSelected(report.title, selection)) {
-            return null;
-          }
-
-          return (
-            <input
-              key={report.title}
-              type="radio"
-              name="pivot"
-              className="btn btn-xs"
-              aria-label={report.title}
-              checked={pivot === report.title}
-              onChange={() => setPivot(report.title)}
-            />
-          );
-        })}
+        {selectedReports.map((report) => (
+          <input
+            key={report.title}
+            type="radio"
+            name="pivot"
+            className="btn btn-xs"
+            aria-label={report.title}
+            checked={pivot === report.title}
+            onChange={() => setPivot(report.title)}
+          />
+        ))}
       </Fieldset>
 
       <Fieldset title="Use a predefined slice:">

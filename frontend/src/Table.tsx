@@ -1,5 +1,5 @@
 import { useAtomValue } from "jotai";
-import { isSelected, pivotAtom, type Report, selectionAtom, viewModelAtom } from "./atoms.ts";
+import { pivotAtom, type Report, selectedReportsAtom, selectionAtom } from "./atoms.ts";
 import clsx from "clsx";
 import type { ReactNode } from "react";
 
@@ -8,18 +8,13 @@ export interface ReportTableHead {
 }
 
 export function ReportTableHead({ title }: ReportTableHead) {
-  const vm = useAtomValue(viewModelAtom);
-  const selection = useAtomValue(selectionAtom);
+  const selectedReports = useAtomValue(selectedReportsAtom);
   const pivot = useAtomValue(pivotAtom);
-
   return (
     <thead>
       <tr>
         <th>{title ?? ""}</th>
-        {Object.values(vm.reports).map((report) => {
-          if (!isSelected(report.title, selection)) {
-            return null;
-          }
+        {selectedReports.map((report) => {
           const isPivot = report.title === pivot;
           return (
             <td
@@ -58,8 +53,7 @@ export interface ReportTableRowProps {
 }
 
 export function ReportTableRow({ title, cell, textAlign }: ReportTableRowProps) {
-  const vm = useAtomValue(viewModelAtom);
-  const selection = useAtomValue(selectionAtom);
+  const selectedReports = useAtomValue(selectedReportsAtom);
 
   const textAlignClass = {
     left: "text-left",
@@ -70,17 +64,11 @@ export function ReportTableRow({ title, cell, textAlign }: ReportTableRowProps) 
   return (
     <tr>
       <th>{title}</th>
-      {Object.values(vm.reports).map((report) => {
-        if (!isSelected(report.title, selection)) {
-          return null;
-        } else {
-          return (
-            <td key={report.title} className={textAlignClass}>
-              {cell(report)}
-            </td>
-          );
-        }
-      })}
+      {selectedReports.map((report) => (
+        <td key={report.title} className={textAlignClass}>
+          {cell(report)}
+        </td>
+      ))}
     </tr>
   );
 }
