@@ -145,8 +145,11 @@ function LabelCategoryBullet({ category }: { category: LabelCategory }) {
   return (
     <span
       aria-label={category}
-      title={category}
-      className={clsx("cursor-help font-normal no-underline select-none", colors.text[category])}
+      data-tip={category}
+      className={clsx(
+        "tooltip cursor-help font-normal no-underline select-none",
+        colors.text[category],
+      )}
     >
       ❖
     </span>
