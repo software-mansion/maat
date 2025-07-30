@@ -2,10 +2,10 @@
 
 @plugin "daisyui";
 
-:root {
-  @apply bg-base-200;
+@theme {
+  --font-fancy: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
 }
 
-.font-fancy {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+:root {
+  @apply bg-base-200;
 }
