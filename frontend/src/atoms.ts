@@ -6,6 +6,7 @@ import { atomWithDefault, unwrap } from "jotai/utils";
 //   from structural type matching.
 export type ReportTitle = string & { readonly __nonexistent_tag: unique symbol };
 export type SliceTitle = string & { readonly __nonexistent_tag: unique symbol };
+export type TestName = string & { readonly __nonexistent_tag: unique symbol };
 
 export interface Metrics {
   workspace: string;
@@ -25,11 +26,36 @@ export interface Metrics {
   medianLsTime: string | null;
 }
 
+export type LabelCategory =
+  | "error"
+  | "build-fail"
+  | "test-error"
+  | "test-fail"
+  | "test-pass"
+  | "lint-fail"
+  | "ls-fail"
+  | "broken"
+  | "lint-broken"
+  | "ls-broken";
+
+export interface Label {
+  category: LabelCategory;
+  comment: string | null;
+}
+
+export interface Test {
+  name: TestName;
+  rev: string;
+  labels: Label[];
+  logsHref: string;
+}
+
 export interface Report {
   title: ReportTitle;
   ecosystemCsvHref: string;
   ecosystemJsonHref: string;
   metrics: Metrics;
+  tests: Test[];
 }
 
 export interface Slice {
@@ -41,6 +67,7 @@ export interface Slice {
 export interface ViewModel {
   reports: Record<ReportTitle, Report>;
   slices: Record<SliceTitle, Slice>;
+  labelCategories: LabelCategory[];
 }
 
 export function urlOf(viewModelUrl: string): string {
