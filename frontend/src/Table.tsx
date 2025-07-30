@@ -1,4 +1,4 @@
-import { useAtomValue } from "jotai";
+import { useAtom, useAtomValue } from "jotai";
 import { pivotAtom, type Report, selectedReportsAtom, selectionAtom } from "./atoms.ts";
 import clsx from "clsx";
 import type { ReactNode } from "react";
@@ -9,7 +9,7 @@ export interface ReportTableHead {
 
 export function ReportTableHead({ title }: ReportTableHead) {
   const selectedReports = useAtomValue(selectedReportsAtom);
-  const pivot = useAtomValue(pivotAtom);
+  const [pivot, setPivot] = useAtom(pivotAtom);
   return (
     <thead>
       <tr>
@@ -21,7 +21,9 @@ export function ReportTableHead({ title }: ReportTableHead) {
               key={report.title}
               className={clsx("text-center", isPivot && "text-primary border-primary border-b")}
             >
-              {report.title}
+              <a className="link link-hover" onClick={() => setPivot(report.title)}>
+                {report.title}
+              </a>
             </td>
           );
         })}
