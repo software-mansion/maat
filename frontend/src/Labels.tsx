@@ -85,7 +85,7 @@ export function LabelsSection() {
 
 function LabelGroupSection({ group }: { group: Group }) {
   return (
-    <Section className={clsx(colors.border[group.category])}>
+    <Section id={`label-${group.category}`} className={clsx(colors.border[group.category])}>
       <SectionTitle>
         <LabelCategoryBullet category={group.category} />
         {` ${group.category} `}

@@ -12,7 +12,7 @@ export function MetricsSection() {
   const pivotReport = vm.reports[pivot];
 
   return (
-    <Section defaultOpen>
+    <Section id="metrics" defaultOpen>
       <SectionTitle>Metrics</SectionTitle>
       <SectionTable>
         <ReportTableHead />

@@ -43,6 +43,31 @@ export interface Label {
   comment: string | null;
 }
 
+export const Steps = {
+  build: {
+    humanName: "Build",
+    meanKey: "meanBuildTime",
+    medianKey: "medianBuildTime",
+  },
+  lint: {
+    humanName: "Lint",
+    meanKey: "meanLintTime",
+    medianKey: "medianLintTime",
+  },
+  test: {
+    humanName: "Test",
+    meanKey: "meanTestTime",
+    medianKey: "medianTestTime",
+  },
+  ls: {
+    humanName: "LS",
+    meanKey: "meanLsTime",
+    medianKey: "medianLsTime",
+  },
+} as const;
+
+export type StepName = keyof typeof Steps;
+
 export interface Test {
   name: TestName;
   rev: string;

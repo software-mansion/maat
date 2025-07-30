@@ -1,46 +1,27 @@
 import { useAtomValue } from "jotai";
-import { pivotAtom, selectedReportsAtom, viewModelAtom } from "./atoms.ts";
+import { pivotAtom, selectedReportsAtom, type StepName, Steps, viewModelAtom } from "./atoms.ts";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import { durationTrend, MetricWithTrend } from "./trends.tsx";
-
-const Steps = {
-  Build: {
-    meanKey: "meanBuildTime",
-    medianKey: "medianBuildTime",
-  },
-  Lint: {
-    meanKey: "meanLintTime",
-    medianKey: "medianLintTime",
-  },
-  Test: {
-    meanKey: "meanTestTime",
-    medianKey: "medianTestTime",
-  },
-  LS: {
-    meanKey: "meanLsTime",
-    medianKey: "medianLsTime",
-  },
-} as const;
 
 export function TimingSections() {
   return (
     <>
       {Object.keys(Steps).map((stepName) => (
-        <TimingSection key={stepName} stepName={stepName as keyof typeof Steps} />
+        <TimingSection key={stepName} stepName={stepName as StepName} />
       ))}
     </>
   );
 }
 
-function TimingSection({ stepName }: { stepName: keyof typeof Steps }) {
+function TimingSection({ stepName }: { stepName: StepName }) {
   const vm = useAtomValue(viewModelAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const pivot = useAtomValue(pivotAtom);
   const pivotReport = vm.reports[pivot];
   return (
-    <Section>
-      <SectionTitle>{stepName} Timings</SectionTitle>
+    <Section id={`timings-${stepName}`}>
+      <SectionTitle>{Steps[stepName].humanName} Timings</SectionTitle>
       <SectionTable>
         <ReportTableHead />
         <ReportTableSection title="Summary" />

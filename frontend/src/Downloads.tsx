@@ -4,7 +4,7 @@ import { ReportTableHead, ReportTableRow } from "./Table.tsx";
 
 export function DownloadsSection() {
   return (
-    <Section defaultOpen>
+    <Section id="downloads" defaultOpen>
       <SectionTitle>Downloads</SectionTitle>
       <SectionTable>
         <ReportTableHead title={"Data exports"} />
