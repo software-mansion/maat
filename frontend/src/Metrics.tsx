@@ -10,7 +10,7 @@ export function MetricsSection() {
   const pivotReport = useAtomValue(pivotReportAtom);
 
   return (
-    <Section id="metrics" defaultOpen>
+    <Section id="metrics">
       <SectionTitle>Metrics</SectionTitle>
       <SectionTable>
         <ReportTableHead />

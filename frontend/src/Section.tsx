@@ -1,6 +1,8 @@
 import type { ReactNode } from "react";
 import clsx from "clsx";
 import type { LabelCategory, StepName } from "./atoms.ts";
+import { atomWithStorage } from "jotai/utils";
+import { useAtom } from "jotai";
 
 export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "downloads";
 
@@ -8,16 +10,31 @@ export interface SectionProps {
   id: SectionId;
   children: ReactNode;
   className?: string;
-  defaultOpen?: boolean;
 }
 
-export function Section({ id, children, className, defaultOpen = false }: SectionProps) {
+const openedAtom = atomWithStorage<SectionId[]>("maat-open-sections", ["metrics", "downloads"]);
+
+export function Section({ id, children, className }: SectionProps) {
+  const [opened, setOpened] = useAtom(openedAtom);
+
   return (
     <div
       id={id}
       className={clsx("collapse-arrow border-base-300 bg-base-100 collapse border", className)}
     >
-      <input type="checkbox" defaultChecked={defaultOpen} />
+      <input
+        type="checkbox"
+        checked={opened.includes(id)}
+        onChange={() =>
+          setOpened((v) => {
+            if (opened.includes(id)) {
+              return v.filter((x) => x !== id);
+            } else {
+              return [...v, id].sort();
+            }
+          })
+        }
+      />
       {children}
     </div>
   );
