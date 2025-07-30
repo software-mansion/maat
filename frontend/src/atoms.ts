@@ -1,8 +1,11 @@
 import { atom } from "jotai";
 import { atomWithDefault, unwrap } from "jotai/utils";
 
-export type ReportTitle = string;
-export type SliceTitle = string;
+// NOTE: These types in reality are just strings that come from JSON.parse call,
+//   but for extra type safety a fake unique symbol tag is used to prevent TypeScript
+//   from structural type matching.
+export type ReportTitle = string & { readonly __nonexistent_tag: unique symbol };
+export type SliceTitle = string & { readonly __nonexistent_tag: unique symbol };
 
 export interface Metrics {
   workspace: string;
@@ -90,6 +93,6 @@ export function applySelection<T>(values: Record<string, T>, selection: string[]
 }
 
 export const pivotAtom = atomWithDefault<ReportTitle>((get) => {
-  const selection = get(selectionAtom);
-  return selection.length > 0 ? selection[0] : "";
+  const [first] = get(selectionAtom);
+  return first;
 });
