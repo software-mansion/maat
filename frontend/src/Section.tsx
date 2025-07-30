@@ -1,13 +1,15 @@
 import type { ReactNode } from "react";
+import clsx from "clsx";
 
 export interface SectionProps {
   children: ReactNode;
+  className?: string;
   defaultOpen?: boolean;
 }
 
-export function Section({ children, defaultOpen = false }: SectionProps) {
+export function Section({ children, className, defaultOpen = false }: SectionProps) {
   return (
-    <div className="collapse-arrow border-base-300 bg-base-100 collapse border">
+    <div className={clsx("collapse-arrow border-base-300 bg-base-100 collapse border", className)}>
       <input type="checkbox" defaultChecked={defaultOpen} />
       {children}
     </div>
