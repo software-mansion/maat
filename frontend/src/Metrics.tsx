@@ -1,15 +1,13 @@
 import { useAtomValue } from "jotai";
-import { pivotAtom, selectedReportsAtom, viewModelAtom } from "./atoms.ts";
+import { pivotReportAtom, selectedReportsAtom } from "./atoms.ts";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import { DateTime } from "./time.tsx";
 import { durationTrend, MetricWithTrend } from "./trends.tsx";
 
 export function MetricsSection() {
-  const vm = useAtomValue(viewModelAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
-  const pivot = useAtomValue(pivotAtom);
-  const pivotReport = vm.reports[pivot];
+  const pivotReport = useAtomValue(pivotReportAtom);
 
   return (
     <Section id="metrics" defaultOpen>
@@ -43,7 +41,7 @@ export function MetricsSection() {
             cell={(report) => {
               const trend = durationTrend(
                 report.metrics.totalExecutionTime,
-                pivotReport.metrics.totalExecutionTime,
+                pivotReport?.metrics?.totalExecutionTime ?? null,
                 selectedReports.map((r) => r.metrics.totalExecutionTime),
               );
               return <MetricWithTrend value={report.metrics.totalExecutionTime} trend={trend} />;

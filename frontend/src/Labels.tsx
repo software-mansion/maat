@@ -2,7 +2,7 @@ import { useAtomValue } from "jotai";
 import {
   type Label,
   type LabelCategory,
-  pivotAtom,
+  pivotReportAtom,
   type Report,
   type ReportTitle,
   selectionAtom,
@@ -70,7 +70,7 @@ type Cell =
 export function LabelsSection() {
   const vm = useAtomValue(viewModelAtom);
   const selection = useAtomValue(selectionAtom);
-  const pivot = useAtomValue(pivotAtom);
+  const pivot = useAtomValue(pivotReportAtom);
 
   const labelGroups = Array.from(buildLabelGroups(vm, selection, pivot));
 
@@ -159,9 +159,8 @@ function LabelCategoryBullet({ category }: { category: LabelCategory }) {
 function* buildLabelGroups(
   vm: ViewModel,
   selection: ReportTitle[],
-  pivotTitle: ReportTitle,
+  pivot: Report | undefined,
 ): Generator<Group> {
-  const pivot: Report | undefined = vm.reports[pivotTitle];
   if (pivot == undefined) {
     return;
   }

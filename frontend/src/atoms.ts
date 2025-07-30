@@ -147,7 +147,14 @@ export const selectedReportsAtom = atom((get) => {
   }
 });
 
-export const pivotAtom = atomWithDefault<ReportTitle>((get) => {
-  const [first] = get(selectionAtom);
-  return first;
+export const pivotAtom = atomWithDefault<ReportTitle | undefined>((get) => get(selectionAtom)[0]);
+
+export const pivotReportAtom = atom<Report | undefined>((get) => {
+  const vm = get(unwrappedViewModelAtom);
+  const pivot = get(pivotAtom);
+  if (!vm || !pivot) {
+    return undefined;
+  } else {
+    return vm.reports[pivot];
+  }
 });
