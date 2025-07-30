@@ -15,6 +15,7 @@ import {
 import { ReportTableHead, ReportTableRow } from "./Table.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import clsx from "clsx";
+import { determineUniformRevForTest } from "./utils.ts";
 
 const colors: Record<"border" | "text", Record<LabelCategory, string>> = {
   border: {
@@ -53,6 +54,7 @@ interface Group {
 interface Row {
   testName: string;
   cells: Record<ReportTitle, Cell>;
+  uniformRev?: string;
 }
 
 const Missing = Symbol("Missing");
@@ -61,6 +63,7 @@ type Cell =
   | {
       label: Label;
       logsHref: string;
+      rev?: string;
     }
   | typeof Missing;
 
@@ -96,7 +99,14 @@ function LabelGroupSection({ group }: { group: Group }) {
           {group.rows.map((project) => (
             <ReportTableRow
               key={project.testName}
-              title={project.testName}
+              title={
+                <>
+                  {project.testName}
+                  {project.uniformRev && (
+                    <span className="text-base-content/60 font-normal">{` (${project.uniformRev})`}</span>
+                  )}
+                </>
+              }
               textAlign="center"
               cell={(report) => <LabelCell cell={project.cells[report.title]} />}
             />
@@ -112,7 +122,7 @@ function LabelCell({ cell }: { cell: Cell }) {
     return <span className="text-base-content/60">—</span>;
   }
 
-  const { label, logsHref } = cell;
+  const { label, logsHref, rev } = cell;
 
   return (
     <>
@@ -121,6 +131,12 @@ function LabelCell({ cell }: { cell: Cell }) {
       <a href={urlOf(logsHref)} className="link link-primary visited:link-secondary">
         {label.comment || label.category}
       </a>
+      {rev && (
+        <>
+          <br />
+          <span className="text-base-content/60 text-sm">({rev})</span>
+        </>
+      )}
     </>
   );
 }
@@ -166,29 +182,36 @@ function* buildLabelGroups(
     }
 
     // For each project with this category, build cells for all reports.
-    const rows: Row[] = testsInThisCategory.map((testName) => ({
-      testName,
-      cells: Object.fromEntries(
-        (function* () {
-          for (const reportTitle of selection) {
-            const report = vm.reports[reportTitle];
-            const test = report?.tests?.find((t: Test) => t.name === testName);
-            const label: Label | undefined = prioritize(test?.labels ?? [], category)[0];
-            if (test && label) {
-              yield [
-                reportTitle,
-                {
-                  label,
-                  logsHref: test.logsHref,
-                } as const,
-              ];
-            } else {
-              yield [reportTitle, Missing];
+    const rows: Row[] = testsInThisCategory.map((testName) => {
+      const uniformRev = determineUniformRevForTest(vm, selection, testName);
+
+      return {
+        testName,
+        cells: Object.fromEntries(
+          (function* () {
+            for (const reportTitle of selection) {
+              const report = vm.reports[reportTitle];
+              const test = report?.tests?.find((t: Test) => t.name === testName);
+              const label: Label | undefined = prioritize(test?.labels ?? [], category)[0];
+              if (test && label) {
+                yield [
+                  reportTitle,
+                  {
+                    label,
+                    logsHref: test.logsHref,
+                    // Only provide test rev if we have no uniformRev.
+                    rev: uniformRev ? undefined : test.rev,
+                  } as const,
+                ];
+              } else {
+                yield [reportTitle, Missing];
+              }
             }
-          }
-        })(),
-      ),
-    }));
+          })(),
+        ),
+        uniformRev,
+      };
+    });
 
     yield {
       category,
