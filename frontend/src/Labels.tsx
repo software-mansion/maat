@@ -179,7 +179,7 @@ function* buildLabelGroups(
     );
 
     // Don't produce empty groups.
-    if (!testsInThisCategory) {
+    if (testsInThisCategory.length === 0) {
       continue;
     }
 
