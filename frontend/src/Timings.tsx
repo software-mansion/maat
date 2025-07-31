@@ -5,21 +5,23 @@ import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import {
+  pivotReportAtom,
   type Report,
   type ReportTitle,
+  selectedReportsAtom,
+  selectionAtom,
   type StepName,
   type StepReport,
   Steps,
   type Test,
   type TestName,
-  pivotReportAtom,
-  selectedReportsAtom,
   urlOf,
+  viewModelAtom
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
 import { durationTrend } from "./trends.ts";
-import { bigintSqrt, variance } from "./utils.ts";
+import { bigintSqrt, determineUniformRevForTest, variance } from "./utils.ts";
 
 type MostVariableSteps = {
   testName: TestName;
@@ -38,6 +40,8 @@ export function TimingSections() {
 }
 
 function TimingSection({ stepName }: { stepName: StepName }) {
+  const vm = useAtomValue(viewModelAtom);
+  const selection = useAtomValue(selectionAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const pivotReport = useAtomValue(pivotReportAtom);
   const mostVariableSteps = findMostVariableSteps(selectedReports, pivotReport, stepName);
@@ -73,38 +77,44 @@ function TimingSection({ stepName }: { stepName: StepName }) {
           <>
             <ReportTableSection title={`Top ${mostVariableSteps.length} most variable projects`} />
             <tbody>
-              {mostVariableSteps.map(({ testName, values, stddev }) => (
-                <ReportTableRow
-                  key={testName}
-                  title={
-                    <>
-                      {testName}
-                      <br />
-                      <span className="text-base-content/60 text-xs font-normal">
-                        σ=
-                        <Duration value={stddev} />
-                      </span>
-                    </>
-                  }
-                  cell={(report) => {
-                    const value = values[report.title];
-                    const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
-                    const allValues = selectedReports.map((r) => values[r.title] ?? null);
-                    const trend = durationTrend(value, pivotValue, allValues);
+              {mostVariableSteps.map(({ testName, values, stddev }) => {
+                const uniformRev = determineUniformRevForTest(vm, selection, testName);
+                return (
+                  <ReportTableRow
+                    key={testName}
+                    title={
+                      <>
+                        {testName}
+                        <br />
+                        <span className="text-base-content/60 text-xs font-normal">
+                          {uniformRev && `${uniformRev}, `}
+                          σ=
+                          <Duration value={stddev} />
+                        </span>
+                      </>
+                    }
+                    cell={(report) => {
+                      const value = values[report.title];
+                      const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
+                      const allValues = selectedReports.map((r) => values[r.title] ?? null);
+                      const trend = durationTrend(value, pivotValue, allValues);
 
-                    const test = report.tests.find((t) => t.name === testName);
-                    const logsHref = test && urlOf(test.logsHref);
+                      const test = report.tests.find((t) => t.name === testName);
+                      const logsHref = test && urlOf(test.logsHref);
+                      const rev = uniformRev ? undefined : test?.rev;
 
-                    return (
-                      <RichCell
-                        value={value && <Duration value={value} />}
-                        trend={trend}
-                        href={logsHref}
-                      />
-                    );
-                  }}
-                />
-              ))}
+                      return (
+                        <RichCell
+                          value={value && <Duration value={value} />}
+                          trend={trend}
+                          href={logsHref}
+                          rev={rev}
+                        />
+                      );
+                    }}
+                  />
+                );
+              })}
             </tbody>
           </>
         )}
