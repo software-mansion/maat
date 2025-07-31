@@ -1,8 +1,9 @@
-import type { ReactNode } from "react";
 import clsx from "clsx";
-import type { LabelCategory, StepName } from "./atoms.ts";
-import { atomWithStorage } from "jotai/utils";
 import { useAtom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
+import type { ReactNode } from "react";
+
+import type { LabelCategory, StepName } from "./atoms.ts";
 
 export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "downloads";
 

@@ -1,20 +1,21 @@
+import clsx from "clsx";
 import { useAtomValue } from "jotai";
+
+import { Section, SectionTable, SectionTitle } from "./Section.tsx";
+import { ReportTableHead, ReportTableRow } from "./Table.tsx";
 import {
   type Label,
   type LabelCategory,
-  pivotReportAtom,
   type Report,
   type ReportTitle,
-  selectionAtom,
   type Test,
   type TestName,
-  urlOf,
   type ViewModel,
+  pivotReportAtom,
+  selectionAtom,
+  urlOf,
   viewModelAtom,
 } from "./atoms.ts";
-import { ReportTableHead, ReportTableRow } from "./Table.tsx";
-import { Section, SectionTable, SectionTitle } from "./Section.tsx";
-import clsx from "clsx";
 import { determineUniformRevForTest } from "./utils.ts";
 
 const colors: Record<"border" | "text", Record<LabelCategory, string>> = {

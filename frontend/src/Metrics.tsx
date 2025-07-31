@@ -1,9 +1,10 @@
 import { useAtomValue } from "jotai";
-import { pivotReportAtom, selectedReportsAtom } from "./atoms.ts";
+
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
+import { pivotReportAtom, selectedReportsAtom } from "./atoms.ts";
 import { DateTime } from "./time.tsx";
-import { durationTrend, MetricWithTrend } from "./trends.tsx";
+import { MetricWithTrend, durationTrend } from "./trends.tsx";
 
 export function MetricsSection() {
   const selectedReports = useAtomValue(selectedReportsAtom);

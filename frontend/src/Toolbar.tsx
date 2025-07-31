@@ -1,14 +1,15 @@
 import { useAtom, useAtomValue } from "jotai";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { VscFold, VscUnfold } from "react-icons/vsc";
+
+import { openSectionsAtom } from "./Section.tsx";
 import {
-  pivotAtom,
   type ReportTitle,
+  pivotAtom,
   selectedReportsAtom,
   selectedSliceAtom,
   viewModelAtom,
 } from "./atoms";
-import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { openSectionsAtom } from "./Section.tsx";
-import { VscFold, VscUnfold } from "react-icons/vsc";
 
 export function Toolbar() {
   const vm = useAtomValue(viewModelAtom);

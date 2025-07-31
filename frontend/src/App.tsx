@@ -1,11 +1,12 @@
-import { Footer } from "./Footer.tsx";
 import { Suspense } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
-import { Toolbar } from "./Toolbar.tsx";
+
+import { DownloadsSection } from "./Downloads.tsx";
+import { Footer } from "./Footer.tsx";
+import { LabelsSection } from "./Labels.tsx";
 import { MetricsSection } from "./Metrics.tsx";
 import { TimingSections } from "./Timings.tsx";
-import { LabelsSection } from "./Labels.tsx";
-import { DownloadsSection } from "./Downloads.tsx";
+import { Toolbar } from "./Toolbar.tsx";
 
 export function App() {
   return (

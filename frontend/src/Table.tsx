@@ -1,7 +1,8 @@
-import { useAtom, useAtomValue } from "jotai";
-import { pivotAtom, type Report, selectedReportsAtom, selectionAtom } from "./atoms.ts";
 import clsx from "clsx";
+import { useAtom, useAtomValue } from "jotai";
 import type { ReactNode } from "react";
+
+import { type Report, pivotAtom, selectedReportsAtom, selectionAtom } from "./atoms.ts";
 
 export interface ReportTableHead {
   title?: string;

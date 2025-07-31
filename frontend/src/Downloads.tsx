@@ -1,6 +1,6 @@
-import { type Report, urlOf } from "./atoms.ts";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow } from "./Table.tsx";
+import { type Report, urlOf } from "./atoms.ts";
 
 export function DownloadsSection() {
   return (

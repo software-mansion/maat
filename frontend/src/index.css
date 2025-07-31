@@ -3,7 +3,7 @@
 @plugin "daisyui";
 
 @theme {
-  --font-fancy: 'Iowan Old Style', 'Palatino Linotype', 'URW Palladio L', P052, serif;
+  --font-fancy: "Iowan Old Style", "Palatino Linotype", "URW Palladio L", P052, serif;
 }
 
 :root {
