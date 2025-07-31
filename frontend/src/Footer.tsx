@@ -1,6 +1,6 @@
 export function Footer() {
   return (
-    <footer className="footer sm:footer-horizontal text-base-content/50 items-center justify-center px-6 py-10 text-xs">
+    <footer className="footer md:footer-horizontal text-base-content/50 items-center justify-center px-6 py-10 text-xs">
       <aside className="grid-flow-col items-center">
         <a href="https://swmansion.com/" rel="noopener noreferrer" target="_blank">
           <svg

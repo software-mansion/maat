@@ -6,7 +6,7 @@ import {
   selectedSliceAtom,
   viewModelAtom,
 } from "./atoms";
-import type { ReactNode } from "react";
+import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { openSectionsAtom } from "./Section.tsx";
 import { VscFold, VscUnfold } from "react-icons/vsc";
 
@@ -17,7 +17,7 @@ export function Toolbar() {
   const [pivot, setPivot] = useAtom(pivotAtom);
 
   return (
-    <form className="grid auto-rows-auto grid-cols-[auto_minmax(0,1fr)_auto] items-baseline gap-3">
+    <form className="grid auto-rows-auto grid-cols-1 items-baseline gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
       <Fieldset title="Pivot:">
         {selectedReports.map((report) => (
           <input
@@ -79,7 +79,7 @@ export function Toolbar() {
         })}
       </Fieldset>
 
-      <div className="col-start-3 row-start-1 row-end-4 flex flex-col gap-3">
+      <div className="flex gap-3 md:col-start-3 md:row-start-1 md:row-end-4 md:flex-col">
         <ToggleSectionsButton />
       </div>
     </form>
@@ -99,9 +99,8 @@ function ToggleSectionsButton() {
   const [openSections, setOpenSections] = useAtom(openSectionsAtom);
   const areSectionsClosed = openSections instanceof Array && openSections.length == 0;
   return (
-    <button
-      className="btn btn-sm tooltip tooltip-left"
-      data-tip={areSectionsClosed ? "Open all sections" : "Close all sections"}
+    <ToolButton
+      label={areSectionsClosed ? "Open all sections" : "Close all sections"}
       onClick={(e) => {
         e.preventDefault();
         setOpenSections(areSectionsClosed ? "all" : []);
@@ -112,6 +111,20 @@ function ToggleSectionsButton() {
       ) : (
         <VscFold className="size-[1.2em]" />
       )}
+    </ToolButton>
+  );
+}
+
+interface ToolButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+  label: string;
+  children: ReactNode;
+}
+
+function ToolButton({ label, children, ...props }: ToolButtonProps) {
+  return (
+    <button className="btn btn-sm md:tooltip md:tooltip-left" data-tip={label} {...props}>
+      {children}
+      <span className="md:hidden">{label}</span>
     </button>
   );
 }
