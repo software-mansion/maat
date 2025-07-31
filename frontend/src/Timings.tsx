@@ -5,15 +5,16 @@ import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import {
-  pivotReportAtom,
   type Report,
   type ReportTitle,
-  selectedReportsAtom,
   type StepName,
   type StepReport,
   Steps,
   type Test,
-  type TestName
+  type TestName,
+  pivotReportAtom,
+  selectedReportsAtom,
+  urlOf,
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
@@ -90,7 +91,17 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                     const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
                     const allValues = selectedReports.map((r) => values[r.title] ?? null);
                     const trend = durationTrend(value, pivotValue, allValues);
-                    return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+
+                    const test = report.tests.find((t) => t.name === testName);
+                    const logsHref = test && urlOf(test.logsHref);
+
+                    return (
+                      <RichCell
+                        value={value && <Duration value={value} />}
+                        trend={trend}
+                        href={logsHref}
+                      />
+                    );
                   }}
                 />
               ))}
