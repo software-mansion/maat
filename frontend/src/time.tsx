@@ -74,26 +74,43 @@ export function parseDuration(value: string): Intl.DurationType {
   return normalized;
 }
 
+export function serializeDuration(duration: Intl.DurationType): string {
+  return tinyduration.serialize({
+    years: duration.years,
+    months: duration.months,
+    weeks: duration.weeks,
+    days: duration.days,
+    hours: duration.hours,
+    minutes: duration.minutes,
+    seconds:
+      (duration.seconds ?? 0) +
+      (duration.milliseconds ?? 0) / 1_000 +
+      (duration.microseconds ?? 0) / 1_000_000 +
+      (duration.nanoseconds ?? 0) / 1_000_000_000,
+  });
+}
+
+// IMPORTANT: Property order is significant.
+const toNanoseconds = {
+  years: 365n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
+  months: 30n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
+  weeks: 7n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
+  days: 24n * 60n * 60n * 1000n * 1000n * 1000n,
+  hours: 60n * 60n * 1000n * 1000n * 1000n,
+  minutes: 60n * 1000n * 1000n * 1000n,
+  seconds: 1000n * 1000n * 1000n,
+  milliseconds: 1000n * 1000n,
+  microseconds: 1000n,
+  nanoseconds: 1n,
+} as const;
+
 export function durationTotal(
   duration: Intl.DurationType | string,
-  unit: Intl.DurationTimeFormatUnit,
+  unit: Intl.DurationTimeFormatUnit = "nanoseconds",
 ): bigint {
   if (typeof duration === "string") {
     duration = parseDuration(duration);
   }
-
-  const toNanoseconds = {
-    years: 365n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
-    months: 30n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
-    weeks: 7n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
-    days: 24n * 60n * 60n * 1000n * 1000n * 1000n,
-    hours: 60n * 60n * 1000n * 1000n * 1000n,
-    minutes: 60n * 1000n * 1000n * 1000n,
-    seconds: 1000n * 1000n * 1000n,
-    milliseconds: 1000n * 1000n,
-    microseconds: 1000n,
-    nanoseconds: 1n,
-  } as const;
 
   let total =
     BigInt(duration.years ?? 0) * toNanoseconds.years +
@@ -108,6 +125,28 @@ export function durationTotal(
     BigInt(duration.nanoseconds ?? 0) * toNanoseconds.nanoseconds;
 
   return total / toNanoseconds[unit];
+}
+
+export function durationFromTotal(
+  total: bigint,
+  unit: Intl.DurationTimeFormatUnit = "nanoseconds",
+): Intl.DurationType {
+  const totalNs = total * toNanoseconds[unit];
+
+  const result: Intl.DurationType = {};
+  let remaining = totalNs;
+  // NOTE: This depends on the order of properties in toNanoseconds object.
+  for (const [unitName, unitNs] of Object.entries(toNanoseconds)) {
+    if (remaining === 0n) break;
+
+    const value = remaining / unitNs;
+    remaining = remaining % unitNs;
+    if (value !== 0n) {
+      result[unitName as keyof Intl.DurationType] = Number(value);
+    }
+  }
+
+  return result;
 }
 
 function durationRoundToSeconds(duration: Intl.DurationType): Intl.DurationType {
