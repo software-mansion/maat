@@ -2,9 +2,9 @@ import { useAtom, useAtomValue } from "jotai";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { VscFold, VscUnfold } from "react-icons/vsc";
 
-import { openSectionsAtom } from "./Section.tsx";
 import {
   type ReportTitle,
+  openSectionsAtom,
   pivotAtom,
   selectedReportsAtom,
   selectedSliceAtom,

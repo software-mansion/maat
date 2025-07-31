@@ -22,4 +22,9 @@ export default tseslint.config([
     },
   },
   eslintConfigPrettier,
+  {
+    linterOptions: {
+      reportUnusedDisableDirectives: "error",
+    },
+  },
 ]);

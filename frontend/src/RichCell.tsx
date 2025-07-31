@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 
-import type { Trend } from "./trends.tsx";
+import type { Trend } from "./trends.ts";
 
 export interface RichCellProps {
   value: ReactNode | null;

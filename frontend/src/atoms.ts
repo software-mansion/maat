@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { atomWithDefault, unwrap } from "jotai/utils";
+import { atomWithDefault, atomWithStorage, unwrap } from "jotai/utils";
 
 // NOTE: These types in reality are just strings that come from JSON.parse call,
 //   but for extra type safety a fake unique symbol tag is used to prevent TypeScript
@@ -168,3 +168,10 @@ export const pivotReportAtom = atom<Report | undefined>((get) => {
     return vm.reports[pivot];
   }
 });
+
+export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "downloads";
+
+export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
+  "metrics",
+  "downloads",
+]);

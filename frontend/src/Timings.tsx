@@ -1,5 +1,6 @@
 import { useAtomValue } from "jotai";
 
+import { Duration } from "./Duration.tsx";
 import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
@@ -15,8 +16,8 @@ import {
   type TestName
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
-import { Duration, durationFromTotal, durationTotal, serializeDuration } from "./time.tsx";
-import { durationTrend } from "./trends.tsx";
+import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
+import { durationTrend } from "./trends.ts";
 import { bigintSqrt, variance } from "./utils.ts";
 
 type MostVariableSteps = {

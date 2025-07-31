@@ -1,11 +1,12 @@
 import { useAtomValue } from "jotai";
 
+import { DateTime } from "./DateTime.tsx";
+import { Duration } from "./Duration.tsx";
 import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import { pivotReportAtom, selectedReportsAtom } from "./atoms.ts";
-import { DateTime, Duration } from "./time.tsx";
-import { durationTrend } from "./trends.tsx";
+import { durationTrend } from "./trends.ts";
 
 export function MetricsSection() {
   const selectedReports = useAtomValue(selectedReportsAtom);

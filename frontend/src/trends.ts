@@ -1,4 +1,4 @@
-import { durationTotal } from "./time.tsx";
+import { durationTotal } from "./time.ts";
 
 export interface Trend {
   ratio: number;

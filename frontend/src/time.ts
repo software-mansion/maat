@@ -1,46 +1,5 @@
 import * as tinyduration from "tinyduration";
 
-const durationFormat = new Intl.DurationFormat(undefined, {
-  style: "narrow",
-});
-
-export interface TimeComponentProps {
-  value: string;
-}
-
-export function DateTime({ value }: TimeComponentProps) {
-  return new Date(value).toLocaleString();
-}
-
-export function Duration({ value }: TimeComponentProps) {
-  const duration = durationRoundToSeconds(parseDuration(value));
-  return durationFormat.format(duration);
-}
-
-// WORKAROUND: Currently, TypeScript doesn't provide `DurationFormat` types.
-//   https://github.com/microsoft/TypeScript/pull/60646
-declare namespace Intl {
-  type DurationTimeFormatUnit =
-    | "years"
-    | "months"
-    | "weeks"
-    | "days"
-    | "hours"
-    | "minutes"
-    | "seconds"
-    | "milliseconds"
-    | "microseconds"
-    | "nanoseconds";
-
-  type DurationType = Partial<Record<DurationTimeFormatUnit, number>>;
-
-  class DurationFormat {
-    constructor(locales?: globalThis.Intl.LocalesArgument, options?: unknown);
-
-    format(duration: DurationType): string;
-  }
-}
-
 export function parseDuration(value: string): Intl.DurationType {
   const duration = tinyduration.parse(value);
   const normalized: Intl.DurationType = {};
@@ -112,7 +71,7 @@ export function durationTotal(
     duration = parseDuration(duration);
   }
 
-  let total =
+  const total =
     BigInt(duration.years ?? 0) * toNanoseconds.years +
     BigInt(duration.months ?? 0) * toNanoseconds.months +
     BigInt(duration.weeks ?? 0) * toNanoseconds.weeks +
@@ -149,7 +108,7 @@ export function durationFromTotal(
   return result;
 }
 
-function durationRoundToSeconds(duration: Intl.DurationType): Intl.DurationType {
+export function durationRoundToSeconds(duration: Intl.DurationType): Intl.DurationType {
   const result: Intl.DurationType = {
     years: duration.years,
     months: duration.months,

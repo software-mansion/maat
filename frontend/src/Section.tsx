@@ -1,22 +1,14 @@
 import clsx from "clsx";
 import { useAtom } from "jotai";
-import { atomWithStorage } from "jotai/utils";
 import type { ReactNode } from "react";
 
-import type { LabelCategory, StepName } from "./atoms.ts";
-
-export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "downloads";
+import { type SectionId, openSectionsAtom } from "./atoms.ts";
 
 export interface SectionProps {
   id: SectionId;
   children: ReactNode;
   className?: string;
 }
-
-export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
-  "metrics",
-  "downloads",
-]);
 
 const sectionClassName = "maat-section";
 
