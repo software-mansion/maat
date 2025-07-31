@@ -12,22 +12,37 @@ export interface SectionProps {
   className?: string;
 }
 
-const openedAtom = atomWithStorage<SectionId[]>("maat-open-sections", ["metrics", "downloads"]);
+export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
+  "metrics",
+  "downloads",
+]);
+
+const sectionClassName = "maat-section";
 
 export function Section({ id, children, className }: SectionProps) {
-  const [opened, setOpened] = useAtom(openedAtom);
+  const [opened, setOpened] = useAtom(openSectionsAtom);
 
   return (
     <div
       id={id}
-      className={clsx("collapse-arrow border-base-300 bg-base-100 collapse border", className)}
+      className={clsx(
+        "collapse-arrow border-base-300 bg-base-100 collapse border",
+        sectionClassName,
+        className,
+      )}
     >
       <input
         type="checkbox"
-        checked={opened.includes(id)}
+        checked={opened == "all" || opened.includes(id)}
         onChange={() =>
           setOpened((v) => {
-            if (opened.includes(id)) {
+            if (v == "all") {
+              const sections = document.getElementsByClassName(sectionClassName);
+              return Array.from(sections)
+                .map((el) => el.id)
+                .filter((sectionId) => sectionId !== id)
+                .sort() as SectionId[];
+            } else if (v.includes(id)) {
               return v.filter((x) => x !== id);
             } else {
               return [...v, id].sort();
