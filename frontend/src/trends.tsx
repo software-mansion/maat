@@ -42,11 +42,8 @@ export function durationTrend(
     return null;
   }
 
-  const durationTotalSeconds = (timeStr: string): number => {
-    const duration = parseDuration(timeStr);
-    const milliseconds = durationTotal(duration, "milliseconds");
-    return Number(milliseconds) / 1000; // Convert milliseconds to seconds.
-  };
+  const durationTotalSeconds = (timeStr: string): number =>
+    Number(durationTotal(timeStr, "milliseconds")) / 1000;
 
   const valueSeconds = durationTotalSeconds(value);
 

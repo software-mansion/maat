@@ -75,9 +75,13 @@ export function parseDuration(value: string): Intl.DurationType {
 }
 
 export function durationTotal(
-  duration: Intl.DurationType,
+  duration: Intl.DurationType | string,
   unit: Intl.DurationTimeFormatUnit,
 ): bigint {
+  if (typeof duration === "string") {
+    duration = parseDuration(duration);
+  }
+
   const toNanoseconds = {
     years: 365n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
     months: 30n * 24n * 60n * 60n * 1000n * 1000n * 1000n,
