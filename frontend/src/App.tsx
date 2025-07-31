@@ -16,7 +16,7 @@ export function App() {
       </header>
       <ErrorBoundary FallbackComponent={Fallback}>
         <Suspense fallback={<Loading />}>
-          <main className="flex flex-col gap-4 px-4">
+          <main className="flex flex-col items-center gap-4 px-4">
             <Toolbar />
             <MetricsSection />
             <LabelsSection />

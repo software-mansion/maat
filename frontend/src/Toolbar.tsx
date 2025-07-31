@@ -18,7 +18,7 @@ export function Toolbar() {
   const [pivot, setPivot] = useAtom(pivotAtom);
 
   return (
-    <form className="grid auto-rows-auto grid-cols-1 items-baseline gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
+    <form className="grid max-w-5xl auto-rows-auto grid-cols-1 items-baseline gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
       <Fieldset title="Pivot:">
         {selectedReports.map((report) => (
           <input
