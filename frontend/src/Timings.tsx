@@ -1,22 +1,23 @@
 import { useAtomValue } from "jotai";
 
 import { Duration } from "./Duration.tsx";
+import { Q } from "./Q.tsx";
 import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import {
-  pivotReportAtom,
   type Report,
   type ReportTitle,
-  selectedReportsAtom,
-  selectionAtom,
   type StepName,
   type StepReport,
   Steps,
   type Test,
   type TestName,
+  pivotReportAtom,
+  selectedReportsAtom,
+  selectionAtom,
   urlOf,
-  viewModelAtom
+  viewModelAtom,
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
@@ -75,7 +76,20 @@ function TimingSection({ stepName }: { stepName: StepName }) {
         </tbody>
         {mostVariableSteps.length > 0 && (
           <>
-            <ReportTableSection title={`Top ${mostVariableSteps.length} most variable projects`} />
+            <ReportTableSection
+              title={
+                <>
+                  {`Top ${mostVariableSteps.length} most variable projects `}
+                  <Q>
+                    Ma'at shows the top 10 projects with the most variable timing performance
+                    compared to a reference report. Projects are sorted by variance (highest first),
+                    then alphabetically. Only projects with at least 2 valid timing measurements are
+                    included. Variance is calculated using the reference report's timing as the
+                    expected value, measuring how much other timings deviate from this baseline.
+                  </Q>
+                </>
+              }
+            />
             <tbody>
               {mostVariableSteps.map(({ testName, values, stddev }) => {
                 const uniformRev = determineUniformRevForTest(vm, selection, testName);

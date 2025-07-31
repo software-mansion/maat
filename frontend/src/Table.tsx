@@ -5,7 +5,7 @@ import type { ReactNode } from "react";
 import { type Report, pivotAtom, selectedReportsAtom, selectionAtom } from "./atoms.ts";
 
 export interface ReportTableHead {
-  title?: string;
+  title?: ReactNode;
 }
 
 export function ReportTableHead({ title }: ReportTableHead) {
@@ -14,7 +14,7 @@ export function ReportTableHead({ title }: ReportTableHead) {
   return (
     <thead>
       <tr>
-        <th>{title ?? ""}</th>
+        <th>{title}</th>
         {selectedReports.map((report) => {
           const isPivot = report.title === pivot;
           return (
@@ -34,7 +34,7 @@ export function ReportTableHead({ title }: ReportTableHead) {
 }
 
 export interface ReportTableSectionProps {
-  title: string;
+  title: ReactNode;
 }
 
 export function ReportTableSection({ title }: ReportTableSectionProps) {
