@@ -1,10 +1,11 @@
+from datetime import timedelta
 from pathlib import Path
 from typing import Self
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
-from maat.model import Label, LabelCategory, ReportMeta, TestReport
+from maat.model import Label, LabelCategory, ReportMeta, StepReport, TestReport
 from maat.report.metrics import Metrics
 from maat.web.report_info import ReportInfo
 from maat.web.slices import Slice
@@ -41,6 +42,20 @@ class LabelViewModel(BaseModel):
         )
 
 
+class StepViewModel(BaseModel):
+    model_config = ViewModelConfig
+
+    execution_time: timedelta | None
+    exit_code: int | None
+
+    @classmethod
+    def new(cls, step: StepReport) -> Self:
+        return cls(
+            execution_time=step.execution_time,
+            exit_code=step.exit_code,
+        )
+
+
 class TestViewModel(BaseModel):
     model_config = ViewModelConfig
 
@@ -49,6 +64,11 @@ class TestViewModel(BaseModel):
     labels: list[LabelViewModel]
     logs_href: str
 
+    build: StepViewModel | None
+    test: StepViewModel | None
+    lint: StepViewModel | None
+    ls: StepViewModel | None
+
     @classmethod
     def new(cls, test: TestReport, report_meta: ReportMeta) -> Self:
         return cls(
@@ -56,6 +76,10 @@ class TestViewModel(BaseModel):
             rev=test.rev,
             labels=[LabelViewModel.new(label) for label in test.analyses.labels],
             logs_href=str(logs_txt_path(report_meta, test)),
+            build=(step := test.step("build")) and StepViewModel.new(step),
+            test=(step := test.step("test")) and StepViewModel.new(step),
+            lint=(step := test.step("lint")) and StepViewModel.new(step),
+            ls=(step := test.step("ls")) and StepViewModel.new(step),
         )
 
 
@@ -75,7 +99,9 @@ class ReportViewModel(BaseModel):
             ecosystem_csv_href=str(ecosystem_csv_path(report_info.meta)),
             ecosystem_json_href=str(ecosystem_json_path(report_info.meta)),
             metrics=MetricsViewModel.new(report_info.metrics),
-            tests=[TestViewModel.new(t, report_info.meta) for t in report_info.report.tests],
+            tests=[
+                TestViewModel.new(t, report_info.meta) for t in report_info.report.tests
+            ],
         )
 
 

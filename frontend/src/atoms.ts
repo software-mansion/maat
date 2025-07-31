@@ -68,11 +68,21 @@ export const Steps = {
 
 export type StepName = keyof typeof Steps;
 
+export interface StepReport {
+  name: string;
+  executionTime: string | null;
+  exitCode: number | null;
+}
+
 export interface Test {
   name: TestName;
   rev: string;
   labels: Label[];
   logsHref: string;
+  build: StepReport | null;
+  test: StepReport | null;
+  lint: StepReport | null;
+  ls: StepReport | null;
 }
 
 export interface Report {
