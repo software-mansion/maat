@@ -1,6 +1,7 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
 
+import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow } from "./Table.tsx";
 import {
@@ -104,7 +105,7 @@ function LabelGroupSection({ group }: { group: Group }) {
                 <>
                   {project.testName}
                   {project.uniformRev && (
-                    <span className="text-base-content/60 font-normal">{` (${project.uniformRev})`}</span>
+                    <span className="text-base-content/60 text-xs font-normal">{` (${project.uniformRev})`}</span>
                   )}
                 </>
               }
@@ -120,25 +121,17 @@ function LabelGroupSection({ group }: { group: Group }) {
 
 function LabelCell({ cell }: { cell: Cell }) {
   if (cell == Missing) {
-    return <span className="text-base-content/60">—</span>;
+    return <RichCell value={null} />;
   }
 
   const { label, logsHref, rev } = cell;
-
   return (
-    <>
-      <LabelCategoryBullet category={label.category} />
-      <span className="select-none"> </span>
-      <a href={urlOf(logsHref)} className="link link-primary visited:link-secondary">
-        {label.comment || label.category}
-      </a>
-      {rev && (
-        <>
-          <br />
-          <span className="text-base-content/60 text-sm">({rev})</span>
-        </>
-      )}
-    </>
+    <RichCell
+      value={label.comment || label.category}
+      href={urlOf(logsHref)}
+      bullet={<LabelCategoryBullet category={label.category} />}
+      rev={rev}
+    />
   );
 }
 

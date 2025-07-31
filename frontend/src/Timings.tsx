@@ -1,21 +1,22 @@
 import { useAtomValue } from "jotai";
 
+import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import {
+  pivotReportAtom,
   type Report,
   type ReportTitle,
+  selectedReportsAtom,
   type StepName,
   type StepReport,
   Steps,
   type Test,
-  type TestName,
-  pivotReportAtom,
-  selectedReportsAtom,
+  type TestName
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
 import { Duration, durationFromTotal, durationTotal, serializeDuration } from "./time.tsx";
-import { MetricWithTrend, durationTrend } from "./trends.tsx";
+import { durationTrend } from "./trends.tsx";
 import { bigintSqrt, variance } from "./utils.ts";
 
 type MostVariableSteps = {
@@ -52,7 +53,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
               const pivotValue = pivotReport?.metrics[Steps[stepName].meanKey] ?? null;
               const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].meanKey]);
               const trend = durationTrend(value, pivotValue, allValues);
-              return <MetricWithTrend value={value} trend={trend} />;
+              return <RichCell value={value && <Duration value={value} />} trend={trend} />;
             }}
           />
           <ReportTableRow
@@ -62,7 +63,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
               const pivotValue = pivotReport?.metrics[Steps[stepName].medianKey] ?? null;
               const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].medianKey]);
               const trend = durationTrend(value, pivotValue, allValues);
-              return <MetricWithTrend value={value} trend={trend} />;
+              return <RichCell value={value && <Duration value={value} />} trend={trend} />;
             }}
           />
         </tbody>
@@ -88,7 +89,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                     const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
                     const allValues = selectedReports.map((r) => values[r.title] ?? null);
                     const trend = durationTrend(value, pivotValue, allValues);
-                    return <MetricWithTrend value={value} trend={trend} />;
+                    return <RichCell value={value && <Duration value={value} />} trend={trend} />;
                   }}
                 />
               ))}

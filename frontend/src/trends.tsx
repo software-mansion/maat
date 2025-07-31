@@ -1,4 +1,4 @@
-import { Duration, durationTotal, parseDuration } from "./time.tsx";
+import { durationTotal } from "./time.tsx";
 
 export interface Trend {
   ratio: number;
@@ -6,31 +6,6 @@ export interface Trend {
   symbol: string;
   percentage: string;
   colorClass: string;
-}
-
-export interface MetricWithTrendProps {
-  value: string | null;
-  trend: Trend | null;
-}
-
-export function MetricWithTrend({ value, trend }: MetricWithTrendProps) {
-  if (!trend) {
-    return <span>—</span>;
-  }
-
-  const formattedValue = value ? isDurationValue(value) ? <Duration value={value} /> : value : "—";
-
-  return (
-    <>
-      {formattedValue}
-      {trend && (
-        <span className={`text-xs select-none ${trend.colorClass}`}>
-          <br />
-          {trend.ratio !== 0.0 ? `${trend.symbol} ${trend.percentage}` : trend.symbol}
-        </span>
-      )}
-    </>
-  );
 }
 
 export function durationTrend(
@@ -111,13 +86,4 @@ export function durationTrend(
     percentage,
     colorClass,
   };
-}
-
-function isDurationValue(value: string): boolean {
-  try {
-    parseDuration(value);
-    return true;
-  } catch {
-    return false;
-  }
 }
