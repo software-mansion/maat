@@ -117,6 +117,11 @@ function durationRoundToSeconds(duration: Intl.DurationType): Intl.DurationType 
     seconds: duration.seconds ?? 0,
   };
 
+  // If this duration is sub-0-seconds, then do not do any rounding.
+  if (Object.values(result).every((v) => v === undefined || v === 0)) {
+    return duration;
+  }
+
   // Convert smaller units to fractional seconds
   const additionalSeconds =
     (duration.milliseconds ?? 0) / 1000 +
