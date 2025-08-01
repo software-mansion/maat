@@ -109,7 +109,7 @@ export interface ViewModel {
 export const vm = vmJson as ViewModel;
 
 export function urlOf(viewModelUrl: string): string {
-  return `${import.meta.env.BASE_URL}${viewModelUrl}`;
+  return `${import.meta.env.BASE_URL}/${viewModelUrl}`;
 }
 
 export type SelectedSlice = { predefined: SliceTitle } | { custom: ReportTitle[] };
