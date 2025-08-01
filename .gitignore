@@ -12,8 +12,5 @@ wheels/
 # Jupyter notebooks
 *.ipynb
 
-# Web directory
-/web/
-
 # Maat plans
 maat-plan.json

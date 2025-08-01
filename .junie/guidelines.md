@@ -8,15 +8,15 @@ running experiments on Cairo ecosystem projects using Docker containers.
 ## Key Structure
 
 - `src/maat/`: Main package with CLI, models, and core functionality
-    - `model.py`: Core data models
-    - `workflow.py`: Predefined workflows for operations
-    - `ecosystem/`: Cairo ecosystem project management
-    - `report/`: Report generation, metrics, and analysis
-    - `runner/`: Experiment execution engines
-    - `agent/`: Docker container configuration
-    - `utils/`: Helper utilities
-    - `web/`: Web interface components
-    - `workspace.py`: Workspace management
+  - `model.py`: Core data models
+  - `workflow.py`: Predefined workflows for operations
+  - `ecosystem/`: Cairo ecosystem project management
+  - `report/`: Report generation, metrics, and analysis
+  - `runner/`: Experiment execution engines
+  - `agent/`: Docker container configuration
+  - `utils/`: Helper utilities
+  - `web/`: Web interface components
+  - `workspace.py`: Workspace management
 - `docs/`: Documentation
 - `reports/`: Experiment reports storage
 - `workspaces/`: Cairo ecosystem project definitions
@@ -33,3 +33,6 @@ running experiments on Cairo ecosystem projects using Docker containers.
 
 This project uses the Click library.
 All `./maat COMMAND` commands are defined as functions (`-` becomes `_`) in `src/maat/__init__.py`.
+
+To build the frontend, run `npm --prefix frontend run dev &`. This command will start the Vite
+dev server. Remember to kill this process afterwards!

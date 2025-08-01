@@ -1,35 +1,30 @@
 import csv
-import importlib.resources
 import json
 import shutil
-from contextlib import contextmanager
-from importlib.resources.abc import Traversable
 from pathlib import Path
-from typing import Iterator
-
-import jinja2
-import minify_html
-from pydantic import BaseModel
 
 from maat.model import Report, ReportMeta
 from maat.report.metrics import Metrics
 from maat.utils.smart_sort import smart_sort_key
-from maat.web import filters
 from maat.web.report_info import ReportInfo
 from maat.web.slices import make_slices
 from maat.web.view_model import (
+    ViewModel,
     archives_path,
-    build_view_model,
     ecosystem_csv_path,
     ecosystem_json_path,
     logs_txt_path,
 )
 
 
-def build(reports: list[tuple[Report, ReportMeta]], output: Path):
-    if output.exists():
-        shutil.rmtree(output)
-    output.mkdir(parents=True)
+def export_assets(
+    reports: list[tuple[Report, ReportMeta]], view_model_path: Path, assets_path: Path
+):
+    view_model_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if assets_path.exists():
+        shutil.rmtree(assets_path)
+    assets_path.mkdir(parents=True, exist_ok=True)
 
     reports.sort(key=lambda t: smart_sort_key(t[1].name))
 
@@ -42,87 +37,16 @@ def build(reports: list[tuple[Report, ReportMeta]], output: Path):
         for report, meta in reports
     ]
 
-    _copy_traversable(
-        importlib.resources.files("maat.web.templates._assets"),
-        output / "_assets",
-    )
-
-    # Copy robots.txt from templates to output root.
-    robots_txt_file = importlib.resources.files("maat.web.templates") / "robots.txt"
-    (output / "robots.txt").write_bytes(robots_txt_file.read_bytes())
-
-    _write_logs(reports, output)
-    _write_archives(reports, output)
+    _write_logs(reports, assets_path)
+    _write_archives(reports, assets_path)
 
     sls = make_slices(reports)
-    for slice_idx, sl in enumerate(sls):
-        for report_idx, reference_report in enumerate(sl.reports):
-            vm = build_view_model(
-                sl.reports,
-                reference_report_idx=report_idx,
-                slices=sls,
-                curr_slice_idx=slice_idx,
-            )
 
-            with _jinja_env() as env:
-                _render_to(
-                    template="index.html",
-                    vm=vm,
-                    path=output / vm.report_names[report_idx].pivot_href,
-                    env=env,
-                )
+    vm = ViewModel.new(reports, sls)
 
-
-@contextmanager
-def _jinja_env() -> Iterator[jinja2.Environment]:
-    env = jinja2.Environment(
-        loader=jinja2.PackageLoader("maat.web", "templates"),
-        autoescape=jinja2.select_autoescape(),
-        undefined=jinja2.StrictUndefined,
+    view_model_path.write_text(
+        vm.model_dump_json(indent=2, by_alias=True), encoding="utf-8"
     )
-
-    env.globals["len"] = len
-    env.globals["round"] = round
-    env.globals["zip"] = zip
-
-    # Create a dictionary of filter functions from the filters module
-    env.filters.update(
-        {
-            name: getattr(filters, name)
-            for name in dir(filters)
-            if not name.startswith("_") and callable(getattr(filters, name))
-        }
-    )
-
-    yield env
-
-
-def _render_to(
-    template: str,
-    vm: BaseModel,
-    path: Path,
-    env: jinja2.Environment,
-):
-    template = env.get_template(template)
-    rendered = template.render(**dict(vm))
-    minified = minify_html.minify(
-        rendered,
-        # These two keep `npx live-server` working, which is useful in development.
-        keep_html_and_head_opening_tags=True,
-        keep_closing_tags=True,
-        minify_js=True,
-    )
-    path.write_text(minified, encoding="utf-8")
-
-
-def _copy_traversable(traversable: Traversable, dest: Path):
-    dest.mkdir(parents=True, exist_ok=True)
-    for child in traversable.iterdir():
-        if child.is_dir():
-            _copy_traversable(child, dest / child.name)
-        else:
-            dest_child = dest / child.name
-            dest_child.write_bytes(child.read_bytes())
 
 
 def _write_logs(reports: list[ReportInfo], output: Path):
