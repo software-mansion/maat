@@ -10,11 +10,10 @@ import {
   selectedReportsAtom,
   selectedSliceAtom,
   toolbarPinnedAtom,
-  viewModelAtom,
+  vm,
 } from "./atoms";
 
 export function Toolbar() {
-  const vm = useAtomValue(viewModelAtom);
   const [selectedSlice, setSelectedSlice] = useAtom(selectedSliceAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const [pivot, setPivot] = useAtom(pivotAtom);

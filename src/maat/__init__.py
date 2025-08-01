@@ -295,36 +295,37 @@ def build_sandbox(
     )
 
 
-@cli.command(help="Build web frontend and optionally open it in browser.")
+@cli.command(help="Export assets to be used by the web frontend.")
 @click.argument("reports", type=PathParamType, nargs=-1, required=True)
 @click.option(
-    "-o",
-    "--output",
-    type=click.Path(dir_okay=True, file_okay=False, path_type=Path),
-    help="Write output to directory instead of opening in browser.",
+    "--view-model",
+    type=click.Path(dir_okay=False, file_okay=True, path_type=Path),
+    help="Path where view model JSON should be exported to.",
     required=True,
 )
 @click.option(
-    "--view-model",
-    is_flag=True,
-    help="Only build the view model, useful for frontend development.",
+    "--assets",
+    type=click.Path(dir_okay=True, file_okay=False, path_type=Path),
+    help="Directory where assets should be exported to.",
+    required=True,
 )
 @pass_console
-def build_web(
+def export_web_assets(
     console: Console,
     reports: tuple[Path, ...],
-    output: Path,
-    view_model: bool = False,
+    view_model: Path,
+    assets: Path,
 ) -> None:
     report_tuples = [
         (Report.model_validate_json(path.read_bytes()), ReportMeta.new(path))
         for path in reports
     ]
 
-    if view_model:
-        web.build_view_model(reports=report_tuples, output=output)
-    else:
-        web.build(reports=report_tuples, output=output)
+    web.export_assets(
+        reports=report_tuples,
+        view_model_path=view_model,
+        assets_path=assets,
+    )
 
 
 @cli.command(help="Reanalyse an existing report and update it.")

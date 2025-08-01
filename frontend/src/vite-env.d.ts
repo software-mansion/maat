@@ -1,5 +1,10 @@
 /// <reference types="vite/client" />
 
+declare module "virtual:maat-view-model" {
+  const vm: unknown;
+  export default vm;
+}
+
 // WORKAROUND: Currently, TypeScript doesn't provide `DurationFormat` types.
 //   https://github.com/microsoft/TypeScript/pull/60646
 declare namespace Intl {

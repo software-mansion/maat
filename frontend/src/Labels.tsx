@@ -15,7 +15,7 @@ import {
   pivotReportAtom,
   selectionAtom,
   urlOf,
-  viewModelAtom,
+  vm,
 } from "./atoms.ts";
 import { determineUniformRevForTest } from "./utils.ts";
 
@@ -70,7 +70,6 @@ type Cell =
   | typeof Missing;
 
 export function LabelsSection() {
-  const vm = useAtomValue(viewModelAtom);
   const selection = useAtomValue(selectionAtom);
   const pivot = useAtomValue(pivotReportAtom);
 

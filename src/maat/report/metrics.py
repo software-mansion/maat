@@ -76,49 +76,6 @@ class Metrics(BaseModel):
         )
 
 
-class MetricsTransposed(BaseModel):
-    meta: list[ReportMeta]
-    workspace: list[str]
-    scarb_version: list[str]
-    foundry_version: list[str]
-    maat_commit: list[str]
-    created_at: list[datetime]
-    total_execution_time: list[timedelta]
-    total_projects: list[int]
-    mean_build_time: list[timedelta | None]
-    mean_lint_time: list[timedelta | None]
-    mean_test_time: list[timedelta | None]
-    mean_ls_time: list[timedelta | None]
-    median_build_time: list[timedelta | None]
-    median_lint_time: list[timedelta | None]
-    median_test_time: list[timedelta | None]
-    median_ls_time: list[timedelta | None]
-
-    @classmethod
-    def new(cls, metrics_list: list[Metrics]) -> Self:
-        result = {}
-        # noinspection PyUnresolvedReferences
-        for k in cls.model_fields.keys():
-            result[k] = [getattr(item, k) for item in metrics_list]
-        return cls(**result)
-
-
-# noinspection PyUnresolvedReferences
-def _assert_transposed_fields():
-    assert Metrics.model_fields.keys() == MetricsTransposed.model_fields.keys(), (
-        "Field names do not match."
-    )
-    for field_name, field_info in Metrics.model_fields.items():
-        metric_type = field_info.annotation
-        transposed_type = MetricsTransposed.model_fields[field_name].annotation
-        assert transposed_type == list[metric_type], (
-            f"Type mismatch for field '{field_name}': {metric_type} != {transposed_type}"
-        )
-
-
-_assert_transposed_fields()
-
-
 def _timedelta_mean(tds: list[timedelta], /) -> timedelta | None:
     if not tds:
         return None

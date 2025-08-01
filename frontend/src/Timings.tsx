@@ -17,7 +17,7 @@ import {
   selectedReportsAtom,
   selectionAtom,
   urlOf,
-  viewModelAtom,
+  vm,
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
@@ -41,7 +41,6 @@ export function TimingSections() {
 }
 
 function TimingSection({ stepName }: { stepName: StepName }) {
-  const vm = useAtomValue(viewModelAtom);
   const selection = useAtomValue(selectionAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const pivotReport = useAtomValue(pivotReportAtom);

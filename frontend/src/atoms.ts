@@ -1,5 +1,6 @@
 import { atom } from "jotai";
-import { atomWithDefault, atomWithStorage, unwrap } from "jotai/utils";
+import { atomWithDefault, atomWithStorage } from "jotai/utils";
+import vmJson from "virtual:maat-view-model";
 
 // NOTE: These types in reality are just strings that come from JSON.parse call,
 //   but for extra type safety a fake unique symbol tag is used to prevent TypeScript
@@ -105,25 +106,15 @@ export interface ViewModel {
   labelCategories: LabelCategory[];
 }
 
+export const vm = vmJson as ViewModel;
+
 export function urlOf(viewModelUrl: string): string {
-  return import.meta.env.DEV ? `vm-dev/${viewModelUrl}` : viewModelUrl;
+  return `${import.meta.env.BASE_URL}${viewModelUrl}`;
 }
-
-export const viewModelAtom = atom<Promise<ViewModel>>(async (_get, { signal }) => {
-  const response = await fetch(urlOf("vm.json"), { signal });
-  return response.json();
-});
-
-const unwrappedViewModelAtom = unwrap(viewModelAtom);
 
 export type SelectedSlice = { predefined: SliceTitle } | { custom: ReportTitle[] };
 
-export const selectedSliceAtom = atomWithDefault<SelectedSlice>((get) => {
-  const vm = get(unwrappedViewModelAtom);
-  if (!vm) {
-    return { custom: [] };
-  }
-
+export const selectedSliceAtom = atomWithDefault<SelectedSlice>(() => {
   const defaultSlice = Object.values(vm.slices).find((slice) => slice.default);
   if (defaultSlice) {
     return { predefined: defaultSlice.title };
@@ -135,34 +126,23 @@ export const selectedSliceAtom = atomWithDefault<SelectedSlice>((get) => {
 export const selectionAtom = atom<ReportTitle[]>((get) => {
   const selectedSlice = get(selectedSliceAtom);
   if ("predefined" in selectedSlice) {
-    const vm = get(unwrappedViewModelAtom);
-    if (!vm) {
-      return [];
-    } else {
-      return vm.slices[selectedSlice.predefined].reports;
-    }
+    return vm.slices[selectedSlice.predefined].reports;
   } else {
     return selectedSlice.custom;
   }
 });
 
 export const selectedReportsAtom = atom((get) => {
-  const vm = get(unwrappedViewModelAtom);
-  if (!vm) {
-    return [];
-  } else {
-    return get(selectionAtom)
-      .map((title) => vm.reports[title])
-      .filter(Boolean);
-  }
+  return get(selectionAtom)
+    .map((title) => vm.reports[title])
+    .filter(Boolean);
 });
 
 export const pivotAtom = atomWithDefault<ReportTitle | undefined>((get) => get(selectionAtom)[0]);
 
 export const pivotReportAtom = atom<Report | undefined>((get) => {
-  const vm = get(unwrappedViewModelAtom);
   const pivot = get(pivotAtom);
-  if (!vm || !pivot) {
+  if (!pivot) {
     return undefined;
   } else {
     return vm.reports[pivot];

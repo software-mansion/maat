@@ -4,9 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "../maat build-web --view-model -o public/vm-dev ../reports/* && vite",
+    "dev": "vite",
     "build": "tsc -b && vite build",
     "fmt": "prettier . --write",
+    "tsc": "tsc --noEmit --project tsconfig.app.json && tsc --noEmit --project tsconfig.node.json",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -25,6 +26,7 @@
   "devDependencies": {
     "@eslint/js": "^9.30.1",
     "@trivago/prettier-plugin-sort-imports": "^5.2.2",
+    "@types/node": "^24.1.0",
     "@types/react": "^19.1.8",
     "@types/react-dom": "^19.1.6",
     "@vitejs/plugin-react": "^4.6.0",

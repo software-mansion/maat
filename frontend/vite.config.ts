@@ -2,7 +2,13 @@ import tailwindcss from "@tailwindcss/vite";
 import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
+import { maatPlugin } from "./vite-plugin-maat";
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  base: "/maat",
+  plugins: [react(), tailwindcss(), maatPlugin()],
+  build: {
+    assetsDir: "_assets",
+  },
 });
