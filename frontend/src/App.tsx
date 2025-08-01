@@ -48,8 +48,18 @@ function Fallback({ error }: FallbackProps) {
 function ToolbarContainer() {
   const toolbarPinned = useAtomValue(toolbarPinnedAtom);
   return (
-    <div className={clsx("flex w-full flex-col items-center", toolbarPinned && "toolbar-sticky")}>
-      <nav className="toolbar-card">
+    <div
+      className={clsx(
+        "flex w-full flex-col items-center",
+        toolbarPinned && "scroll-state sticky top-0 z-10",
+      )}
+    >
+      <nav
+        className={clsx(
+          "border-base-300 bg-base-100 toolbar-card mx-4 flex flex-col items-center rounded-(--radius-box) border p-4 transition",
+          "stuck-top:border-t-base-100 stuck-top:border-x-base-100 stuck-top:w-full stuck-top:rounded-none stuck-top:px-8 stuck-top:shadow-lg",
+        )}
+      >
         <Toolbar />
       </nav>
     </div>
