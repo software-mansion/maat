@@ -1,3 +1,5 @@
+import clsx from "clsx";
+import { useAtomValue } from "jotai";
 import { Suspense } from "react";
 import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 
@@ -7,26 +9,23 @@ import { LabelsSection } from "./Labels.tsx";
 import { MetricsSection } from "./Metrics.tsx";
 import { TimingSections } from "./Timings.tsx";
 import { Toolbar } from "./Toolbar.tsx";
+import { toolbarPinnedAtom } from "./atoms.ts";
 
 export function App() {
   return (
-    <>
-      <header className="flex flex-col items-center justify-center px-12 py-8">
-        <h1 className="font-fancy text-5xl">Ma'at</h1>
-      </header>
+    <main className="flex flex-col items-center">
+      <h1 className="font-fancy m-8 text-center text-5xl md:text-6xl">Ma'at</h1>
       <ErrorBoundary FallbackComponent={Fallback}>
         <Suspense fallback={<Loading />}>
-          <main className="flex flex-col items-center gap-4 px-4">
-            <Toolbar />
-            <MetricsSection />
-            <LabelsSection />
-            <TimingSections />
-            <DownloadsSection />
-          </main>
+          <ToolbarContainer />
+          <MetricsSection />
+          <LabelsSection />
+          <TimingSections />
+          <DownloadsSection />
         </Suspense>
       </ErrorBoundary>
-      <Footer />
-    </>
+      <Footer className="m-8" />
+    </main>
   );
 }
 
@@ -42,6 +41,17 @@ function Fallback({ error }: FallbackProps) {
   return (
     <div role="alert" className="alert alert-error m-8">
       <pre>{error.message}</pre>
+    </div>
+  );
+}
+
+function ToolbarContainer() {
+  const toolbarPinned = useAtomValue(toolbarPinnedAtom);
+  return (
+    <div className={clsx("flex w-full flex-col items-center", toolbarPinned && "toolbar-sticky")}>
+      <nav className="toolbar-card">
+        <Toolbar />
+      </nav>
     </div>
   );
 }

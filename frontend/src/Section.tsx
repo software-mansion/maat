@@ -19,7 +19,7 @@ export function Section({ id, children, className }: SectionProps) {
     <div
       id={id}
       className={clsx(
-        "collapse-arrow border-base-300 bg-base-100 collapse w-fit border",
+        "collapse-arrow border-base-300 bg-base-100 collapse m-4 w-fit border",
         sectionClassName,
         className,
       )}

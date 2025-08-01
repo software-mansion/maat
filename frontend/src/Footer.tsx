@@ -1,6 +1,13 @@
-export function Footer() {
+import clsx from "clsx";
+
+export function Footer({ className }: { className?: string }) {
   return (
-    <footer className="footer md:footer-horizontal text-base-content/50 items-center justify-center px-6 py-10 text-xs">
+    <footer
+      className={clsx(
+        "footer md:footer-horizontal text-base-content/50 items-center justify-center text-xs",
+        className,
+      )}
+    >
       <aside className="grid-flow-col items-center">
         <a href="https://swmansion.com/" rel="noopener noreferrer" target="_blank">
           <svg

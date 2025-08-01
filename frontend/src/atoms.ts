@@ -175,3 +175,5 @@ export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-
   "metrics",
   "downloads",
 ]);
+
+export const toolbarPinnedAtom = atomWithStorage<boolean>("maat-toolbar-pinned", true);
