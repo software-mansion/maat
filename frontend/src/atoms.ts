@@ -106,7 +106,19 @@ export interface ViewModel {
   labelCategories: LabelCategory[];
 }
 
-export const vm = vmJson as ViewModel;
+export const vm = {
+  ...(vmJson as ViewModel),
+
+  /** Type-safe report access. */
+  report(title: ReportTitle): Report {
+    return vm.reports[title]!;
+  },
+
+  /** Type-safe slice access. */
+  slice(title: SliceTitle): Slice {
+    return vm.slices[title]!;
+  },
+} as const;
 
 export function urlOf(viewModelUrl: string): string {
   return `${import.meta.env.BASE_URL}/${viewModelUrl}`;
@@ -126,15 +138,15 @@ export const selectedSliceAtom = atomWithDefault<SelectedSlice>(() => {
 export const selectionAtom = atom<ReportTitle[]>((get) => {
   const selectedSlice = get(selectedSliceAtom);
   if ("predefined" in selectedSlice) {
-    return vm.slices[selectedSlice.predefined].reports;
+    return vm.slice(selectedSlice.predefined).reports;
   } else {
     return selectedSlice.custom;
   }
 });
 
-export const selectedReportsAtom = atom((get) => {
+export const selectedReportsAtom = atom<Report[]>((get) => {
   return get(selectionAtom)
-    .map((title) => vm.reports[title])
+    .map((title) => vm.report(title))
     .filter(Boolean);
 });
 

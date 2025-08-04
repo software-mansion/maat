@@ -107,7 +107,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                       </>
                     }
                     cell={(report) => {
-                      const value = values[report.title];
+                      const value = values[report.title] ?? null;
                       const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
                       const allValues = selectedReports.map((r) => values[r.title] ?? null);
                       const trend = durationTrend(value, pivotValue, allValues);
@@ -195,7 +195,7 @@ function findMostVariableSteps(
           values,
           variance: variance(
             Object.values(values).map((v) => durationTotal(v)),
-            durationTotal(values[pivotReport.title]),
+            durationTotal(values[pivotReport.title]!), // FIXME
           ),
         }) as const,
     )

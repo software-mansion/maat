@@ -109,7 +109,14 @@ function LabelGroupSection({ group }: { group: Group }) {
                 </>
               }
               textAlign="center"
-              cell={(report) => <LabelCell cell={project.cells[report.title]} />}
+              cell={(report) => {
+                const cell = project.cells[report.title];
+                console.assert(
+                  cell != undefined,
+                  `missing cell for ${report.title} in ${project.testName}`,
+                );
+                return <LabelCell cell={cell ?? Missing} />;
+              }}
             />
           ))}
         </tbody>
