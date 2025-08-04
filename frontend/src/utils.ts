@@ -1,9 +1,5 @@
 import type { ReportTitle, Test, TestName, ViewModel } from "./atoms.ts";
 
-
-
-
-
 /** Calculate uniformRev if all selected runs of a test share the same revision. */
 export function determineUniformRevForTest(
   vm: ViewModel,
