@@ -22,7 +22,7 @@ import {
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
 import { durationTrend } from "./trends.ts";
-import { bigintSqrt, determineUniformRevForTest, variance } from "./utils.ts";
+import { bigintSqrt, determineUniformRevForTest, mean, variance } from "./utils.ts";
 
 type MostVariableSteps = {
   testName: TestName;
@@ -188,17 +188,16 @@ function findMostVariableSteps(
 
   // Sort by variance (highest first) and limit to at most 10.
   return candidates
-    .map(
-      ({ testName, values }) =>
-        ({
-          testName,
-          values,
-          variance: variance(
-            Object.values(values).map((v) => durationTotal(v)),
-            durationTotal(values[pivotReport.title]!), // FIXME
-          ),
-        }) as const,
-    )
+    .map(({ testName, values }) => {
+      const samples = Object.values(values).map((v) => durationTotal(v));
+      const pivotSample = values[pivotReport.title];
+      const xbar = pivotSample ? durationTotal(pivotSample) : mean(samples);
+      return {
+        testName,
+        values,
+        variance: variance(samples, xbar),
+      } as const;
+    })
     .sort((a, b) => Number(b.variance - a.variance) || a.testName.localeCompare(b.testName))
     .map(
       ({ variance, ...props }) =>

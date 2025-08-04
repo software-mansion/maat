@@ -1,5 +1,9 @@
 import type { ReportTitle, Test, TestName, ViewModel } from "./atoms.ts";
 
+
+
+
+
 /** Calculate uniformRev if all selected runs of a test share the same revision. */
 export function determineUniformRevForTest(
   vm: ViewModel,
@@ -49,4 +53,8 @@ export function bigintSqrt(n: bigint): bigint {
     x = next;
   } while ((next = (x + n / x) >> 1n) < x);
   return x;
+}
+
+export function mean(samples: bigint[]): bigint {
+  return samples.reduce((sum, sample) => sum + sample, 0n) / BigInt(samples.length);
 }
