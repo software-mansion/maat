@@ -144,11 +144,11 @@ export const selectionAtom = atom<ReportTitle[]>((get) => {
   }
 });
 
-export const selectedReportsAtom = atom<Report[]>((get) => {
-  return get(selectionAtom)
+export const selectedReportsAtom = atom<Report[]>((get) =>
+  get(selectionAtom)
     .map((title) => vm.report(title))
-    .filter(Boolean);
-});
+    .filter(Boolean),
+);
 
 export const pivotAtom = atomWithDefault<ReportTitle | undefined>((get) => get(selectionAtom)[0]);
 
