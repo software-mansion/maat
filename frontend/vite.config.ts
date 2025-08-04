@@ -11,5 +11,12 @@ export default defineConfig({
   build: {
     assetsDir: "_assets",
     sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vm: ["virtual:maat-view-model"],
+        },
+      },
+    },
   },
 });
