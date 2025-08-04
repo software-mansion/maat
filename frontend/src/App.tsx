@@ -14,7 +14,9 @@ import { toolbarPinnedAtom } from "./atoms.ts";
 export function App() {
   return (
     <main className="flex flex-col items-center">
-      <h1 className="font-fancy m-8 text-center text-5xl md:text-6xl">Ma'at</h1>
+      <a href="#" className="font-fancy m-8 text-center text-5xl md:text-6xl">
+        <h1>Ma'at</h1>
+      </a>
       <ErrorBoundary FallbackComponent={Fallback}>
         <Suspense fallback={<Loading />}>
           <ToolbarContainer />
