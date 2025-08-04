@@ -2,6 +2,8 @@ import { atom } from "jotai";
 import { atomWithDefault, atomWithStorage } from "jotai/utils";
 import vmJson from "virtual:maat-view-model";
 
+import { atomWithHashStorage } from "./atomWithHashStorage.ts";
+
 // NOTE: These types in reality are just strings that come from JSON.parse call,
 //   but for extra type safety a fake unique symbol tag is used to prevent TypeScript
 //   from structural type matching.
@@ -118,6 +120,10 @@ export const vm = {
   slice(title: SliceTitle): Slice {
     return vm.slices[title]!;
   },
+
+  isReportTitle(value: string): value is ReportTitle {
+    return value in vm.reports;
+  },
 } as const;
 
 export function urlOf(viewModelUrl: string): string {
@@ -150,7 +156,18 @@ export const selectedReportsAtom = atom<Report[]>((get) =>
     .filter(Boolean),
 );
 
-export const pivotAtom = atomWithDefault<ReportTitle | undefined>((get) => get(selectionAtom)[0]);
+export const pivotAtom = atomWithHashStorage<ReportTitle | undefined>({
+  key: "p",
+  getDefault: (get) => get(selectionAtom)[0],
+  serialize: (value) => value,
+  deserialize(value) {
+    if (vm.isReportTitle(value)) {
+      return value;
+    } else {
+      throw new Error("pivotAtom: invalid value");
+    }
+  },
+});
 
 export const pivotReportAtom = atom<Report | undefined>((get) => {
   const pivot = get(pivotAtom);
