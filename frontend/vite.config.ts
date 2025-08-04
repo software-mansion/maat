@@ -10,5 +10,6 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), maatPlugin()],
   build: {
     assetsDir: "_assets",
+    sourcemap: true,
   },
 });
