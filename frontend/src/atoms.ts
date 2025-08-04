@@ -1,5 +1,5 @@
 import { atom } from "jotai";
-import { atomWithDefault, atomWithStorage } from "jotai/utils";
+import { atomWithStorage } from "jotai/utils";
 import vmJson from "virtual:maat-view-model";
 
 import { atomWithHashStorage } from "./atomWithHashStorage.ts";
@@ -124,6 +124,10 @@ export const vm = {
   isReportTitle(value: string): value is ReportTitle {
     return value in vm.reports;
   },
+
+  isSliceTitle(value: string): value is SliceTitle {
+    return value in vm.slices;
+  },
 } as const;
 
 export function urlOf(viewModelUrl: string): string {
@@ -132,13 +136,36 @@ export function urlOf(viewModelUrl: string): string {
 
 export type SelectedSlice = { predefined: SliceTitle } | { custom: ReportTitle[] };
 
-export const selectedSliceAtom = atomWithDefault<SelectedSlice>(() => {
-  const defaultSlice = Object.values(vm.slices).find((slice) => slice.default);
-  if (defaultSlice) {
-    return { predefined: defaultSlice.title };
-  } else {
-    return { custom: [] };
-  }
+export const selectedSliceAtom = atomWithHashStorage<SelectedSlice>({
+  key: "s",
+  getDefault() {
+    const defaultSlice = Object.values(vm.slices).find((slice) => slice.default);
+    if (defaultSlice) {
+      return { predefined: defaultSlice.title };
+    } else {
+      return { custom: [] };
+    }
+  },
+  serialize(value) {
+    if ("predefined" in value) {
+      return `*${value.predefined}`;
+    } else {
+      return value.custom.join(" ");
+    }
+  },
+  deserialize(value) {
+    if (value.startsWith("*")) {
+      const predefined = value.slice(1);
+      if (!vm.isSliceTitle(predefined)) {
+        throw new Error("selectedSliceAtom: invalid predefined value");
+      }
+      return { predefined: predefined };
+    } else {
+      return {
+        custom: value.split(" ").filter((title) => vm.isReportTitle(title)),
+      };
+    }
+  },
 });
 
 export const selectionAtom = atom<ReportTitle[]>((get) => {
