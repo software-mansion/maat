@@ -1,5 +1,15 @@
 import clsx from "clsx";
 import { useAtomValue } from "jotai";
+import {
+  VscBeaker,
+  VscBeakerStop,
+  VscCheckAll,
+  VscDebug,
+  VscGear,
+  VscLightbulb,
+  VscTrash,
+  VscVscode,
+} from "react-icons/vsc";
 
 import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
@@ -19,7 +29,7 @@ import {
 } from "./atoms.ts";
 import { determineUniformRevForTest } from "./utils.ts";
 
-const colors: Record<"border" | "text", Record<LabelCategory, string>> = {
+const colors = {
   border: {
     error: "border-red-500",
     "build-fail": "border-orange-500",
@@ -43,6 +53,18 @@ const colors: Record<"border" | "text", Record<LabelCategory, string>> = {
     broken: "text-slate-500",
     "lint-broken": "text-purple-300",
     "ls-broken": "text-pink-300",
+  },
+  icon: {
+    error: VscDebug,
+    "build-fail": VscGear,
+    "test-error": VscBeakerStop,
+    "test-fail": VscBeaker,
+    "test-pass": VscCheckAll,
+    "lint-fail": VscLightbulb,
+    "ls-fail": VscVscode,
+    broken: VscTrash,
+    "lint-broken": VscTrash,
+    "ls-broken": VscTrash,
   },
 } as const;
 
@@ -142,16 +164,10 @@ function LabelCell({ cell }: { cell: Cell }) {
 }
 
 function LabelCategoryBullet({ category }: { category: LabelCategory }) {
+  const Icon = colors.icon[category];
   return (
-    <span
-      aria-label={category}
-      data-tip={category}
-      className={clsx(
-        "tooltip cursor-help font-normal no-underline select-none",
-        colors.text[category],
-      )}
-    >
-      ❖
+    <span aria-label={category} data-tip={category} className="tooltip">
+      <Icon className={clsx("inline cursor-help align-text-bottom", colors.text[category])} />
     </span>
   );
 }
