@@ -32,7 +32,7 @@ export function RichCell({ value, href, bullet, trend, rev }: RichCellProps) {
 
   const secondLine =
     trend || rev ? (
-      <span className="text-base-content/60 text-xs select-none">
+      <span className="text-base-content/60 text-xs">
         <br />
         {trend && (
           <span className={trend.colorClass}>
