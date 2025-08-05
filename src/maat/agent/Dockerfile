@@ -1,4 +1,4 @@
-FROM node:23.11.0 AS nodejs-builder
+FROM node:24.5.0 AS nodejs-builder
 WORKDIR /nodejs
 ADD nodejs /nodejs
 RUN npm ci
@@ -34,12 +34,12 @@ EOF
 
 # Install Rust, this will use RUSTUP_TOOLCHAIN from environment.
 ENV RUST_BACKTRACE=1
-ARG RUSTUP_TOOLCHAIN=1.86
+ARG RUSTUP_TOOLCHAIN=1.88
 ENV RUSTUP_TOOLCHAIN="$RUSTUP_TOOLCHAIN"
 RUN rustup-init -y --no-modify-path && cargo --version
 
 # Install UV and Python.
-COPY --from=ghcr.io/astral-sh/uv:0.6.13 /uv /uvx /root/.local/bin/
+COPY --from=ghcr.io/astral-sh/uv:0.8.4 /uv /uvx /root/.local/bin/
 RUN uv python install 3.13
 
 # Install ASDF.
@@ -58,7 +58,7 @@ asdf plugin add starknet-foundry
 EOF
 
 # Install Node.js.
-ARG ASDF_NODEJS_VERSION=23.11.0
+ARG ASDF_NODEJS_VERSION=24.5.0
 ENV ASDF_NODEJS_VERSION="$ASDF_NODEJS_VERSION"
 RUN <<EOF
 set -eux
