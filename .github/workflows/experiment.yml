@@ -206,3 +206,4 @@ jobs:
         run: gh workflow run web.yml --ref "${{ github.ref }}"
         env:
           GH_TOKEN: ${{ github.token }}
+          REPORT_NAME: ${{ env.REPORT_NAME }}
