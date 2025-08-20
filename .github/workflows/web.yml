@@ -7,6 +7,11 @@ on:
   push:
     branches: [ main ]
   workflow_dispatch:
+    inputs:
+      experiment_name:
+        description: Optional experiment name (to be used by experiment workflow)
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -61,6 +66,7 @@ jobs:
         uses: actions/deploy-pages@v4
   notify-team:
     needs: deploy
+    if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.experiment_name != '' }}
     runs-on: ubuntu-latest
     steps:
       - name: Notifying the team about new report upload
@@ -70,6 +76,6 @@ jobs:
           webhook-type: webhook-trigger
           payload: |
             {
-              "url": "${{ needs.deploy.outputs.page_url }}/#s=${{ env.REPORT_NAME }}",
-              "report_name": "${{ env.REPORT_NAME }}"
+              "url": "${{ needs.deploy.outputs.page_url }}#s=${{ github.event.inputs.experiment_name }}&p=${{ github.event.inputs.experiment_name }}",
+              "report_name": "${{ github.event.inputs.experiment_name }}"
             }
