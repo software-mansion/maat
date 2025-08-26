@@ -1,16 +1,16 @@
 import clsx from "clsx";
 import { useAtom, useAtomValue } from "jotai";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { VscFold, VscPin, VscUnfold } from "react-icons/vsc";
+import { VscFold, VscPin, VscUnfold, VscWarning } from "react-icons/vsc";
 
 import {
-  type ReportTitle,
   openSectionsAtom,
   pivotAtom,
+  type ReportTitle,
   selectedReportsAtom,
   selectedSliceAtom,
   toolbarPinnedAtom,
-  vm,
+  vm
 } from "./atoms";
 
 export function Toolbar() {
@@ -18,9 +18,14 @@ export function Toolbar() {
   const selectedReports = useAtomValue(selectedReportsAtom);
   const [pivot, setPivot] = useAtom(pivotAtom);
 
+  const isPivotNotInSliceWarning =
+    !selectedReports.find((report) => report.title === pivot) &&
+    `Currently selected pivot (${pivot}) is not part of this slice. \
+    To get correct comparisons, add it to the slice or select a different pivot.`;
+
   return (
     <form className="grid max-w-5xl auto-rows-auto grid-cols-1 gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
-      <Fieldset title="Pivot:">
+      <Fieldset title="Pivot" warning={isPivotNotInSliceWarning}>
         {selectedReports.map((report) => (
           <input
             key={report.title}
@@ -34,7 +39,7 @@ export function Toolbar() {
         ))}
       </Fieldset>
 
-      <Fieldset title="Use a predefined slice:">
+      <Fieldset title="Use a predefined slice">
         {Object.values(vm.slices).map((slice) => {
           const isActive =
             "predefined" in selectedSlice && selectedSlice.predefined === slice.title;
@@ -52,7 +57,7 @@ export function Toolbar() {
         })}
       </Fieldset>
 
-      <Fieldset title="Or compose your own:">
+      <Fieldset title="Or compose your own">
         {Object.values(vm.reports).map((report) => {
           const isActive = "custom" in selectedSlice && selectedSlice.custom.includes(report.title);
           return (
@@ -89,11 +94,37 @@ export function Toolbar() {
   );
 }
 
-function Fieldset({ title, children }: { title: string; children: ReactNode }) {
+function Fieldset({
+  title,
+  warning,
+  children,
+}: {
+  title: string;
+  warning?: boolean | string;
+  children: ReactNode;
+}) {
   return (
     <fieldset className="contents">
-      <legend className="self-baseline text-sm text-nowrap">{title}</legend>
-      <div className="flex flex-wrap gap-1 self-baseline">{children}</div>
+      <legend className="self-baseline text-sm text-nowrap">
+        {title}
+        {warning && typeof warning === "string" && (
+          <>
+            {" "}
+            <span className="tooltip tooltip-right cursor-help">
+              <span className="tooltip-content">{warning}</span>
+              <VscWarning className="text-warning inline" />
+            </span>
+          </>
+        )}
+      </legend>
+      <div
+        className={clsx(
+          "rounded-field flex flex-wrap gap-1 self-baseline",
+          warning && "outline-warning outline-offset-4 outline-solid",
+        )}
+      >
+        {children}
+      </div>
     </fieldset>
   );
 }
