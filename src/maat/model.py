@@ -2,7 +2,7 @@ import enum
 from collections.abc import MutableSet
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Iterator, Literal, Self
+from typing import Any, Callable, Iterator, Literal, Self, Protocol
 
 from pydantic import (
     BaseModel,
@@ -74,6 +74,11 @@ class Test(BaseModel):
 
 class TestSuite(BaseModel):
     tests: list[Test] = []
+
+    @model_validator(mode="after")
+    def validate_unique_test_names(self) -> Self:
+        check_unique_test_names(self.tests)
+        return self
 
     def test_by_name(self, name: str) -> Test | None:
         for test in self.tests:
@@ -304,18 +309,7 @@ class Report(BaseModel):
 
     @model_validator(mode="after")
     def validate_unique_test_names(self) -> Self:
-        test_names = [test.name for test in self.tests]
-        if len(test_names) != len(set(test_names)):
-            duplicates = [
-                name for name in set(test_names) if test_names.count(name) > 1
-            ]
-            duplicates.sort()
-            limit = 3
-            if len(duplicates) > limit:
-                msg = f"duplicate tests found: {', '.join(duplicates[:limit])} ({len(duplicates) - limit} more)"
-            else:
-                msg = f"duplicate tests found: {', '.join(duplicates)}"
-            raise ValueError(msg)
+        check_unique_test_names(self.tests)
         return self
 
     @classmethod
@@ -415,3 +409,20 @@ class PlanPartitionView(BaseModel):
     @property
     def test_suite(self) -> TestSuite:
         return self.plan.partitions[self.partition]
+
+
+class TestLike(Protocol):
+    name: str
+
+
+def check_unique_test_names(tests: list[TestLike]) -> None:
+    test_names = [test.name for test in tests]
+    if len(test_names) != len(set(test_names)):
+        duplicates = [name for name in set(test_names) if test_names.count(name) > 1]
+        duplicates.sort()
+        limit = 3
+        if len(duplicates) > limit:
+            msg = f"duplicate tests found: {', '.join(duplicates[:limit])} ({len(duplicates) - limit} more)"
+        else:
+            msg = f"duplicate tests found: {', '.join(duplicates)}"
+        raise ValueError(msg)

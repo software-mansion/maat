@@ -21,12 +21,12 @@ def fetch_all_packages() -> list[str]:
             page_number = int(match.group(1))
             total_pages = max(total_pages, page_number)
 
-    result = []
+    result = set()
     for page in range(1, total_pages + 1):
         page_url = urljoin(BASE_URL, f"/packages?page={page}")
-        result.extend(_get_packages_from_page(page_url))
+        result.update(_get_packages_from_page(page_url))
 
-    return result
+    return list(sorted(result))
 
 
 def _get_packages_from_page(page_url):

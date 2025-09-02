@@ -71,12 +71,13 @@ def prepare_plan(
     scarb, foundry = tool_versions(sandbox, docker)
 
     with console.status("Collecting ecosystem..."):
-        suite = TestSuite()
-
+        tests = []
         for project in flatten_ecosystem(workspace.settings.ecosystem):
             steps = project.setup() + _workflow(project=project, scarb=scarb)
             test = Test(name=project.name, rev=project.fetch_rev(), steps=steps)
-            suite.tests.append(test)
+            tests.append(test)
+
+        suite = TestSuite(tests=tests)
 
     report_name = workspace.settings.generate_report_name(
         _PlanningReportNameGenerationContext(
