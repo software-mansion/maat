@@ -1,11 +1,8 @@
 import subprocess
 
-from cache_to_disk import cache_to_disk
-
 from maat.model import Step
 
 
-@cache_to_disk(1)
 def fetch_commit_hash(repo: str) -> str:
     try:
         result = subprocess.run(

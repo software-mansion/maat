@@ -3,12 +3,10 @@ from urllib.parse import urljoin
 
 import requests
 from bs4 import BeautifulSoup
-from cache_to_disk import cache_to_disk
 
 BASE_URL = "https://scarbs.xyz/"
 
 
-@cache_to_disk(1)
 def fetch_all_packages() -> list[str]:
     response = requests.get(urljoin(BASE_URL, "/packages"))
     soup = BeautifulSoup(response.text, "html.parser")
