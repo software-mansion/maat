@@ -72,7 +72,7 @@ jobs:
       - name: URL encode experiment name
         id: url-encode
         run: |
-          ENCODED_NAME=$(echo -n '${{ github.event.inputs.experiment_name }}' | jq -Rr @uri)
+          ENCODED_NAME=$(echo -n ${{ toJSON(github.event.inputs.experiment_name) }} | jq -Rr @uri)
           echo "encoded_name=$ENCODED_NAME" >> $GITHUB_OUTPUT
       - name: Notifying the team about new report upload
         uses: slackapi/slack-github-action@v2.1.1
