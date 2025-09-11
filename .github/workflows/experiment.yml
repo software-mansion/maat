@@ -26,14 +26,14 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}/${{ trim(inputs.workspace) }}/${{ trim(inputs.scarb) }}/${{ trim(inputs.foundry) }}
+  group: ${{ github.workflow }}/${{ inputs.workspace }}/${{ inputs.scarb }}/${{ inputs.foundry }}
   cancel-in-progress: true
 
 run-name: >-
   experiment
-  w=${{ trim(inputs.workspace) }}
-  ${{ trim(inputs.scarb) && format('scarb={0}', trim(inputs.scarb)) }}
-  ${{ trim(inputs.foundry) && format('foundry={0}', trim(inputs.foundry)) }}
+  w=${{ inputs.workspace }}
+  ${{ inputs.scarb && format('scarb={0}', inputs.scarb) }}
+  ${{ inputs.foundry && format('foundry={0}', inputs.foundry) }}
 
 env:
   PARTITIONS_COUNT: 4
@@ -62,9 +62,9 @@ jobs:
       - name: Build sandbox image
         run: >-
           ./maat build-sandbox
-          --workspace "${{ trim(inputs.workspace) }}"
-          ${{ trim(inputs.scarb) && format('--scarb "{0}"', trim(inputs.scarb)) }}
-          ${{ trim(inputs.foundry) && format('--foundry "{0}"', trim(inputs.foundry)) }}
+          --workspace "${{ inputs.workspace }}"
+          ${{ inputs.scarb && format('--scarb "{0}"', inputs.scarb) }}
+          ${{ inputs.foundry && format('--foundry "{0}"', inputs.foundry) }}
           --iidfile iidfile.txt
           --cache-from "type=gha"
           --cache-to "type=gha,mode=max,ghtoken=${{ secrets.GITHUB_TOKEN }}"
@@ -83,7 +83,7 @@ jobs:
       - name: Create plan
         run:
           ./maat plan
-          --workspace "${{ trim(inputs.workspace) }}"
+          --workspace "${{ inputs.workspace }}"
           --pull "${{ env.SANDBOX_DIGEST }}"
           --output maat-plan.json
           --partitions ${{ env.PARTITIONS_COUNT }}
