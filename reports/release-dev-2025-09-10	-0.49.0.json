@@ -1,0 +1,4367 @@
+{
+  "workspace": "release",
+  "scarb": "dev-2025-09-10\t",
+  "foundry": "0.49.0",
+  "maat_commit": "4bfa2f9",
+  "created_at": "2025-09-11T11:41:29.911488Z",
+  "total_execution_time": "PT1M30.515476S",
+  "tests": [
+    {
+      "name": "EkuboProtocol/abis",
+      "rev": "f4a16b959",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/abis .",
+          "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/abis .",
+          "exit_code": 0,
+          "execution_time": "PT0.343194S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203361S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "EkuboProtocol/governance",
+      "rev": "799840d4a",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .",
+          "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .",
+          "exit_code": 0,
+          "execution_time": "PT0.930212S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.197845S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "EkuboProtocol/revenue-buybacks",
+      "rev": "0c7dfc156",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .",
+          "run": "git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .",
+          "exit_code": 0,
+          "execution_time": "PT0.371563S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.201567S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "HerodotusDev/integrity",
+      "rev": "331bd29a4",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/HerodotusDev/integrity .",
+          "run": "git clone --depth 1 --no-tags https://github.com/HerodotusDev/integrity .",
+          "exit_code": 0,
+          "execution_time": "PT1.254779S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.204073S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000003S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "OpenZeppelin/cairo-contracts",
+      "rev": "fc9420699",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/OpenZeppelin/cairo-contracts .",
+          "run": "git clone --depth 1 --no-tags https://github.com/OpenZeppelin/cairo-contracts .",
+          "exit_code": 0,
+          "execution_time": "PT0.541627S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.199373S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "access_control",
+      "rev": "0.5.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/access_control/0.5.0 -o archive-621308911887233024.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/access_control/0.5.0 -o archive-621308911887233024.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT2.106474S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308911887233024.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308911887233024.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.196329S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.19426S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_ascii",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_ascii/0.6.1 -o archive-621308915519500288.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_ascii/0.6.1 -o archive-621308915519500288.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.219118S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308915519500288.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308915519500288.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.207777S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.196153S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_btc",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_btc/0.6.1 -o archive-621308918531010560.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_btc/0.6.1 -o archive-621308918531010560.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.889127S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308918531010560.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308918531010560.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.192904S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.204886S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_bytes",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_bytes/0.6.1 -o archive-621308923161522176.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_bytes/0.6.1 -o archive-621308923161522176.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.127693S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308923161522176.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308923161522176.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.209745S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.20005S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_data_structures",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_data_structures/0.6.1 -o archive-621308926726680576.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_data_structures/0.6.1 -o archive-621308926726680576.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.320018S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308926726680576.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308926726680576.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.197751S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.200121S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_encoding",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_encoding/0.6.1 -o archive-621308930317004800.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_encoding/0.6.1 -o archive-621308930317004800.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT0.632606S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308930317004800.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308930317004800.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.205866S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.202802S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_evm",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_evm/0.6.1 -o archive-621308933924106240.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_evm/0.6.1 -o archive-621308933924106240.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.576513S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308933924106240.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308933924106240.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.195358S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.201848S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_json",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_json/0.6.1 -o archive-621308936537157632.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_json/0.6.1 -o archive-621308936537157632.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.077143S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308936537157632.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308936537157632.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.200206S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.22981S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_linalg",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_linalg/0.6.1 -o archive-621308939540279296.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_linalg/0.6.1 -o archive-621308939540279296.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.15868S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308939540279296.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308939540279296.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.197116S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.201906S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_macros",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_macros/0.6.1 -o archive-621308942342074368.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_macros/0.6.1 -o archive-621308942342074368.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.026451S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308942342074368.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308942342074368.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.191458S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.197168S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_math",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_math/0.6.1 -o archive-621308945361973248.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_math/0.6.1 -o archive-621308945361973248.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.924661S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308945361973248.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308945361973248.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.191125S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.196437S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_merkle_tree",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_merkle_tree/0.6.1 -o archive-621308948356706304.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_merkle_tree/0.6.1 -o archive-621308948356706304.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.037201S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308948356706304.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308948356706304.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.201973S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.191795S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_numeric",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_numeric/0.6.1 -o archive-621308951447908352.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_numeric/0.6.1 -o archive-621308951447908352.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.224436S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308951447908352.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308951447908352.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.192606S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.20095S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_searching",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_searching/0.6.1 -o archive-621308954786574336.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_searching/0.6.1 -o archive-621308954786574336.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.016341S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308954786574336.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308954786574336.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.19508S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203382S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_sorting",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_sorting/0.6.1 -o archive-621308957856804864.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_sorting/0.6.1 -o archive-621308957856804864.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.601204S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308957856804864.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308957856804864.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.197499S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.193952S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_storage",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_storage/0.6.1 -o archive-621308960838955008.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_storage/0.6.1 -o archive-621308960838955008.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.01128S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308960838955008.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308960838955008.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.205126S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.202988S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "alexandria_utils",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_utils/0.6.1 -o archive-621308963787550720.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_utils/0.6.1 -o archive-621308963787550720.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.194883S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308963787550720.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308963787550720.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.194017S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203361S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "avnu-labs/avnu-contracts-v2",
+      "rev": "29a31b6e3",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/avnu-labs/avnu-contracts-v2 .",
+          "run": "git clone --depth 1 --no-tags https://github.com/avnu-labs/avnu-contracts-v2 .",
+          "exit_code": 0,
+          "execution_time": "PT0.728363S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203943S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "cartesian_merkle_tree",
+      "rev": "0.2.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/cartesian_merkle_tree/0.2.1 -o archive-621308966606123008.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/cartesian_merkle_tree/0.2.1 -o archive-621308966606123008.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.718164S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308966606123008.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308966606123008.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.216733S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.19061S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "chrono",
+      "rev": "0.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/chrono/0.1.0 -o archive-621308969135288320.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/chrono/0.1.0 -o archive-621308969135288320.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT0.97185S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308969135288320.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308969135288320.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.19818S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.200559S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "corelib_imports",
+      "rev": "0.1.2",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/corelib_imports/0.1.2 -o archive-621308971731562496.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/corelib_imports/0.1.2 -o archive-621308971731562496.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.103626S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308971731562496.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308971731562496.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.200143S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.197355S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "diff",
+      "rev": "0.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/diff/0.1.0 -o archive-621308974206201856.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/diff/0.1.0 -o archive-621308974206201856.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.121246S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308974206201856.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308974206201856.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.201261S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.196515S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "dojoengine/origami",
+      "rev": "81e49e9db",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/dojoengine/origami .",
+          "run": "git clone --depth 1 --no-tags https://github.com/dojoengine/origami .",
+          "exit_code": 0,
+          "execution_time": "PT0.402849S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.213707S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "env_macro",
+      "rev": "0.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/env_macro/0.1.0 -o archive-621308976601149440.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/env_macro/0.1.0 -o archive-621308976601149440.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.063226S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308976601149440.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308976601149440.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.196446S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.21675S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "fp",
+      "rev": "0.1.4",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/fp/0.1.4 -o archive-621308979059011584.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/fp/0.1.4 -o archive-621308979059011584.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT2.238645S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308979059011584.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308979059011584.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.192156S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.198074S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "garaga",
+      "rev": "0.18.2",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/garaga/0.18.2 -o archive-621308981567205376.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/garaga/0.18.2 -o archive-621308981567205376.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT2.077693S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308981567205376.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308981567205376.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.50687S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.202364S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "integrity",
+      "rev": "2.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/integrity/2.1.0 -o archive-621308984050233344.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/integrity/2.1.0 -o archive-621308984050233344.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.819716S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308984050233344.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308984050233344.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.214072S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.20405S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "keep-starknet-strange/memecoin-staking",
+      "rev": "de2f416b4",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/memecoin-staking .",
+          "run": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/memecoin-staking .",
+          "exit_code": 0,
+          "execution_time": "PT0.456656S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.210754S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000006S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "keep-starknet-strange/raito",
+      "rev": "91867a759",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/raito .",
+          "run": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/raito .",
+          "exit_code": 0,
+          "execution_time": "PT4.906875S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.195505S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "keep-starknet-strange/s2morrow",
+      "rev": "b3aecfccf",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/s2morrow .",
+          "run": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/s2morrow .",
+          "exit_code": 0,
+          "execution_time": "PT0.695035S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.201233S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "keep-starknet-strange/shinigami",
+      "rev": "7e8c05d60",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/shinigami .",
+          "run": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/shinigami .",
+          "exit_code": 0,
+          "execution_time": "PT0.486824S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203228S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "keep-starknet-strange/tokenized-bond",
+      "rev": "dce5d9cc7",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/tokenized-bond .",
+          "run": "git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/tokenized-bond .",
+          "exit_code": 0,
+          "execution_time": "PT0.4498S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.196097S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "openzeppelin",
+      "rev": "2.0.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/openzeppelin/2.0.0 -o archive-621308987753803776.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/openzeppelin/2.0.0 -o archive-621308987753803776.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.728355S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308987753803776.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308987753803776.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.206709S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.208534S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "opus",
+      "rev": "1.3.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/opus/1.3.0 -o archive-621308991847444480.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/opus/1.3.0 -o archive-621308991847444480.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.48844S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308991847444480.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308991847444480.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.201486S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203639S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "oracle",
+      "rev": "0.1.0-dev.4",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/oracle/0.1.0-dev.4 -o archive-621308994712154112.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/oracle/0.1.0-dev.4 -o archive-621308994712154112.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.112779S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308994712154112.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308994712154112.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.20635S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.205663S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "plugin_crate",
+      "rev": "0.1.4",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/plugin_crate/0.1.4 -o archive-621308997241319424.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/plugin_crate/0.1.4 -o archive-621308997241319424.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.155459S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308997241319424.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308997241319424.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.194263S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.203767S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "pragma_lib",
+      "rev": "2.11.4",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/pragma_lib/2.11.4 -o archive-621308999674015744.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/pragma_lib/2.11.4 -o archive-621308999674015744.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.075041S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621308999674015744.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621308999674015744.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.193633S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.20612S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "pretty_assertions",
+      "rev": "0.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/pretty_assertions/0.1.0 -o archive-621309002127683584.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/pretty_assertions/0.1.0 -o archive-621309002127683584.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.558207S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309002127683584.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309002127683584.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.193258S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.189835S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "pretty_assertions_macro",
+      "rev": "0.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/pretty_assertions_macro/0.1.0 -o archive-621309004652654592.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/pretty_assertions_macro/0.1.0 -o archive-621309004652654592.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.051347S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309004652654592.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309004652654592.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.195824S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.21089S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "snforge_scarb_plugin_deprecated",
+      "rev": "0.49.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_scarb_plugin_deprecated/0.49.0 -o archive-621309007106322432.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_scarb_plugin_deprecated/0.49.0 -o archive-621309007106322432.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT2.208186S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309007106322432.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309007106322432.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.221408S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.208396S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "snforge_std",
+      "rev": "0.49.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_std/0.49.0 -o archive-621309010751172608.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_std/0.49.0 -o archive-621309010751172608.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.062707S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309010751172608.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309010751172608.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.196147S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.211977S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "snforge_std_deprecated",
+      "rev": "0.49.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_std_deprecated/0.49.0 -o archive-621309014509268992.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_std_deprecated/0.49.0 -o archive-621309014509268992.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.663972S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309014509268992.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309014509268992.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.197943S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.193735S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "starkware-libs/starknet-perpetual",
+      "rev": "a08614bd3",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-perpetual .",
+          "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-perpetual .",
+          "exit_code": 0,
+          "execution_time": "PT0.993224S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.19115S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "starkware-libs/starknet-staking",
+      "rev": "c7d00334c",
+      "steps": [
+        {
+          "name": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
+          "run": "git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .",
+          "exit_code": 0,
+          "execution_time": "PT0.399362S",
+          "log": "[err] Cloning into '.'...\n"
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.197094S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "starkware_utils",
+      "rev": "1.0.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/starkware_utils/1.0.0 -o archive-621309017063600128.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/starkware_utils/1.0.0 -o archive-621309017063600128.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.010174S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309017063600128.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309017063600128.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.2148S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.202413S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "starkware_utils_testing",
+      "rev": "1.0.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/starkware_utils_testing/1.0.0 -o archive-621309019555016704.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/starkware_utils_testing/1.0.0 -o archive-621309019555016704.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.183408S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309019555016704.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309019555016704.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.199552S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.198313S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "string_utility",
+      "rev": "0.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/string_utility/0.1.0 -o archive-621309022084182016.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/string_utility/0.1.0 -o archive-621309022084182016.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.066836S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309022084182016.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309022084182016.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.194272S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.198757S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "token_sender",
+      "rev": "0.5.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/token_sender/0.5.1 -o archive-621309024521072640.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/token_sender/0.5.1 -o archive-621309024521072640.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.493927S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309024521072640.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309024521072640.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.196255S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.194274S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "wadray",
+      "rev": "0.6.1",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/wadray/0.6.1 -o archive-621309027201232896.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/wadray/0.6.1 -o archive-621309027201232896.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.031042S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309027201232896.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309027201232896.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.195459S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.198864S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    },
+    {
+      "name": "xoroshiro",
+      "rev": "1.1.0",
+      "steps": [
+        {
+          "name": "curl -sSLf https://scarbs.xyz/api/v1/dl/xoroshiro/1.1.0 -o archive-621309029717815296.tar.zstd",
+          "run": "curl -sSLf https://scarbs.xyz/api/v1/dl/xoroshiro/1.1.0 -o archive-621309029717815296.tar.zstd",
+          "exit_code": 0,
+          "execution_time": "PT1.281279S",
+          "log": ""
+        },
+        {
+          "name": "tar --zstd -xf archive-621309029717815296.tar.zstd --strip-components 1",
+          "run": "tar --zstd -xf archive-621309029717815296.tar.zstd --strip-components 1",
+          "exit_code": 0,
+          "execution_time": "PT0.196869S",
+          "log": ""
+        },
+        {
+          "name": "maat-check-versions",
+          "run": "maat-check-versions",
+          "exit_code": 1,
+          "execution_time": "PT0.193218S",
+          "log": "[out] Name             Version         Source                        Installed\n[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true\n[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true\n[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true\n[out] scarb is NOT OK\n"
+        },
+        {
+          "name": "maat-patch",
+          "run": "maat-patch",
+          "exit_code": -1,
+          "execution_time": "PT0.000002S",
+          "log": ""
+        },
+        {
+          "name": "fetch",
+          "run": "scarb fetch",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "tree",
+          "run": "scarb tree -q --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "build",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "lint",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "test",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        },
+        {
+          "name": "ls",
+          "run": "SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls",
+          "exit_code": -1,
+          "execution_time": "PT0.000001S",
+          "log": ""
+        }
+      ],
+      "analyses": {
+        "labels": [
+          "error(:monkas:)"
+        ]
+      }
+    }
+  ]
+}
