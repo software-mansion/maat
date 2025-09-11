@@ -79,6 +79,9 @@ def load_workspace(f=None, /, optional: bool = False):
         @click.pass_context
         def new_func(ctx, *args, **kwargs):
             workspace_name: str | None = kwargs.pop("workspace", None)
+            # Trim whitespace from workspace name
+            if workspace_name:
+                workspace_name = workspace_name.strip()
             if not workspace_name and not optional:
                 raise click.UsageError("--workspace is required")
             workspace = None if not workspace_name else Workspace.load(workspace_name)
@@ -118,6 +121,9 @@ def tool_versions(f=None, /, optional_if_pull: bool = False):
                     scarb = asdf_latest(docker, "scarb", version)
 
                 kwargs["scarb"] = scarb
+            else:
+                # Trim whitespace from provided scarb version
+                kwargs["scarb"] = kwargs["scarb"].strip() if kwargs["scarb"] else None
 
             if kwargs.get("foundry") is None:
                 if optional:
@@ -136,6 +142,9 @@ def tool_versions(f=None, /, optional_if_pull: bool = False):
                     foundry = asdf_latest(docker, "starknet-foundry", version)
 
                 kwargs["foundry"] = foundry
+            else:
+                # Trim whitespace from provided foundry version
+                kwargs["foundry"] = kwargs["foundry"].strip() if kwargs["foundry"] else None
 
             return ctx.invoke(f, *args, **kwargs)
 
