@@ -72,8 +72,8 @@ jobs:
       - name: URL encode experiment name
         id: url-encode
         run: |
-          # Use Node.js to URL encode the experiment name (safer approach using stdin)
-          ENCODED_NAME=$(echo '${{ github.event.inputs.experiment_name }}' | node -e "process.stdin.setEncoding('utf8'); let input=''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => console.log(encodeURIComponent(input.trim())))")
+          # Use jq to URL encode the experiment name
+          ENCODED_NAME=$(echo -n '${{ github.event.inputs.experiment_name }}' | jq -Rr @uri)
           echo "encoded_name=$ENCODED_NAME" >> $GITHUB_OUTPUT
       - name: Notifying the team about new report upload
         uses: slackapi/slack-github-action@v2.1.1
