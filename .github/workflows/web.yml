@@ -69,6 +69,12 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.experiment_name != '' }}
     runs-on: ubuntu-latest
     steps:
+      - name: URL encode experiment name
+        id: url-encode
+        run: |
+          # Use Node.js to URL encode the experiment name (safer approach using stdin)
+          ENCODED_NAME=$(echo '${{ github.event.inputs.experiment_name }}' | node -e "process.stdin.setEncoding('utf8'); let input=''; process.stdin.on('data', chunk => input += chunk); process.stdin.on('end', () => console.log(encodeURIComponent(input.trim())))")
+          echo "encoded_name=$ENCODED_NAME" >> $GITHUB_OUTPUT
       - name: Notifying the team about new report upload
         uses: slackapi/slack-github-action@v2.1.1
         with:
@@ -76,6 +82,6 @@ jobs:
           webhook-type: webhook-trigger
           payload: |
             {
-              "url": "${{ needs.deploy.outputs.page_url }}#s=${{ github.event.inputs.experiment_name }}&p=${{ github.event.inputs.experiment_name }}",
+              "url": "${{ needs.deploy.outputs.page_url }}#s=${{ steps.url-encode.outputs.encoded_name }}&p=${{ steps.url-encode.outputs.encoded_name }}",
               "report_name": "${{ github.event.inputs.experiment_name }}"
             }
