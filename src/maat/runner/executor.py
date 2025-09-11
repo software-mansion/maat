@@ -180,6 +180,9 @@ class TestProgress:
         self.setup_failed = False
 
     def __enter__(self):
+        self._progress.console.log(
+            f":arrow_forward: [progress.description]{self._test.name}[/progress.description]"
+        )
         return self
 
     def __exit__(self, exc_type, exc_val, exc_tb):
