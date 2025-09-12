@@ -1,0 +1,536 @@
+=== token_sender-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/token_sender/0.5.1 -o archive-607884413944107008.tar.zstd
+
+>>> tar --zstd -xf archive-607884413944107008.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index d25419f..ae506c0 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -17,6 +17,7 @@ license = "MIT"
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.openzeppelin_token]
+[out]  version = "^1.0.0"
+[out] @@ -25,7 +26,7 @@ version = "^1.0.0"
+[out]  version = "^2.11.4"
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [[tool.snforge.fork]]
+[out]  name = "SEPOLIA_LATEST"
+[out] @@ -34,3 +35,20 @@ url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_8"
+[out]  [tool.snforge.fork.block_id]
+[out]  tag = "latest"
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out]  Downloading openzeppelin_access v1.0.0
+[out]  Downloading openzeppelin_utils v1.0.0
+[out]  Downloading openzeppelin_token v1.0.0
+[out]  Downloading openzeppelin_account v1.0.0
+[out]  Downloading openzeppelin_introspection v1.0.0
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(token_sender_unittest) token_sender v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(token_sender_integrationtest) token_sender_integrationtest v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 25 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test token_sender (snforge test --fuzzer-seed 1)
+[out]    Compiling test(token_sender_unittest) token_sender v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(token_sender_integrationtest) token_sender_integrationtest v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 25 seconds
+[out] 
+[out] 
+[out] Collected 8 test(s) from token_sender package
+[out] Running 8 test(s) from tests/
+[out] [IGNORE] token_sender_integrationtest::test_erc20::test_fork_transfer
+[out] Balance 1000000000
+[out] [PASS] token_sender_integrationtest::test_erc20::test_transfer (l1_gas: ~0, l1_data_gas: ~768, l2_gas: ~1001920)
+[out] [PASS] token_sender_integrationtest::test_erc20::should_panic_transfer (l1_gas: ~0, l1_data_gas: ~672, l2_gas: ~720960)
+[out] [PASS] token_sender_integrationtest::test_erc20::test_get_balance (l1_gas: ~0, l1_data_gas: ~672, l2_gas: ~560960)
+[out] [PASS] token_sender_integrationtest::test_token_sender::test_multisend (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~2917440)
+[out] Balance 1000000000
+[out] [PASS] token_sender_integrationtest::test_token_sender::test_single_send (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~2440640)
+[out] [PASS] token_sender_integrationtest::test_erc20::test_transfer_event (l1_gas: ~0, l1_data_gas: ~768, l2_gas: ~841920)
+[out] [PASS] token_sender_integrationtest::test_token_sender::test_single_send_fuzz (runs: 256, (l1_gas: {max: ~0, min: ~0, mean: ~0.00, std deviation: ~0.00}, l1_data_gas: {max: ~960, min: ~960, mean: ~960.00, std deviation: ~0.00}, l2_gas: {max: ~3720640, min: ~3600640, mean: ~3683608.75, std deviation: ~18971.99}))
+[out] Running 0 test(s) from src/
+[out] Tests: 7 passed, 0 failed, 1 ignored, 0 filtered out
+[out] Fuzzer seed: 1
+[out] 
+
+>>> maat-test-ls
+[err]    0.004117653s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_access`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_access-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_access",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_account`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_account-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_account",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_introspection`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_introspection-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_introspection",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_token`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_token-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_token",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_utils`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_utils-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_utils",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `snforge_std`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.47.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "snforge_std",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 47,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `token_sender`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "token_sender",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "token_sender": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "token_sender 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `token_sender_integrationtest`: `["/mnt/maat-workbench/tests/test_erc20.cairo", "/mnt/maat-workbench/tests/test_token_sender.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "token_sender_integrationtest",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "token_sender": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "token_sender 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/tests/test_erc20.cairo (7)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 24, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 32, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 49, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 50, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 74, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 101, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 102, Col 0]
+[out] file:///mnt/maat-workbench/tests/test_token_sender.cairo (4)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 35, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 69, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 70, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 117, Col 0]
+[out] total: 11 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

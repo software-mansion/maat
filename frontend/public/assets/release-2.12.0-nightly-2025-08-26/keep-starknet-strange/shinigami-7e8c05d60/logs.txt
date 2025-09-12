@@ -1,0 +1,1096 @@
+=== keep-starknet-strange/shinigami-7e8c05d60 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/shinigami .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 9defef4..98059b4 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -15,3 +15,14 @@ repository = "https://github.com/keep-starknet-strange/shinigami.git"
+[out]  ripemd160 = { git = "https://github.com/j1mbo64/ripemd160_cairo.git" }
+[out]  sha1 = { git = "https://github.com/j1mbo64/sha1_cairo.git" }
+[out]  cairo_test = "2.8.2"
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/cmds/Scarb.toml b/packages/cmds/Scarb.toml
+[out] index 67b3b62..4295ccf 100644
+[out] --- a/packages/cmds/Scarb.toml
+[out] +++ b/packages/cmds/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "shinigami_cmds"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  shinigami_compiler = { path = "../compiler" }
+[out] @@ -14,3 +15,7 @@ cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/compiler/Scarb.toml b/packages/compiler/Scarb.toml
+[out] index b47a90c..6493084 100644
+[out] --- a/packages/compiler/Scarb.toml
+[out] +++ b/packages/compiler/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "shinigami_compiler"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  shinigami_engine = { path = "../engine" }
+[out] @@ -12,3 +13,7 @@ cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/engine/Scarb.toml b/packages/engine/Scarb.toml
+[out] index 8e3c592..85af8b3 100644
+[out] --- a/packages/engine/Scarb.toml
+[out] +++ b/packages/engine/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "shinigami_engine"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  ripemd160.workspace = true
+[out] @@ -13,3 +14,7 @@ cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/tests/Scarb.toml b/packages/tests/Scarb.toml
+[out] index 9294604..d09572e 100644
+[out] --- a/packages/tests/Scarb.toml
+[out] +++ b/packages/tests/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "shinigami_tests"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  ripemd160.workspace = true
+[out] @@ -14,3 +15,7 @@ cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/utils/Scarb.toml b/packages/utils/Scarb.toml
+[out] index cd77514..ac8045e 100644
+[out] --- a/packages/utils/Scarb.toml
+[out] +++ b/packages/utils/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "shinigami_utils"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  
+[out] @@ -10,3 +11,7 @@ cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+
+>>> scarb fetch
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] shinigami_cmds v0.1.0 (/mnt/maat-workbench/packages/cmds/Scarb.toml)
+[out] ├── shinigami_compiler v0.1.0 (/mnt/maat-workbench/packages/compiler/Scarb.toml)
+[out] │   ├── shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml)
+[out] │   │   ├── ripemd160 v0.1.0 (git+https://github.com/j1mbo64/ripemd160_cairo.git#cdc5ab58b0acc64db87e0b03851fb18213977dc8)
+[out] │   │   ├── sha1 v0.1.0 (git+https://github.com/j1mbo64/sha1_cairo.git#280b4c64ae457fdc4bd7cd807efd17e8dced654e)
+[out] │   │   └── shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml)
+[out] │   └── shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml) (*)
+[out] ├── shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml) (*)
+[out] ├── shinigami_tests v0.1.0 (/mnt/maat-workbench/packages/tests/Scarb.toml)
+[out] │   ├── ripemd160 v0.1.0 (git+https://github.com/j1mbo64/ripemd160_cairo.git#cdc5ab58b0acc64db87e0b03851fb18213977dc8) (*)
+[out] │   ├── shinigami_compiler v0.1.0 (/mnt/maat-workbench/packages/compiler/Scarb.toml) (*)
+[out] │   ├── shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml) (*)
+[out] │   └── shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml) (*)
+[out] ├── shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.0 (std)
+[out] 
+[out] shinigami_compiler v0.1.0 (/mnt/maat-workbench/packages/compiler/Scarb.toml) (*)
+[out] 
+[out] shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml) (*)
+[out] 
+[out] shinigami_tests v0.1.0 (/mnt/maat-workbench/packages/tests/Scarb.toml) (*)
+[out] 
+[out] shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml) (*)
+
+>>> scarb build --workspace --test
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(shinigami_cmds_unittest) shinigami_cmds v0.1.0 (/mnt/maat-workbench/packages/cmds/Scarb.toml)
+[out]    Compiling test(shinigami_compiler_unittest) shinigami_compiler v0.1.0 (/mnt/maat-workbench/packages/compiler/Scarb.toml)
+[out]    Compiling test(shinigami_engine_unittest) shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml)
+[out]    Compiling test(shinigami_tests_unittest) shinigami_tests v0.1.0 (/mnt/maat-workbench/packages/tests/Scarb.toml)
+[out]    Compiling test(shinigami_utils_unittest) shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 16 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]      Linting shinigami_cmds v0.1.0 (/mnt/maat-workbench/packages/cmds/Scarb.toml)
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/packages/cmds/src/main.cairo:151:12
+[out]         if res.unwrap() == false {
+[out]            ^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]      Linting shinigami_compiler v0.1.0 (/mnt/maat-workbench/packages/compiler/Scarb.toml)
+[out]      Linting shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml)
+[out] warn: Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is.
+[out]  --> /mnt/maat-workbench/packages/engine/src/engine.cairo:698:9-702:9
+[out]           if self.is_witness_active(TAPROOT_WITNESS_VERSION) {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/packages/engine/src/engine.cairo:618:20
+[out]                 if witness.len() == 0 {
+[out]                    ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/packages/engine/src/engine.cairo:643:16
+[out]             if witness.len() == 0 {
+[out]                ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: using `clone` on type which implements `Copy` trait
+[out]  --> /mnt/maat-workbench/packages/engine/src/engine.cairo:637:17
+[out]             && !self.bip16.clone() {
+[out]                 ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/packages/engine/src/stack.cairo:64:46
+[out]         let (entry, bytes) = self.data.entry((self.len - idx - 1).into());
+[out]                                              ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/packages/engine/src/stack.cairo:199:46
+[out]             let (entry, _) = self.data.entry((self.len - idx + i - 1).into());
+[out]                                              ^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/packages/engine/src/stack.cairo:203:47
+[out]         let (last_entry, _) = self.data.entry((self.len - 1).into());
+[out]                                               ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/packages/engine/src/witness.cairo:10:27
+[out]         return Result::Ok((byte - Opcode::OP_1 + 1).into());
+[out]                           ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: using `clone` on type which implements `Copy` trait
+[out]  --> /mnt/maat-workbench/packages/engine/src/taproot.cairo:55:12
+[out]     return pubkey.clone();
+[out]            ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead.
+[out]  --> /mnt/maat-workbench/packages/engine/src/taproot.cairo:200:32
+[out]     let output_key_y_is_odd = (control_block[0] & 0x01) == 0x01;
+[out]                                ^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is.
+[out]  --> /mnt/maat-workbench/packages/engine/src/opcodes/crypto.cairo:310:20-314:13
+[out]               } else if err != '' {
+[out]  ____________________^
+[out] | ...
+[out] |             }
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is.
+[out]  --> /mnt/maat-workbench/packages/engine/src/scriptnum.cairo:15:9-19:9
+[out]           if last_element & 0x7F == 0 {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: Consider using else if instead of else { if ... }
+[out]  --> /mnt/maat-workbench/packages/engine/src/scriptnum.cairo:49:9-63:9
+[out]           if is_negative {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead.
+[out]  --> /mnt/maat-workbench/packages/engine/src/signature/signature.cairo:398:24
+[out]         let parity = !(pk_bytes_uncompressed[64] & 1 == 0);
+[out]                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/packages/engine/src/signature/signature.cairo:555:15-562:5
+[out]       let sig = match parse_signature(sig_bytes) {
+[out]  _______________^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/packages/engine/src/signature/signature.cairo:564:19-567:5
+[out]       let pub_key = match parse_pub_key(pk_bytes) {
+[out]  ___________________^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/packages/engine/src/signature/schnorr.cairo:94:17
+[out]     Result::Ok(!(Rx == 0 && Ry == 0) && Ry % 2 == 0 && Rx == sig.r)
+[out]                 ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]      Linting shinigami_tests v0.1.0 (/mnt/maat-workbench/packages/tests/Scarb.toml)
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/packages/tests/src/validate.cairo:70:5-137:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/packages/tests/src/validate.cairo:63:8
+[out]     if tx.transaction_inputs.len() == 0 {
+[out]        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/packages/tests/src/utils.cairo:260:5-269:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out]      Linting shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml)
+[out] error: lint checking `shinigami_cmds`, `shinigami_engine`, `shinigami_tests` packages failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test shinigami_cmds (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(shinigami_cmds_unittest) shinigami_cmds v0.1.0 (/mnt/maat-workbench/packages/cmds/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 1 second
+[out]      Testing shinigami_cmds
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test shinigami_compiler (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(shinigami_compiler_unittest) shinigami_compiler v0.1.0 (/mnt/maat-workbench/packages/compiler/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 3 seconds
+[out]      Testing shinigami_compiler
+[out] running 1 test
+[out] test shinigami_compiler::tests::test_compiler::test_compiler_unknown_opcode ... ok (gas usage est.: 60323250)
+[out] test result: ok. 1 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test shinigami_engine (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(shinigami_engine_unittest) shinigami_engine v0.1.0 (/mnt/maat-workbench/packages/engine/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out]      Testing shinigami_engine
+[out] running 24 tests
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_14 ... ok (gas usage est.: 1054560)
+[out] test shinigami_engine::tests::test_scriptnum::test_scriptnum_wrap_unwrap ... ok (gas usage est.: 577680)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_8 ... ok (gas usage est.: 34033730)
+[out] test shinigami_engine::tests::test_scriptnum::test_scriptnum_bytes_wrap ... ok (gas usage est.: 174320)
+[out] test shinigami_engine::tests::test_scriptnum::test_scriptnum_too_big_unwrap_panic ... ok (gas usage est.: 132670)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_9 ... ok (gas usage est.: 34027330)
+[out] test shinigami_engine::tests::test_scriptnum::test_scriptnum_too_small_unwrap_panic ... ok (gas usage est.: 135510)
+[out] test shinigami_engine::tests::test_taproot_hash::test_calc_taproot_signature_hash_script_path_spend_simple ... ok (gas usage est.: 44140305)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_10 ... ok (gas usage est.: 34027240)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_0 ... ok (gas usage est.: 34032530)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_11 ... ok (gas usage est.: 34033730)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_1 ... ok (gas usage est.: 34033410)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_12 ... ok (gas usage est.: 740500)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_2 ... ok (gas usage est.: 34033320)
+[out] test shinigami_engine::tests::test_taproot_hash::test_calc_taproot_signature_hash_script_path_spend_signature ... ok (gas usage est.: 34093035)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_13 ... ok (gas usage est.: 740500)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_5 ... ok (gas usage est.: 1054560)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_3 ... ok (gas usage est.: 34033320)
+[out] test shinigami_engine::tests::test_taproot_hash::test_new_sigHashMidstate ... ok (gas usage est.: 93862010)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_6 ... ok (gas usage est.: 34033350)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_4 ... ok (gas usage est.: 34033320)
+[out] test shinigami_engine::tests::test_taproot_hash::test_calc_taproot_signature_hash_script_path_spend_tree ... ok (gas usage est.: 34232215)
+[out] test shinigami_engine::tests::test_schnorr::test_schnorr_verify_7 ... ok (gas usage est.: 34033350)
+[out] test shinigami_engine::tests::test_taproot_hash::test_calc_taproot_signature_hash_key_path_spend ... ok (gas usage est.: 25505025)
+[out] test result: ok. 24 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test shinigami_tests (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(shinigami_tests_unittest) shinigami_tests v0.1.0 (/mnt/maat-workbench/packages/tests/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 9 seconds
+[out]      Testing shinigami_tests
+[out] running 224 tests
+[out] test shinigami_tests::tests::test_p2pkh::test_10000_btc_pizza_transaction ... ignored
+[out] test shinigami_tests::tests::test_p2pkh::test_block_770000_p2pkh_transaction ... ok (gas usage est.: 69384047)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_greater_than_or_equal_true_for_greater_than ... ok (gas usage est.: 61897618)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_vernotif_if ... ok (gas usage est.: 61944775)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_0 ... ok (gas usage est.: 60619378)
+[out] test shinigami_tests::tests::test_p2pkh::test_block_770002_p2pkh_transaction ... ok (gas usage est.: 69376427)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_true ... ok (gas usage est.: 60779508)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_greater_than_or_equal_true_for_equal ... ok (gas usage est.: 61897618)
+[out] test shinigami_tests::tests::test_p2wpkh::test_p2wpkh_create_transaction ... ok (gas usage est.: 78628695)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_greater_than_or_equal_false_for_less_than ... ok (gas usage est.: 61845298)
+[out] test shinigami_tests::tests::test_p2wpkh::test_p2wpkh_unlock_transaction ... ok (gas usage est.: 74464725)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_min_min_first ... ok (gas usage est.: 61458388)
+[out] test shinigami_tests::tests::test_p2wpkh::test_p2wpkh_first_transaction ... ok (gas usage est.: 84335750)
+[out] test shinigami_tests::tests::test_p2wpkh::test_p2wpkh_first_witness_spend ... ok (gas usage est.: 83744285)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_min_min_second ... ok (gas usage est.: 61458488)
+[out] test shinigami_tests::tests::test_p2wpkh::test_p2wpkh_uncompressed_key_scriptpubkey_validation ... ok (gas usage est.: 64890793)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_min_same_value ... ok (gas usage est.: 61458388)
+[out] test shinigami_tests::tests::test_p2wsh::test_learnmeabitcoin_usage ... ok (gas usage est.: 200227950)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_max ... ok (gas usage est.: 61422598)
+[out] test shinigami_tests::tests::test_p2wsh::test_learnmeabitcoin_usage_wrong_hash_in_pubkey_script ... ok (gas usage est.: 42171381)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_within_true ... ok (gas usage est.: 61854328)
+[out] test shinigami_tests::tests::test_p2wsh::test_learnmeabitcoin_usage_different_witness_script_from_hash ... ok (gas usage est.: 42171581)
+[out] test shinigami_tests::tests::test_p2wsh::test_custom_hash_puzzle ... ok (gas usage est.: 20957534)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_within_false ... ok (gas usage est.: 61801908)
+[out] test shinigami_tests::tests::test_p2wsh::test_custom_hash_puzzle_invalid_unlock_code ... ok (gas usage est.: 20917274)
+[out] test shinigami_tests::tests::opcodes::test_disabled::test_op_code_disabled ... ok (gas usage est.: 908209495)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_opcode_sha256_1 ... ok (gas usage est.: 64783878)
+[out] test shinigami_tests::tests::test_p2wsh::test_custom_hash_puzzle_wrong_hash_script_in_pubkey_script ... ok (gas usage est.: 17465491)
+[out] test shinigami_tests::tests::test_p2wsh::test_custom_hash_puzzle_different_witness_script_from_hash ... ok (gas usage est.: 17465491)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_opcode_sha256_2 ... ok (gas usage est.: 64783068)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_n_all ... ok (gas usage est.: 971554058)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_1_of_2 ... ok (gas usage est.: 110546127)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_1negate ... ok (gas usage est.: 60869058)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_opcode_sha256_data_8 ... ok (gas usage est.: 66182238)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_2_of_3 ... ok (gas usage est.: 129959857)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_opcode_sha256_push_data_2 ... ok (gas usage est.: 106054878)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_3_of_3 ... ok (gas usage est.: 181765357)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_1of2_invalid_pubkey ... ok (gas usage est.: 30779271)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_opcode_sha256_14_double_sha256 ... ok (gas usage est.: 66733228)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_2_of_3_random ... ok (gas usage est.: 174514147)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash160 ... ok (gas usage est.: 70649490)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash160_1 ... ok (gas usage est.: 68683290)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash160_2 ... ok (gas usage est.: 68682350)
+[out] test shinigami_tests::tests::opcodes::test_disabled::test_disabled_opcodes_if_block ... ok (gas usage est.: 935417245)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_1_of_1 ... ok (gas usage est.: 355342397)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash160_data_8 ... ok (gas usage est.: 69925940)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash160_push_data_2 ... ok (gas usage est.: 109956250)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash160_14_double_hash160 ... ok (gas usage est.: 75361512)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash256 ... ok (gas usage est.: 68233478)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash256_1 ... ok (gas usage est.: 66268088)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash256_2 ... ok (gas usage est.: 66271118)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash256_data_8 ... ok (gas usage est.: 67665608)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash256_push_data_2 ... ok (gas usage est.: 107542878)
+[out] test shinigami_tests::tests::opcodes::test_disabled::test_disabled_opcodes_else_block ... ok (gas usage est.: 937106995)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_hash256_14_double_hash256 ... ok (gas usage est.: 69700498)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_ripemd160 ... ok (gas usage est.: 69669610)
+[out] test shinigami_tests::tests::test_p2ms::test_p2ms_20_of_20 ... ok (gas usage est.: 2156148527)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_ripemd160_1 ... ok (gas usage est.: 67845260)
+[out] test shinigami_tests::tests::test_p2sh::test_p2sh_transaction_1 ... ok (gas usage est.: 149114128)
+[out] test shinigami_tests::tests::test_p2sh::test_p2sh_transaction_2 ... ok (gas usage est.: 73438322)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_ripemd160_2 ... ok (gas usage est.: 67844320)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_ripemd160_data_8 ... ok (gas usage est.: 69119690)
+[out] test shinigami_tests::tests::test_p2sh::test_p2sh_transaction_3 ... ok (gas usage est.: 292463842)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_ripemd160_push_data_2 ... ok (gas usage est.: 120482388)
+[out] test shinigami_tests::tests::test_p2sh::test_p2sh_transaction_4 ... ok (gas usage est.: 195068792)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_ripemd160_14_double_ripemd160 ... ok (gas usage est.: 73343742)
+[out] test shinigami_tests::tests::test_p2sh::test_p2sh_transaction_5 ... ok (gas usage est.: 20011693)
+[out] test shinigami_tests::tests::opcodes::test_disabled::test_disabled_opcode_in_unexecd_if_block ... ok (gas usage est.: 935081495)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checksig_valid ... ok (gas usage est.: 182638127)
+[out] test shinigami_tests::tests::test_coinbase::test_block_subsidy_calculation ... ok (gas usage est.: 20150)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_0 ... ok (gas usage est.: 18752910)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_1 ... ok (gas usage est.: 12363610)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checksig_wrong_signature ... ok (gas usage est.: 182587370)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_150007 ... ok (gas usage est.: 12239670)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_227835 ... ok (gas usage est.: 10060020)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_227836 ... ok (gas usage est.: 11666590)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_400021 ... ok (gas usage est.: 10510450)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checksig_invalid_hash_type ... ok (gas usage est.: 182587370)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_481823 ... ok (gas usage est.: 18987110)
+[out] test shinigami_tests::tests::test_p2sh::test_p2sh_transaction_6 ... ok (gas usage est.: 702615375)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_481824 ... ok (gas usage est.: 25059410)
+[out] test shinigami_tests::tests::test_coinbase::test_validate_coinbase_block_538403 ... ok (gas usage est.: 19046290)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checksig_empty_signature ... ok (gas usage est.: 136730160)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_3dup ... ok (gas usage est.: 61974678)
+[out] test shinigami_tests::tests::test_transactions::test_deserialize_transaction ... ok (gas usage est.: 68775210)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2swap ... ok (gas usage est.: 62232068)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checksig_too_short_signature ... ok (gas usage est.: 136843501)
+[out] test shinigami_tests::tests::test_transactions::test_deserialize_first_p2pkh_transaction ... ok (gas usage est.: 42928060)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2swap_mid ... ok (gas usage est.: 62959188)
+[out] test shinigami_tests::tests::test_transactions::test_deserialize_first_p2sh_transaction ... ok (gas usage est.: 34920070)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_sha1 ... ok (gas usage est.: 68437484)
+[out] test shinigami_tests::tests::test_transactions::test_deserialize_p2wsh_transaction ... ok (gas usage est.: 18881710)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2swap_underflow ... ok (gas usage est.: 61553005)
+[out] test shinigami_tests::tests::test_transactions::test_deserialize_p2wpkh_transaction ... ok (gas usage est.: 34015560)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_sha1_1 ... ok (gas usage est.: 66613394)
+[out] test shinigami_tests::tests::test_transactions::test_deserialize_coinbase_transaction ... ok (gas usage est.: 0)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_nip ... ok (gas usage est.: 61409458)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_sha1_2 ... ok (gas usage est.: 66614074)
+[out] test shinigami_tests::tests::test_transactions::test_validate_transaction ... ok (gas usage est.: 74993618)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_pick ... ok (gas usage est.: 61456418)
+[out] test shinigami_tests::tests::test_p2pk::test_compressed_pubkey ... ok (gas usage est.: 57302235)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_sha1_data_8 ... ok (gas usage est.: 67889184)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_pick_2 ... ok (gas usage est.: 62219128)
+[out] test shinigami_tests::tests::test_p2pk::test_block_181_tx_mainnet ... ok (gas usage est.: 75054118)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_nip_multi ... ok (gas usage est.: 61772918)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_sha1_push_data_2 ... ok (gas usage est.: 115088708)
+[out] test shinigami_tests::tests::test_p2pk::test_block_182_tx_mainnet ... ok (gas usage est.: 74942658)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_nip_out_of_bounds ... ok (gas usage est.: 60524015)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_sha1_14_double_sha1 ... ok (gas usage est.: 70878920)
+[out] test shinigami_tests::tests::test_p2pk::test_block_496_tx_mainnet ... ok (gas usage est.: 190532432)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_rot ... ok (gas usage est.: 61830978)
+[out] test shinigami_tests::tests::test_p2pkh::test_p2pkh_transaction ... ok (gas usage est.: 121743072)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2rot ... ok (gas usage est.: 63081558)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checkmultisig_valid ... ok (gas usage est.: 301875237)
+[out] test shinigami_tests::tests::test_p2pkh::test_p2pkh_transaction_spend ... ok (gas usage est.: 198285454)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_rot_insufficient_items ... ok (gas usage est.: 61195585)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_abs_negative ... ok (gas usage est.: 61514118)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2rot_insufficient_items ... ok (gas usage est.: 62227555)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_abs_zero ... ok (gas usage est.: 60998818)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checkmultisig_wrong_signature ... ok (gas usage est.: 301834700)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_not ... ok (gas usage est.: 61033218)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_0_not_equal_one ... ok (gas usage est.: 61284048)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checkmultisig_not_enough_sig ... ok (gas usage est.: 159173011)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_0_not_equal_five ... ok (gas usage est.: 61284048)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_max_stack ... ok (gas usage est.: 419786978)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_0_not_equal_zero ... ok (gas usage est.: 61180668)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_data_all ... ok (gas usage est.: 5220119800)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checkmultisig_bad_order ... ok (gas usage est.: 257697300)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_add ... ok (gas usage est.: 61458678)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_push_data1 ... ok (gas usage est.: 188088414)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checkmultisig_miss_dummy ... ok (gas usage est.: 168851681)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_exceed_stack ... ok (gas usage est.: 420025115)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_sub ... ok (gas usage est.: 184308574)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_roll ... ok (gas usage est.: 62203718)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_bool_and_one ... ok (gas usage est.: 61563918)
+[out] test shinigami_tests::tests::opcodes::test_crypto::test_op_checkmultisig_dummy_not_zero ... ok (gas usage est.: 169207664)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_roll_2 ... ok (gas usage est.: 62217388)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_bool_and_zero ... ok (gas usage est.: 61475898)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_reserved ... ok (gas usage est.: 60660185)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_push_data2 ... ok (gas usage est.: 301283069)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_opcode_2over ... ok (gas usage est.: 62314338)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_bool_or_one ... ok (gas usage est.: 61497318)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_reserved1 ... ok (gas usage est.: 60690595)
+[out] test shinigami_tests::tests::opcodes::test_splice::test_op_size_zero_item ... ok (gas usage est.: 61054318)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_reserved2 ... ok (gas usage est.: 60690595)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_bool_or_zero ... ok (gas usage est.: 61409778)
+[out] test shinigami_tests::tests::opcodes::test_splice::test_op_size_one_item ... ok (gas usage est.: 61153038)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_ver ... ok (gas usage est.: 60508555)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_bool_or_both ... ok (gas usage est.: 61533108)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_push_data4 ... ok (gas usage est.: 302006659)
+[out] test shinigami_tests::tests::opcodes::test_bitwise::test_op_equal ... ok (gas usage est.: 61457288)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_verif ... ok (gas usage est.: 60542975)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_numequal_true ... ok (gas usage est.: 61593748)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_pushdata1_in_if ... ok (gas usage est.: 71492918)
+[out] test shinigami_tests::tests::opcodes::test_bitwise::test_op_equal_false ... ok (gas usage est.: 61387978)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_vernotif ... ok (gas usage est.: 60634185)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_numequal_false ... ok (gas usage est.: 61541328)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_1add ... ok (gas usage est.: 61132268)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_pushdata1_in_if_with_disabled ... ok (gas usage est.: 71324575)
+[out] test shinigami_tests::tests::opcodes::test_reserved::test_op_verif_if ... ok (gas usage est.: 61853565)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_numequalverify_true ... ok (gas usage est.: 61711498)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_1sub ... ok (gas usage est.: 61132268)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_pushdata2_in_if ... ok (gas usage est.: 71666338)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_negate_1 ... ok (gas usage est.: 61195568)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_numequalverify_false ... ok (gas usage est.: 61600295)
+[out] test shinigami_tests::tests::opcodes::test_constants::test_op_pushdata4_in_if ... ok (gas usage est.: 72011908)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_negate_0 ... ok (gas usage est.: 61090108)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_numnotequal_true ... ok (gas usage est.: 61684768)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checklocktime_as_op_nop ... ok (gas usage est.: 121522154)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_nop ... ok (gas usage est.: 60593718)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_negate_negative ... ok (gas usage est.: 61966668)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_numnotequal_false ... ok (gas usage est.: 61632348)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checklocktime_as_op_nop_fail ... ok (gas usage est.: 121388461)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_nop_with_add ... ok (gas usage est.: 61812538)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_abs_positive ... ok (gas usage est.: 61102298)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_lessthan ... ok (gas usage est.: 61594118)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_if_true ... ok (gas usage est.: 61866298)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_lessthan_reverse ... ok (gas usage est.: 61541598)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_lessthan_equal ... ok (gas usage est.: 61541598)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checklocktime_max_sequence_fail ... ok (gas usage est.: 122272288)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_notif_false ... ok (gas usage est.: 61914988)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_verify_false ... ok (gas usage est.: 60930285)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_greater_than_true ... ok (gas usage est.: 61649348)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_block ... ok (gas usage est.: 122357476)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_notif_true ... ok (gas usage est.: 61835638)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_return ... ok (gas usage est.: 60838095)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_greater_than_false ... ok (gas usage est.: 61596828)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_else_false ... ok (gas usage est.: 62547308)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_greater_than_equal_false ... ok (gas usage est.: 61632618)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_time ... ok (gas usage est.: 122405516)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_else_true ... ok (gas usage est.: 62521248)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_less_than_or_equal_true_for_less_than ... ok (gas usage est.: 61806398)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_fail ... ok (gas usage est.: 122245813)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_verify_empty_stack ... ok (gas usage est.: 60614555)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_less_than_or_equal_true_for_equal ... ok (gas usage est.: 61806398)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_verify_true ... ok (gas usage est.: 61149198)
+[out] test shinigami_tests::tests::opcodes::test_arithmetic::test_op_less_than_or_equal_false_for_greater_than ... ok (gas usage est.: 61754078)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_as_op_nop ... ok (gas usage est.: 122263884)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_op_nop_x_all ... ok (gas usage est.: 485198898)
+[out] test shinigami_tests::tests::opcodes::test_flow::test_data_op_in_if ... ok (gas usage est.: 62523448)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_ifdup_non_zero_top_stack ... ok (gas usage est.: 61195418)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_ifdup_multi_non_zero_top_stack ... ok (gas usage est.: 62293988)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_as_op_nop_fail ... ok (gas usage est.: 122142391)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_disabled_bit_tx_fail ... ok (gas usage est.: 122250844)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checklocktime ... ok (gas usage est.: 122381761)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_depth_empty_stack ... ok (gas usage est.: 60742128)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_toaltstack ... ok (gas usage est.: 61210188)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_tx_version_fail ... ok (gas usage est.: 122243071)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_depth_one_item ... ok (gas usage est.: 61173278)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checklocktime_unsatisfied_fail ... ok (gas usage est.: 122260568)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_toaltstack_underflow ... ok (gas usage est.: 60757875)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_depth_multiple_items ... ok (gas usage est.: 62302878)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checksequence_disabled_bit_stack ... ok (gas usage est.: 122357476)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_ifdup_zero_top_stack ... ok (gas usage est.: 61057948)
+[out] test shinigami_tests::tests::opcodes::test_locktime::test_opcode_checklocktime_block ... ok (gas usage est.: 121560861)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_drop ... ok (gas usage est.: 61414458)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_dup ... ok (gas usage est.: 61473618)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_opcode_tuck ... ok (gas usage est.: 61508878)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_drop_underflow ... ok (gas usage est.: 60551455)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2drop_underflow ... ok (gas usage est.: 60913145)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_swap ... ok (gas usage est.: 61823908)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2drop ... ok (gas usage est.: 61327518)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_2dup ... ok (gas usage est.: 61557588)
+[out] test shinigami_tests::tests::opcodes::test_stack::test_op_swap_mid ... ok (gas usage est.: 62551028)
+[out] test result: ok. 223 passed; 0 failed; 1 ignored; 0 filtered out;
+[out]      Running test shinigami_utils (scarb cairo-test)
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(shinigami_utils_unittest) shinigami_utils v0.1.0 (/mnt/maat-workbench/packages/utils/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 0 seconds
+[out]      Testing shinigami_utils
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.003942690s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/packages/cmds/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/packages/compiler/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/packages/engine/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/packages/tests/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/packages/utils/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "ripemd160",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/ripemd160_cairo-9tlsggif2vsdg/cdc5ab5/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "ripemd160",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "ripemd160": {
+[out]         "discriminator": "ripemd160 0.1.0 (git+https://github.com/j1mbo64/ripemd160_cairo.git#cdc5ab58b0acc64db87e0b03851fb18213977dc8)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "sha1",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/sha1_cairo-ijhp98qgkbdk8/280b4c6/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "sha1",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "sha1": {
+[out]         "discriminator": "sha1 0.1.0 (git+https://github.com/j1mbo64/sha1_cairo.git#280b4c64ae457fdc4bd7cd807efd17e8dced654e)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "shinigami_cmds",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/packages/cmds/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "shinigami_cmds",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "shinigami_cmds": {
+[out]         "discriminator": "shinigami_cmds 0.1.0 (path+file:///mnt/maat-workbench/packages/cmds/Scarb.toml)"
+[out]       },
+[out]       "shinigami_compiler": {
+[out]         "discriminator": "shinigami_compiler 0.1.0 (path+file:///mnt/maat-workbench/packages/compiler/Scarb.toml)"
+[out]       },
+[out]       "shinigami_engine": {
+[out]         "discriminator": "shinigami_engine 0.1.0 (path+file:///mnt/maat-workbench/packages/engine/Scarb.toml)"
+[out]       },
+[out]       "shinigami_tests": {
+[out]         "discriminator": "shinigami_tests 0.1.0 (path+file:///mnt/maat-workbench/packages/tests/Scarb.toml)"
+[out]       },
+[out]       "shinigami_utils": {
+[out]         "discriminator": "shinigami_utils 0.1.0 (path+file:///mnt/maat-workbench/packages/utils/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "shinigami_compiler",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/packages/compiler/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "shinigami_compiler",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "shinigami_compiler": {
+[out]         "discriminator": "shinigami_compiler 0.1.0 (path+file:///mnt/maat-workbench/packages/compiler/Scarb.toml)"
+[out]       },
+[out]       "shinigami_engine": {
+[out]         "discriminator": "shinigami_engine 0.1.0 (path+file:///mnt/maat-workbench/packages/engine/Scarb.toml)"
+[out]       },
+[out]       "shinigami_utils": {
+[out]         "discriminator": "shinigami_utils 0.1.0 (path+file:///mnt/maat-workbench/packages/utils/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "shinigami_engine",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/packages/engine/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "shinigami_engine",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "ripemd160": {
+[out]         "discriminator": "ripemd160 0.1.0 (git+https://github.com/j1mbo64/ripemd160_cairo.git#cdc5ab58b0acc64db87e0b03851fb18213977dc8)"
+[out]       },
+[out]       "sha1": {
+[out]         "discriminator": "sha1 0.1.0 (git+https://github.com/j1mbo64/sha1_cairo.git#280b4c64ae457fdc4bd7cd807efd17e8dced654e)"
+[out]       },
+[out]       "shinigami_engine": {
+[out]         "discriminator": "shinigami_engine 0.1.0 (path+file:///mnt/maat-workbench/packages/engine/Scarb.toml)"
+[out]       },
+[out]       "shinigami_utils": {
+[out]         "discriminator": "shinigami_utils 0.1.0 (path+file:///mnt/maat-workbench/packages/utils/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "shinigami_tests",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/packages/tests/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "shinigami_tests",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "ripemd160": {
+[out]         "discriminator": "ripemd160 0.1.0 (git+https://github.com/j1mbo64/ripemd160_cairo.git#cdc5ab58b0acc64db87e0b03851fb18213977dc8)"
+[out]       },
+[out]       "shinigami_compiler": {
+[out]         "discriminator": "shinigami_compiler 0.1.0 (path+file:///mnt/maat-workbench/packages/compiler/Scarb.toml)"
+[out]       },
+[out]       "shinigami_engine": {
+[out]         "discriminator": "shinigami_engine 0.1.0 (path+file:///mnt/maat-workbench/packages/engine/Scarb.toml)"
+[out]       },
+[out]       "shinigami_tests": {
+[out]         "discriminator": "shinigami_tests 0.1.0 (path+file:///mnt/maat-workbench/packages/tests/Scarb.toml)"
+[out]       },
+[out]       "shinigami_utils": {
+[out]         "discriminator": "shinigami_utils 0.1.0 (path+file:///mnt/maat-workbench/packages/utils/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "shinigami_utils",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/packages/utils/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "shinigami_utils",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "shinigami_utils": {
+[out]         "discriminator": "shinigami_utils 0.1.0 (path+file:///mnt/maat-workbench/packages/utils/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/packages/cmds/src/main.cairo (1)
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 150, Col 11]
+[out] file:///mnt/maat-workbench/packages/engine/src/engine.cairo (4)
+[out]   (W) Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is. [Ln 697, Col 8]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 617, Col 19]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 642, Col 15]
+[out]   (W) Plugin diagnostic: using `clone` on type which implements `Copy` trait [Ln 636, Col 16]
+[out] file:///mnt/maat-workbench/packages/engine/src/opcodes/crypto.cairo (1)
+[out]   (W) Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is. [Ln 309, Col 19]
+[out] file:///mnt/maat-workbench/packages/engine/src/scriptnum.cairo (2)
+[out]   (W) Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is. [Ln 14, Col 8]
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 48, Col 8]
+[out] file:///mnt/maat-workbench/packages/engine/src/signature/schnorr.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 93, Col 16]
+[out] file:///mnt/maat-workbench/packages/engine/src/signature/signature.cairo (3)
+[out]   (W) Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead. [Ln 397, Col 23]
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 554, Col 14]
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 563, Col 18]
+[out] file:///mnt/maat-workbench/packages/engine/src/stack.cairo (3)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 63, Col 45]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 198, Col 45]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 202, Col 46]
+[out] file:///mnt/maat-workbench/packages/engine/src/taproot.cairo (2)
+[out]   (W) Plugin diagnostic: using `clone` on type which implements `Copy` trait [Ln 54, Col 11]
+[out]   (W) Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead. [Ln 199, Col 31]
+[out] file:///mnt/maat-workbench/packages/engine/src/witness.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 9, Col 26]
+[out] file:///mnt/maat-workbench/packages/tests/src/utils.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 259, Col 4]
+[out] file:///mnt/maat-workbench/packages/tests/src/validate.cairo (2)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 69, Col 4]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 62, Col 7]
+[out] total: 0 errors, 21 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

@@ -1,0 +1,513 @@
+=== garaga-0.18.2 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/garaga/0.18.2 -o archive-621372329426595840.tar.zstd
+
+>>> tar --zstd -xf archive-621372329426595840.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index a7fb031..776e09f 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -33,6 +33,7 @@ keywords = [
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/keep-starknet-strange/garaga"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.corelib_imports]
+[out]  version = "^0.1.1"
+[out] @@ -46,3 +47,19 @@ version = "^0.48.0"
+[out]  [features]
+[out]  full = []
+[out]  
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.49.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading snforge_std v0.49.0
+[out]  Downloading corelib_imports v0.1.2
+[out]  Downloading snforge_scarb_plugin v0.49.0
+
+>>> scarb tree -q --workspace
+[out] garaga v0.18.2 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── corelib_imports v0.1.2
+[out] │   └── cairo_test v2.12.2 (std)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.2 (std)
+[out]     ├── snforge_std v0.49.0
+[out]     │   └── snforge_scarb_plugin v0.49.0
+[out]     └── snforge_scarb_plugin v0.49.0 (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(garaga_unittest) garaga v0.18.2 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `garaga::circuits::extf_mul::circuit_inverse`
+[out]  --> /mnt/maat-workbench/src/circuits/extf_mul.cairo:3:18
+[out]     circuit_add, circuit_inverse, circuit_mul, circuit_sub, u384,
+[out]                  ^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `garaga::circuits::isogeny::circuit_sub`
+[out]  --> /mnt/maat-workbench/src/circuits/isogeny.cairo:3:48
+[out]     circuit_add, circuit_inverse, circuit_mul, circuit_sub, u384,
+[out]                                                ^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 39 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]      Linting garaga v0.18.2 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `garaga::circuits::extf_mul::circuit_inverse`
+[out]  --> /mnt/maat-workbench/src/circuits/extf_mul.cairo:3:18
+[out]     circuit_add, circuit_inverse, circuit_mul, circuit_sub, u384,
+[out]                  ^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `garaga::circuits::isogeny::circuit_sub`
+[out]  --> /mnt/maat-workbench/src/circuits/isogeny.cairo:3:48
+[out]     circuit_add, circuit_inverse, circuit_mul, circuit_sub, u384,
+[out]                                                ^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Consider using else if instead of else { if ... }
+[out]  --> /mnt/maat-workbench/src/ec/selectors.cairo:430:5-446:5
+[out]       if s1 != 0 {
+[out]  _____^
+[out] | ...
+[out] |     }
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/src/signatures/schnorr.cairo:95:68
+[out]     if u384_eq_zero(rx) || s >= n || s == 0 || e >= n || e == 0 || is_even_u384(py) == false {
+[out]                                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/src/signatures/schnorr.cairo:103:8
+[out]     if pk_on_curve == false {
+[out]        ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: lint checking `garaga` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.104811
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_alias_2
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test garaga (snforge test --fuzzer-seed 1)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(garaga_unittest) garaga v0.18.2 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `garaga::circuits::extf_mul::circuit_inverse`
+[out]  --> /mnt/maat-workbench/src/circuits/extf_mul.cairo:3:18
+[out]     circuit_add, circuit_inverse, circuit_mul, circuit_sub, u384,
+[out]                  ^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `garaga::circuits::isogeny::circuit_sub`
+[out]  --> /mnt/maat-workbench/src/circuits/isogeny.cairo:3:48
+[out]     circuit_add, circuit_inverse, circuit_mul, circuit_sub, u384,
+[out]                                                ^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 33 seconds
+[out] 
+[out] 
+[out] Collected 145 test(s) from garaga package
+[out] Running 145 test(s) from src/
+[out] [IGNORE] garaga::hashes::poseidon_bn254::tests::test_run_poseidon_grumpkin_circuit_2
+[out] [IGNORE] garaga::tests::autogenerated::ecdsa_tests::test_ecdsa_BLS12_381
+[out] [IGNORE] garaga::tests::autogenerated::ecdsa_tests::test_ecdsa_BN254
+[out] [IGNORE] garaga::tests::autogenerated::ecdsa_tests::test_ecdsa_ED25519
+[out] [IGNORE] garaga::tests::autogenerated::ecdsa_tests::test_ecdsa_GRUMPKIN
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_10_20B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_11_22B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_12_24B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_13_26B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_14_28B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_15_30B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_17_34B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_18_36B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_19_38B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_1_2B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_20_40B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_21_42B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_22_44B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_23_46B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_24_48B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_25_50B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_26_52B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_27_54B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_28_56B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_29_58B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_2_4B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_30_60B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_31_62B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_3_6B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_4_8B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_5_10B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_6_12B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_7_14B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_8_16B
+[out] [IGNORE] garaga::tests::autogenerated::eddsa_tests::test_eddsa_9_18B
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_10P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_11P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_12P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_1P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_1P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_2P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_2P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_3P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_3P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BLS12_381_4P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_10P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_11P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_12P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_1P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_1P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_2P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_2P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_3P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_3P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_BN254_4P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_10P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_11P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_12P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_1P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_1P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_2P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_2P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_3P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_3P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_ED25519_4P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_10P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_11P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_12P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_1P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_1P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_2P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_2P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_3P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_3P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_GRUMPKIN_4P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_10P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_11P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_12P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_1P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_2P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_3P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_4P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_10P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_11P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_12P
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_1P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_2P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_3P_edge_case
+[out] [IGNORE] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_4P
+[out] [IGNORE] garaga::tests::autogenerated::schnorr_tests::test_schnorr_BLS12_381
+[out] [IGNORE] garaga::tests::autogenerated::schnorr_tests::test_schnorr_BN254
+[out] [IGNORE] garaga::tests::autogenerated::schnorr_tests::test_schnorr_ED25519
+[out] [IGNORE] garaga::tests::autogenerated::schnorr_tests::test_schnorr_GRUMPKIN
+[out] [IGNORE] garaga::tests::autogenerated::schnorr_tests::test_schnorr_SECP256R1
+[out] [IGNORE] garaga::tests_lib::test_builtins
+[out] [IGNORE] garaga::tests_lib::test_circuit_failure
+[out] [IGNORE] garaga::tests_lib::test_circuit_success
+[out] [IGNORE] garaga::tests_lib::test_fill_inputs_loop
+[out] [IGNORE] garaga::tests_lib::test_u96
+[out] [PASS] garaga::crypto::mmr::tests::test_trailing_ones (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] [PASS] garaga::hashes::poseidon_bn254::tests::test_run_poseidon_grumpkin_circuit_1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~10240000)
+[out] [PASS] garaga::tests::autogenerated::ecdsa_tests::test_ecdsa_SECP256K1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~25040000)
+[out] [PASS] garaga::tests::autogenerated::ecdsa_tests::test_ecdsa_SECP256R1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~32040000)
+[out] [PASS] garaga::ec::ec_ops_g2::tests::test_ec_mul_g2 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~148920000)
+[out] [PASS] garaga::tests::autogenerated::eddsa_tests::test_eddsa_0_0B (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~32840000)
+[out] [PASS] garaga::tests::autogenerated::eddsa_tests::test_eddsa_16_32B (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~32800000)
+[out] [PASS] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_1P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~12320000)
+[out] [PASS] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_2P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~24600000)
+[out] [PASS] garaga::tests::autogenerated::eddsa_tests::test_eddsa_32_64B (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~32680000)
+[out] [PASS] garaga::tests::autogenerated::msm_tests::test_msm_SECP256K1_3P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~37120000)
+[out] [PASS] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_1P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~15920000)
+[out] [PASS] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_2P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~31800000)
+[out] [PASS] garaga::tests::autogenerated::msm_tests::test_msm_SECP256R1_3P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~47760000)
+[out] [PASS] garaga::tests::autogenerated::pairing_tests::test_BLS12_381_mpcheck_2P_2F (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40360000)
+[out] [PASS] garaga::tests::autogenerated::pairing_tests::test_BLS12_381_mpcheck_3P_2F_with_extra_miller_loop_result (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~73040000)
+[out] [PASS] garaga::tests::autogenerated::pairing_tests::test_BN254_mpcheck_2P_2F (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~53200000)
+[out] [PASS] garaga::tests::autogenerated::schnorr_tests::test_schnorr_SECP256K1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~24840000)
+[out] [PASS] garaga::tests::autogenerated::pairing_tests::test_BN254_mpcheck_3P_2F_with_extra_miller_loop_result (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~95760000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_final_exp_BN254 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~331440000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_final_exp_BLS12_381 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~316000000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_pairing_BLS12_381_1P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~501280000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_pairing_BLS12_381_2P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~686560000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_pairing_BN254_1P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~554960000)
+[out] [PASS] garaga::tests::calldata_tests::test_deserialize_full_proof_with_hints_bls12_381 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~8560000)
+[out] [PASS] garaga::tests::sha512_tests::test_sha512_lorem_ipsum (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~31400000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_pairing_BLS12_381_3P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~871880000)
+[out] [PASS] garaga::tests::sha512_tests::test_sha512_size_one (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~10520000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_pairing_BN254_2P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~778480000)
+[out] [PASS] garaga::tests::sha512_tests::test_size_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~10520000)
+[out] [PASS] garaga::utils::drand::tests::test_drand_quicknet_public_key (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~280000)
+[out] [PASS] garaga::utils::drand::tests::test_hash_to_two_bls_felts (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~78680000)
+[out] [PASS] garaga::utils::drand::tests::test_hash_to_curve (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~78680000)
+[out] [PASS] garaga::utils::drand::tests::test_isogeny (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1440000)
+[out] [PASS] garaga::utils::drand::tests::test_map_to_curve (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~440000)
+[out] [PASS] garaga::utils::neg_3::tests::test_scalar_to_epns (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1520000)
+[out] [PASS] garaga::utils::neg_3::tests::test_scalar_to_epns_single (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~480000)
+[out] [PASS] garaga::tests::autogenerated::tower_pairing_tests::test_tower_pairing_BN254_3P (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1002040000)
+[out] [PASS] garaga::utils::noir::honk_transcript::tests::test_transcript_keccak (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~37920000)
+[out] [PASS] garaga::utils::noir::honk_transcript::tests::test_transcript_starknet (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2040000)
+[out] [PASS] garaga::utils::noir::zk_honk_transcript::tests::test_zk_transcript_keccak (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~39120000)
+[out] [PASS] garaga::utils::risc0::risc0_utils_tests::test_output_digest (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~14280000)
+[out] [PASS] garaga::utils::noir::zk_honk_transcript::tests::test_zk_transcript_starknet (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2200000)
+[out] [PASS] garaga::utils::risc0::risc0_utils_tests::test_receipt_claim (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~35800000)
+[out] [PASS] garaga::utils::sp1::tests::test_convert_u32_to_u128 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] garaga::utils::drand::tests::test_decrypt_at_round (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~635640000)
+[out] Tests: 46 passed, 0 failed, 99 ignored, 0 filtered out
+[out] 
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[err]    0.004213478s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.2/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "corelib_imports",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/corelib_imports-0.1.2/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "corelib_imports",
+[out]     "edition": "2023_10",
+[out]     "version": "0.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "corelib_imports": {
+[out]         "discriminator": "corelib_imports 0.1.2 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "garaga",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "garaga",
+[out]     "edition": "2024_07",
+[out]     "version": "0.18.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "corelib_imports": {
+[out]         "discriminator": "corelib_imports 0.1.2 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "garaga": {
+[out]         "discriminator": "garaga 0.18.2 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.49.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {},
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.49.0 (registry+https://scarbs.xyz/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "snforge_std",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.49.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "snforge_std",
+[out]     "edition": "2024_07",
+[out]     "version": "0.49.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.49.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.49.0 (registry+https://scarbs.xyz/)"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/circuits/extf_mul.cairo (1)
+[out]   (W) Unused import: `garaga::circuits::extf_mul::circuit_inverse` [Ln 2, Col 17]
+[out] file:///mnt/maat-workbench/src/circuits/isogeny.cairo (1)
+[out]   (W) Unused import: `garaga::circuits::isogeny::circuit_sub` [Ln 2, Col 47]
+[out] file:///mnt/maat-workbench/src/ec/selectors.cairo (1)
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 429, Col 4]
+[out] file:///mnt/maat-workbench/src/signatures/schnorr.cairo (2)
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 94, Col 67]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 102, Col 7]
+[out] total: 0 errors, 5 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: SIGTERM

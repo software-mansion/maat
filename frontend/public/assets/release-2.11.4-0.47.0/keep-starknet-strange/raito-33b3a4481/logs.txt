@@ -1,0 +1,188 @@
+=== keep-starknet-strange/raito-33b3a4481 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/raito .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 980b2ef..51a35b9 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -19,4 +19,14 @@ inherits = "release"
+[out]  [profile.proving.cairo]
+[out]  enable-gas = false
+[out]  sierra-replace-ids = true
+[out] -unsafe-panic = true
+[out] \ No newline at end of file
+[out] +unsafe-panic = true
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/assumevalid/Scarb.toml b/packages/assumevalid/Scarb.toml
+[out] index 7531198..6bb20ef 100644
+[out] --- a/packages/assumevalid/Scarb.toml
+[out] +++ b/packages/assumevalid/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "assumevalid"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [executable]
+[out]  allow-syscalls=true
+[out] @@ -18,3 +19,9 @@ syscalls = ["consensus/syscalls", "utils/syscalls"]
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/client/Scarb.toml b/packages/client/Scarb.toml
+[out] index 19a036f..524724a 100644
+[out] --- a/packages/client/Scarb.toml
+[out] +++ b/packages/client/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "client"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [executable]
+[out]  allow-syscalls = true
+[out] @@ -23,4 +24,6 @@ lint = "black ../../scripts/data && flake8 ../../scripts/data --max-complexity=1
+[out]  [features]
+[out]  default = ["syscalls"]
+[out]  shinigami = ["consensus/shinigami"]
+[out] -syscalls = ["consensus/syscalls"]
+[out] \ No newline at end of file
+[out] +syscalls = ["consensus/syscalls"]
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/consensus/Scarb.toml b/packages/consensus/Scarb.toml
+[out] index 3cf0b59..62ab22e 100644
+[out] --- a/packages/consensus/Scarb.toml
+[out] +++ b/packages/consensus/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "consensus"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  utils = { path = "../utils" }
+[out] @@ -12,8 +13,12 @@ cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [features]
+[out]  default = []
+[out]  shinigami = []
+[out]  syscalls = ["utils/syscalls"]
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/utils/Scarb.toml b/packages/utils/Scarb.toml
+[out] index 048de57..c1ad15d 100644
+[out] --- a/packages/utils/Scarb.toml
+[out] +++ b/packages/utils/Scarb.toml
+[out] @@ -2,13 +2,20 @@
+[out]  name = "utils"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out]  
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [features]
+[out]  default = []
+[out]  syscalls = []
+[out] +
+[out] +[dependencies]
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/utreexo/Scarb.toml b/packages/utreexo/Scarb.toml
+[out] index 8592594..be3ddbd 100644
+[out] --- a/packages/utreexo/Scarb.toml
+[out] +++ b/packages/utreexo/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "utreexo"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [executable]
+[out]  
+[out] @@ -17,3 +18,6 @@ cairo_test.workspace = true
+[out]  [scripts]
+[out]  lint = "scarb fmt"
+[out]  test = "scarb cairo-test && scarb --profile proving build --target-kinds executable && ../../scripts/data/integration_tests.sh"
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+
+>>> scarb fetch
+[out] error: failed to parse manifest at: /mnt/maat-workbench/packages/assumevalid/Scarb.toml
+[out] 
+[out] Caused by:
+[out]     TOML parse error at line 18, column 12
+[out]        |
+[out]     18 | syscalls = ["consensus/syscalls", "utils/syscalls"]
+[out]        |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out]     invalid character `/` in package name: `consensus/syscalls`, characters must be ASCII lowercase letters, ASCII numbers or underscore
+[out]     
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[out]    1: scarb::core::manifest::toml_manifest::TomlManifest::read_from_path
+[out]    2: <core::iter::adapters::GenericShunt<I,R> as core::iter::traits::iterator::Iterator>::next
+[out]    3: scarb::ops::workspace::read_workspace_root
+[out]    4: scarb::ops::workspace::read_workspace_impl
+[out]    5: scarb::ops::workspace::read_workspace
+[out]    6: scarb::commands::run
+[out]    7: scarb::main
+[out]    8: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    9: main
+[out]   10: __libc_start_call_main
+[out]   11: __libc_start_main_impl
+[out]   12: _start
+Process finished with exit code 1
+
+>>> scarb tree -q --workspace
+Process finished with exit code -1
+
+>>> scarb build --workspace --test
+Process finished with exit code -1
+
+>>> scarb lint --workspace --deny-warnings
+Process finished with exit code -1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+Process finished with exit code -1
+
+>>> maat-test-ls
+Process finished with exit code -1

@@ -1,0 +1,291 @@
+=== alexandria_ascii-0.6.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_ascii/0.6.1 -o archive-621282015243821056.tar.zstd
+
+>>> tar --zstd -xf archive-621282015243821056.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-09-10     ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 1ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index b044aba..89aef4e 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "utilities for working with ascii values"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/packages/ascii"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.12.1"
+[out] +cairo-version = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: '^2.12.1'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_data_structures]
+[out] @@ -28,3 +28,19 @@ version = "^2.12.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] alexandria_ascii v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── alexandria_data_structures v0.6.1
+[out] │   └── cairo_test v2.12.2 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.2 (std) (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(alexandria_ascii_unittest) alexandria_ascii v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `alexandria_ascii::ToAsciiArrayTrait`
+[out]  --> /mnt/maat-workbench/src/lib.cairo:5:15
+[out] use integer::{ToAsciiArrayTrait, ToAsciiTrait};
+[out]               ^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 3 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting alexandria_ascii v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `alexandria_ascii::ToAsciiArrayTrait`
+[out]  --> /mnt/maat-workbench/src/lib.cairo:5:15
+[out] use integer::{ToAsciiArrayTrait, ToAsciiTrait};
+[out]               ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_ascii::ToAsciiTrait`
+[out]  --> /mnt/maat-workbench/src/lib.cairo:5:34
+[out] use integer::{ToAsciiArrayTrait, ToAsciiTrait};
+[out]                                  ^^^^^^^^^^^^
+[out] 
+[out] error: lint checking `alexandria_ascii` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.104811
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_alias_2
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_ascii (scarb cairo-test)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(alexandria_ascii_unittest) alexandria_ascii v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `alexandria_ascii::ToAsciiArrayTrait`
+[out]  --> /mnt/maat-workbench/src/lib.cairo:5:15
+[out] use integer::{ToAsciiArrayTrait, ToAsciiTrait};
+[out]               ^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 1 second
+[out]      Testing alexandria_ascii
+[out] running 6 tests
+[out] test alexandria_ascii::tests::test_ascii_integer::u16_to_ascii ... ok (gas usage est.: 24890)
+[out] test alexandria_ascii::tests::test_ascii_integer::u32_to_ascii ... ok (gas usage est.: 44640)
+[out] test alexandria_ascii::tests::test_ascii_integer::u128_to_ascii ... ok (gas usage est.: 428860)
+[out] test alexandria_ascii::tests::test_ascii_integer::u8_to_ascii ... ok (gas usage est.: 16990)
+[out] test alexandria_ascii::tests::test_ascii_integer::u64_to_ascii ... ok (gas usage est.: 84140)
+[out] test alexandria_ascii::tests::test_ascii_integer::u256_to_ascii ... ok (gas usage est.: 2006540)
+[out] test result: ok. 6 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[err]    0.004268880s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "alexandria_ascii",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_ascii",
+[out]     "edition": "2023_11",
+[out]     "version": "0.6.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_ascii": {
+[out]         "discriminator": "alexandria_ascii 0.6.1 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "alexandria_data_structures": {
+[out]         "discriminator": "alexandria_data_structures 0.6.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {},
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "alexandria_data_structures",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_data_structures-0.6.1/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_data_structures",
+[out]     "edition": "2023_11",
+[out]     "version": "0.6.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_data_structures": {
+[out]         "discriminator": "alexandria_data_structures 0.6.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.2/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/lib.cairo (1)
+[out]   (W) Unused import: `alexandria_ascii::ToAsciiArrayTrait` [Ln 4, Col 14]
+[out] total: 0 errors, 1 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

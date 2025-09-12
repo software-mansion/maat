@@ -1,0 +1,84 @@
+=== starkware_utils-1.0.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/starkware_utils/1.0.0 -o archive-607884411310084096.tar.zstd
+
+>>> tar --zstd -xf archive-607884411310084096.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 02e0083..0a9552c 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -21,6 +21,7 @@ keywords = [
+[out]  ]
+[out]  readme = "README.md"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.openzeppelin]
+[out]  version = "^1.0.0"
+[out] @@ -32,5 +33,25 @@ version = "^2.11.4"
+[out]  sort-module-level-items = true
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +assert_macros = "*" # NOTE: added by maat-patch, was: None
+[out] +openzeppelin_testing = "*" # NOTE: added by maat-patch, was: None
+[out] +starkware_utils_testing = "*" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] error: cannot get dependencies of `openzeppelin_testing@4.4.0`
+[out] 
+[out] Caused by:
+[out]     cannot find package `starknet ^2.12.0-rc.2`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[out]    1: scarb::resolver::algorithm::scarb_resolver::{{closure}}
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __GI___clone
+Process finished with exit code 1
+
+>>> scarb tree -q --workspace
+Process finished with exit code -1
+
+>>> scarb build --workspace --test
+Process finished with exit code -1
+
+>>> scarb lint --workspace --deny-warnings
+Process finished with exit code -1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+Process finished with exit code -1
+
+>>> maat-test-ls
+Process finished with exit code -1

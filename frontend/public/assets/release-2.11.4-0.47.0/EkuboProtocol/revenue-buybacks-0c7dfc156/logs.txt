@@ -1,0 +1,2151 @@
+=== EkuboProtocol/revenue-buybacks-0c7dfc156 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 0fcc4dc..08aa140 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -3,7 +3,7 @@ name = "ekubo_rb"
+[out]  version = "0.1.0"
+[out]  description = "Owner for the Ekubo core contract that allows anyone to trigger buybacks via TWAMM"
+[out]  homepage = "https://ekubo.org"
+[out] -cairo-version = ">=2.7.0"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '>=2.7.0'
+[out]  edition = '2024_07'
+[out]  
+[out]  [dependencies]
+[out] @@ -13,6 +13,8 @@ starknet = ">=2.7.0"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  [[target.starknet-contract]]
+[out]  allowed-libfuncs-list.name = "audited"
+[out]  casm = true
+[out] @@ -24,4 +26,17 @@ block_id.number = "691381"
+[out]  
+[out]  [dev-dependencies]
+[out]  snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.29.0" }
+[out] -assert_macros = "2.8.0"
+[out] \ No newline at end of file
+[out] +assert_macros = "2.8.0"
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out]     Updating git repository https://github.com/ekuboprotocol/abis
+[out]     Updating git repository https://github.com/foundry-rs/starknet-foundry
+[out] warn: `edition` field not set in `[package]` section for package `map`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails`
+[out] warn: `edition` field not set in `[package]` section for package `main_workspace`
+[out] warn: `edition` field not set in `[package]` section for package `package1`
+[out] warn: `edition` field not set in `[package]` section for package `package2`
+[out] warn: `edition` field not set in `[package]` section for package `cast_addition`
+[out] warn: `edition` field not set in `[package]` section for package `cast_fibonacci`
+[out] warn: `edition` field not set in `[package]` section for package `constructor_with_params`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails_no_sierra`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails_no_casm`
+[out] warn: `edition` field not set in `[package]` section for package `state`
+[out] warn: `edition` field not set in `[package]` section for package `state_script`
+[out] warn: `edition` field not set in `[package]` section for package `tx_status_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `map`
+[out] warn: `edition` field not set in `[package]` section for package `map_script`
+[out] warn: `edition` field not set in `[package]` section for package `misc_script`
+[out] warn: `edition` field not set in `[package]` section for package `invoke_script`
+[out] warn: `edition` field not set in `[package]` section for package `deploy_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `declare_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `old_sncast_std`
+[out] warn: `edition` field not set in `[package]` section for package `call_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `script1`
+[out] warn: `edition` field not set in `[package]` section for package `script2`
+[out] warn: `edition` field not set in `[package]` section for package `missing_field_script`
+[out] warn: `edition` field not set in `[package]` section for package `state_file_test_script`
+[out] warn: `edition` field not set in `[package]` section for package `basic_package`
+[out] warn: `edition` field not set in `[package]` section for package `empty_lib`
+[out] warn: `edition` field not set in `[package]` section for package `cheatnet_testing_contracts`
+[out] warn: `edition` field not set in `[package]` section for package `collection_without_lib`
+[out] warn: `edition` field not set in `[package]` section for package `panic_decoding`
+[out] warn: `edition` field not set in `[package]` section for package `trace_resources`
+[out] warn: `edition` field not set in `[package]` section for package `fibonacci2`
+[out] warn: `edition` field not set in `[package]` section for package `subtraction`
+[out] warn: `edition` field not set in `[package]` section for package `contract_printing`
+[out] warn: `edition` field not set in `[package]` section for package `forking`
+[out] warn: `edition` field not set in `[package]` section for package `should_panic_test`
+[out] warn: `edition` field not set in `[package]` section for package `features`
+[out] warn: `edition` field not set in `[package]` section for package `erc20_package`
+[out] warn: `edition` field not set in `[package]` section for package `empty`
+[out] warn: `edition` field not set in `[package]` section for package `hello_workspaces`
+[out] warn: `edition` field not set in `[package]` section for package `addition`
+[out] warn: `edition` field not set in `[package]` section for package `fibonacci`
+[out] warn: `edition` field not set in `[package]` section for package `exit_first`
+[out] warn: `edition` field not set in `[package]` section for package `trace_info`
+[out] warn: `edition` field not set in `[package]` section for package `file_reading`
+[out] warn: `edition` field not set in `[package]` section for package `env`
+[out] warn: `edition` field not set in `[package]` section for package `fuzzing`
+[out] warn: `edition` field not set in `[package]` section for package `collection_with_lib`
+[out] warn: `edition` field not set in `[package]` section for package `simple_package`
+[out] warn: `edition` field not set in `[package]` section for package `component_macros`
+[out] warn: `edition` field not set in `[package]` section for package `steps`
+[out]     Updating crates.io index
+[out]     Updating git repository `https://github.com/xJonathanLEI/starknet-rs`
+[out]     Updating git submodule `https://github.com/OpenZeppelin/cairo-contracts`
+[out]     Updating git repository `https://github.com/software-mansion/cairo-profiler/`
+[out]  Downloading crates ...
+[out]   Downloaded tinyvec_macros v0.1.1
+[out]   Downloaded smol_str v0.2.2
+[out]   Downloaded form_urlencoded v1.2.1
+[out]   Downloaded percent-encoding v2.3.1
+[out]   Downloaded unicode-bidi v0.3.14
+[out]   Downloaded funty v2.0.0
+[out]   Downloaded const_format_proc_macros v0.2.32
+[out]   Downloaded num-complex v0.2.4
+[out]   Downloaded assert_matches v1.5.0
+[out]   Downloaded yansi v0.5.1
+[out]   Downloaded schemars_derive v0.8.21
+[out]   Downloaded backtrace v0.3.69
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded serde_derive_internals v0.29.0
+[out]   Downloaded ark-ff-macros v0.4.2
+[out]   Downloaded pbkdf2 v0.11.0
+[out]   Downloaded salsa20 v0.10.2
+[out]   Downloaded generic-array v0.14.7
+[out]   Downloaded const-fnv1a-hash v1.1.0
+[out]   Downloaded cairo-lang-debug v2.7.1
+[out]   Downloaded windows_x86_64_gnullvm v0.52.0
+[out]   Downloaded windows_aarch64_gnullvm v0.52.0
+[out]   Downloaded colorchoice v1.0.0
+[out]   Downloaded foreign-types-shared v0.1.1
+[out]   Downloaded num-traits v0.1.43
+[out]   Downloaded cairo-lang-project v2.7.1
+[out]   Downloaded bzip2-sys v0.1.11+1.0.8
+[out]   Downloaded num-rational v0.4.1
+[out]   Downloaded cached_proc_macro v0.17.0
+[out]   Downloaded cairo-lang-defs v2.7.1
+[out]   Downloaded ctor v0.2.8
+[out]   Downloaded phf_generator v0.11.2
+[out]   Downloaded crossbeam-deque v0.8.4
+[out]   Downloaded web-sys v0.3.66
+[out]   Downloaded error-code v2.3.1
+[out]   Downloaded der v0.7.8
+[out]   Downloaded convert_case v0.4.0
+[out]   Downloaded derive_more v0.99.17
+[out]   Downloaded rawpointer v0.2.1
+[out]   Downloaded cairo-lang-sierra-ap-change v2.7.1
+[out]   Downloaded crossbeam-utils v0.8.17
+[out]   Downloaded pin-project v1.1.4
+[out]   Downloaded darling_macro v0.14.4
+[out]   Downloaded tower v0.4.13
+[out]   Downloaded darling_core v0.14.4
+[out]   Downloaded axum v0.7.5
+[out]   Downloaded ndarray v0.13.1
+[out]   Downloaded itertools v0.11.0
+[out]   Downloaded cairo-lang-lowering v2.7.1
+[out]   Downloaded blockifier v0.8.0-rc.2
+[out]   Downloaded cairo-lang-sierra-generator v2.7.1
+[out]   Downloaded cairo-lang-test-plugin v2.7.1
+[out]   Downloaded genco v0.17.8
+[out]   Downloaded bstr v1.8.0
+[out]   Downloaded rayon-core v1.12.1
+[out]   Downloaded portable-atomic v1.6.0
+[out]   Downloaded cairo-lang-syntax-codegen v2.7.1
+[out]   Downloaded rayon v1.10.0
+[out]   Downloaded starknet_api v0.13.0-rc.1
+[out]   Downloaded openssl-src v300.2.3+3.2.1
+[out]   Downloaded sprs v0.7.1
+[out]   Downloaded fs4 v0.7.0
+[out]   Downloaded base16ct v0.2.0
+[out]   Downloaded fs_extra v1.3.0
+[out]   Downloaded project-root v0.2.2
+[out]   Downloaded str-buf v1.0.6
+[out]   Downloaded promptly v0.3.1
+[out]   Downloaded cairo-lang-semantic v2.7.1
+[out]   Downloaded rtoolbox v0.0.2
+[out]   Downloaded rpassword v7.3.1
+[out]   Downloaded darling v0.14.4
+[out]   Downloaded assert_fs v1.1.1
+[out]   Downloaded home v0.5.5
+[out]   Downloaded which v5.0.0
+[out]   Downloaded clap_lex v0.7.0
+[out]   Downloaded heck v0.5.0
+[out]   Downloaded clap_derive v4.5.13
+[out]   Downloaded clap v4.5.13
+[out]   Downloaded indicatif v0.17.7
+[out]   Downloaded camino v1.1.7
+[out]   Downloaded scarb-metadata v1.12.0
+[out]   Downloaded ark-secp256r1 v0.4.0
+[out]   Downloaded number_prefix v0.4.0
+[out]   Downloaded scarb-ui v0.1.5
+[out]   Downloaded ark-ec v0.4.2
+[out]   Downloaded ignore v0.4.22
+[out]   Downloaded cairo-lang-test-utils v2.7.1
+[out]   Downloaded id-arena v2.2.1
+[out]   Downloaded matchit v0.7.3
+[out]   Downloaded pin-project-internal v1.1.4
+[out]   Downloaded primeorder v0.13.6
+[out]   Downloaded globset v0.4.14
+[out]   Downloaded cairo-lang-formatter v2.7.1
+[out]   Downloaded matrixmultiply v0.2.4
+[out]   Downloaded semver v1.0.23
+[out]   Downloaded axum-core v0.4.3
+[out]   Downloaded tower-layer v0.3.2
+[out]   Downloaded include_dir_macros v0.7.4
+[out]   Downloaded elliptic-curve v0.13.8
+[out]   Downloaded p256 v0.13.2
+[out]   Downloaded flatten-serde-json v0.1.0
+[out]   Downloaded cairo-lang-filesystem v2.7.1
+[out]   Downloaded sync_wrapper v0.1.2
+[out]   Downloaded sync_wrapper v1.0.0
+[out]   Downloaded sec1 v0.7.3
+[out]   Downloaded serdect v0.2.0
+[out]   Downloaded cairo-lang-sierra-to-casm v2.7.1
+[out]   Downloaded h2 v0.3.22
+[out]   Downloaded http v0.2.11
+[out]   Downloaded hyper v0.14.27
+[out]   Downloaded ring v0.17.7
+[out]   Downloaded starknet-curve v0.3.0
+[out]   Downloaded starknet-crypto v0.5.2
+[out]   Downloaded predicates v3.0.4
+[out]   Downloaded openssl v0.10.64
+[out]   Downloaded security-framework v2.9.2
+[out]   Downloaded lalrpop v0.20.0
+[out]   Downloaded strum v0.24.1
+[out]   Downloaded doc-comment v0.3.3
+[out]   Downloaded globwalk v0.9.1
+[out]   Downloaded difflib v0.4.0
+[out]   Downloaded predicates-tree v1.0.9
+[out]   Downloaded vcpkg v0.2.15
+[out]   Downloaded openssl-sys v0.9.102
+[out]   Downloaded rustls-webpki v0.101.7
+[out]   Downloaded cairo-lang-parser v2.7.1
+[out]   Downloaded windows_x86_64_gnullvm v0.48.5
+[out]   Downloaded windows_x86_64_msvc v0.48.5
+[out]   Downloaded cairo-lang-plugins v2.7.1
+[out]   Downloaded cairo-lang-proc-macros v2.7.1
+[out]   Downloaded overload v0.1.1
+[out]   Downloaded rustls v0.21.10
+[out]   Downloaded webpki-roots v0.22.6
+[out]   Downloaded encoding_rs v0.8.33
+[out]   Downloaded cached_proc_macro_types v0.1.0
+[out]   Downloaded cached v0.44.0
+[out]   Downloaded const-oid v0.9.6
+[out]   Downloaded zeroize_derive v1.4.2
+[out]   Downloaded zeroize v1.7.0
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded reqwest v0.11.18
+[out]   Downloaded aes v0.8.3
+[out]   Downloaded tokio v1.38.0
+[out]   Downloaded windows-sys v0.48.0
+[out]   Downloaded minimal-lexical v0.2.1
+[out]   Downloaded cairo-lang-starknet v2.7.1
+[out]   Downloaded nom v7.1.3
+[out]   Downloaded num-prime v0.4.3
+[out]   Downloaded rust_decimal v1.35.0
+[out]   Downloaded zstd-sys v2.0.11+zstd.1.5.6
+[out]   Downloaded windows_aarch64_msvc v0.48.5
+[out]   Downloaded windows_i686_gnu v0.48.5
+[out]   Downloaded windows_x86_64_gnu v0.48.5
+[out]   Downloaded rustix v0.38.31
+[out]   Downloaded regex-syntax v0.7.5
+[out]   Downloaded windows_aarch64_gnullvm v0.48.5
+[out]   Downloaded windows_i686_msvc v0.48.5
+[out]   Downloaded cairo-lang-compiler v2.7.1
+[out]   Downloaded bimap v0.6.3
+[out]   Downloaded pkcs8 v0.10.2
+[out]   Downloaded zip v0.6.6
+[out]   Downloaded cairo-vm v1.0.1
+[out]   Downloaded itertools v0.10.5
+[out]   Downloaded include_dir v0.7.4
+[out]   Downloaded spki v0.7.3
+[out]   Downloaded minilp v0.2.2
+[out]   Downloaded cairo-lang-eq-solver v2.7.1
+[out]   Downloaded cairo-lang-sierra-gas v2.7.1
+[out]   Downloaded cairo-lang-sierra-type-size v2.7.1
+[out]   Downloaded cairo-lang-starknet-classes v2.7.1
+[out]   Downloaded indent v0.1.1
+[out]   Downloaded http-body v0.4.6
+[out]   Downloaded socket2 v0.4.10
+[out]   Downloaded hyper-tls v0.5.0
+[out]   Downloaded ipnet v2.9.0
+[out]   Downloaded mime v0.3.17
+[out]   Downloaded rustls-pemfile v1.0.4
+[out]   Downloaded serde_urlencoded v0.7.1
+[out]   Downloaded foreign-types v0.3.2
+[out]   Downloaded openssl-macros v0.1.1
+[out]   Downloaded openssl-probe v0.1.5
+[out]   Downloaded pkg-config v0.3.27
+[out]   Downloaded core-foundation v0.9.4
+[out]   Downloaded term v0.7.0
+[out]   Downloaded unicode-xid v0.2.4
+[out]   Downloaded sha2 v0.10.8
+[out]   Downloaded security-framework-sys v2.9.1
+[out]   Downloaded native-tls v0.2.11
+[out]   Downloaded tokio-native-tls v0.3.1
+[out]   Downloaded sct v0.7.1
+[out]   Downloaded tokio-rustls v0.24.1
+[out]   Downloaded tower-service v0.3.2
+[out]   Downloaded wasm-bindgen-futures v0.4.39
+[out]   Downloaded untrusted v0.9.0
+[out]   Downloaded webpki v0.22.4
+[out]   Downloaded winreg v0.10.1
+[out]   Downloaded proc-macro-error-attr v1.0.4
+[out]   Downloaded proc-macro-error v1.0.4
+[out]   Downloaded auto_impl v1.1.0
+[out]   Downloaded ctr v0.9.2
+[out]   Downloaded base64ct v1.6.0
+[out]   Downloaded password-hash v0.4.2
+[out]   Downloaded signal-hook-registry v1.4.1
+[out]   Downloaded socket2 v0.5.5
+[out]   Downloaded tokio-macros v2.3.0
+[out]   Downloaded wiremock v0.6.1
+[out]   Downloaded data-encoding v2.5.0
+[out]   Downloaded xxhash-rust v0.8.10
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded linkme-impl v0.3.25
+[out]   Downloaded linkme v0.3.25
+[out]   Downloaded cairo-lang-macro v0.1.0
+[out]   Downloaded cairo-lang-diagnostics v2.7.1
+[out]   Downloaded genco-macros v0.17.8
+[out]   Downloaded relative-path v1.9.0
+[out]   Downloaded lru v0.7.8
+[out]   Downloaded num-modular v0.5.1
+[out]   Downloaded starknet-curve v0.4.0
+[out]   Downloaded thiserror-impl-no-std v2.0.2
+[out]   Downloaded petgraph v0.6.4
+[out]   Downloaded schannel v0.1.22
+[out]   Downloaded crunchy v0.2.2
+[out]   Downloaded tiny-keccak v2.0.2
+[out]   Downloaded lalrpop-util v0.20.2
+[out]   Downloaded block-buffer v0.10.4
+[out]   Downloaded pin-project-lite v0.2.13
+[out]   Downloaded xshell-macros v0.2.6
+[out]   Downloaded xshell v0.2.6
+[out]   Downloaded colored v2.1.0
+[out]   Downloaded anyhow v1.0.86
+[out]   Downloaded windows-targets v0.48.5
+[out]   Downloaded parking_lot_core v0.9.9
+[out]   Downloaded parking_lot v0.12.1
+[out]   Downloaded siphasher v0.3.11
+[out]   Downloaded phf_shared v0.10.0
+[out]   Downloaded precomputed-hash v0.1.1
+[out]   Downloaded string_cache v0.8.7
+[out]   Downloaded bitflags v2.4.1
+[out]   Downloaded redox_syscall v0.4.1
+[out]   Downloaded libredox v0.0.1
+[out]   Downloaded redox_users v0.4.4
+[out]   Downloaded dirs-sys-next v0.1.2
+[out]   Downloaded dirs-next v2.0.0
+[out]   Downloaded rustversion v1.0.14
+[out]   Downloaded bincode v2.0.0-rc.3
+[out]   Downloaded starknet-crypto-codegen v0.3.2
+[out]   Downloaded starknet-ff v0.3.5
+[out]   Downloaded starknet-crypto v0.6.1
+[out]   Downloaded thiserror-no-std v2.0.2
+[out]   Downloaded bzip2 v0.4.4
+[out]   Downloaded constant_time_eq v0.1.5
+[out]   Downloaded sha1 v0.10.6
+[out]   Downloaded zstd-safe v5.0.2+zstd.1.5.2
+[out]   Downloaded zstd v0.11.2+zstd.1.5.2
+[out]   Downloaded cairo-lang-runner v2.7.1
+[out]   Downloaded encode_unicode v0.3.6
+[out]   Downloaded unicode-width v0.1.11
+[out]   Downloaded console v0.15.8
+[out]   Downloaded option-ext v0.2.0
+[out]   Downloaded dirs-sys v0.4.1
+[out]   Downloaded dirs v5.0.1
+[out]   Downloaded shellexpand v3.1.0
+[out]   Downloaded normalize-line-endings v0.3.0
+[out]   Downloaded similar v2.3.0
+[out]   Downloaded anstyle-parse v0.2.3
+[out]   Downloaded anstyle-query v1.0.2
+[out]   Downloaded anstyle v1.0.4
+[out]   Downloaded anstyle-wincon v3.0.2
+[out]   Downloaded snapbox-macros v0.3.8
+[out]   Downloaded fixed-hash v0.8.0
+[out]   Downloaded impl-codec v0.6.0
+[out]   Downloaded rustc-hex v2.1.0
+[out]   Downloaded impl-serde v0.4.0
+[out]   Downloaded linux-raw-sys v0.4.12
+[out]   Downloaded windows-sys v0.52.0
+[out]   Downloaded lambdaworks-math v0.7.0
+[out]   Downloaded cairo-lang-sierra v2.7.1
+[out]   Downloaded k256 v0.13.3
+[out]   Downloaded radix_trie v0.2.1
+[out]   Downloaded rustyline v9.1.2
+[out]   Downloaded winapi-i686-pc-windows-gnu v0.4.0
+[out]   Downloaded winapi-x86_64-pc-windows-gnu v0.4.0
+[out]   Downloaded utf8parse v0.2.1
+[out]   Downloaded anstream v0.6.11
+[out]   Downloaded snapbox v0.4.17
+[out]   Downloaded ethbloom v0.13.0
+[out]   Downloaded rlp v0.5.2
+[out]   Downloaded impl-rlp v0.3.0
+[out]   Downloaded primitive-types v0.12.2
+[out]   Downloaded byteorder v1.5.0
+[out]   Downloaded static_assertions v1.1.0
+[out]   Downloaded uint v0.9.5
+[out]   Downloaded ethereum-types v0.14.1
+[out]   Downloaded hyper-rustls v0.24.2
+[out]   Downloaded windows_aarch64_msvc v0.52.0
+[out]   Downloaded windows_i686_gnu v0.52.0
+[out]   Downloaded windows_i686_msvc v0.52.0
+[out]   Downloaded windows_x86_64_msvc v0.52.0
+[out]   Downloaded clap_builder v4.5.13
+[out]   Downloaded windows_x86_64_gnu v0.52.0
+[out]   Downloaded is-terminal v0.4.9
+[out]   Downloaded fixedbitset v0.4.2
+[out]   Downloaded pico-args v0.5.0
+[out]   Downloaded hashbrown v0.13.2
+[out]   Downloaded pretty_assertions v1.4.0
+[out]   Downloaded starknet-types-core v0.1.5
+[out]   Downloaded const_format v0.2.32
+[out]   Downloaded winapi v0.3.9
+[out]   Downloaded salsa v0.16.1
+[out]   Downloaded itertools v0.12.1
+[out]   Downloaded glob v0.3.1
+[out]   Downloaded ecdsa v0.16.9
+[out]   Downloaded unicode-segmentation v1.10.1
+[out]   Downloaded cairo-lang-syntax v2.7.1
+[out]   Downloaded zerocopy-derive v0.7.31
+[out]   Downloaded convert_case v0.6.0
+[out]   Downloaded derivative v2.2.0
+[out]   Downloaded ascii-canvas v3.0.0
+[out]   Downloaded bit-vec v0.6.3
+[out]   Downloaded bit-set v0.5.3
+[out]   Downloaded diff v0.1.13
+[out]   Downloaded ena v0.14.2
+[out]   Downloaded hermit-abi v0.3.3
+[out]   Downloaded errno v0.3.8
+[out]   Downloaded windows-targets v0.52.0
+[out]   Downloaded new_debug_unreachable v1.0.4
+[out]   Downloaded keccak v0.1.5
+[out]   Downloaded sha3 v0.10.8
+[out]   Downloaded lambdaworks-crypto v0.7.0
+[out]   Downloaded fs2 v0.4.3
+[out]   Downloaded signature v2.2.0
+[out]   Downloaded ff v0.13.0
+[out]   Downloaded group v0.13.0
+[out]   Downloaded pem-rfc7468 v0.7.0
+[out]   Downloaded fd-lock v3.0.13
+[out]   Downloaded memoffset v0.6.5
+[out]   Downloaded nix v0.23.2
+[out]   Downloaded endian-type v0.1.2
+[out]   Downloaded nibble_vec v0.1.0
+[out]   Downloaded strum v0.25.0
+[out]   Downloaded strum_macros v0.25.3
+[out]   Downloaded strum_macros v0.24.3
+[out]   Downloaded diffy v0.3.0
+[out]   Downloaded crossbeam-epoch v0.9.16
+[out]   Downloaded chrono v0.4.31
+[out]   Downloaded serde_with v2.3.3
+[out]   Downloaded bitvec v1.0.1
+[out]   Downloaded zerocopy v0.7.31
+[out]   Downloaded winnow v0.5.28
+[out]   Downloaded syn v1.0.109
+[out]   Downloaded wasm-bindgen v0.2.89
+[out]   Downloaded typenum v1.17.0
+[out]   Downloaded crypto-common v0.1.6
+[out]   Downloaded subtle v2.5.0
+[out]   Downloaded digest v0.10.7
+[out]   Downloaded cpufeatures v0.2.11
+[out]   Downloaded clipboard-win v4.5.0
+[out]   Downloaded phf_macros v0.11.2
+[out]   Downloaded phf_shared v0.11.2
+[out]   Downloaded phf v0.11.2
+[out]   Downloaded predicates-core v1.0.6
+[out]   Downloaded termtree v0.4.1
+[out]   Downloaded strsim v0.11.0
+[out]   Downloaded serde_path_to_error v0.1.16
+[out]   Downloaded ark-secp256k1 v0.4.0
+[out]   Downloaded ark-poly v0.4.2
+[out]   Downloaded nu-ansi-term v0.46.0
+[out]   Downloaded memoffset v0.9.0
+[out]   Downloaded cairo-lang-casm v2.7.1
+[out]   Downloaded good_lp v1.8.1
+[out]   Downloaded eth-keystore v0.5.0
+[out]   Downloaded flate2 v1.0.30
+[out]   Downloaded serde_json_pythonic v0.1.2
+[out]   Downloaded darling_core v0.20.3
+[out]   Downloaded time-macros v0.2.15
+[out]   Downloaded time v0.3.30
+[out]   Downloaded rfc6979 v0.4.0
+[out]   Downloaded ark-ff-asm v0.4.2
+[out]   Downloaded ark-serialize v0.4.2
+[out]   Downloaded ark-std v0.4.0
+[out]   Downloaded ark-ff v0.4.2
+[out]   Downloaded bigdecimal v0.3.1
+[out]   Downloaded crypto-bigint v0.5.5
+[out]   Downloaded winnow v0.6.5
+[out]   Downloaded base64 v0.21.5
+[out]   Downloaded http-body-util v0.1.0
+[out]   Downloaded futures-task v0.3.30
+[out]   Downloaded pin-utils v0.1.0
+[out]   Downloaded futures-util v0.3.30
+[out]   Downloaded futures-sink v0.3.30
+[out]   Downloaded tokio-util v0.7.11
+[out]   Downloaded h2 v0.4.5
+[out]   Downloaded http v1.0.0
+[out]   Downloaded try-lock v0.2.5
+[out]   Downloaded gimli v0.28.1
+[out]   Downloaded lock_api v0.4.11
+[out]   Downloaded parking_lot_core v0.8.6
+[out]   Downloaded parking_lot v0.11.2
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded heck v0.3.3
+[out]   Downloaded salsa-macros v0.16.0
+[out]   Downloaded smallvec v1.11.2
+[out]   Downloaded thiserror-impl v1.0.61
+[out]   Downloaded either v1.9.0
+[out]   Downloaded tap v1.0.1
+[out]   Downloaded impl-trait-for-tuples v0.2.2
+[out]   Downloaded ahash v0.8.11
+[out]   Downloaded allocator-api2 v0.2.16
+[out]   Downloaded hashbrown v0.14.5
+[out]   Downloaded indexmap v2.2.6
+[out]   Downloaded toml_datetime v0.6.5
+[out]   Downloaded toml_edit v0.21.1
+[out]   Downloaded js-sys v0.3.66
+[out]   Downloaded crc32fast v1.3.2
+[out]   Downloaded android-tzdata v0.1.1
+[out]   Downloaded android_system_properties v0.1.5
+[out]   Downloaded core-foundation-sys v0.8.6
+[out]   Downloaded ident_case v1.0.1
+[out]   Downloaded strsim v0.10.0
+[out]   Downloaded darling_macro v0.20.3
+[out]   Downloaded darling v0.20.3
+[out]   Downloaded serde_with_macros v2.3.3
+[out]   Downloaded deranged v0.3.10
+[out]   Downloaded powerfmt v0.2.0
+[out]   Downloaded time-core v0.1.2
+[out]   Downloaded hmac v0.12.1
+[out]   Downloaded ark-serialize-derive v0.4.2
+[out]   Downloaded paste v1.0.15
+[out]   Downloaded rustc_version v0.4.0
+[out]   Downloaded hex v0.4.3
+[out]   Downloaded fastrand v2.0.1
+[out]   Downloaded tempfile v3.10.1
+[out]   Downloaded test-case v3.3.1
+[out]   Downloaded toml_edit v0.22.12
+[out]   Downloaded futures v0.3.30
+[out]   Downloaded futures-io v0.3.30
+[out]   Downloaded futures-macro v0.3.30
+[out]   Downloaded atomic-waker v1.1.2
+[out]   Downloaded futures-core v0.3.30
+[out]   Downloaded valuable v0.1.0
+[out]   Downloaded tracing-core v0.1.32
+[out]   Downloaded fnv v1.0.7
+[out]   Downloaded httpdate v1.0.3
+[out]   Downloaded want v0.3.1
+[out]   Downloaded hyper v1.1.0
+[out]   Downloaded hyper-util v0.1.3
+[out]   Downloaded jobserver v0.1.31
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded instant v0.1.12
+[out]   Downloaded bitflags v1.3.2
+[out]   Downloaded redox_syscall v0.2.16
+[out]   Downloaded thiserror v1.0.61
+[out]   Downloaded unescaper v0.1.3
+[out]   Downloaded arrayvec v0.7.4
+[out]   Downloaded radium v0.7.0
+[out]   Downloaded wyz v0.5.1
+[out]   Downloaded byte-slice-cast v1.2.2
+[out]   Downloaded equivalent v1.0.1
+[out]   Downloaded proc-macro-crate v3.1.0
+[out]   Downloaded parity-scale-codec-derive v3.6.12
+[out]   Downloaded parity-scale-codec v3.6.12
+[out]   Downloaded dyn-clone v1.0.16
+[out]   Downloaded version_check v0.9.4
+[out]   Downloaded spin v0.9.8
+[out]   Downloaded aho-corasick v1.1.2
+[out]   Downloaded regex-automata v0.4.5
+[out]   Downloaded regex-syntax v0.8.2
+[out]   Downloaded syn v2.0.72
+[out]   Downloaded inout v0.1.3
+[out]   Downloaded cipher v0.4.4
+[out]   Downloaded scrypt v0.10.0
+[out]   Downloaded uuid v0.8.2
+[out]   Downloaded base64 v0.13.1
+[out]   Downloaded iana-time-zone-haiku v0.1.2
+[out]   Downloaded windows-core v0.51.1
+[out]   Downloaded iana-time-zone v0.1.58
+[out]   Downloaded test-case-core v3.3.1
+[out]   Downloaded serde_spanned v0.6.5
+[out]   Downloaded toml v0.8.12
+[out]   Downloaded same-file v1.0.6
+[out]   Downloaded assert-json-diff v2.0.2
+[out]   Downloaded deadpool v0.10.0
+[out]   Downloaded futures-executor v0.3.30
+[out]   Downloaded tracing v0.1.40
+[out]   Downloaded http-body v1.0.0
+[out]   Downloaded addr2line v0.21.0
+[out]   Downloaded cc v1.0.83
+[out]   Downloaded schemars v0.8.21
+[out]   Downloaded indoc v2.0.5
+[out]   Downloaded autocfg v1.1.0
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded libc v0.2.153
+[out]   Downloaded wasi v0.11.0+wasi-snapshot-preview1
+[out]   Downloaded bumpalo v3.14.0
+[out]   Downloaded wasm-bindgen-macro v0.2.89
+[out]   Downloaded rand_core v0.6.4
+[out]   Downloaded rand v0.8.5
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded ryu v1.0.16
+[out]   Downloaded serde_json v1.0.122
+[out]   Downloaded quote v1.0.36
+[out]   Downloaded test-case-macros v3.3.1
+[out]   Downloaded winapi-util v0.1.6
+[out]   Downloaded walkdir v2.5.0
+[out]   Downloaded async-trait v0.1.80
+[out]   Downloaded deadpool-runtime v0.1.4
+[out]   Downloaded futures-channel v0.3.30
+[out]   Downloaded slab v0.4.9
+[out]   Downloaded httparse v1.8.0
+[out]   Downloaded indexmap v1.9.3
+[out]   Downloaded cairo-lang-utils v2.7.1
+[out]   Downloaded getrandom v0.2.11
+[out]   Downloaded memchr v2.6.4
+[out]   Downloaded cfg-if v1.0.0
+[out]   Downloaded once_cell v1.19.0
+[out]   Downloaded wasm-bindgen-shared v0.2.89
+[out]   Downloaded itoa v1.0.10
+[out]   Downloaded unicode-ident v1.0.12
+[out]   Downloaded serde_derive v1.0.203
+[out]   Downloaded serde v1.0.203
+[out]   Downloaded object v0.32.1
+[out]   Downloaded ahash v0.7.7
+[out]   Downloaded hashbrown v0.12.3
+[out]   Downloaded lazy_static v1.5.0
+[out]   Downloaded rand_chacha v0.3.1
+[out]   Downloaded log v0.4.22
+[out]   Downloaded wasm-bindgen-backend v0.2.89
+[out]   Downloaded bytes v1.5.0
+[out]   Downloaded mio v0.8.10
+[out]   Downloaded wasm-bindgen-macro-support v0.2.89
+[out]   Downloaded regex v1.10.5
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded ppv-lite86 v0.2.17
+[out]   Downloaded rustc-demangle v0.1.23
+[out]   Downloaded adler v1.0.2
+[out]   Downloaded miniz_oxide v0.7.1
+[out]   Downloaded num_cpus v1.16.0
+[out]   Downloaded oorandom v11.1.3
+[out]   Downloaded unicode-normalization v0.1.22
+[out]   Downloaded idna v0.5.0
+[out]   Downloaded url v2.5.2
+[out]   Downloaded proc-macro2 v1.0.86
+[out]   Downloaded tinyvec v1.6.0
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out] warn: `edition` field not set in `[package]` section for package `map`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails`
+[out] warn: `edition` field not set in `[package]` section for package `main_workspace`
+[out] warn: `edition` field not set in `[package]` section for package `package1`
+[out] warn: `edition` field not set in `[package]` section for package `package2`
+[out] warn: `edition` field not set in `[package]` section for package `cast_addition`
+[out] warn: `edition` field not set in `[package]` section for package `cast_fibonacci`
+[out] warn: `edition` field not set in `[package]` section for package `constructor_with_params`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails_no_sierra`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails_no_casm`
+[out] warn: `edition` field not set in `[package]` section for package `state`
+[out] warn: `edition` field not set in `[package]` section for package `state_script`
+[out] warn: `edition` field not set in `[package]` section for package `tx_status_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `map`
+[out] warn: `edition` field not set in `[package]` section for package `map_script`
+[out] warn: `edition` field not set in `[package]` section for package `misc_script`
+[out] warn: `edition` field not set in `[package]` section for package `invoke_script`
+[out] warn: `edition` field not set in `[package]` section for package `deploy_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `declare_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `old_sncast_std`
+[out] warn: `edition` field not set in `[package]` section for package `call_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `script1`
+[out] warn: `edition` field not set in `[package]` section for package `script2`
+[out] warn: `edition` field not set in `[package]` section for package `missing_field_script`
+[out] warn: `edition` field not set in `[package]` section for package `state_file_test_script`
+[out] warn: `edition` field not set in `[package]` section for package `basic_package`
+[out] warn: `edition` field not set in `[package]` section for package `empty_lib`
+[out] warn: `edition` field not set in `[package]` section for package `cheatnet_testing_contracts`
+[out] warn: `edition` field not set in `[package]` section for package `collection_without_lib`
+[out] warn: `edition` field not set in `[package]` section for package `panic_decoding`
+[out] warn: `edition` field not set in `[package]` section for package `trace_resources`
+[out] warn: `edition` field not set in `[package]` section for package `fibonacci2`
+[out] warn: `edition` field not set in `[package]` section for package `subtraction`
+[out] warn: `edition` field not set in `[package]` section for package `contract_printing`
+[out] warn: `edition` field not set in `[package]` section for package `forking`
+[out] warn: `edition` field not set in `[package]` section for package `should_panic_test`
+[out] warn: `edition` field not set in `[package]` section for package `features`
+[out] warn: `edition` field not set in `[package]` section for package `erc20_package`
+[out] warn: `edition` field not set in `[package]` section for package `empty`
+[out] warn: `edition` field not set in `[package]` section for package `hello_workspaces`
+[out] warn: `edition` field not set in `[package]` section for package `addition`
+[out] warn: `edition` field not set in `[package]` section for package `fibonacci`
+[out] warn: `edition` field not set in `[package]` section for package `exit_first`
+[out] warn: `edition` field not set in `[package]` section for package `trace_info`
+[out] warn: `edition` field not set in `[package]` section for package `file_reading`
+[out] warn: `edition` field not set in `[package]` section for package `env`
+[out] warn: `edition` field not set in `[package]` section for package `fuzzing`
+[out] warn: `edition` field not set in `[package]` section for package `collection_with_lib`
+[out] warn: `edition` field not set in `[package]` section for package `simple_package`
+[out] warn: `edition` field not set in `[package]` section for package `component_macros`
+[out] warn: `edition` field not set in `[package]` section for package `steps`
+[out]     Updating crates.io index
+[out]     Updating git repository `https://github.com/xJonathanLEI/starknet-rs`
+[out]     Updating git submodule `https://github.com/OpenZeppelin/cairo-contracts`
+[out]     Updating git repository `https://github.com/software-mansion/cairo-profiler/`
+[out]  Downloading crates ...
+[out]   Downloaded form_urlencoded v1.2.1
+[out]   Downloaded percent-encoding v2.3.1
+[out]   Downloaded smol_str v0.2.2
+[out]   Downloaded tinyvec_macros v0.1.1
+[out]   Downloaded tinyvec v1.6.0
+[out]   Downloaded unicode-bidi v0.3.14
+[out]   Downloaded rand_core v0.6.4
+[out]   Downloaded url v2.5.2
+[out]   Downloaded ryu v1.0.16
+[out]   Downloaded wasm-bindgen-macro-support v0.2.89
+[out]   Downloaded proc-macro2 v1.0.86
+[out]   Downloaded getrandom v0.2.11
+[out]   Downloaded memchr v2.6.4
+[out]   Downloaded wasm-bindgen-shared v0.2.89
+[out]   Downloaded wasm-bindgen v0.2.89
+[out]   Downloaded instant v0.1.12
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded num_cpus v1.16.0
+[out]   Downloaded try-lock v0.2.5
+[out]   Downloaded winapi v0.3.9
+[out]   Downloaded ark-serialize-derive v0.4.2
+[out]   Downloaded time-core v0.1.2
+[out]   Downloaded ndarray v0.13.1
+[out]   Downloaded overload v0.1.1
+[out]   Downloaded snapbox v0.4.17
+[out]   Downloaded const_format_proc_macros v0.2.32
+[out]   Downloaded const_format v0.2.32
+[out]   Downloaded bzip2-sys v0.1.11+1.0.8
+[out]   Downloaded ark-poly v0.4.2
+[out]   Downloaded ark-secp256r1 v0.4.0
+[out]   Downloaded ark-secp256k1 v0.4.0
+[out]   Downloaded sprs v0.7.1
+[out]   Downloaded bstr v1.8.0
+[out]   Downloaded scarb-metadata v1.12.0
+[out]   Downloaded scarb-ui v0.1.5
+[out]   Downloaded number_prefix v0.4.0
+[out]   Downloaded serde_path_to_error v0.1.16
+[out]   Downloaded cairo-lang-defs v2.7.1
+[out]   Downloaded precomputed-hash v0.1.1
+[out]   Downloaded windows-targets v0.48.5
+[out]   Downloaded parking_lot v0.12.1
+[out]   Downloaded parking_lot_core v0.9.9
+[out]   Downloaded bit-set v0.5.3
+[out]   Downloaded derivative v2.2.0
+[out]   Downloaded openssl-probe v0.1.5
+[out]   Downloaded cairo-lang-eq-solver v2.7.1
+[out]   Downloaded starknet-crypto v0.5.2
+[out]   Downloaded phf v0.11.2
+[out]   Downloaded clap v4.5.13
+[out]   Downloaded encode_unicode v0.3.6
+[out]   Downloaded convert_case v0.4.0
+[out]   Downloaded ctor v0.2.8
+[out]   Downloaded minimal-lexical v0.2.1
+[out]   Downloaded signature v2.2.0
+[out]   Downloaded ecdsa v0.16.9
+[out]   Downloaded crunchy v0.2.2
+[out]   Downloaded base16ct v0.2.0
+[out]   Downloaded promptly v0.3.1
+[out]   Downloaded darling_core v0.14.4
+[out]   Downloaded cached_proc_macro_types v0.1.0
+[out]   Downloaded fs4 v0.7.0
+[out]   Downloaded elliptic-curve v0.13.8
+[out]   Downloaded rustversion v1.0.14
+[out]   Downloaded flatten-serde-json v0.1.0
+[out]   Downloaded p256 v0.13.2
+[out]   Downloaded rust_decimal v1.35.0
+[out]   Downloaded lalrpop-util v0.20.2
+[out]   Downloaded rayon-core v1.12.1
+[out]   Downloaded lalrpop v0.20.0
+[out]   Downloaded cairo-lang-diagnostics v2.7.1
+[out]   Downloaded cairo-lang-sierra v2.7.1
+[out]   Downloaded cairo-lang-filesystem v2.7.1
+[out]   Downloaded cairo-lang-lowering v2.7.1
+[out]   Downloaded cairo-lang-debug v2.7.1
+[out]   Downloaded cairo-lang-test-utils v2.7.1
+[out]   Downloaded cairo-lang-casm v2.7.1
+[out]   Downloaded unescaper v0.1.3
+[out]   Downloaded k256 v0.13.3
+[out]   Downloaded cached v0.44.0
+[out]   Downloaded zstd-sys v2.0.11+zstd.1.5.6
+[out]   Downloaded ring v0.17.7
+[out]   Downloaded starknet-crypto v0.6.1
+[out]   Downloaded cairo-vm v1.0.1
+[out]   Downloaded cairo-lang-test-plugin v2.7.1
+[out]   Downloaded zip v0.6.6
+[out]   Downloaded windows-sys v0.52.0
+[out]   Downloaded windows-sys v0.48.0
+[out]   Downloaded primeorder v0.13.6
+[out]   Downloaded rayon v1.10.0
+[out]   Downloaded starknet_api v0.13.0-rc.1
+[out]   Downloaded starknet-crypto-codegen v0.3.2
+[out]   Downloaded cairo-lang-plugins v2.7.1
+[out]   Downloaded cairo-lang-formatter v2.7.1
+[out]   Downloaded cairo-lang-sierra-type-size v2.7.1
+[out]   Downloaded cairo-lang-parser v2.7.1
+[out]   Downloaded cairo-lang-semantic v2.7.1
+[out]   Downloaded cairo-lang-sierra-generator v2.7.1
+[out]   Downloaded cairo-lang-project v2.7.1
+[out]   Downloaded cairo-lang-compiler v2.7.1
+[out]   Downloaded cairo-lang-proc-macros v2.7.1
+[out]   Downloaded hyper-util v0.1.3
+[out]   Downloaded der v0.7.8
+[out]   Downloaded cairo-lang-runner v2.7.1
+[out]   Downloaded openssl-src v300.2.3+3.2.1
+[out]   Downloaded serdect v0.2.0
+[out]   Downloaded bimap v0.6.3
+[out]   Downloaded fs2 v0.4.3
+[out]   Downloaded glob v0.3.1
+[out]   Downloaded blockifier v0.8.0-rc.2
+[out]   Downloaded term v0.7.0
+[out]   Downloaded tiny-keccak v2.0.2
+[out]   Downloaded unicode-xid v0.2.4
+[out]   Downloaded include_dir_macros v0.7.4
+[out]   Downloaded include_dir v0.7.4
+[out]   Downloaded libredox v0.0.1
+[out]   Downloaded redox_users v0.4.4
+[out]   Downloaded dirs-next v2.0.0
+[out]   Downloaded dirs-sys-next v0.1.2
+[out]   Downloaded tokio v1.38.0
+[out]   Downloaded linux-raw-sys v0.4.12
+[out]   Downloaded cached_proc_macro v0.17.0
+[out]   Downloaded rtoolbox v0.0.2
+[out]   Downloaded rpassword v7.3.1
+[out]   Downloaded darling_macro v0.14.4
+[out]   Downloaded pkcs8 v0.10.2
+[out]   Downloaded cairo-lang-sierra-to-casm v2.7.1
+[out]   Downloaded windows_aarch64_msvc v0.52.0
+[out]   Downloaded darling v0.14.4
+[out]   Downloaded spki v0.7.3
+[out]   Downloaded sec1 v0.7.3
+[out]   Downloaded windows_i686_gnu v0.52.0
+[out]   Downloaded windows_i686_msvc v0.52.0
+[out]   Downloaded windows_x86_64_gnu v0.52.0
+[out]   Downloaded encoding_rs v0.8.33
+[out]   Downloaded windows_x86_64_msvc v0.52.0
+[out]   Downloaded windows_i686_msvc v0.48.5
+[out]   Downloaded ff v0.13.0
+[out]   Downloaded group v0.13.0
+[out]   Downloaded pem-rfc7468 v0.7.0
+[out]   Downloaded windows_aarch64_msvc v0.48.5
+[out]   Downloaded windows_i686_gnu v0.48.5
+[out]   Downloaded num-prime v0.4.3
+[out]   Downloaded windows_x86_64_gnu v0.48.5
+[out]   Downloaded windows_x86_64_msvc v0.48.5
+[out]   Downloaded derive_more v0.99.17
+[out]   Downloaded nom v7.1.3
+[out]   Downloaded starknet-curve v0.3.0
+[out]   Downloaded web-sys v0.3.66
+[out]   Downloaded windows_aarch64_gnullvm v0.52.0
+[out]   Downloaded windows_x86_64_gnullvm v0.52.0
+[out]   Downloaded h2 v0.3.22
+[out]   Downloaded openssl v0.10.64
+[out]   Downloaded rustix v0.38.31
+[out]   Downloaded starknet-ff v0.3.5
+[out]   Downloaded zstd-safe v5.0.2+zstd.1.5.2
+[out]   Downloaded zstd v0.11.2+zstd.1.5.2
+[out]   Downloaded unicode-width v0.1.11
+[out]   Downloaded console v0.15.8
+[out]   Downloaded dirs-sys v0.4.1
+[out]   Downloaded dirs v5.0.1
+[out]   Downloaded shellexpand v3.1.0
+[out]   Downloaded similar v2.3.0
+[out]   Downloaded anstyle-parse v0.2.3
+[out]   Downloaded anstyle-query v1.0.2
+[out]   Downloaded anstyle v1.0.4
+[out]   Downloaded anstyle-wincon v3.0.2
+[out]   Downloaded vcpkg v0.2.15
+[out]   Downloaded gimli v0.28.1
+[out]   Downloaded windows_aarch64_gnullvm v0.48.5
+[out]   Downloaded windows_x86_64_gnullvm v0.48.5
+[out]   Downloaded strum v0.25.0
+[out]   Downloaded strum_macros v0.25.3
+[out]   Downloaded starknet-curve v0.4.0
+[out]   Downloaded option-ext v0.2.0
+[out]   Downloaded normalize-line-endings v0.3.0
+[out]   Downloaded colorchoice v1.0.0
+[out]   Downloaded http v0.2.11
+[out]   Downloaded hyper v0.14.27
+[out]   Downloaded openssl-sys v0.9.102
+[out]   Downloaded bytes v1.5.0
+[out]   Downloaded socket2 v0.5.5
+[out]   Downloaded regex-syntax v0.7.5
+[out]   Downloaded strum v0.24.1
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded strum_macros v0.24.3
+[out]   Downloaded termtree v0.4.1
+[out]   Downloaded predicates-tree v1.0.9
+[out]   Downloaded assert_fs v1.1.1
+[out]   Downloaded cairo-lang-starknet v2.7.1
+[out]   Downloaded which v5.0.0
+[out]   Downloaded clap_lex v0.7.0
+[out]   Downloaded strsim v0.11.0
+[out]   Downloaded heck v0.5.0
+[out]   Downloaded clap_derive v4.5.13
+[out]   Downloaded num-modular v0.5.1
+[out]   Downloaded security-framework v2.9.2
+[out]   Downloaded object v0.32.1
+[out]   Downloaded backtrace v0.3.69
+[out]   Downloaded pin-project-lite v0.2.13
+[out]   Downloaded signal-hook-registry v1.4.1
+[out]   Downloaded tokio-macros v2.3.0
+[out]   Downloaded wiremock v0.6.1
+[out]   Downloaded data-encoding v2.5.0
+[out]   Downloaded cairo-lang-sierra-gas v2.7.1
+[out]   Downloaded cairo-lang-starknet-classes v2.7.1
+[out]   Downloaded indent v0.1.1
+[out]   Downloaded bincode v2.0.0-rc.3
+[out]   Downloaded lru v0.7.8
+[out]   Downloaded utf8parse v0.2.1
+[out]   Downloaded primitive-types v0.12.2
+[out]   Downloaded byteorder v1.5.0
+[out]   Downloaded static_assertions v1.1.0
+[out]   Downloaded uint v0.9.5
+[out]   Downloaded ethereum-types v0.14.1
+[out]   Downloaded hyper-rustls v0.24.2
+[out]   Downloaded http-body v0.4.6
+[out]   Downloaded socket2 v0.4.10
+[out]   Downloaded hyper-tls v0.5.0
+[out]   Downloaded openssl-macros v0.1.1
+[out]   Downloaded pkg-config v0.3.27
+[out]   Downloaded schannel v0.1.22
+[out]   Downloaded core-foundation v0.9.4
+[out]   Downloaded security-framework-sys v2.9.1
+[out]   Downloaded tokio-rustls v0.24.1
+[out]   Downloaded tower-service v0.3.2
+[out]   Downloaded wasm-bindgen-futures v0.4.39
+[out]   Downloaded miniz_oxide v0.7.1
+[out]   Downloaded genco v0.17.8
+[out]   Downloaded itertools v0.10.5
+[out]   Downloaded petgraph v0.6.4
+[out]   Downloaded addr2line v0.21.0
+[out]   Downloaded jobserver v0.1.31
+[out]   Downloaded adler v1.0.2
+[out]   Downloaded rustc-demangle v0.1.23
+[out]   Downloaded xshell-macros v0.2.6
+[out]   Downloaded xshell v0.2.6
+[out]   Downloaded cairo-lang-syntax-codegen v2.7.1
+[out]   Downloaded colored v2.1.0
+[out]   Downloaded anyhow v1.0.86
+[out]   Downloaded const-fnv1a-hash v1.1.0
+[out]   Downloaded convert_case v0.6.0
+[out]   Downloaded ascii-canvas v3.0.0
+[out]   Downloaded bit-vec v0.6.3
+[out]   Downloaded diff v0.1.13
+[out]   Downloaded ena v0.14.2
+[out]   Downloaded hermit-abi v0.3.3
+[out]   Downloaded errno v0.3.8
+[out]   Downloaded windows-targets v0.52.0
+[out]   Downloaded is-terminal v0.4.9
+[out]   Downloaded fixedbitset v0.4.2
+[out]   Downloaded pico-args v0.5.0
+[out]   Downloaded new_debug_unreachable v1.0.4
+[out]   Downloaded siphasher v0.3.11
+[out]   Downloaded phf_shared v0.10.0
+[out]   Downloaded bitflags v2.4.1
+[out]   Downloaded string_cache v0.8.7
+[out]   Downloaded redox_syscall v0.4.1
+[out]   Downloaded portable-atomic v1.6.0
+[out]   Downloaded nu-ansi-term v0.46.0
+[out]   Downloaded memoffset v0.9.0
+[out]   Downloaded crossbeam-epoch v0.9.16
+[out]   Downloaded crossbeam-deque v0.8.4
+[out]   Downloaded ignore v0.4.22
+[out]   Downloaded assert_matches v1.5.0
+[out]   Downloaded num-complex v0.2.4
+[out]   Downloaded diffy v0.3.0
+[out]   Downloaded globset v0.4.14
+[out]   Downloaded cairo-lang-sierra-ap-change v2.7.1
+[out]   Downloaded matrixmultiply v0.2.4
+[out]   Downloaded rawpointer v0.2.1
+[out]   Downloaded num-traits v0.1.43
+[out]   Downloaded minilp v0.2.2
+[out]   Downloaded good_lp v1.8.1
+[out]   Downloaded rustls-webpki v0.101.7
+[out]   Downloaded rustls v0.21.10
+[out]   Downloaded sha3 v0.10.8
+[out]   Downloaded radix_trie v0.2.1
+[out]   Downloaded webpki-roots v0.22.6
+[out]   Downloaded chrono v0.4.31
+[out]   Downloaded thiserror-impl-no-std v2.0.2
+[out]   Downloaded thiserror-no-std v2.0.2
+[out]   Downloaded bzip2 v0.4.4
+[out]   Downloaded constant_time_eq v0.1.5
+[out]   Downloaded sha1 v0.10.6
+[out]   Downloaded anstream v0.6.11
+[out]   Downloaded snapbox-macros v0.3.8
+[out]   Downloaded ethbloom v0.13.0
+[out]   Downloaded impl-codec v0.6.0
+[out]   Downloaded rlp v0.5.2
+[out]   Downloaded impl-rlp v0.3.0
+[out]   Downloaded impl-serde v0.4.0
+[out]   Downloaded ipnet v2.9.0
+[out]   Downloaded rustls-pemfile v1.0.4
+[out]   Downloaded foreign-types-shared v0.1.1
+[out]   Downloaded foreign-types v0.3.2
+[out]   Downloaded native-tls v0.2.11
+[out]   Downloaded tokio-native-tls v0.3.1
+[out]   Downloaded relative-path v1.9.0
+[out]   Downloaded lambdaworks-crypto v0.7.0
+[out]   Downloaded lambdaworks-math v0.7.0
+[out]   Downloaded tower v0.4.13
+[out]   Downloaded axum v0.7.5
+[out]   Downloaded nix v0.23.2
+[out]   Downloaded rustyline v9.1.2
+[out]   Downloaded itertools v0.11.0
+[out]   Downloaded clap_builder v4.5.13
+[out]   Downloaded hashbrown v0.13.2
+[out]   Downloaded pretty_assertions v1.4.0
+[out]   Downloaded reqwest v0.11.18
+[out]   Downloaded aes v0.8.3
+[out]   Downloaded flate2 v1.0.30
+[out]   Downloaded serde_json_pythonic v0.1.2
+[out]   Downloaded base64 v0.13.1
+[out]   Downloaded darling_core v0.20.3
+[out]   Downloaded time v0.3.30
+[out]   Downloaded serde_with v2.3.3
+[out]   Downloaded hmac v0.12.1
+[out]   Downloaded ark-ff v0.4.2
+[out]   Downloaded crypto-bigint v0.5.5
+[out]   Downloaded winnow v0.6.5
+[out]   Downloaded toml_edit v0.22.12
+[out]   Downloaded base64 v0.21.5
+[out]   Downloaded futures v0.3.30
+[out]   Downloaded futures-util v0.3.30
+[out]   Downloaded tokio-util v0.7.11
+[out]   Downloaded tracing-core v0.1.32
+[out]   Downloaded tracing v0.1.40
+[out]   Downloaded h2 v0.4.5
+[out]   Downloaded http v1.0.0
+[out]   Downloaded hyper v1.1.0
+[out]   Downloaded fixed-hash v0.8.0
+[out]   Downloaded rustc-hex v2.1.0
+[out]   Downloaded mime v0.3.17
+[out]   Downloaded serde_urlencoded v0.7.1
+[out]   Downloaded sct v0.7.1
+[out]   Downloaded xxhash-rust v0.8.10
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded linkme-impl v0.3.25
+[out]   Downloaded linkme v0.3.25
+[out]   Downloaded cairo-lang-macro v0.1.0
+[out]   Downloaded genco-macros v0.17.8
+[out]   Downloaded sha2 v0.10.8
+[out]   Downloaded block-buffer v0.10.4
+[out]   Downloaded const-oid v0.9.6
+[out]   Downloaded zeroize_derive v1.4.2
+[out]   Downloaded zeroize v1.7.0
+[out]   Downloaded generic-array v0.14.7
+[out]   Downloaded typenum v1.17.0
+[out]   Downloaded crypto-common v0.1.6
+[out]   Downloaded subtle v2.5.0
+[out]   Downloaded digest v0.10.7
+[out]   Downloaded cpufeatures v0.2.11
+[out]   Downloaded keccak v0.1.5
+[out]   Downloaded starknet-types-core v0.1.5
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded semver v1.0.23
+[out]   Downloaded crossbeam-utils v0.8.17
+[out]   Downloaded sync_wrapper v0.1.2
+[out]   Downloaded axum-core v0.4.3
+[out]   Downloaded matchit v0.7.3
+[out]   Downloaded sync_wrapper v1.0.0
+[out]   Downloaded pin-project-internal v1.1.4
+[out]   Downloaded pin-project v1.1.4
+[out]   Downloaded tower-layer v0.3.2
+[out]   Downloaded fs_extra v1.3.0
+[out]   Downloaded project-root v0.2.2
+[out]   Downloaded error-code v2.3.1
+[out]   Downloaded str-buf v1.0.6
+[out]   Downloaded clipboard-win v4.5.0
+[out]   Downloaded fd-lock v3.0.13
+[out]   Downloaded memoffset v0.6.5
+[out]   Downloaded endian-type v0.1.2
+[out]   Downloaded nibble_vec v0.1.0
+[out]   Downloaded num-rational v0.4.1
+[out]   Downloaded phf_generator v0.11.2
+[out]   Downloaded phf_macros v0.11.2
+[out]   Downloaded phf_shared v0.11.2
+[out]   Downloaded doc-comment v0.3.3
+[out]   Downloaded globwalk v0.9.1
+[out]   Downloaded difflib v0.4.0
+[out]   Downloaded predicates v3.0.4
+[out]   Downloaded predicates-core v1.0.6
+[out]   Downloaded home v0.5.5
+[out]   Downloaded indicatif v0.17.7
+[out]   Downloaded camino v1.1.7
+[out]   Downloaded ark-ec v0.4.2
+[out]   Downloaded webpki v0.22.4
+[out]   Downloaded winreg v0.10.1
+[out]   Downloaded proc-macro-error v1.0.4
+[out]   Downloaded auto_impl v1.1.0
+[out]   Downloaded base64ct v1.6.0
+[out]   Downloaded password-hash v0.4.2
+[out]   Downloaded inout v0.1.3
+[out]   Downloaded cipher v0.4.4
+[out]   Downloaded uuid v0.8.2
+[out]   Downloaded eth-keystore v0.5.0
+[out]   Downloaded crc32fast v1.3.2
+[out]   Downloaded core-foundation-sys v0.8.6
+[out]   Downloaded windows-core v0.51.1
+[out]   Downloaded iana-time-zone v0.1.58
+[out]   Downloaded darling v0.20.3
+[out]   Downloaded serde_with_macros v2.3.3
+[out]   Downloaded powerfmt v0.2.0
+[out]   Downloaded rfc6979 v0.4.0
+[out]   Downloaded ark-serialize v0.4.2
+[out]   Downloaded bigdecimal v0.3.1
+[out]   Downloaded hex v0.4.3
+[out]   Downloaded tempfile v3.10.1
+[out]   Downloaded test-case v3.3.1
+[out]   Downloaded serde_spanned v0.6.5
+[out]   Downloaded toml v0.8.12
+[out]   Downloaded walkdir v2.5.0
+[out]   Downloaded assert-json-diff v2.0.2
+[out]   Downloaded async-trait v0.1.80
+[out]   Downloaded deadpool v0.10.0
+[out]   Downloaded futures-channel v0.3.30
+[out]   Downloaded futures-task v0.3.30
+[out]   Downloaded atomic-waker v1.1.2
+[out]   Downloaded futures-core v0.3.30
+[out]   Downloaded futures-sink v0.3.30
+[out]   Downloaded valuable v0.1.0
+[out]   Downloaded fnv v1.0.7
+[out]   Downloaded httparse v1.8.0
+[out]   Downloaded oorandom v11.1.3
+[out]   Downloaded winapi-i686-pc-windows-gnu v0.4.0
+[out]   Downloaded yansi v0.5.1
+[out]   Downloaded id-arena v2.2.1
+[out]   Downloaded untrusted v0.9.0
+[out]   Downloaded proc-macro-error-attr v1.0.4
+[out]   Downloaded ctr v0.9.2
+[out]   Downloaded pbkdf2 v0.11.0
+[out]   Downloaded salsa20 v0.10.2
+[out]   Downloaded scrypt v0.10.0
+[out]   Downloaded android-tzdata v0.1.1
+[out]   Downloaded android_system_properties v0.1.5
+[out]   Downloaded iana-time-zone-haiku v0.1.2
+[out]   Downloaded ident_case v1.0.1
+[out]   Downloaded strsim v0.10.0
+[out]   Downloaded darling_macro v0.20.3
+[out]   Downloaded deranged v0.3.10
+[out]   Downloaded time-macros v0.2.15
+[out]   Downloaded ark-ff-asm v0.4.2
+[out]   Downloaded ark-ff-macros v0.4.2
+[out]   Downloaded ark-std v0.4.0
+[out]   Downloaded paste v1.0.15
+[out]   Downloaded rustc_version v0.4.0
+[out]   Downloaded test-case-core v3.3.1
+[out]   Downloaded same-file v1.0.6
+[out]   Downloaded winapi-util v0.1.6
+[out]   Downloaded deadpool-runtime v0.1.4
+[out]   Downloaded futures-executor v0.3.30
+[out]   Downloaded http-body-util v0.1.0
+[out]   Downloaded futures-io v0.3.30
+[out]   Downloaded futures-macro v0.3.30
+[out]   Downloaded pin-utils v0.1.0
+[out]   Downloaded slab v0.4.9
+[out]   Downloaded winapi-x86_64-pc-windows-gnu v0.4.0
+[out]   Downloaded fastrand v2.0.1
+[out]   Downloaded test-case-macros v3.3.1
+[out]   Downloaded http-body v1.0.0
+[out]   Downloaded want v0.3.1
+[out]   Downloaded cc v1.0.83
+[out]   Downloaded salsa v0.16.1
+[out]   Downloaded httpdate v1.0.3
+[out]   Downloaded mio v0.8.10
+[out]   Downloaded unicode-segmentation v1.10.1
+[out]   Downloaded cairo-lang-syntax v2.7.1
+[out]   Downloaded itertools v0.12.1
+[out]   Downloaded indexmap v2.2.6
+[out]   Downloaded js-sys v0.3.66
+[out]   Downloaded libc v0.2.153
+[out]   Downloaded syn v2.0.72
+[out]   Downloaded zerocopy-derive v0.7.31
+[out]   Downloaded toml_edit v0.21.1
+[out]   Downloaded syn v1.0.109
+[out]   Downloaded hashbrown v0.12.3
+[out]   Downloaded bumpalo v3.14.0
+[out]   Downloaded bitvec v1.0.1
+[out]   Downloaded zerocopy v0.7.31
+[out]   Downloaded hashbrown v0.14.5
+[out]   Downloaded serde v1.0.203
+[out]   Downloaded lock_api v0.4.11
+[out]   Downloaded salsa-macros v0.16.0
+[out]   Downloaded radium v0.7.0
+[out]   Downloaded wyz v0.5.1
+[out]   Downloaded impl-trait-for-tuples v0.2.2
+[out]   Downloaded ahash v0.8.11
+[out]   Downloaded winnow v0.5.28
+[out]   Downloaded log v0.4.22
+[out]   Downloaded serde_derive v1.0.203
+[out]   Downloaded redox_syscall v0.2.16
+[out]   Downloaded parking_lot_core v0.8.6
+[out]   Downloaded parking_lot v0.11.2
+[out]   Downloaded thiserror-impl v1.0.61
+[out]   Downloaded arrayvec v0.7.4
+[out]   Downloaded byte-slice-cast v1.2.2
+[out]   Downloaded allocator-api2 v0.2.16
+[out]   Downloaded toml_datetime v0.6.5
+[out]   Downloaded proc-macro-crate v3.1.0
+[out]   Downloaded parity-scale-codec-derive v3.6.12
+[out]   Downloaded dyn-clone v1.0.16
+[out]   Downloaded version_check v0.9.4
+[out]   Downloaded ahash v0.7.7
+[out]   Downloaded indexmap v1.9.3
+[out]   Downloaded serde_derive_internals v0.29.0
+[out]   Downloaded schemars_derive v0.8.21
+[out]   Downloaded schemars v0.8.21
+[out]   Downloaded cairo-lang-utils v2.7.1
+[out]   Downloaded indoc v2.0.5
+[out]   Downloaded spin v0.9.8
+[out]   Downloaded lazy_static v1.5.0
+[out]   Downloaded autocfg v1.1.0
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded ppv-lite86 v0.2.17
+[out]   Downloaded rand_chacha v0.3.1
+[out]   Downloaded wasi v0.11.0+wasi-snapshot-preview1
+[out]   Downloaded cfg-if v1.0.0
+[out]   Downloaded once_cell v1.19.0
+[out]   Downloaded wasm-bindgen-backend v0.2.89
+[out]   Downloaded unicode-ident v1.0.12
+[out]   Downloaded bitflags v1.3.2
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded heck v0.3.3
+[out]   Downloaded smallvec v1.11.2
+[out]   Downloaded thiserror v1.0.61
+[out]   Downloaded either v1.9.0
+[out]   Downloaded funty v2.0.0
+[out]   Downloaded tap v1.0.1
+[out]   Downloaded equivalent v1.0.1
+[out]   Downloaded parity-scale-codec v3.6.12
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded regex-automata v0.4.5
+[out]   Downloaded regex v1.10.5
+[out]   Downloaded rand v0.8.5
+[out]   Downloaded aho-corasick v1.1.2
+[out]   Downloaded regex-syntax v0.8.2
+[out]   Downloaded serde_json v1.0.122
+[out]   Downloaded idna v0.5.0
+[out]   Downloaded unicode-normalization v0.1.22
+[out]   Downloaded wasm-bindgen-macro v0.2.89
+[out]   Downloaded itoa v1.0.10
+[out]   Downloaded quote v1.0.36
+[out]    Compiling snforge_scarb_plugin v0.1.0 (git+https://github.com/foundry-rs/starknet-foundry.git?tag=v0.29.0#d37d2272ca6c915117646de76cdf26ec06e44f61)
+[out]    Compiling proc-macro2 v1.0.86
+[out]    Compiling unicode-ident v1.0.12
+[out]    Compiling autocfg v1.1.0
+[out]    Compiling libc v0.2.153
+[out]    Compiling version_check v0.9.4
+[out]    Compiling serde v1.0.203
+[out]    Compiling cfg-if v1.0.0
+[out]    Compiling lock_api v0.4.11
+[out]    Compiling num-traits v0.2.19
+[out]    Compiling memchr v2.6.4
+[out]    Compiling ahash v0.8.11
+[out]    Compiling quote v1.0.36
+[out]    Compiling syn v2.0.72
+[out]    Compiling indexmap v1.9.3
+[out]    Compiling typenum v1.17.0
+[out]    Compiling generic-array v0.14.7
+[out]    Compiling serde_json v1.0.122
+[out]    Compiling syn v1.0.109
+[out]    Compiling hashbrown v0.12.3
+[out]    Compiling rand_core v0.6.4
+[out]    Compiling once_cell v1.19.0
+[out]    Compiling smallvec v1.11.2
+[out]    Compiling zerocopy v0.7.31
+[out]    Compiling rand v0.8.5
+[out]    Compiling num-integer v0.1.46
+[out]    Compiling parking_lot_core v0.8.6
+[out]    Compiling itoa v1.0.10
+[out]    Compiling allocator-api2 v0.2.16
+[out]    Compiling schemars v0.8.21
+[out]    Compiling ryu v1.0.16
+[out]    Compiling serde_derive_internals v0.29.0
+[out]    Compiling instant v0.1.12
+[out]    Compiling unicode-segmentation v1.10.1
+[out]    Compiling either v1.9.0
+[out]    Compiling equivalent v1.0.1
+[out]    Compiling parking_lot_core v0.9.9
+[out]    Compiling scopeguard v1.2.0
+[out]    Compiling crossbeam-utils v0.8.17
+[out]    Compiling dyn-clone v1.0.16
+[out]    Compiling aho-corasick v1.1.2
+[out]    Compiling itertools v0.12.1
+[out]    Compiling serde_derive v1.0.203
+[out]    Compiling schemars_derive v0.8.21
+[out]    Compiling heck v0.3.3
+[out]    Compiling dirs-sys-next v0.1.2
+[out]    Compiling crunchy v0.2.2
+[out]    Compiling regex-syntax v0.8.2
+[out]    Compiling rustix v0.38.31
+[out]    Compiling salsa-macros v0.16.0
+[out]    Compiling dirs-next v2.0.0
+[out]    Compiling parking_lot v0.11.2
+[out]    Compiling regex-automata v0.4.5
+[out]    Compiling crypto-common v0.1.6
+[out]    Compiling block-buffer v0.10.4
+[out]    Compiling bitflags v2.4.1
+[out]    Compiling log v0.4.22
+[out]    Compiling thiserror v1.0.61
+[out]    Compiling tiny-keccak v2.0.2
+[out]    Compiling linux-raw-sys v0.4.12
+[out]    Compiling hashbrown v0.14.5
+[out]    Compiling siphasher v0.3.11
+[out]    Compiling semver v1.0.23
+[out]    Compiling oorandom v11.1.3
+[out]    Compiling rustc-hash v1.1.0
+[out]    Compiling indexmap v2.2.6
+[out]    Compiling phf_shared v0.10.0
+[out]    Compiling num-bigint v0.4.6
+[out]    Compiling salsa v0.16.1
+[out]    Compiling smol_str v0.2.2
+[out]    Compiling digest v0.10.7
+[out]    Compiling cairo-lang-utils v2.7.1
+[out]    Compiling term v0.7.0
+[out]    Compiling parking_lot v0.12.1
+[out]    Compiling thiserror-impl v1.0.61
+[out]    Compiling precomputed-hash v0.1.1
+[out]    Compiling fixedbitset v0.4.2
+[out]    Compiling new_debug_unreachable v1.0.4
+[out]    Compiling genco-macros v0.17.8
+[out]    Compiling bit-vec v0.6.3
+[out]    Compiling string_cache v0.8.7
+[out]    Compiling itertools v0.10.5
+[out]    Compiling bit-set v0.5.3
+[out]    Compiling petgraph v0.6.4
+[out]    Compiling ena v0.14.2
+[out]    Compiling ascii-canvas v3.0.0
+[out]    Compiling cairo-lang-debug v2.7.1
+[out]    Compiling is-terminal v0.4.9
+[out]    Compiling lalrpop-util v0.20.2
+[out]    Compiling regex v1.10.5
+[out]    Compiling pico-args v0.5.0
+[out]    Compiling diff v0.1.13
+[out]    Compiling regex-syntax v0.7.5
+[out]    Compiling keccak v0.1.5
+[out]    Compiling tinyvec_macros v0.1.1
+[out]    Compiling path-clean v1.0.1
+[out]    Compiling unicode-xid v0.2.4
+[out]    Compiling cpufeatures v0.2.11
+[out]    Compiling lazy_static v1.5.0
+[out]    Compiling sha2 v0.10.8
+[out]    Compiling cairo-lang-filesystem v2.7.1
+[out]    Compiling sha3 v0.10.8
+[out]    Compiling lalrpop v0.20.0
+[out]    Compiling tinyvec v1.6.0
+[out]    Compiling lambdaworks-math v0.7.0
+[out]    Compiling relative-path v1.9.0
+[out]    Compiling xxhash-rust v0.8.10
+[out]    Compiling data-encoding v2.5.0
+[out]    Compiling anyhow v1.0.86
+[out]    Compiling xshell-macros v0.2.6
+[out]    Compiling xshell v0.2.6
+[out]    Compiling cairo-lang-sierra v2.7.1
+[out]    Compiling scarb-stable-hash v1.0.0
+[out]    Compiling genco v0.17.8
+[out]    Compiling lambdaworks-crypto v0.7.0
+[out]    Compiling unicode-normalization v0.1.22
+[out]    Compiling unescaper v0.1.3
+[out]    Compiling linkme-impl v0.3.25
+[out]    Compiling percent-encoding v2.3.1
+[out]    Compiling unicode-bidi v0.3.14
+[out]    Compiling form_urlencoded v1.2.1
+[out]    Compiling linkme v0.3.25
+[out]    Compiling convert_case v0.6.0
+[out]    Compiling cairo-lang-syntax v2.7.1
+[out]    Compiling idna v0.5.0
+[out]    Compiling starknet-types-core v0.1.5
+[out]    Compiling cairo-lang-syntax-codegen v2.7.1
+[out]    Compiling cairo-lang-macro-attributes v0.1.0
+[out]    Compiling cairo-lang-diagnostics v2.7.1
+[out]    Compiling colored v2.1.0
+[out]    Compiling derivative v2.2.0
+[out]    Compiling const-fnv1a-hash v1.1.0
+[out]    Compiling cairo-lang-macro-stable v1.0.0
+[out]    Compiling cairo-lang-macro v0.1.0
+[out]    Compiling cairo-lang-parser v2.7.1
+[out]    Compiling url v2.5.2
+[out]    Compiling indoc v2.0.5
+[out]    Compiling snforge-scarb-plugin v0.1.0 (/mnt/maat-cache/scarb/registry/git/checkouts/starknet-foundry-v6206fshfutuo/d37d2272/crates/snforge-scarb-plugin)
+[out]     Finished `release` profile [optimized] target(s) in 1m 03s
+[out]    Compiling test(ekubo_rb_unittest) ekubo_rb v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: package name differs between Cargo and Scarb manifest
+[out] cargo: `snforge-scarb-plugin`, scarb: `snforge_scarb_plugin`
+[out] this might become an error in future Scarb releases
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:102:1
+[out] #[test]
+[out] ^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:103:1
+[out] #[fork("mainnet")]
+[out] ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:128:1
+[out] #[test]
+[out] ^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:129:1
+[out] #[fork("mainnet")]
+[out] ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:167:1
+[out] #[test]
+[out] ^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:168:1
+[out] #[fork("mainnet")]
+[out] ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:169:1
+[out] #[should_panic(expected: ('Invalid sell token',))]
+[out] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:182:1
+[out] #[test]
+[out] ^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:183:1
+[out] #[fork("mainnet")]
+[out] ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:184:1
+[out] #[should_panic(expected: ('No config for token',))]
+[out] ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:191:1
+[out] #[test]
+[out] ^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:192:1
+[out] #[fork("mainnet")]
+[out] ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:211:1
+[out] #[test]
+[out] ^^^^^^^
+[out] 
+[out] error: Plugin diagnostic: Unsupported attribute.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:212:1
+[out] #[fork("mainnet")]
+[out] ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:16:37
+[out] use starknet::{get_block_timestamp, contract_address_const, ContractAddress};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: could not compile `ekubo_rb` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __GI___clone
+Process finished with exit code 1
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test ekubo_rb (snforge test --fuzzer-seed 1)
+[out] warn: `edition` field not set in `[package]` section for package `map`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails`
+[out] warn: `edition` field not set in `[package]` section for package `main_workspace`
+[out] warn: `edition` field not set in `[package]` section for package `package1`
+[out] warn: `edition` field not set in `[package]` section for package `package2`
+[out] warn: `edition` field not set in `[package]` section for package `cast_addition`
+[out] warn: `edition` field not set in `[package]` section for package `cast_fibonacci`
+[out] warn: `edition` field not set in `[package]` section for package `constructor_with_params`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails_no_sierra`
+[out] warn: `edition` field not set in `[package]` section for package `build_fails_no_casm`
+[out] warn: `edition` field not set in `[package]` section for package `state`
+[out] warn: `edition` field not set in `[package]` section for package `state_script`
+[out] warn: `edition` field not set in `[package]` section for package `tx_status_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `map`
+[out] warn: `edition` field not set in `[package]` section for package `map_script`
+[out] warn: `edition` field not set in `[package]` section for package `misc_script`
+[out] warn: `edition` field not set in `[package]` section for package `invoke_script`
+[out] warn: `edition` field not set in `[package]` section for package `deploy_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `declare_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `old_sncast_std`
+[out] warn: `edition` field not set in `[package]` section for package `call_test_scripts`
+[out] warn: `edition` field not set in `[package]` section for package `script1`
+[out] warn: `edition` field not set in `[package]` section for package `script2`
+[out] warn: `edition` field not set in `[package]` section for package `missing_field_script`
+[out] warn: `edition` field not set in `[package]` section for package `state_file_test_script`
+[out] warn: `edition` field not set in `[package]` section for package `basic_package`
+[out] warn: `edition` field not set in `[package]` section for package `empty_lib`
+[out] warn: `edition` field not set in `[package]` section for package `cheatnet_testing_contracts`
+[out] warn: `edition` field not set in `[package]` section for package `collection_without_lib`
+[out] warn: `edition` field not set in `[package]` section for package `panic_decoding`
+[out] warn: `edition` field not set in `[package]` section for package `trace_resources`
+[out] warn: `edition` field not set in `[package]` section for package `fibonacci2`
+[out] warn: `edition` field not set in `[package]` section for package `subtraction`
+[out] warn: `edition` field not set in `[package]` section for package `contract_printing`
+[out] warn: `edition` field not set in `[package]` section for package `forking`
+[out] warn: `edition` field not set in `[package]` section for package `should_panic_test`
+[out] warn: `edition` field not set in `[package]` section for package `features`
+[out] warn: `edition` field not set in `[package]` section for package `erc20_package`
+[out] warn: `edition` field not set in `[package]` section for package `empty`
+[out] warn: `edition` field not set in `[package]` section for package `hello_workspaces`
+[out] warn: `edition` field not set in `[package]` section for package `addition`
+[out] warn: `edition` field not set in `[package]` section for package `fibonacci`
+[out] warn: `edition` field not set in `[package]` section for package `exit_first`
+[out] warn: `edition` field not set in `[package]` section for package `trace_info`
+[out] warn: `edition` field not set in `[package]` section for package `file_reading`
+[out] warn: `edition` field not set in `[package]` section for package `env`
+[out] warn: `edition` field not set in `[package]` section for package `fuzzing`
+[out] warn: `edition` field not set in `[package]` section for package `collection_with_lib`
+[out] warn: `edition` field not set in `[package]` section for package `simple_package`
+[out] warn: `edition` field not set in `[package]` section for package `component_macros`
+[out] warn: `edition` field not set in `[package]` section for package `steps`
+[out]     Updating crates.io index
+[out]     Updating git repository `https://github.com/xJonathanLEI/starknet-rs`
+[out]     Updating git submodule `https://github.com/OpenZeppelin/cairo-contracts`
+[out]     Updating git repository `https://github.com/software-mansion/cairo-profiler/`
+[out]  Downloading crates ...
+[out]   Downloaded tinyvec_macros v0.1.1
+[out]   Downloaded form_urlencoded v1.2.1
+[out]   Downloaded wasm-bindgen-shared v0.2.89
+[out]   Downloaded smol_str v0.2.2
+[out]   Downloaded schemars_derive v0.8.21
+[out]   Downloaded percent-encoding v2.3.1
+[out]   Downloaded lazy_static v1.5.0
+[out]   Downloaded wyz v0.5.1
+[out]   Downloaded log v0.4.22
+[out]   Downloaded rustc-demangle v0.1.23
+[out]   Downloaded slab v0.4.9
+[out]   Downloaded try-lock v0.2.5
+[out]   Downloaded mio v0.8.10
+[out]   Downloaded futures-core v0.3.30
+[out]   Downloaded futures v0.3.30
+[out]   Downloaded serde_with_macros v2.3.3
+[out]   Downloaded base16ct v0.2.0
+[out]   Downloaded toml v0.8.12
+[out]   Downloaded salsa20 v0.10.2
+[out]   Downloaded hmac v0.12.1
+[out]   Downloaded unicode-segmentation v1.10.1
+[out]   Downloaded ark-serialize-derive v0.4.2
+[out]   Downloaded winnow v0.6.5
+[out]   Downloaded darling_macro v0.20.3
+[out]   Downloaded fd-lock v3.0.13
+[out]   Downloaded anstyle-wincon v3.0.2
+[out]   Downloaded anstream v0.6.11
+[out]   Downloaded starknet_api v0.13.0-rc.1
+[out]   Downloaded strum_macros v0.24.3
+[out]   Downloaded error-code v2.3.1
+[out]   Downloaded globset v0.4.14
+[out]   Downloaded derivative v2.2.0
+[out]   Downloaded id-arena v2.2.1
+[out]   Downloaded sec1 v0.7.3
+[out]   Downloaded fs2 v0.4.3
+[out]   Downloaded group v0.13.0
+[out]   Downloaded keccak v0.1.5
+[out]   Downloaded cpufeatures v0.2.11
+[out]   Downloaded untrusted v0.9.0
+[out]   Downloaded winreg v0.10.1
+[out]   Downloaded openssl-sys v0.9.102
+[out]   Downloaded vcpkg v0.2.15
+[out]   Downloaded thiserror-impl-no-std v2.0.2
+[out]   Downloaded thiserror-no-std v2.0.2
+[out]   Downloaded regex-syntax v0.7.5
+[out]   Downloaded derive_more v0.99.17
+[out]   Downloaded endian-type v0.1.2
+[out]   Downloaded errno v0.3.8
+[out]   Downloaded memoffset v0.6.5
+[out]   Downloaded hashbrown v0.13.2
+[out]   Downloaded phf_generator v0.11.2
+[out]   Downloaded which v5.0.0
+[out]   Downloaded bzip2-sys v0.1.11+1.0.8
+[out]   Downloaded cairo-lang-sierra-to-casm v2.7.1
+[out]   Downloaded cairo-lang-semantic v2.7.1
+[out]   Downloaded ndarray v0.13.1
+[out]   Downloaded num-prime v0.4.3
+[out]   Downloaded nom v7.1.3
+[out]   Downloaded rust_decimal v1.35.0
+[out]   Downloaded openssl v0.10.64
+[out]   Downloaded cairo-lang-starknet v2.7.1
+[out]   Downloaded rustyline v9.1.2
+[out]   Downloaded cairo-lang-sierra-generator v2.7.1
+[out]   Downloaded radix_trie v0.2.1
+[out]   Downloaded minimal-lexical v0.2.1
+[out]   Downloaded cairo-vm v1.0.1
+[out]   Downloaded itertools v0.11.0
+[out]   Downloaded zstd-sys v2.0.11+zstd.1.5.6
+[out]   Downloaded starknet-crypto-codegen v0.3.2
+[out]   Downloaded starknet-ff v0.3.5
+[out]   Downloaded clap_builder v4.5.13
+[out]   Downloaded starknet-crypto v0.6.1
+[out]   Downloaded ring v0.17.7
+[out]   Downloaded windows-targets v0.52.0
+[out]   Downloaded convert_case v0.4.0
+[out]   Downloaded nix v0.23.2
+[out]   Downloaded strsim v0.11.0
+[out]   Downloaded cairo-lang-starknet-classes v2.7.1
+[out]   Downloaded lru v0.7.8
+[out]   Downloaded num-modular v0.5.1
+[out]   Downloaded starknet-curve v0.4.0
+[out]   Downloaded normalize-line-endings v0.3.0
+[out]   Downloaded windows_x86_64_msvc v0.52.0
+[out]   Downloaded rustix v0.38.31
+[out]   Downloaded similar v2.3.0
+[out]   Downloaded hyper-tls v0.5.0
+[out]   Downloaded windows_x86_64_gnullvm v0.52.0
+[out]   Downloaded ipnet v2.9.0
+[out]   Downloaded mime v0.3.17
+[out]   Downloaded windows_aarch64_gnullvm v0.52.0
+[out]   Downloaded rustls-pemfile v1.0.4
+[out]   Downloaded serde_urlencoded v0.7.1
+[out]   Downloaded foreign-types-shared v0.1.1
+[out]   Downloaded openssl-macros v0.1.1
+[out]   Downloaded openssl-probe v0.1.5
+[out]   Downloaded pkg-config v0.3.27
+[out]   Downloaded windows_aarch64_msvc v0.48.5
+[out]   Downloaded windows_i686_msvc v0.48.5
+[out]   Downloaded windows_x86_64_gnu v0.48.5
+[out]   Downloaded nibble_vec v0.1.0
+[out]   Downloaded promptly v0.3.1
+[out]   Downloaded darling_macro v0.14.4
+[out]   Downloaded darling v0.14.4
+[out]   Downloaded phf_macros v0.11.2
+[out]   Downloaded windows_aarch64_msvc v0.52.0
+[out]   Downloaded windows_i686_gnu v0.52.0
+[out]   Downloaded phf_shared v0.11.2
+[out]   Downloaded ctor v0.2.8
+[out]   Downloaded starknet-curve v0.3.0
+[out]   Downloaded starknet-crypto v0.5.2
+[out]   Downloaded windows_i686_msvc v0.52.0
+[out]   Downloaded difflib v0.4.0
+[out]   Downloaded matrixmultiply v0.2.4
+[out]   Downloaded windows_x86_64_gnu v0.52.0
+[out]   Downloaded rawpointer v0.2.1
+[out]   Downloaded num-complex v0.2.4
+[out]   Downloaded good_lp v1.8.1
+[out]   Downloaded cairo-lang-eq-solver v2.7.1
+[out]   Downloaded cairo-lang-sierra-gas v2.7.1
+[out]   Downloaded cairo-lang-sierra-type-size v2.7.1
+[out]   Downloaded indent v0.1.1
+[out]   Downloaded bincode v2.0.0-rc.3
+[out]   Downloaded zip v0.6.6
+[out]   Downloaded foreign-types v0.3.2
+[out]   Downloaded strum v0.24.1
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded assert_matches v1.5.0
+[out]   Downloaded num-traits v0.1.43
+[out]   Downloaded windows_i686_gnu v0.48.5
+[out]   Downloaded constant_time_eq v0.1.5
+[out]   Downloaded zstd-safe v5.0.2+zstd.1.5.2
+[out]   Downloaded zstd v0.11.2+zstd.1.5.2
+[out]   Downloaded cairo-lang-runner v2.7.1
+[out]   Downloaded shellexpand v3.1.0
+[out]   Downloaded web-sys v0.3.66
+[out]   Downloaded clap_derive v4.5.13
+[out]   Downloaded camino v1.1.7
+[out]   Downloaded scarb-metadata v1.12.0
+[out]   Downloaded scarb-ui v0.1.5
+[out]   Downloaded ark-poly v0.4.2
+[out]   Downloaded diffy v0.3.0
+[out]   Downloaded lalrpop v0.20.0
+[out]   Downloaded bzip2 v0.4.4
+[out]   Downloaded sha1 v0.10.6
+[out]   Downloaded encode_unicode v0.3.6
+[out]   Downloaded unicode-width v0.1.11
+[out]   Downloaded linux-raw-sys v0.4.12
+[out]   Downloaded console v0.15.8
+[out]   Downloaded option-ext v0.2.0
+[out]   Downloaded dirs-sys v0.4.1
+[out]   Downloaded dirs v5.0.1
+[out]   Downloaded security-framework v2.9.2
+[out]   Downloaded webpki-roots v0.22.6
+[out]   Downloaded heck v0.5.0
+[out]   Downloaded clap v4.5.13
+[out]   Downloaded serde_path_to_error v0.1.16
+[out]   Downloaded ark-secp256k1 v0.4.0
+[out]   Downloaded crossbeam-epoch v0.9.16
+[out]   Downloaded crossbeam-deque v0.8.4
+[out]   Downloaded itertools v0.10.5
+[out]   Downloaded petgraph v0.6.4
+[out]   Downloaded rustls-webpki v0.101.7
+[out]   Downloaded rustls v0.21.10
+[out]   Downloaded memoffset v0.9.0
+[out]   Downloaded windows_aarch64_gnullvm v0.48.5
+[out]   Downloaded sha3 v0.10.8
+[out]   Downloaded schannel v0.1.22
+[out]   Downloaded core-foundation v0.9.4
+[out]   Downloaded security-framework-sys v2.9.1
+[out]   Downloaded native-tls v0.2.11
+[out]   Downloaded tokio-native-tls v0.3.1
+[out]   Downloaded sct v0.7.1
+[out]   Downloaded tokio-rustls v0.24.1
+[out]   Downloaded windows-sys v0.48.0
+[out]   Downloaded tower-service v0.3.2
+[out]   Downloaded wasm-bindgen-futures v0.4.39
+[out]   Downloaded webpki v0.22.4
+[out]   Downloaded auto_impl v1.1.0
+[out]   Downloaded aes v0.8.3
+[out]   Downloaded cairo-lang-parser v2.7.1
+[out]   Downloaded anyhow v1.0.86
+[out]   Downloaded is-terminal v0.4.9
+[out]   Downloaded fixedbitset v0.4.2
+[out]   Downloaded pico-args v0.5.0
+[out]   Downloaded sha2 v0.10.8
+[out]   Downloaded const-oid v0.9.6
+[out]   Downloaded zeroize_derive v1.4.2
+[out]   Downloaded subtle v2.5.0
+[out]   Downloaded lambdaworks-math v0.7.0
+[out]   Downloaded cairo-lang-sierra v2.7.1
+[out]   Downloaded ctr v0.9.2
+[out]   Downloaded windows-sys v0.52.0
+[out]   Downloaded base64ct v1.6.0
+[out]   Downloaded password-hash v0.4.2
+[out]   Downloaded pin-project-lite v0.2.13
+[out]   Downloaded colored v2.1.0
+[out]   Downloaded new_debug_unreachable v1.0.4
+[out]   Downloaded unicode-xid v0.2.4
+[out]   Downloaded block-buffer v0.10.4
+[out]   Downloaded zeroize v1.7.0
+[out]   Downloaded generic-array v0.14.7
+[out]   Downloaded typenum v1.17.0
+[out]   Downloaded crypto-common v0.1.6
+[out]   Downloaded lambdaworks-crypto v0.7.0
+[out]   Downloaded bimap v0.6.3
+[out]   Downloaded proc-macro-error-attr v1.0.4
+[out]   Downloaded proc-macro-error v1.0.4
+[out]   Downloaded tiny-keccak v2.0.2
+[out]   Downloaded lalrpop-util v0.20.2
+[out]   Downloaded digest v0.10.7
+[out]   Downloaded starknet-types-core v0.1.5
+[out]   Downloaded cairo-lang-filesystem v2.7.1
+[out]   Downloaded k256 v0.13.3
+[out]   Downloaded cairo-lang-debug v2.7.1
+[out]   Downloaded cairo-lang-test-plugin v2.7.1
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded semver v1.0.23
+[out]   Downloaded signature v2.2.0
+[out]   Downloaded ecdsa v0.16.9
+[out]   Downloaded ff v0.13.0
+[out]   Downloaded pem-rfc7468 v0.7.0
+[out]   Downloaded spki v0.7.3
+[out]   Downloaded pkcs8 v0.10.2
+[out]   Downloaded glob v0.3.1
+[out]   Downloaded der v0.7.8
+[out]   Downloaded elliptic-curve v0.13.8
+[out]   Downloaded reqwest v0.11.18
+[out]   Downloaded const-fnv1a-hash v1.1.0
+[out]   Downloaded convert_case v0.6.0
+[out]   Downloaded bit-set v0.5.3
+[out]   Downloaded diff v0.1.13
+[out]   Downloaded bstr v1.8.0
+[out]   Downloaded pretty_assertions v1.4.0
+[out]   Downloaded primeorder v0.13.6
+[out]   Downloaded cached_proc_macro v0.17.0
+[out]   Downloaded cached_proc_macro_types v0.1.0
+[out]   Downloaded cached v0.44.0
+[out]   Downloaded ascii-canvas v3.0.0
+[out]   Downloaded bit-vec v0.6.3
+[out]   Downloaded ena v0.14.2
+[out]   Downloaded hermit-abi v0.3.3
+[out]   Downloaded serdect v0.2.0
+[out]   Downloaded encoding_rs v0.8.33
+[out]   Downloaded cairo-lang-test-utils v2.7.1
+[out]   Downloaded num-rational v0.4.1
+[out]   Downloaded h2 v0.3.22
+[out]   Downloaded http v0.2.11
+[out]   Downloaded hyper v0.14.27
+[out]   Downloaded blockifier v0.8.0-rc.2
+[out]   Downloaded winapi-i686-pc-windows-gnu v0.4.0
+[out]   Downloaded winapi-x86_64-pc-windows-gnu v0.4.0
+[out]   Downloaded str-buf v1.0.6
+[out]   Downloaded clipboard-win v4.5.0
+[out]   Downloaded cairo-lang-compiler v2.7.1
+[out]   Downloaded tower v0.4.13
+[out]   Downloaded axum v0.7.5
+[out]   Downloaded rayon-core v1.12.1
+[out]   Downloaded rayon v1.10.0
+[out]   Downloaded portable-atomic v1.6.0
+[out]   Downloaded cairo-lang-lowering v2.7.1
+[out]   Downloaded sprs v0.7.1
+[out]   Downloaded clap_lex v0.7.0
+[out]   Downloaded cairo-lang-project v2.7.1
+[out]   Downloaded anstyle-parse v0.2.3
+[out]   Downloaded anstyle v1.0.4
+[out]   Downloaded snapbox v0.4.17
+[out]   Downloaded ethbloom v0.13.0
+[out]   Downloaded fixed-hash v0.8.0
+[out]   Downloaded impl-codec v0.6.0
+[out]   Downloaded rustc-hex v2.1.0
+[out]   Downloaded rlp v0.5.2
+[out]   Downloaded impl-rlp v0.3.0
+[out]   Downloaded impl-serde v0.4.0
+[out]   Downloaded primitive-types v0.12.2
+[out]   Downloaded byteorder v1.5.0
+[out]   Downloaded uint v0.9.5
+[out]   Downloaded ethereum-types v0.14.1
+[out]   Downloaded hyper-rustls v0.24.2
+[out]   Downloaded http-body v0.4.6
+[out]   Downloaded socket2 v0.4.10
+[out]   Downloaded const_format v0.2.32
+[out]   Downloaded libc v0.2.153
+[out]   Downloaded regex-automata v0.4.5
+[out]   Downloaded doc-comment v0.3.3
+[out]   Downloaded globwalk v0.9.1
+[out]   Downloaded ark-ec v0.4.2
+[out]   Downloaded ark-secp256r1 v0.4.0
+[out]   Downloaded nu-ansi-term v0.46.0
+[out]   Downloaded anstyle-query v1.0.2
+[out]   Downloaded static_assertions v1.1.0
+[out]   Downloaded tokio v1.38.0
+[out]   Downloaded wiremock v0.6.1
+[out]   Downloaded xxhash-rust v0.8.10
+[out]   Downloaded relative-path v1.9.0
+[out]   Downloaded genco v0.17.8
+[out]   Downloaded xshell v0.2.6
+[out]   Downloaded cairo-lang-syntax-codegen v2.7.1
+[out]   Downloaded windows_x86_64_msvc v0.48.5
+[out]   Downloaded bitflags v2.4.1
+[out]   Downloaded redox_syscall v0.4.1
+[out]   Downloaded dirs-sys-next v0.1.2
+[out]   Downloaded dirs-next v2.0.0
+[out]   Downloaded term v0.7.0
+[out]   Downloaded pin-project-internal v1.1.4
+[out]   Downloaded pin-project v1.1.4
+[out]   Downloaded fs_extra v1.3.0
+[out]   Downloaded indicatif v0.17.7
+[out]   Downloaded ignore v0.4.22
+[out]   Downloaded wasm-bindgen v0.2.89
+[out]   Downloaded regex v1.10.5
+[out]   Downloaded socket2 v0.5.5
+[out]   Downloaded data-encoding v2.5.0
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded linkme-impl v0.3.25
+[out]   Downloaded linkme v0.3.25
+[out]   Downloaded cairo-lang-macro v0.1.0
+[out]   Downloaded cairo-lang-diagnostics v2.7.1
+[out]   Downloaded genco-macros v0.17.8
+[out]   Downloaded xshell-macros v0.2.6
+[out]   Downloaded windows_x86_64_gnullvm v0.48.5
+[out]   Downloaded parking_lot_core v0.9.9
+[out]   Downloaded parking_lot v0.12.1
+[out]   Downloaded precomputed-hash v0.1.1
+[out]   Downloaded string_cache v0.8.7
+[out]   Downloaded libredox v0.0.1
+[out]   Downloaded redox_users v0.4.4
+[out]   Downloaded rustversion v1.0.14
+[out]   Downloaded crunchy v0.2.2
+[out]   Downloaded crossbeam-utils v0.8.17
+[out]   Downloaded axum-core v0.4.3
+[out]   Downloaded matchit v0.7.3
+[out]   Downloaded tower-layer v0.3.2
+[out]   Downloaded include_dir_macros v0.7.4
+[out]   Downloaded include_dir v0.7.4
+[out]   Downloaded flatten-serde-json v0.1.0
+[out]   Downloaded fs4 v0.7.0
+[out]   Downloaded project-root v0.2.2
+[out]   Downloaded termtree v0.4.1
+[out]   Downloaded predicates-tree v1.0.9
+[out]   Downloaded assert_fs v1.1.1
+[out]   Downloaded home v0.5.5
+[out]   Downloaded number_prefix v0.4.0
+[out]   Downloaded cairo-lang-defs v2.7.1
+[out]   Downloaded cairo-lang-plugins v2.7.1
+[out]   Downloaded cairo-lang-proc-macros v2.7.1
+[out]   Downloaded overload v0.1.1
+[out]   Downloaded cairo-lang-formatter v2.7.1
+[out]   Downloaded yansi v0.5.1
+[out]   Downloaded cairo-lang-casm v2.7.1
+[out]   Downloaded cairo-lang-sierra-ap-change v2.7.1
+[out]   Downloaded minilp v0.2.2
+[out]   Downloaded serde_json_pythonic v0.1.2
+[out]   Downloaded chrono v0.4.31
+[out]   Downloaded time v0.3.30
+[out]   Downloaded crypto-bigint v0.5.5
+[out]   Downloaded futures-util v0.3.30
+[out]   Downloaded http v1.0.0
+[out]   Downloaded winapi v0.3.9
+[out]   Downloaded js-sys v0.3.66
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded regex-syntax v0.8.2
+[out]   Downloaded syn v2.0.72
+[out]   Downloaded colorchoice v1.0.0
+[out]   Downloaded utf8parse v0.2.1
+[out]   Downloaded snapbox-macros v0.3.8
+[out]   Downloaded signal-hook-registry v1.4.1
+[out]   Downloaded tokio-macros v2.3.0
+[out]   Downloaded windows-targets v0.48.5
+[out]   Downloaded siphasher v0.3.11
+[out]   Downloaded phf_shared v0.10.0
+[out]   Downloaded sync_wrapper v0.1.2
+[out]   Downloaded sync_wrapper v1.0.0
+[out]   Downloaded p256 v0.13.2
+[out]   Downloaded flate2 v1.0.30
+[out]   Downloaded ark-ff v0.4.2
+[out]   Downloaded bumpalo v3.14.0
+[out]   Downloaded rand v0.8.5
+[out]   Downloaded aho-corasick v1.1.2
+[out]   Downloaded serde v1.0.203
+[out]   Downloaded rtoolbox v0.0.2
+[out]   Downloaded rpassword v7.3.1
+[out]   Downloaded darling_core v0.14.4
+[out]   Downloaded phf v0.11.2
+[out]   Downloaded strum v0.25.0
+[out]   Downloaded strum_macros v0.25.3
+[out]   Downloaded predicates v3.0.4
+[out]   Downloaded predicates-core v1.0.6
+[out]   Downloaded const_format_proc_macros v0.2.32
+[out]   Downloaded pbkdf2 v0.11.0
+[out]   Downloaded inout v0.1.3
+[out]   Downloaded cipher v0.4.4
+[out]   Downloaded scrypt v0.10.0
+[out]   Downloaded uuid v0.8.2
+[out]   Downloaded eth-keystore v0.5.0
+[out]   Downloaded crc32fast v1.3.2
+[out]   Downloaded base64 v0.13.1
+[out]   Downloaded android-tzdata v0.1.1
+[out]   Downloaded android_system_properties v0.1.5
+[out]   Downloaded core-foundation-sys v0.8.6
+[out]   Downloaded iana-time-zone-haiku v0.1.2
+[out]   Downloaded windows-core v0.51.1
+[out]   Downloaded iana-time-zone v0.1.58
+[out]   Downloaded ident_case v1.0.1
+[out]   Downloaded strsim v0.10.0
+[out]   Downloaded darling_core v0.20.3
+[out]   Downloaded deranged v0.3.10
+[out]   Downloaded powerfmt v0.2.0
+[out]   Downloaded time-core v0.1.2
+[out]   Downloaded time-macros v0.2.15
+[out]   Downloaded serde_with v2.3.3
+[out]   Downloaded rfc6979 v0.4.0
+[out]   Downloaded ark-ff-asm v0.4.2
+[out]   Downloaded ark-ff-macros v0.4.2
+[out]   Downloaded ark-serialize v0.4.2
+[out]   Downloaded ark-std v0.4.0
+[out]   Downloaded paste v1.0.15
+[out]   Downloaded hex v0.4.3
+[out]   Downloaded fastrand v2.0.1
+[out]   Downloaded tempfile v3.10.1
+[out]   Downloaded toml_edit v0.22.12
+[out]   Downloaded same-file v1.0.6
+[out]   Downloaded walkdir v2.5.0
+[out]   Downloaded deadpool-runtime v0.1.4
+[out]   Downloaded deadpool v0.10.0
+[out]   Downloaded futures-io v0.3.30
+[out]   Downloaded futures-macro v0.3.30
+[out]   Downloaded tracing-core v0.1.32
+[out]   Downloaded fnv v1.0.7
+[out]   Downloaded http-body v1.0.0
+[out]   Downloaded httparse v1.8.0
+[out]   Downloaded httpdate v1.0.3
+[out]   Downloaded gimli v0.28.1
+[out]   Downloaded jobserver v0.1.31
+[out]   Downloaded itertools v0.12.1
+[out]   Downloaded memchr v2.6.4
+[out]   Downloaded darling v0.20.3
+[out]   Downloaded rustc_version v0.4.0
+[out]   Downloaded base64 v0.21.5
+[out]   Downloaded tokio-util v0.7.11
+[out]   Downloaded tracing v0.1.40
+[out]   Downloaded assert-json-diff v2.0.2
+[out]   Downloaded futures-task v0.3.30
+[out]   Downloaded addr2line v0.21.0
+[out]   Downloaded futures-channel v0.3.30
+[out]   Downloaded atomic-waker v1.1.2
+[out]   Downloaded futures-sink v0.3.30
+[out]   Downloaded valuable v0.1.0
+[out]   Downloaded h2 v0.4.5
+[out]   Downloaded hyper v1.1.0
+[out]   Downloaded hyper-util v0.1.3
+[out]   Downloaded cairo-lang-syntax v2.7.1
+[out]   Downloaded schemars v0.8.21
+[out]   Downloaded cairo-lang-utils v2.7.1
+[out]   Downloaded indoc v2.0.5
+[out]   Downloaded spin v0.9.8
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded ppv-lite86 v0.2.17
+[out]   Downloaded rand_chacha v0.3.1
+[out]   Downloaded wasi v0.11.0+wasi-snapshot-preview1
+[out]   Downloaded wasm-bindgen-macro-support v0.2.89
+[out]   Downloaded wasm-bindgen-macro v0.2.89
+[out]   Downloaded getrandom v0.2.11
+[out]   Downloaded rand_core v0.6.4
+[out]   Downloaded itoa v1.0.10
+[out]   Downloaded ryu v1.0.16
+[out]   Downloaded proc-macro2 v1.0.86
+[out]   Downloaded quote v1.0.36
+[out]   Downloaded unicode-ident v1.0.12
+[out]   Downloaded serde_derive v1.0.203
+[out]   Downloaded bigdecimal v0.3.1
+[out]   Downloaded test-case v3.3.1
+[out]   Downloaded futures-executor v0.3.30
+[out]   Downloaded cc v1.0.83
+[out]   Downloaded parking_lot_core v0.8.6
+[out]   Downloaded parking_lot v0.11.2
+[out]   Downloaded heck v0.3.3
+[out]   Downloaded salsa-macros v0.16.0
+[out]   Downloaded smallvec v1.11.2
+[out]   Downloaded salsa v0.16.1
+[out]   Downloaded thiserror-impl v1.0.61
+[out]   Downloaded either v1.9.0
+[out]   Downloaded byte-slice-cast v1.2.2
+[out]   Downloaded zerocopy v0.7.31
+[out]   Downloaded allocator-api2 v0.2.16
+[out]   Downloaded winnow v0.5.28
+[out]   Downloaded toml_edit v0.21.1
+[out]   Downloaded autocfg v1.1.0
+[out]   Downloaded cfg-if v1.0.0
+[out]   Downloaded test-case-core v3.3.1
+[out]   Downloaded test-case-macros v3.3.1
+[out]   Downloaded serde_spanned v0.6.5
+[out]   Downloaded winapi-util v0.1.6
+[out]   Downloaded async-trait v0.1.80
+[out]   Downloaded pin-utils v0.1.0
+[out]   Downloaded lock_api v0.4.11
+[out]   Downloaded instant v0.1.12
+[out]   Downloaded bitflags v1.3.2
+[out]   Downloaded thiserror v1.0.61
+[out]   Downloaded radium v0.7.0
+[out]   Downloaded bitvec v1.0.1
+[out]   Downloaded impl-trait-for-tuples v0.2.2
+[out]   Downloaded zerocopy-derive v0.7.31
+[out]   Downloaded hashbrown v0.14.5
+[out]   Downloaded indexmap v2.2.6
+[out]   Downloaded syn v1.0.109
+[out]   Downloaded http-body-util v0.1.0
+[out]   Downloaded want v0.3.1
+[out]   Downloaded object v0.32.1
+[out]   Downloaded backtrace v0.3.69
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded redox_syscall v0.2.16
+[out]   Downloaded funty v2.0.0
+[out]   Downloaded equivalent v1.0.1
+[out]   Downloaded toml_datetime v0.6.5
+[out]   Downloaded proc-macro-crate v3.1.0
+[out]   Downloaded parity-scale-codec-derive v3.6.12
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded unescaper v0.1.3
+[out]   Downloaded arrayvec v0.7.4
+[out]   Downloaded tap v1.0.1
+[out]   Downloaded ahash v0.8.11
+[out]   Downloaded dyn-clone v1.0.16
+[out]   Downloaded version_check v0.9.4
+[out]   Downloaded miniz_oxide v0.7.1
+[out]   Downloaded bytes v1.5.0
+[out]   Downloaded adler v1.0.2
+[out]   Downloaded oorandom v11.1.3
+[out]   Downloaded idna v0.5.0
+[out]   Downloaded num_cpus v1.16.0
+[out]   Downloaded openssl-src v300.2.3+3.2.1
+[out]   Downloaded ahash v0.7.7
+[out]   Downloaded hashbrown v0.12.3
+[out]   Downloaded indexmap v1.9.3
+[out]   Downloaded serde_json v1.0.122
+[out]   Downloaded unicode-normalization v0.1.22
+[out]   Downloaded url v2.5.2
+[out]   Downloaded parity-scale-codec v3.6.12
+[out]   Downloaded serde_derive_internals v0.29.0
+[out]   Downloaded once_cell v1.19.0
+[out]   Downloaded wasm-bindgen-backend v0.2.89
+[out]   Downloaded unicode-bidi v0.3.14
+[out]   Downloaded tinyvec v1.6.0
+[out] [ERROR] Package snforge_std version does not meet the minimum required version >=0.44.0. Please upgrade snforge_std in Scarb.toml
+Process finished with exit code 2
+
+>>> maat-test-ls
+[err]    0.004409048s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] 
+[out] 
+[out] ==============================
+[out] total: 0 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: SIGTERM
+[err] 
+[err] thread '<unnamed>' panicked at library/std/src/io/stdio.rs:1123:9:
+[err] failed printing to stdout: Broken pipe (os error 32)
+[err] stack backtrace:
+[err]    0: rust_begin_unwind
+[err]    1: core::panicking::panic_fmt
+[err]    2: std::io::stdio::_print
+[err]    3: scarb_ui::Ui::print
+[err] note: Some details are omitted, run with `RUST_BACKTRACE=full` for a verbose backtrace.

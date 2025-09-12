@@ -1,0 +1,252 @@
+=== opus-1.3.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/opus/1.3.0 -o archive-621372338733756416.tar.zstd
+
+>>> tar --zstd -xf archive-621372338733756416.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 1e6ecfb..267ba79 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -15,6 +15,7 @@ version = "1.3.0"
+[out]  edition = "2024_07"
+[out]  readme = "README.md"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.starknet]
+[out]  version = ">=2.11.4"
+[out] @@ -22,3 +23,23 @@ version = ">=2.11.4"
+[out]  [dependencies.wadray]
+[out]  version = ">=0.6.1"
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.49.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] opus v1.3.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.2 (std)
+[out] ├── wadray v0.6.1
+[out] │   └── starknet v2.12.2 (std) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.2 (std)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(opus_unittest) opus v1.3.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 3 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting opus v1.3.0 (/mnt/maat-workbench/Scarb.toml)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test opus (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(opus_unittest) opus v1.3.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out]      Testing opus
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[err]    0.004250544s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.2/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "opus",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "opus",
+[out]     "edition": "2024_07",
+[out]     "version": "1.3.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "opus": {
+[out]         "discriminator": "opus 1.3.0 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "wadray": {
+[out]         "discriminator": "wadray 0.6.1 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {},
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest",
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "wadray",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/wadray-0.6.1/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "wadray",
+[out]     "edition": "2024_07",
+[out]     "version": "0.6.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "wadray": {
+[out]         "discriminator": "wadray 0.6.1 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] total: 0 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

@@ -1,0 +1,595 @@
+=== pretty_assertions_macro-0.1.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/pretty_assertions_macro/0.1.0 -o archive-615238751905517568.tar.zstd
+
+>>> tar --zstd -xf archive-615238751905517568.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.48.1          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 7f324f5..3da7349 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -19,9 +19,26 @@ homepage = "https://github.com/m-kus/cairo-pretty-assertions"
+[out]  license = "MIT OR Apache-2.0"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/m-kus/cairo-pretty-assertions"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  
+[out]  [cairo-plugin]
+[out]  name = "pretty_assertions_macro"
+[out]  
+[out] +[scripts]
+[out] +test = "cargo test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.48.1" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]     Updating crates.io index
+[out]      Locking 86 packages to latest compatible versions
+[out]       Adding cairo-lang-macro v0.1.1 (available: v0.2.0)
+[out]       Adding itertools v0.13.0 (available: v0.14.0)
+[out]  Downloading crates ...
+[out]   Downloaded thiserror-impl v2.0.16
+[out]   Downloaded quote v1.0.40
+[out]   Downloaded unicode-ident v1.0.18
+[out]   Downloaded serde v1.0.219
+[out]   Downloaded proc-macro2 v1.0.101
+[out]   Downloaded syn v2.0.106
+[out]   Downloaded equivalent v1.0.2
+[out]   Downloaded foldhash v0.1.5
+[out]   Downloaded bitflags v2.9.3
+[out]   Downloaded smallvec v1.15.1
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded data-encoding v2.9.0
+[out]   Downloaded genco-macros v0.17.10
+[out]   Downloaded xshell v0.2.7
+[out]   Downloaded genco v0.17.10
+[out]   Downloaded toml_edit v0.22.27
+[out]   Downloaded cairo-lang-parser v2.12.1
+[out]   Downloaded memchr v2.7.5
+[out]   Downloaded hashbrown v0.15.5
+[out]   Downloaded winnow v0.7.13
+[out]   Downloaded itertools v0.14.0
+[out]   Downloaded cairo-lang-syntax v2.12.1
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded indexmap v2.11.0
+[out]   Downloaded windows_x86_64_gnullvm v0.52.6
+[out]   Downloaded tracing-core v0.1.34
+[out]   Downloaded semver v1.0.26
+[out]   Downloaded toml v0.8.23
+[out]   Downloaded rust-analyzer-salsa v0.17.0-pre.6
+[out]   Downloaded cairo-lang-utils v2.12.1
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded parking_lot v0.12.4
+[out]   Downloaded windows_aarch64_gnullvm v0.52.6
+[out]   Downloaded windows_i686_gnullvm v0.52.6
+[out]   Downloaded cairo-lang-debug v2.12.1
+[out]   Downloaded serde_spanned v0.6.9
+[out]   Downloaded toml_datetime v0.6.11
+[out]   Downloaded toml_write v0.1.2
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded windows_x86_64_gnu v0.52.6
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded smol_str v0.3.2
+[out]   Downloaded windows_i686_msvc v0.52.6
+[out]   Downloaded xxhash-rust v0.8.15
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded windows_i686_gnu v0.52.6
+[out]   Downloaded linkme-impl v0.3.33
+[out]   Downloaded libc v0.2.175
+[out]   Downloaded linkme v0.3.33
+[out]   Downloaded cairo-lang-diagnostics v2.12.1
+[out]   Downloaded windows_aarch64_msvc v0.52.6
+[out]   Downloaded windows_x86_64_msvc v0.52.6
+[out]   Downloaded relative-path v1.9.3
+[out]   Downloaded cairo-lang-syntax-codegen v2.12.1
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded cairo-lang-primitive-token v1.0.0
+[out]   Downloaded allocator-api2 v0.2.21
+[out]   Downloaded redox_syscall v0.5.17
+[out]   Downloaded once_cell v1.21.3
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded cairo-lang-macro v0.1.1
+[out]   Downloaded xshell-macros v0.2.7
+[out]   Downloaded colored v3.0.0
+[out]   Downloaded tracing-attributes v0.1.30
+[out]   Downloaded tracing v0.1.41
+[out]   Downloaded cfg-if v1.0.3
+[out]   Downloaded rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]   Downloaded pin-project-lite v0.2.16
+[out]   Downloaded stable_deref_trait v1.2.0
+[out]   Downloaded triomphe v0.1.14
+[out]   Downloaded borsh v1.5.7
+[out]   Downloaded serde_derive v1.0.219
+[out]   Downloaded oorandom v11.1.5
+[out]   Downloaded autocfg v1.5.0
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded lock_api v0.4.13
+[out]   Downloaded windows-targets v0.52.6
+[out]   Downloaded parking_lot_core v0.9.11
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded cfg_aliases v0.2.1
+[out]   Downloaded itertools v0.13.0
+[out]   Downloaded unescaper v0.1.6
+[out]   Downloaded either v1.15.0
+[out]   Downloaded thiserror v2.0.16
+[out]   Downloaded windows-sys v0.59.0
+[out]   Downloaded cairo-lang-filesystem v2.12.1
+
+>>> scarb tree -q --workspace
+[out] pretty_assertions_macro v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+
+>>> scarb build --workspace --test
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]     Updating crates.io index
+[out]  Downloading crates ...
+[out]   Downloaded either v1.15.0
+[out]   Downloaded thiserror v2.0.16
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded oorandom v11.1.5
+[out]   Downloaded lock_api v0.4.13
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded cairo-lang-primitive-token v1.0.0
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded data-encoding v2.9.0
+[out]   Downloaded linkme-impl v0.3.33
+[out]   Downloaded cairo-lang-diagnostics v2.12.1
+[out]   Downloaded genco v0.17.10
+[out]   Downloaded itertools v0.14.0
+[out]   Downloaded syn v2.0.106
+[out]   Downloaded cairo-lang-filesystem v2.12.1
+[out]   Downloaded cairo-lang-parser v2.12.1
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded genco-macros v0.17.10
+[out]   Downloaded winnow v0.7.13
+[out]   Downloaded cairo-lang-debug v2.12.1
+[out]   Downloaded toml_edit v0.22.27
+[out]   Downloaded windows_aarch64_gnullvm v0.52.6
+[out]   Downloaded rust-analyzer-salsa v0.17.0-pre.6
+[out]   Downloaded parking_lot_core v0.9.11
+[out]   Downloaded parking_lot v0.12.4
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded linkme v0.3.33
+[out]   Downloaded cairo-lang-syntax-codegen v2.12.1
+[out]   Downloaded semver v1.0.26
+[out]   Downloaded memchr v2.7.5
+[out]   Downloaded rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]   Downloaded xxhash-rust v0.8.15
+[out]   Downloaded cairo-lang-macro v0.1.1
+[out]   Downloaded windows_x86_64_gnullvm v0.52.6
+[out]   Downloaded windows_i686_gnullvm v0.52.6
+[out]   Downloaded xshell-macros v0.2.7
+[out]   Downloaded colored v3.0.0
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded toml_write v0.1.2
+[out]   Downloaded cairo-lang-utils v2.12.1
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded libc v0.2.175
+[out]   Downloaded cfg-if v1.0.3
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded relative-path v1.9.3
+[out]   Downloaded serde_spanned v0.6.9
+[out]   Downloaded toml_datetime v0.6.11
+[out]   Downloaded toml v0.8.23
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded windows_x86_64_msvc v0.52.6
+[out]   Downloaded windows_aarch64_msvc v0.52.6
+[out]   Downloaded windows-targets v0.52.6
+[out]   Downloaded windows_x86_64_gnu v0.52.6
+[out]   Downloaded windows_i686_gnu v0.52.6
+[out]   Downloaded serde v1.0.219
+[out]   Downloaded allocator-api2 v0.2.21
+[out]   Downloaded equivalent v1.0.2
+[out]   Downloaded windows_i686_msvc v0.52.6
+[out]   Downloaded foldhash v0.1.5
+[out]   Downloaded indexmap v2.11.0
+[out]   Downloaded xshell v0.2.7
+[out]   Downloaded hashbrown v0.15.5
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded bitflags v2.9.3
+[out]   Downloaded redox_syscall v0.5.17
+[out]   Downloaded triomphe v0.1.14
+[out]   Downloaded cfg_aliases v0.2.1
+[out]   Downloaded serde_derive v1.0.219
+[out]   Downloaded proc-macro2 v1.0.101
+[out]   Downloaded smallvec v1.15.1
+[out]   Downloaded pin-project-lite v0.2.16
+[out]   Downloaded tracing-attributes v0.1.30
+[out]   Downloaded tracing-core v0.1.34
+[out]   Downloaded borsh v1.5.7
+[out]   Downloaded smol_str v0.3.2
+[out]   Downloaded quote v1.0.40
+[out]   Downloaded autocfg v1.5.0
+[out]   Downloaded once_cell v1.21.3
+[out]   Downloaded tracing v0.1.41
+[out]   Downloaded stable_deref_trait v1.2.0
+[out]   Downloaded unicode-ident v1.0.18
+[out]   Downloaded thiserror-impl v2.0.16
+[out]   Downloaded unescaper v0.1.6
+[out]   Downloaded cairo-lang-syntax v2.12.1
+[out]   Downloaded itertools v0.13.0
+[out]   Downloaded windows-sys v0.59.0
+[out]    Compiling pretty_assertions_macro v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling proc-macro2 v1.0.101
+[out]    Compiling unicode-ident v1.0.18
+[out]    Compiling serde v1.0.219
+[out]    Compiling autocfg v1.5.0
+[out]    Compiling allocator-api2 v0.2.21
+[out]    Compiling foldhash v0.1.5
+[out]    Compiling equivalent v1.0.2
+[out]    Compiling num-traits v0.2.19
+[out]    Compiling libc v0.2.175
+[out]    Compiling smallvec v1.15.1
+[out]    Compiling lock_api v0.4.13
+[out]    Compiling parking_lot_core v0.9.11
+[out]    Compiling quote v1.0.40
+[out]    Compiling either v1.15.0
+[out]    Compiling syn v2.0.106
+[out]    Compiling cfg-if v1.0.3
+[out]    Compiling scopeguard v1.2.0
+[out]    Compiling once_cell v1.21.3
+[out]    Compiling num-integer v0.1.46
+[out]    Compiling tracing-core v0.1.34
+[out]    Compiling itertools v0.14.0
+[out]    Compiling stable_deref_trait v1.2.0
+[out]    Compiling toml_write v0.1.2
+[out]    Compiling semver v1.0.26
+[out]    Compiling heck v0.4.1
+[out]    Compiling winnow v0.7.13
+[out]    Compiling pin-project-lite v0.2.16
+[out]    Compiling parking_lot v0.12.4
+[out]    Compiling rustc-hash v1.1.0
+[out]    Compiling genco-macros v0.17.10
+[out]    Compiling oorandom v11.1.5
+[out]    Compiling thiserror v2.0.16
+[out]    Compiling linkme-impl v0.3.33
+[out]    Compiling path-clean v1.0.1
+[out]    Compiling data-encoding v2.9.0
+[out]    Compiling xshell-macros v0.2.7
+[out]    Compiling xxhash-rust v0.8.15
+[out]    Compiling relative-path v1.9.3
+[out]    Compiling scarb-stable-hash v1.0.0
+[out]    Compiling xshell v0.2.7
+[out]    Compiling cairo-lang-primitive-token v1.0.0
+[out]    Compiling colored v3.0.0
+[out]    Compiling cairo-lang-macro-stable v1.0.0
+[out]    Compiling itertools v0.13.0
+[out]    Compiling serde_derive v1.0.219
+[out]    Compiling tracing-attributes v0.1.30
+[out]    Compiling rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]    Compiling thiserror-impl v2.0.16
+[out]    Compiling tracing v0.1.41
+[out]    Compiling genco v0.17.10
+[out]    Compiling unescaper v0.1.6
+[out]    Compiling linkme v0.3.33
+[out]    Compiling cairo-lang-macro-attributes v0.1.0
+[out]    Compiling cairo-lang-syntax-codegen v2.12.1
+[out]    Compiling cairo-lang-macro v0.1.1
+[out]    Compiling hashbrown v0.15.5
+[out]    Compiling indexmap v2.11.0
+[out]    Compiling serde_spanned v0.6.9
+[out]    Compiling toml_datetime v0.6.11
+[out]    Compiling num-bigint v0.4.6
+[out]    Compiling smol_str v0.3.2
+[out]    Compiling triomphe v0.1.14
+[out]    Compiling toml_edit v0.22.27
+[out]    Compiling rust-analyzer-salsa v0.17.0-pre.6
+[out]    Compiling cairo-lang-utils v2.12.1
+[out]    Compiling cairo-lang-debug v2.12.1
+[out]    Compiling toml v0.8.23
+[out]    Compiling cairo-lang-filesystem v2.12.1
+[out]    Compiling cairo-lang-diagnostics v2.12.1
+[out]    Compiling cairo-lang-syntax v2.12.1
+[out]    Compiling cairo-lang-parser v2.12.1
+[out]    Compiling pretty_assertions_macro v0.1.0 (/mnt/maat-workbench)
+[out]     Finished `release` profile [optimized] target(s) in 36.99s
+[out]     Finished `dev` profile target(s) in 38 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]     Updating crates.io index
+[out]  Downloading crates ...
+[out]   Downloaded thiserror-impl v2.0.16
+[out]   Downloaded semver v1.0.26
+[out]   Downloaded unicode-ident v1.0.18
+[out]   Downloaded once_cell v1.21.3
+[out]   Downloaded windows-targets v0.52.6
+[out]   Downloaded parking_lot_core v0.9.11
+[out]   Downloaded windows_x86_64_msvc v0.52.6
+[out]   Downloaded xxhash-rust v0.8.15
+[out]   Downloaded data-encoding v2.9.0
+[out]   Downloaded cairo-lang-macro v0.1.1
+[out]   Downloaded relative-path v1.9.3
+[out]   Downloaded genco-macros v0.17.10
+[out]   Downloaded linkme v0.3.33
+[out]   Downloaded cairo-lang-parser v2.12.1
+[out]   Downloaded allocator-api2 v0.2.21
+[out]   Downloaded hashbrown v0.15.5
+[out]   Downloaded winnow v0.7.13
+[out]   Downloaded itertools v0.14.0
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded indexmap v2.11.0
+[out]   Downloaded colored v3.0.0
+[out]   Downloaded serde_spanned v0.6.9
+[out]   Downloaded xshell v0.2.7
+[out]   Downloaded memchr v2.7.5
+[out]   Downloaded toml_edit v0.22.27
+[out]   Downloaded genco v0.17.10
+[out]   Downloaded windows_aarch64_gnullvm v0.52.6
+[out]   Downloaded windows_i686_gnullvm v0.52.6
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded windows_x86_64_gnullvm v0.52.6
+[out]   Downloaded oorandom v11.1.5
+[out]   Downloaded bitflags v2.9.3
+[out]   Downloaded cairo-lang-syntax-codegen v2.12.1
+[out]   Downloaded toml_datetime v0.6.11
+[out]   Downloaded cairo-lang-filesystem v2.12.1
+[out]   Downloaded cairo-lang-utils v2.12.1
+[out]   Downloaded equivalent v1.0.2
+[out]   Downloaded foldhash v0.1.5
+[out]   Downloaded autocfg v1.5.0
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded redox_syscall v0.5.17
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded linkme-impl v0.3.33
+[out]   Downloaded cairo-lang-diagnostics v2.12.1
+[out]   Downloaded xshell-macros v0.2.7
+[out]   Downloaded cairo-lang-debug v2.12.1
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded libc v0.2.175
+[out]   Downloaded toml_write v0.1.2
+[out]   Downloaded windows_x86_64_gnu v0.52.6
+[out]   Downloaded windows_i686_gnu v0.52.6
+[out]   Downloaded toml v0.8.23
+[out]   Downloaded windows_aarch64_msvc v0.52.6
+[out]   Downloaded windows_i686_msvc v0.52.6
+[out]   Downloaded cairo-lang-primitive-token v1.0.0
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded lock_api v0.4.13
+[out]   Downloaded cfg-if v1.0.3
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded rust-analyzer-salsa v0.17.0-pre.6
+[out]   Downloaded quote v1.0.40
+[out]   Downloaded syn v2.0.106
+[out]   Downloaded parking_lot v0.12.4
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded smallvec v1.15.1
+[out]   Downloaded pin-project-lite v0.2.16
+[out]   Downloaded tracing-attributes v0.1.30
+[out]   Downloaded tracing-core v0.1.34
+[out]   Downloaded triomphe v0.1.14
+[out]   Downloaded borsh v1.5.7
+[out]   Downloaded serde v1.0.219
+[out]   Downloaded smol_str v0.3.2
+[out]   Downloaded thiserror v2.0.16
+[out]   Downloaded rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]   Downloaded tracing v0.1.41
+[out]   Downloaded stable_deref_trait v1.2.0
+[out]   Downloaded serde_derive v1.0.219
+[out]   Downloaded cfg_aliases v0.2.1
+[out]   Downloaded proc-macro2 v1.0.101
+[out]   Downloaded unescaper v0.1.6
+[out]   Downloaded cairo-lang-syntax v2.12.1
+[out]   Downloaded either v1.15.0
+[out]   Downloaded itertools v0.13.0
+[out]   Downloaded windows-sys v0.59.0
+[out] Skipping package pretty_assertions_macro
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test pretty_assertions_macro (cargo test)
+[err]     Updating crates.io index
+[err]  Downloading crates ...
+[err]   Downloaded winnow v0.7.13
+[err]   Downloaded cairo-lang-macro-stable v1.0.0
+[err]   Downloaded allocator-api2 v0.2.21
+[err]   Downloaded cairo-lang-debug v2.12.1
+[err]   Downloaded autocfg v1.5.0
+[err]   Downloaded cfg-if v1.0.3
+[err]   Downloaded foldhash v0.1.5
+[err]   Downloaded linkme-impl v0.3.33
+[err]   Downloaded path-clean v1.0.1
+[err]   Downloaded hashbrown v0.15.5
+[err]   Downloaded lock_api v0.4.13
+[err]   Downloaded linkme v0.3.33
+[err]   Downloaded stable_deref_trait v1.2.0
+[err]   Downloaded toml_write v0.1.2
+[err]   Downloaded xshell-macros v0.2.7
+[err]   Downloaded xshell v0.2.7
+[err]   Downloaded thiserror v2.0.16
+[err]   Downloaded xxhash-rust v0.8.15
+[err]   Downloaded unescaper v0.1.6
+[err]   Downloaded tracing-attributes v0.1.30
+[err]   Downloaded unicode-ident v1.0.18
+[err]   Downloaded tracing-core v0.1.34
+[err]   Downloaded memchr v2.7.5
+[err]   Downloaded toml_edit v0.22.27
+[err]   Downloaded cairo-lang-syntax v2.12.1
+[err]   Downloaded serde v1.0.219
+[err]   Downloaded parking_lot v0.12.4
+[err]   Downloaded tracing v0.1.41
+[err]   Downloaded semver v1.0.26
+[err]   Downloaded proc-macro2 v1.0.101
+[err]   Downloaded num-traits v0.2.19
+[err]   Downloaded smallvec v1.15.1
+[err]   Downloaded serde_derive v1.0.219
+[err]   Downloaded syn v2.0.106
+[err]   Downloaded data-encoding v2.9.0
+[err]   Downloaded triomphe v0.1.14
+[err]   Downloaded toml v0.8.23
+[err]   Downloaded rust-analyzer-salsa-macros v0.17.0-pre.6
+[err]   Downloaded genco v0.17.10
+[err]   Downloaded rust-analyzer-salsa v0.17.0-pre.6
+[err]   Downloaded colored v3.0.0
+[err]   Downloaded toml_datetime v0.6.11
+[err]   Downloaded smol_str v0.3.2
+[err]   Downloaded scopeguard v1.2.0
+[err]   Downloaded num-bigint v0.4.6
+[err]   Downloaded either v1.15.0
+[err]   Downloaded quote v1.0.40
+[err]   Downloaded cairo-lang-syntax-codegen v2.12.1
+[err]   Downloaded thiserror-impl v2.0.16
+[err]   Downloaded relative-path v1.9.3
+[err]   Downloaded once_cell v1.21.3
+[err]   Downloaded rustc-hash v1.1.0
+[err]   Downloaded parking_lot_core v0.9.11
+[err]   Downloaded itertools v0.13.0
+[err]   Downloaded serde_spanned v0.6.9
+[err]   Downloaded oorandom v11.1.5
+[err]   Downloaded num-integer v0.1.46
+[err]   Downloaded heck v0.4.1
+[err]   Downloaded scarb-stable-hash v1.0.0
+[err]   Downloaded pin-project-lite v0.2.16
+[err]   Downloaded libc v0.2.175
+[err]   Downloaded equivalent v1.0.2
+[err]   Downloaded cairo-lang-parser v2.12.1
+[err]   Downloaded cairo-lang-macro v0.1.1
+[err]   Downloaded borsh v1.5.7
+[err]   Downloaded itertools v0.14.0
+[err]   Downloaded indexmap v2.11.0
+[err]   Downloaded genco-macros v0.17.10
+[err]   Downloaded cfg_aliases v0.2.1
+[err]   Downloaded cairo-lang-utils v2.12.1
+[err]   Downloaded cairo-lang-filesystem v2.12.1
+[err]   Downloaded cairo-lang-macro-attributes v0.1.0
+[err]   Downloaded cairo-lang-primitive-token v1.0.0
+[err]   Downloaded cairo-lang-diagnostics v2.12.1
+[err]    Compiling proc-macro2 v1.0.101
+[err]    Compiling unicode-ident v1.0.18
+[err]    Compiling serde v1.0.219
+[err]    Compiling autocfg v1.5.0
+[err]    Compiling allocator-api2 v0.2.21
+[err]    Compiling foldhash v0.1.5
+[err]    Compiling equivalent v1.0.2
+[err]    Compiling num-traits v0.2.19
+[err]    Compiling smallvec v1.15.1
+[err]    Compiling libc v0.2.175
+[err]    Compiling lock_api v0.4.13
+[err]    Compiling either v1.15.0
+[err]    Compiling parking_lot_core v0.9.11
+[err]    Compiling quote v1.0.40
+[err]    Compiling syn v2.0.106
+[err]    Compiling cfg-if v1.0.3
+[err]    Compiling once_cell v1.21.3
+[err]    Compiling scopeguard v1.2.0
+[err]    Compiling num-integer v0.1.46
+[err]    Compiling tracing-core v0.1.34
+[err]    Compiling itertools v0.14.0
+[err]    Compiling winnow v0.7.13
+[err]    Compiling heck v0.4.1
+[err]    Compiling stable_deref_trait v1.2.0
+[err]    Compiling semver v1.0.26
+[err]    Compiling toml_write v0.1.2
+[err]    Compiling pin-project-lite v0.2.16
+[err]    Compiling parking_lot v0.12.4
+[err]    Compiling oorandom v11.1.5
+[err]    Compiling rustc-hash v1.1.0
+[err]    Compiling thiserror v2.0.16
+[err]    Compiling genco-macros v0.17.10
+[err]    Compiling linkme-impl v0.3.33
+[err]    Compiling path-clean v1.0.1
+[err]    Compiling relative-path v1.9.3
+[err]    Compiling data-encoding v2.9.0
+[err]    Compiling xshell-macros v0.2.7
+[err]    Compiling xxhash-rust v0.8.15
+[err]    Compiling scarb-stable-hash v1.0.0
+[err]    Compiling cairo-lang-primitive-token v1.0.0
+[err]    Compiling xshell v0.2.7
+[err]    Compiling colored v3.0.0
+[err]    Compiling cairo-lang-macro-stable v1.0.0
+[err]    Compiling itertools v0.13.0
+[err]    Compiling serde_derive v1.0.219
+[err]    Compiling tracing-attributes v0.1.30
+[err]    Compiling rust-analyzer-salsa-macros v0.17.0-pre.6
+[err]    Compiling thiserror-impl v2.0.16
+[err]    Compiling tracing v0.1.41
+[err]    Compiling genco v0.17.10
+[err]    Compiling unescaper v0.1.6
+[err]    Compiling cairo-lang-macro-attributes v0.1.0
+[err]    Compiling linkme v0.3.33
+[err]    Compiling cairo-lang-syntax-codegen v2.12.1
+[err]    Compiling cairo-lang-macro v0.1.1
+[err]    Compiling hashbrown v0.15.5
+[err]    Compiling toml_datetime v0.6.11
+[err]    Compiling num-bigint v0.4.6
+[err]    Compiling serde_spanned v0.6.9
+[err]    Compiling smol_str v0.3.2
+[err]    Compiling triomphe v0.1.14
+[err]    Compiling indexmap v2.11.0
+[err]    Compiling toml_edit v0.22.27
+[err]    Compiling cairo-lang-utils v2.12.1
+[err]    Compiling rust-analyzer-salsa v0.17.0-pre.6
+[err]    Compiling cairo-lang-debug v2.12.1
+[err]    Compiling toml v0.8.23
+[err]    Compiling cairo-lang-filesystem v2.12.1
+[err]    Compiling cairo-lang-diagnostics v2.12.1
+[err]    Compiling cairo-lang-syntax v2.12.1
+[err]    Compiling cairo-lang-parser v2.12.1
+[err]    Compiling pretty_assertions_macro v0.1.0 (/mnt/maat-workbench)
+[err]     Finished `test` profile [unoptimized + debuginfo] target(s) in 22.22s
+[err]      Running unittests src/lib.rs (target/debug/deps/pretty_assertions_macro-4b1865a4acd3f7de)
+[out] 
+[out] running 0 tests
+[out] 
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+[out] 
+
+>>> maat-test-ls
+[err]    0.004047082s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] 
+[out] ```
+[out] 
+[out] ==============================
+[out] total: 0 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

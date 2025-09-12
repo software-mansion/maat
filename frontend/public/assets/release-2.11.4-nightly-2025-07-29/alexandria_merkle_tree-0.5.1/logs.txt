@@ -1,0 +1,228 @@
+=== alexandria_merkle_tree-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_merkle_tree/0.5.1 -o archive-605325147130912768.tar.zstd
+
+>>> tar --zstd -xf archive-605325147130912768.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           23.11.0            ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-07-29 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 8971943..7703a6e 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "Merkle tree related stuff"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/src/merkle_tree"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_math]
+[out] @@ -25,3 +25,22 @@ version = "^0.5.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(alexandria_merkle_tree_unittest) alexandria_merkle_tree v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 5 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_merkle_tree (scarb cairo-test)
+[out]    Compiling test(alexandria_merkle_tree_unittest) alexandria_merkle_tree v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 5 seconds
+[out]      Testing alexandria_merkle_tree
+[out] running 7 tests
+[out] test alexandria_merkle_tree::tests::merkle_tree_test::merkle_tree_pedersen_test ... ok (gas usage est.: 172420)
+[out] test alexandria_merkle_tree::tests::storage_proof_test::wrong_contract_address_proof_test ... ok (gas usage est.: 445678)
+[out] test alexandria_merkle_tree::tests::merkle_tree_test::merkle_tree_poseidon_test ... ok (gas usage est.: 142350)
+[out] test alexandria_merkle_tree::tests::storage_proof_test::total_balance_lsb_proof_test ... ok (gas usage est.: 720828)
+[out] test alexandria_merkle_tree::tests::storage_proof_test::balance_lsb_proof_test ... ok (gas usage est.: 736258)
+[out] test alexandria_merkle_tree::tests::merkle_tree_test::regular_call_merkle_tree_pedersen::regular_call_merkle_tree_pedersen_test ... ok (gas usage est.: 172420)
+[out] test alexandria_merkle_tree::tests::storage_proof_test::balance_msb_proof_test ... ok (gas usage est.: 363584)
+[out] test result: ok. 7 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.003869371s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `alexandria_math`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_math-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_math",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_math": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_merkle_tree`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_merkle_tree",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_math": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_merkle_tree": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_merkle_tree 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/storage_proof.cairo (1)
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 127, Col 31]
+[out] total: 0 errors, 1 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

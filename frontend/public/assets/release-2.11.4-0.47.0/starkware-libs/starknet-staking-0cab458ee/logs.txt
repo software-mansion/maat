@@ -1,0 +1,84 @@
+=== starkware-libs/starknet-staking-0cab458ee ===
+
+>>> git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index e23e0ee..9f9f388 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -27,3 +27,14 @@ block_id.tag = "latest"
+[out]  
+[out]  [workspace.tool.scarb]
+[out]  allow-prebuilt-plugins = ["snforge_std"]
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/workspace/apps/staking/contracts/Scarb.toml b/workspace/apps/staking/contracts/Scarb.toml
+[out] index 86f76c9..a78df2a 100644
+[out] --- a/workspace/apps/staking/contracts/Scarb.toml
+[out] +++ b/workspace/apps/staking/contracts/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "staking"
+[out]  version = "1.14.5"
+[out]  edition = "2023_11"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -36,6 +37,7 @@ sort-module-level-items = true
+[out]  [tool]
+[out]  snforge.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [features]
+[out]  fork_test = []
+
+>>> scarb fetch
+[out]     Updating git repository https://github.com/starkware-libs/starkware-starknet-utils
+[out] error: cannot get dependencies of `openzeppelin_testing@4.4.0`
+[out] 
+[out] Caused by:
+[out]     cannot find package `starknet ^2.12.0-rc.2`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[out]    1: scarb::resolver::algorithm::scarb_resolver::{{closure}}
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __GI___clone
+Process finished with exit code 1
+
+>>> scarb tree -q --workspace
+Process finished with exit code -1
+
+>>> scarb build --workspace --test
+Process finished with exit code -1
+
+>>> scarb lint --workspace --deny-warnings
+Process finished with exit code -1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+Process finished with exit code -1
+
+>>> maat-test-ls
+Process finished with exit code -1

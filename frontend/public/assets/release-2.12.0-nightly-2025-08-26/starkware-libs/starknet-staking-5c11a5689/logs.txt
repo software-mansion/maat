@@ -1,0 +1,2139 @@
+=== starkware-libs/starknet-staking-5c11a5689 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 6434e50..bb82980 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -26,3 +26,14 @@ block_id.tag = "latest"
+[out]  
+[out]  [workspace.tool.scarb]
+[out]  allow-prebuilt-plugins = ["snforge_std"]
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] diff --git a/workspace/apps/staking/contracts/Scarb.toml b/workspace/apps/staking/contracts/Scarb.toml
+[out] index 86f76c9..37abf8a 100644
+[out] --- a/workspace/apps/staking/contracts/Scarb.toml
+[out] +++ b/workspace/apps/staking/contracts/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "staking"
+[out]  version = "1.14.5"
+[out]  edition = "2023_11"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -36,6 +37,7 @@ sort-module-level-items = true
+[out]  [tool]
+[out]  snforge.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [features]
+[out]  fork_test = []
+
+>>> scarb fetch
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `staking` package also defines `profile` in the manifest
+[out] 
+[out]     Updating git repository https://github.com/starkware-libs/starkware-starknet-utils
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading openzeppelin_presets v2.0.0
+[out]  Downloading openzeppelin_introspection v2.0.0
+[out]  Downloading openzeppelin_merkle_tree v2.0.0
+[out]  Downloading openzeppelin_finance v2.0.0
+[out]  Downloading openzeppelin_access v2.0.0
+[out]  Downloading openzeppelin_governance v2.0.0
+[out]  Downloading openzeppelin_token v2.0.0
+[out]  Downloading openzeppelin v2.0.0
+[out]  Downloading openzeppelin_account v2.0.0
+[out]  Downloading openzeppelin_upgrades v2.0.0
+[out]  Downloading openzeppelin_security v2.0.0
+[out]  Downloading openzeppelin_utils v2.0.0
+
+>>> scarb tree -q --workspace
+[out] staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out] ├── openzeppelin v2.0.0
+[out] │   ├── openzeppelin_security v2.0.0
+[out] │   │   └── starknet v2.12.0 (std)
+[out] │   ├── starknet v2.12.0 (std) (*)
+[out] │   ├── openzeppelin_introspection v2.0.0
+[out] │   │   └── starknet v2.12.0 (std) (*)
+[out] │   ├── openzeppelin_merkle_tree v2.0.0
+[out] │   ├── openzeppelin_upgrades v2.0.0
+[out] │   │   └── starknet v2.12.0 (std) (*)
+[out] │   ├── openzeppelin_utils v2.0.0
+[out] │   │   └── starknet v2.12.0 (std) (*)
+[out] │   ├── openzeppelin_access v2.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   └── openzeppelin_introspection v2.0.0 (*)
+[out] │   ├── openzeppelin_account v2.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   ├── openzeppelin_introspection v2.0.0 (*)
+[out] │   │   └── openzeppelin_utils v2.0.0 (*)
+[out] │   ├── openzeppelin_token v2.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   ├── openzeppelin_introspection v2.0.0 (*)
+[out] │   │   ├── openzeppelin_utils v2.0.0 (*)
+[out] │   │   ├── openzeppelin_access v2.0.0 (*)
+[out] │   │   └── openzeppelin_account v2.0.0 (*)
+[out] │   ├── openzeppelin_governance v2.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   ├── openzeppelin_introspection v2.0.0 (*)
+[out] │   │   ├── openzeppelin_utils v2.0.0 (*)
+[out] │   │   ├── openzeppelin_access v2.0.0 (*)
+[out] │   │   ├── openzeppelin_account v2.0.0 (*)
+[out] │   │   └── openzeppelin_token v2.0.0 (*)
+[out] │   ├── openzeppelin_finance v2.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   ├── openzeppelin_access v2.0.0 (*)
+[out] │   │   └── openzeppelin_token v2.0.0 (*)
+[out] │   └── openzeppelin_presets v2.0.0
+[out] │       ├── starknet v2.12.0 (std) (*)
+[out] │       ├── openzeppelin_introspection v2.0.0 (*)
+[out] │       ├── openzeppelin_upgrades v2.0.0 (*)
+[out] │       ├── openzeppelin_utils v2.0.0 (*)
+[out] │       ├── openzeppelin_access v2.0.0 (*)
+[out] │       ├── openzeppelin_account v2.0.0 (*)
+[out] │       ├── openzeppelin_token v2.0.0 (*)
+[out] │       └── openzeppelin_finance v2.0.0 (*)
+[out] ├── starknet v2.12.0 (std) (*)
+[out] ├── starkware_utils v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)
+[out] │   ├── openzeppelin v2.0.0 (*)
+[out] │   └── starknet v2.12.0 (std) (*)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.0 (std)
+[out]     ├── snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]     │   └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]     ├── starkware_utils_testing v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)
+[out]     │   ├── assert_macros v2.12.0 (std) (*)
+[out]     │   ├── openzeppelin v2.0.0 (*)
+[out]     │   ├── snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+[out]     │   ├── starknet v2.12.0 (std) (*)
+[out]     │   ├── starkware_utils v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34) (*)
+[out]     │   └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+[out]     └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+
+>>> scarb build --workspace --test
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `staking` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(contracts_unittest) staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 43 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `staking` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting lib(staking) staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out] warn: Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead.
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo:951:24-955:17
+[out]                   } else if decimals == BTC_18D_CONFIG.decimals {
+[out]  ________________________^
+[out] | ...
+[out] |                 }
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: redundant parentheses in enum variant definition
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/objects.cairo:587:5
+[out]     V0: (),
+[out]     ^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Consider using else if instead of else { if ... }
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1333:17-1340:17
+[out]                   if let Option::Some(delegated_balance_trace) = delegated_balance_trace {
+[out]  _________________^
+[out] | ...
+[out] |                 }
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: Consider using else if instead of else { if ... }
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1367:17-1382:17
+[out]                   if self.is_commission_commitment_active(:commission_commitment) {
+[out]  _________________^
+[out] | ...
+[out] |                 }
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: Consider using else if instead of else { if ... }
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1364:13-1385:13
+[out]               if let Option::Some(commission_commitment) = staker_pool_info
+[out]  _____________^
+[out] | ...
+[out] |             }
+[out] |_____________^
+[out] 
+[out] error: lint checking `staking` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `staking` package also defines `profile` in the manifest
+[out] 
+[out]      Running test staking (SNFORGE_BACKTRACE=1 snforge test)
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `staking` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] [WARNING] To get accurate backtrace results, it is required to use the configuration available in the latest Cairo version. For more details, please visit https://foundry-rs.github.io/starknet-foundry/snforge-advanced-features/backtrace.html
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `staking` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(contracts_unittest) staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 30 seconds
+[out] 
+[out] 
+[out] Collected 329 test(s) from staking package
+[out] Running 329 test(s) from tests/
+[out] [PASS] staking::attestation::test::test_constructor (l1_gas: ~0, l1_data_gas: ~1408, l2_gas: ~1656000)
+[out] [PASS] staking::attestation::test::test_constructor_assertions (l1_gas: ~0, l1_data_gas: ~1312, l2_gas: ~1656000)
+[out] 
+[out] 
+[out] [PASS] staking::attestation::test::test_attest (l1_gas: ~26764, l1_data_gas: ~11232, l2_gas: ~31953920)
+[out] [PASS] staking::attestation::test::test_attest_assertions (l1_gas: ~26764, l1_data_gas: ~11616, l2_gas: ~38774400)
+[out] [PASS] staking::attestation::test::test_contract_admin_role (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18686720)
+[out] [PASS] staking::attestation::test::test_contract_upgrade_delay (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18606720)
+[out] [PASS] staking::attestation::test::test_get_current_epoch_target_attestation_block (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~24076160)
+[out] [PASS] staking::attestation::test::test_attest_role_assertions (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18566720)
+[out] 
+[out] error occurred in contract 'Attestation'
+[out] stack backtrace:
+[out]    0: staking::attestation::attestation::Attestation::__wrapper__AttestationImpl__set_attestation_window
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/attestation/attestation.cairo:164:9
+[out] 
+[out] [PASS] staking::attestation::test::test_get_last_epoch_attestation_done (l1_gas: ~26764, l1_data_gas: ~11232, l2_gas: ~30913920)
+[out] [PASS] staking::attestation::test::test_is_attestation_done_in_curr_epoch (l1_gas: ~26764, l1_data_gas: ~11232, l2_gas: ~31273920)
+[out] [PASS] staking::attestation::test::test_set_attestation_window (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19467200)
+[out] [PASS] staking::attestation::test::test_set_attestation_window_assertions (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18886720)
+[out] [PASS] staking::attestation::test::test_is_attestation_done_in_curr_epoch_zero_epoch (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18566720)
+[out] 
+[out] error occurred in contract 'Attestation'
+[out] stack backtrace:
+[out]    0: staking::attestation::attestation::Attestation::__wrapper__AttestationImpl__is_attestation_done_in_curr_epoch
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/attestation/attestation.cairo:136:9
+[out] 
+[out] [PASS] staking::flow_test::test::add_to_delegation_after_exit_action_flow_test (l1_gas: ~0, l1_data_gas: ~15072, l2_gas: ~78878400)
+[out] [PASS] staking::flow_test::test::add_token_without_enable_flow_test (l1_gas: ~0, l1_data_gas: ~16416, l2_gas: ~61174720)
+[out] [PASS] staking::flow_test::test::assert_total_stake_after_multi_stake_flow_test (l1_gas: ~0, l1_data_gas: ~18720, l2_gas: ~56866880)
+[out] [PASS] staking::flow_test::test::attest_after_delegator_intent_flow_test (l1_gas: ~0, l1_data_gas: ~15264, l2_gas: ~60000320)
+[out] [PASS] staking::flow_test::test::add_to_delegation_after_intent_flow_test (l1_gas: ~0, l1_data_gas: ~19296, l2_gas: ~161741120)
+[out] [PASS] staking::flow_test::test::attest_with_zero_total_btc_stake_flow_test (l1_gas: ~0, l1_data_gas: ~13920, l2_gas: ~43918080)
+[out] [PASS] staking::flow_test::test::claim_rewards_multiple_delegators_btc_flow_test (l1_gas: ~0, l1_data_gas: ~17952, l2_gas: ~97550720)
+[out] [PASS] staking::flow_test::test::basic_stake_flow_test (l1_gas: ~0, l1_data_gas: ~18240, l2_gas: ~148356160)
+[out] [PASS] staking::flow_test::test::basic_stake_btc_flow_test (l1_gas: ~0, l1_data_gas: ~22848, l2_gas: ~161291520)
+[out] [PASS] staking::flow_test::test::delegate_intent_same_epoch_flow_test (l1_gas: ~0, l1_data_gas: ~14880, l2_gas: ~63313920)
+[out] [PASS] staking::flow_test::test::claim_rewards_multiple_delegators_flow_test (l1_gas: ~0, l1_data_gas: ~17760, l2_gas: ~96990720)
+[out] [PASS] staking::flow_test::test::delegator_claim_rewards_flow_test (l1_gas: ~0, l1_data_gas: ~16128, l2_gas: ~85527360)
+[out] [PASS] staking::flow_test::test::change_balance_claim_rewards_flow_test (l1_gas: ~0, l1_data_gas: ~22464, l2_gas: ~255294080)
+[out] [PASS] staking::flow_test::test::delegator_didnt_update_after_staker_update_commission_flow_test (l1_gas: ~0, l1_data_gas: ~16320, l2_gas: ~99256320)
+[out] [PASS] staking::flow_test::test::delegator_intent_after_staker_action_flow_test (l1_gas: ~0, l1_data_gas: ~15840, l2_gas: ~83350080)
+[out] [PASS] staking::flow_test::test::delegator_exit_and_enter_again_flow_test (l1_gas: ~0, l1_data_gas: ~18144, l2_gas: ~177070400)
+[out] [PASS] staking::flow_test::test::delegator_exit_and_enter_again_with_switch_flow_test (l1_gas: ~0, l1_data_gas: ~22752, l2_gas: ~196847680)
+[out] [PASS] staking::flow_test::test::disable_btc_token_same_and_next_epoch_flow_test (l1_gas: ~0, l1_data_gas: ~11136, l2_gas: ~36353920)
+[out] [PASS] staking::flow_test::test::delegator_updated_after_staker_update_commission_flow_test (l1_gas: ~0, l1_data_gas: ~16416, l2_gas: ~116957440)
+[out] [PASS] staking::flow_test::test::delegator_intent_flow_test (l1_gas: ~0, l1_data_gas: ~19968, l2_gas: ~182835520)
+[out] [PASS] staking::flow_test::test::disable_enable_btc_token_same_epoch_flow_test (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~27332480)
+[out] [PASS] staking::flow_test::test::delegators_add_to_delegation_pool_flow_test (l1_gas: ~0, l1_data_gas: ~20064, l2_gas: ~158348800)
+[out] [PASS] staking::flow_test::test::enable_disable_btc_token_same_epoch_flow_test (l1_gas: ~0, l1_data_gas: ~11136, l2_gas: ~30193920)
+[out] [PASS] staking::flow_test::test::diverse_staker_vec_flow_test (l1_gas: ~0, l1_data_gas: ~21696, l2_gas: ~68479360)
+[out] [PASS] staking::flow_test::test::disabled_token_delegation_flow_test (l1_gas: ~0, l1_data_gas: ~21216, l2_gas: ~103637120)
+[out] [PASS] staking::flow_test::test::increase_stake_intent_same_epoch_flow_test (l1_gas: ~0, l1_data_gas: ~11424, l2_gas: ~47537600)
+[out] [PASS] staking::flow_test::test::multi_pool_exit_intent_flow_test (l1_gas: ~0, l1_data_gas: ~24672, l2_gas: ~102213120)
+[out] [PASS] staking::flow_test::test::multiple_btc_pools_different_decimals_flow_test (l1_gas: ~0, l1_data_gas: ~22464, l2_gas: ~84080640)
+[out] [PASS] staking::flow_test::test::multiple_pools_delegator_intent_action_switch_flow_test (l1_gas: ~0, l1_data_gas: ~25344, l2_gas: ~112424960)
+[out] [PASS] staking::flow_test::test::flow_4_switch_member_back_and_forth_test (l1_gas: ~0, l1_data_gas: ~23616, l2_gas: ~258901120)
+[out] [PASS] staking::flow_test::test::new_token_delegation_flow_test (l1_gas: ~0, l1_data_gas: ~16128, l2_gas: ~46101120)
+[out] [PASS] staking::flow_test::test::multiple_tokens_delegation_flow_test (l1_gas: ~0, l1_data_gas: ~27648, l2_gas: ~174072640)
+[out] [PASS] staking::flow_test::test::pool_calculate_rewards_twice_flow_test (l1_gas: ~0, l1_data_gas: ~15744, l2_gas: ~116653760)
+[out] [PASS] staking::flow_test::test::operations_after_dead_staker_flow_test (l1_gas: ~0, l1_data_gas: ~23232, l2_gas: ~219038080)
+[out] [PASS] staking::flow_test::test::pool_claim_after_claim_flow_test (l1_gas: ~0, l1_data_gas: ~16800, l2_gas: ~141111680)
+[out] [PASS] staking::flow_test::test::partial_switches_flow_test (l1_gas: ~0, l1_data_gas: ~26208, l2_gas: ~345875520)
+[out] [PASS] staking::flow_test::test::pool_claim_rewards_flow_btc_test (l1_gas: ~0, l1_data_gas: ~19680, l2_gas: ~172393280)
+[out] [PASS] staking::flow_test::test::pool_with_lots_of_btc_flow_test (l1_gas: ~0, l1_data_gas: ~15744, l2_gas: ~62752960)
+[out] [PASS] staking::flow_test::test::pool_claim_rewards_flow_test (l1_gas: ~0, l1_data_gas: ~19584, l2_gas: ~179970560)
+[out] [PASS] staking::flow_test::test::pool_with_min_btc_flow_test (l1_gas: ~0, l1_data_gas: ~16512, l2_gas: ~89604160)
+[out] [PASS] staking::flow_test::test::set_epoch_info_flow_test (l1_gas: ~0, l1_data_gas: ~14208, l2_gas: ~52098560)
+[out] [PASS] staking::flow_test::test::set_commission_multiple_pools_flow_test (l1_gas: ~0, l1_data_gas: ~19488, l2_gas: ~91930880)
+[out] [PASS] staking::flow_test::test::set_open_for_delegation_flow_test (l1_gas: ~0, l1_data_gas: ~16224, l2_gas: ~107351360)
+[out] [PASS] staking::flow_test::test::staker_intent_last_action_first_flow_test (l1_gas: ~0, l1_data_gas: ~16416, l2_gas: ~97865600)
+[out] [PASS] staking::flow_test::test::staker_multiple_pools_attest_flow_test (l1_gas: ~0, l1_data_gas: ~23232, l2_gas: ~98145600)
+[out] [PASS] staking::flow_test::utils::test_advance_epoch (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~24731520)
+[out] [PASS] staking::flow_test::test::two_stakers_same_operational_address_flow_test (l1_gas: ~0, l1_data_gas: ~12768, l2_gas: ~67036480)
+[out] [PASS] staking::flow_test::test::two_delegators_full_intent_flow_test (l1_gas: ~0, l1_data_gas: ~19200, l2_gas: ~167828480)
+[out] [PASS] staking::minting_curve::test::test_contract_parameters (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18606720)
+[out] [PASS] staking::minting_curve::test::test_set_c_num (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19467200)
+[out] [PASS] staking::minting_curve::test::test_set_c_num_over_limit (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'MintingCurve'
+[out] stack backtrace:
+[out]    0: staking::minting_curve::minting_curve::MintingCurve::__wrapper__IMintingCurveConfigImpl__set_c_num
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/minting_curve/minting_curve.cairo:150:9
+[out] 
+[out] [PASS] staking::minting_curve::test::test_set_c_num_unauthorized (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'MintingCurve'
+[out] stack backtrace:
+[out]    0: staking::minting_curve::minting_curve::MintingCurve::__wrapper__IMintingCurveConfigImpl__set_c_num
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/minting_curve/minting_curve.cairo:150:9
+[out] 
+[out] [PASS] staking::minting_curve::test::test_set_max_c_num (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19027200)
+[out] [PASS] staking::minting_curve::test::test_set_invalid_c_num (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'MintingCurve'
+[out] stack backtrace:
+[out]    0: staking::minting_curve::minting_curve::MintingCurve::__wrapper__IMintingCurveConfigImpl__set_c_num
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/minting_curve/minting_curve.cairo:150:9
+[out] 
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_at (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~720000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_at_out_of_bounds (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::minting_curve::test::test_yearly_mint (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~24516160)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_cumulative_rewards_trace_idx (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_insert (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~760000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_insert_unordered_insertion (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~360000)
+[out] 
+[out] 
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_is_non_empty (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~240000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_latest (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~600000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_latest_empty_trace (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_latest_mutable (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~600000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_length (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~520000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_length_mutable (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~520000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_penultimate (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~600000)
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_penultimate_not_exist (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::pool::pool_member_balance_trace::test::test_pool_member_checkpoint_getters (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::flow_test::test::switch_to_same_delegation_pool_flow_test (l1_gas: ~0, l1_data_gas: ~14688, l2_gas: ~45183040)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPoolImpl__switch_staking_delegation_pool
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:961:9
+[out] 
+[out] error occurred in contract 'Pool'
+[out] stack backtrace:
+[out]    0: staking::pool::pool::Pool::__wrapper__PoolImpl__switch_delegation_pool
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo:361:9
+[out] 
+[out] [PASS] staking::pool::test::test_add_to_delegation_pool (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~49291840)
+[out] [PASS] staking::pool::test::test_add_to_delegation_pool_assertions (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~35134400)
+[out] [PASS] staking::pool::test::test_add_to_delegation_pool_from_reward_address (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~47251840)
+[out] [PASS] staking::pool::test::test_assert_staker_is_active (l1_gas: ~0, l1_data_gas: ~11392, l2_gas: ~20102720)
+[out] [PASS] staking::pool::test::test_assert_staker_is_active_panic (l1_gas: ~0, l1_data_gas: ~11488, l2_gas: ~20142720)
+[out] 
+[out] 
+[out] [PASS] staking::pool::test::test_change_reward_address_pool_member_not_exist (l1_gas: ~0, l1_data_gas: ~4768, l2_gas: ~9508480)
+[out] 
+[out] 
+[out] [PASS] staking::pool::test::test_change_reward_address (l1_gas: ~0, l1_data_gas: ~7872, l2_gas: ~31490880)
+[out] [PASS] staking::pool::test::test_claim_rewards_btc_pool (l1_gas: ~0, l1_data_gas: ~15456, l2_gas: ~47011200)
+[out] [PASS] staking::pool::test::test_claim_rewards_pool_member_not_exist (l1_gas: ~0, l1_data_gas: ~11392, l2_gas: ~20302720)
+[out] 
+[out] 
+[out] [PASS] staking::pool::test::test_claim_rewards_no_rewards (l1_gas: ~0, l1_data_gas: ~14688, l2_gas: ~41368000)
+[out] [PASS] staking::pool::test::test_claim_rewards_strk_pool (l1_gas: ~0, l1_data_gas: ~15168, l2_gas: ~48171200)
+[out] [PASS] staking::pool::test::test_contract_parameters_v1 (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17981760)
+[out] [PASS] staking::pool::test::test_claim_rewards_with_balance_changes_btc_pool (l1_gas: ~0, l1_data_gas: ~18528, l2_gas: ~102994560)
+[out] [PASS] staking::pool::test::test_enter_delegation_pool (l1_gas: ~0, l1_data_gas: ~7872, l2_gas: ~28420160)
+[out] [PASS] staking::pool::test::test_claim_rewards_with_balance_changes_strk_pool (l1_gas: ~0, l1_data_gas: ~18336, l2_gas: ~102994560)
+[out] [PASS] staking::pool::test::test_enter_delegation_pool_assertions (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~35094400)
+[out] [PASS] staking::pool::test::test_enter_delegation_pool_from_staking_contract (l1_gas: ~0, l1_data_gas: ~7584, l2_gas: ~29084160)
+[out] [PASS] staking::pool::test::test_enter_delegation_pool_from_staking_contract_assertions (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~35294400)
+[out] [PASS] staking::pool::test::test_exit_delegation_pool_action_assertions (l1_gas: ~0, l1_data_gas: ~15072, l2_gas: ~38338240)
+[out] [PASS] staking::pool::test::test_exit_delegation_pool_action (l1_gas: ~26764, l1_data_gas: ~15744, l2_gas: ~70256640)
+[out] [PASS] staking::pool::test::test_exit_delegation_pool_intent (l1_gas: ~0, l1_data_gas: ~14880, l2_gas: ~43618240)
+[out] [PASS] staking::pool::test::test_claim_rewards_unauthorized_address (l1_gas: ~0, l1_data_gas: ~7872, l2_gas: ~22980160)
+[out] 
+[out] error occurred in contract 'Pool'
+[out] stack backtrace:
+[out]    0: staking::pool::pool::Pool::__wrapper__PoolImpl__claim_rewards
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo:317:9
+[out] 
+[out] [PASS] staking::pool::test::test_exit_delegation_pool_intent_assertions (l1_gas: ~0, l1_data_gas: ~15168, l2_gas: ~39138240)
+[out] [PASS] staking::pool::test::test_identity (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~16981760)
+[out] [PASS] staking::pool::test::test_get_internal_pool_member_info (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~34894400)
+[out] [PASS] staking::pool::test::test_get_pool_member_info (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~38214400)
+[out] [PASS] staking::pool::test::test_internal_pool_member_info (l1_gas: ~0, l1_data_gas: ~14208, l2_gas: ~42927680)
+[out] [PASS] staking::pool::test::test_partial_undelegate (l1_gas: ~0, l1_data_gas: ~14592, l2_gas: ~52022080)
+[out] [PASS] staking::pool::test::test_pool_member_info_into_internal_pool_member_info_v1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::pool::test::test_pool_member_info (l1_gas: ~0, l1_data_gas: ~14208, l2_gas: ~48687680)
+[out] [PASS] staking::pool::test::test_sanity_serde_versioned_internal_staker_info (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~160000)
+[out] [PASS] staking::pool::test::test_sanity_storage_versioned_internal_pool_member_info (l1_gas: ~0, l1_data_gas: ~160, l2_gas: ~520000)
+[out] [PASS] staking::pool::test::test_set_staker_removed (l1_gas: ~0, l1_data_gas: ~11488, l2_gas: ~20643200)
+[out] [PASS] staking::pool::test::test_set_staker_removed_already_removed (l1_gas: ~0, l1_data_gas: ~11488, l2_gas: ~20563200)
+[out] 
+[out] 
+[out] [PASS] staking::pool::test::test_set_staker_removed_caller_is_not_staking_contract (l1_gas: ~0, l1_data_gas: ~11392, l2_gas: ~20382720)
+[out] 
+[out] 
+[out] [PASS] staking::pool::test::test_internal_pool_member_info_pool_member_doesnt_exist (l1_gas: ~0, l1_data_gas: ~13632, l2_gas: ~27976000)
+[out] 
+[out] error occurred in contract 'Pool'
+[out] stack backtrace:
+[out]    0: staking::pool::pool::Pool::__wrapper__PoolMigrationImpl__internal_pool_member_info
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo:569:9
+[out] 
+[out] [PASS] staking::pool::test::test_switch_delegation_pool (l1_gas: ~0, l1_data_gas: ~18816, l2_gas: ~68825920)
+[out] [PASS] staking::pool::test::test_switch_delegation_pool_assertions (l1_gas: ~0, l1_data_gas: ~18720, l2_gas: ~48827520)
+[out] [PASS] staking::pool::test::test_update_rewards_from_staking_contract (l1_gas: ~0, l1_data_gas: ~14880, l2_gas: ~48974400)
+[out] [PASS] staking::pool::test::test_v_internal_pool_member_info_is_none (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::pool::test::test_v_internal_pool_member_info_new_latest (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::pool::test::test_v_internal_pool_member_info_wrap_latest (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::pool::test::test_pool_member_info_pool_member_doesnt_exist (l1_gas: ~0, l1_data_gas: ~13632, l2_gas: ~27976000)
+[out] 
+[out] error occurred in contract 'Pool'
+[out] stack backtrace:
+[out]    0: staking::pool::pool::Pool::__wrapper__PoolImpl__pool_member_info_v1
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo:505:9
+[out] 
+[out] [PASS] staking::reward_supplier::test::test_claim_rewards (l1_gas: ~0, l1_data_gas: ~7552, l2_gas: ~17207040)
+[out] [PASS] staking::reward_supplier::test::test_calculate_current_epoch_rewards (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~20886720)
+[out] [PASS] staking::reward_supplier::test::test_claim_rewards_assertions (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19246720)
+[out] [PASS] staking::reward_supplier::test::test_contract_parameters_v1 (l1_gas: ~0, l1_data_gas: ~1792, l2_gas: ~2016000)
+[out] [PASS] staking::reward_supplier::test::test_get_alpha (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18606720)
+[out] [PASS] staking::reward_supplier::test::test_identity (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19126720)
+[out] [PASS] staking::reward_supplier::test::test_on_receive (l1_gas: ~26764, l1_data_gas: ~10944, l2_gas: ~27256640)
+[out] [PASS] staking::reward_supplier::test::test_reward_supplier_constructor (l1_gas: ~0, l1_data_gas: ~4768, l2_gas: ~9068480)
+[out] [PASS] staking::pool::test::test_update_rewards_from_staking_contract_caller_not_staking_contract (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17141760)
+[out] 
+[out] error occurred in contract 'Pool'
+[out] stack backtrace:
+[out]    0: staking::pool::pool::Pool::__wrapper__PoolImpl__update_rewards_from_staking_contract
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo:546:9
+[out] 
+[out] [PASS] staking::reward_supplier::test::test_update_unclaimed_rewards_from_staking_contract (l1_gas: ~26764, l1_data_gas: ~9696, l2_gas: ~19587200)
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_current_epoch (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2880000)
+[out] [PASS] staking::reward_supplier::test::test_on_receive_caller_not_starkgate (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18846720)
+[out] 
+[out] error occurred in contract 'RewardSupplier'
+[out] stack backtrace:
+[out]    0: staking::reward_supplier::reward_supplier::RewardSupplier::__wrapper__RewardSupplierImpl__on_receive
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/reward_supplier/reward_supplier.cairo:173:9
+[out] 
+[out] [PASS] staking::reward_supplier::test::test_on_receive_unexpected_token (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18846720)
+[out] 
+[out] error occurred in contract 'RewardSupplier'
+[out] stack backtrace:
+[out]    0: staking::reward_supplier::reward_supplier::RewardSupplier::__wrapper__RewardSupplierImpl__on_receive
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/reward_supplier/reward_supplier.cairo:173:9
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_current_epoch_starting_block (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2560000)
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_epoch_len_in_blocks (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1200000)
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_epochs_in_year (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1240000)
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_new (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_new_with_invalid_epoch_duration (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_new_with_invalid_epoch_length (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_new_with_invalid_starting_block (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~360000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_update (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1000000)
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_update_in_first_epoch (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~480000)
+[out] 
+[out] 
+[out] [PASS] staking::reward_supplier::test::test_update_unclaimed_rewards_from_staking_contract_caller_not_staking (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'RewardSupplier'
+[out] stack backtrace:
+[out]    0: staking::reward_supplier::reward_supplier::RewardSupplier::__wrapper__RewardSupplierImpl__update_unclaimed_rewards_from_staking_contract
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/reward_supplier/reward_supplier.cairo:139:9
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_update_twice (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~920000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_update_with_invalid_epoch_duration (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~640000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::objects::epoch_info_tests::test_update_with_invalid_epoch_length (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~640000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::pause_test::test_already_paused_and_unpaused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~20742080)
+[out] [PASS] staking::staking::pause_test::test_add_stake_from_pool_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPoolImpl__add_stake_from_pool
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:816:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_change_operational_address_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:609:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_change_reward_address_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_reward_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:457:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_pause (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~20317440)
+[out] [PASS] staking::staking::pause_test::test_claim_rewards_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__claim_rewards
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:359:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_declare_operational_address_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__declare_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:644:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_increase_stake_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__increase_stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:316:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_pause_not_security_agent (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPauseImpl__pause
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1060:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_remove_from_delegation_pool_action_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPoolImpl__remove_from_delegation_pool_action
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:926:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_set_commission_commitment_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission_commitment
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:682:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_remove_from_delegation_pool_intent_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPoolImpl__remove_from_delegation_pool_intent
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:861:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_set_commission_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:659:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_set_open_for_delegation_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_stake_when_paused (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~20143040)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_switch_staking_delegation_pool_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPoolImpl__switch_staking_delegation_pool
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:961:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_unpause_not_security_admin (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPauseImpl__unpause
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1069:9
+[out] 
+[out] [PASS] staking::staking::staker_balance_trace::test::test_at_mutable (l1_gas: ~0, l1_data_gas: ~1024, l2_gas: ~1120000)
+[out] [PASS] staking::staking::pause_test::test_unstake_action_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__unstake_action
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:428:9
+[out] 
+[out] [PASS] staking::staking::staker_balance_trace::test::test_at_mutable_out_of_bounds (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::staker_balance_trace::test::test_insert (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~1200000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_insert_unordered_insertion (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~360000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::staker_balance_trace::test::test_is_empty (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~240000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_is_empty_mutable (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~240000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_is_non_empty (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~240000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_is_non_empty_mutable (l1_gas: ~0, l1_data_gas: ~448, l2_gas: ~280000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_latest (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~600000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_latest_empty_trace (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::staker_balance_trace::test::test_latest_mutable (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~600000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_length (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~520000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_length_mutable (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~520000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_penultimate (l1_gas: ~0, l1_data_gas: ~736, l2_gas: ~600000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_penultimate_not_exist (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::staker_balance_trace::test::test_staker_balance_increase_own_amount (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_staker_balance_new (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::staking::staker_balance_trace::test::test_staker_balance_update_pool_amount (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_add_stake_from_pool (l1_gas: ~0, l1_data_gas: ~13824, l2_gas: ~34499840)
+[out] [PASS] staking::staking::pause_test::test_unstake_intent_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__unstake_intent
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:381:9
+[out] 
+[out] [PASS] staking::staking::pause_test::test_update_rewards_from_attestation_contract_when_paused (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~19142080)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingAttestationImpl__update_rewards_from_attestation_contract
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1182:9
+[out] 
+[out] [PASS] staking::staking::test::test_add_stake_from_pool_assertions (l1_gas: ~0, l1_data_gas: ~17280, l2_gas: ~46498560)
+[out] [PASS] staking::staking::test::test_add_token (l1_gas: ~0, l1_data_gas: ~10752, l2_gas: ~22868160)
+[out] [PASS] staking::staking::test::test_add_token_assertions (l1_gas: ~0, l1_data_gas: ~12480, l2_gas: ~26238080)
+[out] [PASS] staking::staking::test::test_change_operational_address (l1_gas: ~0, l1_data_gas: ~4416, l2_gas: ~14383360)
+[out] [PASS] staking::staking::test::test_assert_caller_is_not_zero (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::test::test_change_operational_address_is_not_eligible (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:609:9
+[out] 
+[out] [PASS] staking::staking::test::test_change_operational_address_staker_doesnt_exist (l1_gas: ~0, l1_data_gas: ~2976, l2_gas: ~7532480)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:609:9
+[out] 
+[out] [PASS] staking::staking::test::test_change_operational_address_operational_address_exists (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:609:9
+[out] 
+[out] [PASS] staking::staking::test::test_change_reward_address (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~24666880)
+[out] [PASS] staking::staking::test::test_claim_rewards (l1_gas: ~26764, l1_data_gas: ~11232, l2_gas: ~37586560)
+[out] [PASS] staking::staking::test::test_change_operational_address_unstake_in_progress (l1_gas: ~0, l1_data_gas: ~11040, l2_gas: ~24332480)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:609:9
+[out] 
+[out] [PASS] staking::staking::test::test_compute_unpool_time (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~560000)
+[out] [PASS] staking::staking::test::test_change_reward_address_staker_not_exist (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__change_reward_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:457:9
+[out] 
+[out] [PASS] staking::staking::test::test_constructor (l1_gas: ~0, l1_data_gas: ~2368, l2_gas: ~2656000)
+[out] [PASS] staking::staking::test::test_claim_rewards_panic_staker_doesnt_exist (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22236160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__claim_rewards
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:359:9
+[out] 
+[out] [PASS] staking::staking::test::test_contract_parameters_v1 (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22436160)
+[out] [PASS] staking::staking::test::test_current_epoch_starting_block (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~22707200)
+[out] [PASS] staking::staking::test::test_deprecated_get_pool_info (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::staking::test::test_claim_rewards_panic_unauthorized (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__claim_rewards
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:359:9
+[out] 
+[out] [PASS] staking::staking::test::test_declare_operational_address (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~25088320)
+[out] [PASS] staking::staking::test::test_disable_token (l1_gas: ~0, l1_data_gas: ~10848, l2_gas: ~26109120)
+[out] [PASS] staking::staking::test::test_enable_token (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~24608640)
+[out] [PASS] staking::staking::test::test_disable_token_assertions (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~26129600)
+[out] [PASS] staking::staking::test::test_epoch_info_current_epoch (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1120000)
+[out] [PASS] staking::staking::test::test_epoch_info_len_kept_after_update (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1440000)
+[out] [PASS] staking::staking::test::test_enable_token_assertions (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22528640)
+[out] [PASS] staking::staking::test::test_epoch_info_new_invalid_epoch_duration (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::test::test_epoch_info_new_invalid_length (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::test::test_epoch_info_update_already_updated (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~920000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::test::test_epoch_info_update_in_first_epoch (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~480000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::test::test_epoch_info_update_only_epoch_duration (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1320000)
+[out] [PASS] staking::staking::test::test_epoch_info_update_only_length (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~4640000)
+[out] [PASS] staking::staking::test::test_get_active_tokens (l1_gas: ~0, l1_data_gas: ~9504, l2_gas: ~21227200)
+[out] [PASS] staking::staking::test::test_get_attestation_info_by_operational_address (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~23396160)
+[out] [PASS] staking::staking::test::test_get_attestation_info_by_operational_address_assertions (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22316160)
+[out] [PASS] staking::staking::test::test_get_current_epoch (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~20046720)
+[out] [PASS] staking::staking::test::test_get_pool_info_panic (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::test::test_get_current_total_staking_power (l1_gas: ~0, l1_data_gas: ~14688, l2_gas: ~45615360)
+[out] [PASS] staking::staking::test::test_get_staker_info (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~23436160)
+[out] [PASS] staking::staking::test::test_get_tokens (l1_gas: ~0, l1_data_gas: ~9504, l2_gas: ~21987200)
+[out] [PASS] staking::staking::test::test_declare_operational_address_operational_address_exists (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__declare_operational_address
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:644:9
+[out] 
+[out] [PASS] staking::staking::test::test_get_total_stake (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~26468800)
+[out] [PASS] staking::staking::test::test_get_total_stake_for_token (l1_gas: ~0, l1_data_gas: ~14688, l2_gas: ~36934400)
+[out] [PASS] staking::staking::test::test_get_staker_commission_commitment_no_commitment (l1_gas: ~0, l1_data_gas: ~13632, l2_gas: ~27936000)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__get_staker_commission_commitment
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:721:9
+[out] 
+[out] [PASS] staking::staking::test::test_get_total_stake_for_token_not_active (l1_gas: ~0, l1_data_gas: ~9504, l2_gas: ~20067200)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__get_total_stake_for_token
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:754:9
+[out] 
+[out] [PASS] staking::staking::test::test_get_total_stake_for_token_not_exists (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18566720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__get_total_stake_for_token
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:754:9
+[out] 
+[out] [PASS] staking::staking::test::test_increase_stake_amount_is_zero (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__increase_stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:316:9
+[out] 
+[out] [PASS] staking::staking::test::test_increase_stake_from_reward_address (l1_gas: ~0, l1_data_gas: ~11136, l2_gas: ~27429760)
+[out] [PASS] staking::staking::test::test_increase_stake_from_staker_address (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~26908800)
+[out] [PASS] staking::staking::test::test_internal_staker_info (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22596160)
+[out] [PASS] staking::staking::test::test_internal_staker_info_latest_into_staker_info (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_increase_stake_caller_cannot_increase (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__increase_stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:316:9
+[out] 
+[out] [PASS] staking::staking::test::test_increase_stake_staker_address_not_exist (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22236160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__increase_stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:316:9
+[out] 
+[out] [PASS] staking::staking::test::test_increase_stake_unstake_in_progress (l1_gas: ~0, l1_data_gas: ~11040, l2_gas: ~24332480)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__increase_stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:316:9
+[out] 
+[out] [PASS] staking::staking::test::test_pool_contract_roles (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17541760)
+[out] [PASS] staking::staking::test::test_remove_from_delegation_pool_action_intent_not_exist (l1_gas: ~0, l1_data_gas: ~2976, l2_gas: ~8212480)
+[out] [PASS] staking::staking::test::test_remove_from_delegation_pool_action (l1_gas: ~0, l1_data_gas: ~14496, l2_gas: ~38643840)
+[out] [PASS] staking::staking::test::test_internal_staker_info_outdated_version (l1_gas: ~0, l1_data_gas: ~11136, l2_gas: ~22676160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingMigrationImpl__internal_staker_info
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:769:9
+[out] 
+[out] [PASS] staking::staking::test::test_remove_from_delegation_pool_intent (l1_gas: ~0, l1_data_gas: ~14784, l2_gas: ~43099200)
+[out] [PASS] staking::staking::test::test_remove_from_delegation_pool_intent_assertions (l1_gas: ~0, l1_data_gas: ~13632, l2_gas: ~28576000)
+[out] [PASS] staking::staking::test::test_send_rewards_to_staker (l1_gas: ~0, l1_data_gas: ~4192, l2_gas: ~6224640)
+[out] [PASS] staking::staking::test::test_set_commission_assertions_with_commitment (l1_gas: ~0, l1_data_gas: ~7296, l2_gas: ~22083200)
+[out] [PASS] staking::staking::test::test_set_commission (l1_gas: ~26764, l1_data_gas: ~15168, l2_gas: ~53369920)
+[out] [PASS] staking::staking::test::test_internal_staker_info_staker_not_exist (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18606720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingMigrationImpl__internal_staker_info
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:769:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_commission_commitment (l1_gas: ~0, l1_data_gas: ~13920, l2_gas: ~30246720)
+[out] [PASS] staking::staking::test::test_set_commission_commitment_assertions (l1_gas: ~0, l1_data_gas: ~14016, l2_gas: ~36904000)
+[out] [PASS] staking::staking::test::test_set_commission_initialize_commission (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17741760)
+[out] [PASS] staking::staking::test::test_remove_from_delegation_pool_action_intent_not_finished (l1_gas: ~0, l1_data_gas: ~14688, l2_gas: ~36476800)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingPoolImpl__remove_from_delegation_pool_action
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:926:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_commission_with_commitment (l1_gas: ~0, l1_data_gas: ~7296, l2_gas: ~23753920)
+[out] [PASS] staking::staking::test::test_set_commission_caller_not_staker (l1_gas: ~0, l1_data_gas: ~2976, l2_gas: ~7772480)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:659:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_commission_commission_out_of_range (l1_gas: ~0, l1_data_gas: ~4320, l2_gas: ~11401920)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:659:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_epoch_info (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~22947200)
+[out] [PASS] staking::staking::test::test_set_epoch_info_assertions (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19286720)
+[out] [PASS] staking::staking::test::test_set_commission_staker_in_exit_window (l1_gas: ~0, l1_data_gas: ~4416, l2_gas: ~13258240)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:659:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_exit_waiting_window (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19747200)
+[out] [PASS] staking::staking::test::test_set_commission_with_higher_commission (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17141760)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:659:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_max_exit_waiting_duration (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19027200)
+[out] [PASS] staking::staking::test::test_set_commission_with_same_commission (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17101760)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_commission
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:659:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_min_stake (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19747200)
+[out] [PASS] staking::staking::test::test_set_open_for_delegation (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17781760)
+[out] [PASS] staking::staking::test::test_set_epoch_info_not_app_governor (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingConfigImpl__set_epoch_info
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1121:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_exit_waiting_window_not_token_admin (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingConfigImpl__set_exit_wait_window
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1094:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_min_stake_not_token_admin (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingConfigImpl__set_min_stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1084:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_btc_token_staker_has_pool (l1_gas: ~0, l1_data_gas: ~10848, l2_gas: ~24337920)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_commission_not_set (l1_gas: ~0, l1_data_gas: ~4320, l2_gas: ~11441920)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_staker_not_exist (l1_gas: ~0, l1_data_gas: ~2976, l2_gas: ~7772480)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_with_btc_token (l1_gas: ~0, l1_data_gas: ~8448, l2_gas: ~21463680)
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_with_disabled_btc_token (l1_gas: ~0, l1_data_gas: ~8256, l2_gas: ~19723200)
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_strk_token_staker_has_pool (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17141760)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_reward_supplier (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~19747200)
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_token_does_not_exist (l1_gas: ~0, l1_data_gas: ~7008, l2_gas: ~17141760)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_open_for_delegation_unstake_in_progress (l1_gas: ~0, l1_data_gas: ~4416, l2_gas: ~13258240)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__set_open_for_delegation
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:477:9
+[out] 
+[out] [PASS] staking::staking::test::test_stake (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~24076160)
+[out] [PASS] staking::staking::test::test_set_reward_supplier_not_token_admin (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingConfigImpl__set_reward_supplier
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1107:9
+[out] 
+[out] [PASS] staking::staking::test::test_set_too_long_exit_duration (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18806720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingConfigImpl__set_exit_wait_window
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:1094:9
+[out] 
+[out] [PASS] staking::staking::test::test_stake_from_same_staker_address (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::test::test_stake_with_less_than_min_stake (l1_gas: ~0, l1_data_gas: ~9792, l2_gas: ~19567680)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::test::test_staker_info (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22836160)
+[out] [PASS] staking::staking::test::test_staker_info_into_internal_staker_info_v1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_stake_with_same_operational_address (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::test::test_stake_with_staker_address_already_used (l1_gas: ~0, l1_data_gas: ~10656, l2_gas: ~28521920)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::test::test_stake_with_token_address (l1_gas: ~0, l1_data_gas: ~10752, l2_gas: ~20828160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__stake
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:248:9
+[out] 
+[out] [PASS] staking::staking::test::test_staker_pool_info (l1_gas: ~0, l1_data_gas: ~13632, l2_gas: ~28736000)
+[out] [PASS] staking::staking::test::test_staker_info_staker_doesnt_exist (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18606720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__staker_info_v1
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:515:9
+[out] 
+[out] [PASS] staking::staking::test::test_staker_pool_info_with_multiple_pools (l1_gas: ~0, l1_data_gas: ~18048, l2_gas: ~46327040)
+[out] [PASS] staking::staking::test::test_staking_eic (l1_gas: ~0, l1_data_gas: ~10848, l2_gas: ~24354240)
+[out] [PASS] staking::staking::test::test_staker_migration_staker_not_exist (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18566720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingMigrationImpl__staker_migration
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:785:9
+[out] 
+[out] [PASS] staking::staking::test::test_staker_migration_up_to_date_new_staker (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22236160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingMigrationImpl__staker_migration
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:785:9
+[out] 
+[out] [PASS] staking::staking::test::test_staker_pool_info_staker_doesnt_exist (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~18566720)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__staker_pool_info
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:549:9
+[out] 
+[out] [PASS] staking::staking::test::test_staking_eic_pool_contract_zero_class_hash (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~20588160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: starkware_utils::components::replaceability::replaceability::ReplaceabilityComponent::__wrapper__ReplaceabilityImpl__replace_to
+[out]        at /mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/utils/src/components/replaceability/replaceability.cairo:107:9
+[out] 
+[out] [PASS] staking::staking::test::test_staking_eic_prev_class_hash_zero_class_hash (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~20628160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: starkware_utils::components::replaceability::replaceability::ReplaceabilityComponent::__wrapper__ReplaceabilityImpl__replace_to
+[out]        at /mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/utils/src/components/replaceability/replaceability.cairo:107:9
+[out] 
+[out] [PASS] staking::staking::test::test_staking_eic_total_stake_trace_empty (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~20628160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: starkware_utils::components::replaceability::replaceability::ReplaceabilityComponent::__wrapper__ReplaceabilityImpl__replace_to
+[out]        at /mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/utils/src/components/replaceability/replaceability.cairo:107:9
+[out] 
+[out] [PASS] staking::staking::test::test_switch_staking_delegation_pool (l1_gas: ~0, l1_data_gas: ~19008, l2_gas: ~62954240)
+[out] [PASS] staking::staking::test::test_undelegate_intent_assert_valid (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_undelegate_intent_assert_valid_panic (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] 
+[out] 
+[out] [PASS] staking::staking::test::test_switch_staking_delegation_pool_assertions (l1_gas: ~0, l1_data_gas: ~22368, l2_gas: ~61054080)
+[out] [PASS] staking::staking::test::test_undelegate_intent_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_undelegate_intent_is_valid (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_undelegate_intent_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::staking::test::test_staking_eic_with_wrong_number_of_data_elemnts (l1_gas: ~0, l1_data_gas: ~9888, l2_gas: ~20537920)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: starkware_utils::components::replaceability::replaceability::ReplaceabilityComponent::__wrapper__ReplaceabilityImpl__replace_to
+[out]        at /mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/utils/src/components/replaceability/replaceability.cairo:107:9
+[out] 
+[out] [PASS] staking::staking::test::test_undelegate_intent_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::staking::test::test_unstake_action_assertions (l1_gas: ~0, l1_data_gas: ~13728, l2_gas: ~31033280)
+[out] [PASS] staking::staking::test::test_unstake_action (l1_gas: ~0, l1_data_gas: ~13632, l2_gas: ~40600000)
+[out] [PASS] staking::staking::test::test_unstake_action_multiple_pools (l1_gas: ~0, l1_data_gas: ~17856, l2_gas: ~62618560)
+[out] [PASS] staking::staking::test::test_unstake_intent (l1_gas: ~0, l1_data_gas: ~11040, l2_gas: ~25532480)
+[out] [PASS] staking::staking::test::test_staking_eic_without_pause (l1_gas: ~0, l1_data_gas: ~10368, l2_gas: ~21012800)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: starkware_utils::components::replaceability::replaceability::ReplaceabilityComponent::__wrapper__ReplaceabilityImpl__replace_to
+[out]        at /mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/utils/src/components/replaceability/replaceability.cairo:107:9
+[out] 
+[out] [PASS] staking::staking::test::test_unstake_intent_with_multiple_pools (l1_gas: ~0, l1_data_gas: ~17088, l2_gas: ~43866880)
+[out] [PASS] staking::staking::test::test_update_rewards_from_attestation_contract_assertions (l1_gas: ~0, l1_data_gas: ~11040, l2_gas: ~24932480)
+[out] [PASS] staking::staking::test::test_unstake_intent_with_pool (l1_gas: ~0, l1_data_gas: ~13728, l2_gas: ~32473280)
+[out] [PASS] staking::staking::test::test_update_rewards_from_attestation_contract_only_staker (l1_gas: ~26764, l1_data_gas: ~11136, l2_gas: ~30728320)
+[out] [PASS] staking::staking::test::test_update_rewards_from_attestation_contract_with_both_strk_and_btc (l1_gas: ~26764, l1_data_gas: ~24096, l2_gas: ~109194880)
+[out] [PASS] staking::staking::test::test_update_rewards_from_attestation_contract_with_pool_member (l1_gas: ~26764, l1_data_gas: ~15072, l2_gas: ~54673600)
+[out] [PASS] staking::staking::test::test_versioned_internal_staker_info_new_latest (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] staking::staking::test::test_versioned_internal_staker_info_wrap_latest (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] staking::test_utils::tests::test_compute_rewards_per_unit (l1_gas: ~0, l1_data_gas: ~1152, l2_gas: ~2361920)
+[out] [PASS] staking::staking::test::test_unstake_intent_staker_doesnt_exist (l1_gas: ~0, l1_data_gas: ~10944, l2_gas: ~22476160)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__unstake_intent
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:381:9
+[out] 
+[out] [PASS] staking::staking::test::test_unstake_intent_unstake_in_progress (l1_gas: ~0, l1_data_gas: ~11040, l2_gas: ~24332480)
+[out] 
+[out] error occurred in contract 'Staking'
+[out] stack backtrace:
+[out]    0: staking::staking::staking::Staking::__wrapper__StakingImpl__unstake_intent
+[out]        at /mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo:381:9
+[out] 
+[out] Tests: 329 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> maat-test-ls
+[err]    0.005204323s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/workspace/apps/staking/contracts/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_finance": {
+[out]         "discriminator": "openzeppelin_finance 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_governance": {
+[out]         "discriminator": "openzeppelin_governance 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_merkle_tree": {
+[out]         "discriminator": "openzeppelin_merkle_tree 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_presets": {
+[out]         "discriminator": "openzeppelin_presets 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_security": {
+[out]         "discriminator": "openzeppelin_security 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_upgrades": {
+[out]         "discriminator": "openzeppelin_upgrades 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_access",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_access-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_access",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_account",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_account-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_account",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_finance",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_finance-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_finance",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_finance": {
+[out]         "discriminator": "openzeppelin_finance 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_governance",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_governance-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_governance",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_governance": {
+[out]         "discriminator": "openzeppelin_governance 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_introspection",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_introspection-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_introspection",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_merkle_tree",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_merkle_tree-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_merkle_tree",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_merkle_tree": {
+[out]         "discriminator": "openzeppelin_merkle_tree 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_presets",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_presets-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_presets",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_finance": {
+[out]         "discriminator": "openzeppelin_finance 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_presets": {
+[out]         "discriminator": "openzeppelin_presets 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_upgrades": {
+[out]         "discriminator": "openzeppelin_upgrades 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_security",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_security-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_security",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_security": {
+[out]         "discriminator": "openzeppelin_security 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_token",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_token-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_token",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_upgrades",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_upgrades-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_upgrades",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_upgrades": {
+[out]         "discriminator": "openzeppelin_upgrades 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_utils",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_utils-2.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_utils",
+[out]     "edition": "2024_07",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "snforge_std",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.dev-uh1rofdq911ru/snforge_std-0.48.1+nightly-2025-08-26/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "snforge_std",
+[out]     "edition": "2024_07",
+[out]     "version": "0.48.1+nightly-2025-08-26",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "staking",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/workspace/apps/staking/contracts/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "staking",
+[out]     "edition": "2023_11",
+[out]     "version": "1.14.5",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       },
+[out]       "staking": {
+[out]         "discriminator": "staking 1.14.5 (path+file:///mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)"
+[out]       },
+[out]       "starkware_utils": {
+[out]         "discriminator": "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)"
+[out]       },
+[out]       "starkware_utils_testing": {
+[out]         "discriminator": "starkware_utils_testing 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "starkware_utils",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/utils/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "starkware_utils",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "starkware_utils": {
+[out]         "discriminator": "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "starkware_utils_testing",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/8a5af95/packages/testing/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "starkware_utils_testing",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 2.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       },
+[out]       "starkware_utils": {
+[out]         "discriminator": "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)"
+[out]       },
+[out]       "starkware_utils_testing": {
+[out]         "discriminator": "starkware_utils_testing 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=8a5af9509d93815542b8a701cee22a1b9ec1fe34#8a5af9509d93815542b8a701cee22a1b9ec1fe34)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/workspace/apps/staking/contracts/src/pool/pool.cairo (1)
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 950, Col 23]
+[out] file:///mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/objects.cairo (1)
+[out]   (W) Plugin diagnostic: redundant parentheses in enum variant definition [Ln 586, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/staking/contracts/src/staking/staking.cairo (3)
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 1332, Col 16]
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 1366, Col 16]
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 1363, Col 12]
+[out] file:///mnt/maat-workbench/workspace/apps/staking/contracts/src/test_utils.cairo (1)
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 1239, Col 15]
+[out] total: 0 errors, 6 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: SIGTERM

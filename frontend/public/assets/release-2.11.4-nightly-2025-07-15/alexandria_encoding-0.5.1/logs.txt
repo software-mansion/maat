@@ -1,0 +1,2466 @@
+=== alexandria_encoding-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_encoding/0.5.1 -o archive-600372596731584512.tar.zstd
+
+>>> tar --zstd -xf archive-600372596731584512.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           23.11.0            ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-07-15 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 604f3d5..c3dc2ca 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "Encoding utilities"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/packages/encoding"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_bytes]
+[out] @@ -34,3 +34,22 @@ version = "^0.5.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(alexandria_encoding_unittest) alexandria_encoding v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-encode_string"` with no `#[feature("deprecated-encode_string")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array_string`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:101:72
+[out]             RLPItem::String(string) => { output.extend_from_span(Self::encode_string(*string)?); },
+[out]                                                                        ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:106:41
+[out]                     let payload = Self::encode(*list)?;
+[out]                                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:124:43
+[out]             output.extend_from_span(Self::encode(input)?);
+[out]                                           ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:184:45
+[out]         let (rlp_type, offset, len) = Self::decode_type(input)?;
+[out]                                             ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:200:37
+[out]                     let res = Self::decode(input.slice(offset, len))?;
+[out]                                     ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:212:27
+[out]                     Self::decode(input.slice(total_item_len, input_len - total_item_len))?,
+[out]                           ^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::rlp_byte_array::UIntBytes`
+[out]  --> /mnt/maat-workbench/src/rlp_byte_array.cairo:3:35
+[out] use alexandria_numeric::integers::UIntBytes;
+[out]                                   ^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiDecodeTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:5:13
+[out] use decode::SolAbiDecodeTrait;
+[out]             ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeSelectorTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:6:14
+[out] use encode::{SolAbiEncodeSelectorTrait, SolAbiEncodeTrait};
+[out]              ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:6:41
+[out] use encode::{SolAbiEncodeSelectorTrait, SolAbiEncodeTrait};
+[out]                                         ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeAsTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:7:16
+[out] use encode_as::SolAbiEncodeAsTrait;
+[out]                ^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolBytesTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:8:16
+[out] use sol_bytes::SolBytesTrait;
+[out]                ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:20:44
+[out]         let (new_offset, decodedU8) = self.read_u256(offset);
+[out]                                            ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:28:45
+[out]         let (new_offset, decodedU16) = self.read_u256(offset);
+[out]                                             ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:36:45
+[out]         let (new_offset, decodedU32) = self.read_u256(offset);
+[out]                                             ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:44:45
+[out]         let (new_offset, decodedU64) = self.read_u256(offset);
+[out]                                             ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:52:46
+[out]         let (new_offset, decodedU128) = self.read_u256(offset);
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:60:46
+[out]         let (new_offset, decodedU256) = self.read_u256(offset);
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:72:46
+[out]         let (new_offset, decodedBool) = self.read_u256(offset);
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:80:49
+[out]         let (new_offset, decodedFelt252) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:88:49
+[out]         let (new_offset, decodedBytes31) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:103:47
+[out]         let (new_offset, decodedBytes) = self.read_u256(offset);
+[out]                                               ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:111:47
+[out]         let (new_offset, decodedBytes) = self.read_u256(offset);
+[out]                                               ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:123:49
+[out]         let (new_offset, decodedAddress) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:134:49
+[out]         let (new_offset, decodedAddress) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u32"` with no `#[feature("deprecated-append_u32")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u32`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:16:14
+[out]         self.append_u32(selector);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:39:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:44:14
+[out]         self.append_u8(x);
+[out]              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:51:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u16"` with no `#[feature("deprecated-append_u16")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u16`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:56:14
+[out]         self.append_u16(x);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:63:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u32"` with no `#[feature("deprecated-append_u32")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u32`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:68:14
+[out]         self.append_u32(x);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:75:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u64"` with no `#[feature("deprecated-append_u64")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u64`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:80:14
+[out]         self.append_u64(x);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:87:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u128"` with no `#[feature("deprecated-append_u128")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u128`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:92:14
+[out]         self.append_u128(x);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:99:14
+[out]         self.append_u256(x);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:104:14
+[out]         self.append_u256(x);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:116:18
+[out]             self.append_u256(1);
+[out]                  ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:118:18
+[out]             self.append_u256(0);
+[out]                  ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:125:18
+[out]             self.append_u8(1);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:127:18
+[out]             self.append_u8(0);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:135:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_felt252"` with no `#[feature("deprecated-append_felt252")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_felt252`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:140:14
+[out]         self.append_felt252(x);
+[out]              ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:147:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_bytes31"` with no `#[feature("deprecated-append_bytes31")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_bytes31`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:152:14
+[out]         self.append_bytes31(x);
+[out]              ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:163:14
+[out]         self.concat(@x);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:164:31
+[out]         let padding = 32 - (x.size() % 32);
+[out]                               ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:166:18
+[out]             self.concat(@BytesTrait::zero(padding));
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:172:14
+[out]         self.concat(@x);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:180:14
+[out]         self.concat(@x.into());
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:183:18
+[out]             self.concat(@BytesTrait::zero(padding));
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:189:14
+[out]         self.concat(@x.into());
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:202:14
+[out]         self.append_u256(address_u256);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_address"` with no `#[feature("deprecated-append_address")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_address`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:207:14
+[out]         self.append_address(x);
+[out]              ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:215:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:223:14
+[out]         self.concat(@BytesTrait::new(20, array![address256.high, address256.low]));
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:223:34
+[out]         self.concat(@BytesTrait::new(20, array![address256.high, address256.low]));
+[out]                                  ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:20:43
+[out]         let bytesRes: Bytes = BytesTrait::new(byteSize, array![x.high, x.low]);
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:21:14
+[out]         self.concat(@bytesRes);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:32:47
+[out]             let bytesRes: Bytes = BytesTrait::new(byteSize, array![x]);
+[out]                                               ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:33:18
+[out]             self.concat(@bytesRes);
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:44:43
+[out]         let bytesRes: Bytes = BytesTrait::new(byteSize, array![x.high, x.low]);
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:45:14
+[out]         self.concat(@bytesRes);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:55:43
+[out]         let bytesRes: Bytes = BytesTrait::new(byteSize, array![x.high, x.low]);
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:56:14
+[out]         self.concat(@bytesRes);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:66:14
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:66:34
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]                                  ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:74:14
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:74:34
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]                                  ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:48:21
+[out]         BytesTrait::new_empty().encode_as(1, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:51:21
+[out]         BytesTrait::new_empty().encode_as(2, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:54:21
+[out]         BytesTrait::new_empty().encode_as(3, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:57:21
+[out]         BytesTrait::new_empty().encode_as(4, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:60:21
+[out]         BytesTrait::new_empty().encode_as(5, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:63:21
+[out]         BytesTrait::new_empty().encode_as(6, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:66:21
+[out]         BytesTrait::new_empty().encode_as(7, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:69:21
+[out]         BytesTrait::new_empty().encode_as(8, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:72:21
+[out]         BytesTrait::new_empty().encode_as(9, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:75:21
+[out]         BytesTrait::new_empty().encode_as(10, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:78:21
+[out]         BytesTrait::new_empty().encode_as(11, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:81:21
+[out]         BytesTrait::new_empty().encode_as(12, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:84:21
+[out]         BytesTrait::new_empty().encode_as(13, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:87:21
+[out]         BytesTrait::new_empty().encode_as(14, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:90:21
+[out]         BytesTrait::new_empty().encode_as(15, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:93:21
+[out]         BytesTrait::new_empty().encode_as(16, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:96:21
+[out]         BytesTrait::new_empty().encode_as(17, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:99:21
+[out]         BytesTrait::new_empty().encode_as(18, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:102:21
+[out]         BytesTrait::new_empty().encode_as(19, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:105:21
+[out]         BytesTrait::new_empty().encode_as(20, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:108:21
+[out]         BytesTrait::new_empty().encode_as(21, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:111:21
+[out]         BytesTrait::new_empty().encode_as(22, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:114:21
+[out]         BytesTrait::new_empty().encode_as(23, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:117:21
+[out]         BytesTrait::new_empty().encode_as(24, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:120:21
+[out]         BytesTrait::new_empty().encode_as(25, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:123:21
+[out]         BytesTrait::new_empty().encode_as(26, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:126:21
+[out]         BytesTrait::new_empty().encode_as(27, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:129:21
+[out]         BytesTrait::new_empty().encode_as(28, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:132:21
+[out]         BytesTrait::new_empty().encode_as(29, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:135:21
+[out]         BytesTrait::new_empty().encode_as(30, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:138:21
+[out]         BytesTrait::new_empty().encode_as(31, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:141:21
+[out]         BytesTrait::new_empty().encode_as(32, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:145:21
+[out]         BytesTrait::new_empty().encode_as(len, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::tests::rlp_test::ByteArrayTraitExt`
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1:39
+[out] use alexandria_bytes::byte_array_ext::ByteArrayTraitExt;
+[out]                                       ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:9:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:21:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:33:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:45:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:57:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:69:25
+[out]     let res = RLPTrait::decode_type(arr.span());
+[out]                         ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:80:25
+[out]     let res = RLPTrait::decode_type(arr.span());
+[out]                         ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:91:25
+[out]     let res = RLPTrait::decode_type(arr.span());
+[out]                         ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:100:25
+[out]     let res = RLPTrait::decode(ArrayTrait::new().span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:111:30
+[out]     let rlp_item = RLPTrait::decode(arr.span()).unwrap();
+[out]                              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:126:29
+[out]         let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                             ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:168:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:211:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:285:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:361:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:635:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:651:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:661:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:676:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:692:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:708:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1251:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1908:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1919:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1930:25
+[out]     let res = RLPTrait::encode(input.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1942:25
+[out]     let res = RLPTrait::encode(array![input].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1954:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1966:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1980:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1998:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2024:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2046:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2066:25
+[out]     let res = RLPTrait::encode(input.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2082:25
+[out]     let res = RLPTrait::encode(array![list].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2098:25
+[out]     let res = RLPTrait::encode(array![list].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2726:25
+[out]     let res = RLPTrait::encode(array![list].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::tests::sol_abi::FormatAsByteArray`
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:8:26
+[out] use core::to_byte_array::FormatAsByteArray;
+[out]                          ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:13:15
+[out]     if actual.size() != expected.size() {
+[out]               ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:13:34
+[out]     if actual.size() != expected.size() {
+[out]                                  ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u8"` with no `#[feature("deprecated-read_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u8`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:18:38
+[out]         let (_, actual_val) = actual.read_u8(i);
+[out]                                      ^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u8"` with no `#[feature("deprecated-read_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u8`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:19:42
+[out]         let (_, expected_val) = expected.read_u8(i);
+[out]                                          ^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:17:22
+[out]     while i < actual.size() {
+[out]                      ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:25:19
+[out]     if i < actual.size() {
+[out]                   ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:33:39
+[out]     let expected: Bytes = BytesTrait::new(
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:72:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:79:49
+[out]     let arbitrary_data: ByteArray = BytesTrait::new(
+[out]                                                 ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:111:39
+[out]     let expected: Bytes = BytesTrait::new(
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:129:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:157:43
+[out]     let mut expected: Bytes = BytesTrait::new(
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:160:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:170:43
+[out]     let mut expected: Bytes = BytesTrait::new(
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:175:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:186:39
+[out]     let expected: Bytes = BytesTrait::new(4, array![0xa9059cbb000000000000000000000000]);
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:187:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:192:39
+[out]     let expected: Bytes = BytesTrait::new(
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:202:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:210:38
+[out]     let encoded: Bytes = BytesTrait::new(
+[out]                                      ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:310:46
+[out]     let mut bytesValAcc: Bytes = BytesTrait::new_empty();
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:311:17
+[out]     bytesValAcc.concat(@bytesVal5);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:312:17
+[out]     bytesValAcc.concat(@bytesVal9);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:321:46
+[out]     let mut bytesValAcc: Bytes = BytesTrait::new_empty();
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:322:17
+[out]     bytesValAcc.concat(@bytesVal18);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:323:17
+[out]     bytesValAcc.concat(@bytesVal3);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:331:21
+[out]         BytesTrait::new(16, array![0xa0a1a2a3a4a500000000000000000000]),
+[out]                     ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:338:46
+[out]     let mut bytesValAcc: Bytes = BytesTrait::new_empty();
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:339:17
+[out]     bytesValAcc.concat(@bytesVal6);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:340:17
+[out]     bytesValAcc.concat(@bytesVal19);
+[out]                 ^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 9 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_encoding (scarb cairo-test)
+[out]    Compiling test(alexandria_encoding_unittest) alexandria_encoding v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-encode_string"` with no `#[feature("deprecated-encode_string")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array_string`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:101:72
+[out]             RLPItem::String(string) => { output.extend_from_span(Self::encode_string(*string)?); },
+[out]                                                                        ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:106:41
+[out]                     let payload = Self::encode(*list)?;
+[out]                                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:124:43
+[out]             output.extend_from_span(Self::encode(input)?);
+[out]                                           ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:184:45
+[out]         let (rlp_type, offset, len) = Self::decode_type(input)?;
+[out]                                             ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:200:37
+[out]                     let res = Self::decode(input.slice(offset, len))?;
+[out]                                     ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/rlp.cairo:212:27
+[out]                     Self::decode(input.slice(total_item_len, input_len - total_item_len))?,
+[out]                           ^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::rlp_byte_array::UIntBytes`
+[out]  --> /mnt/maat-workbench/src/rlp_byte_array.cairo:3:35
+[out] use alexandria_numeric::integers::UIntBytes;
+[out]                                   ^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiDecodeTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:5:13
+[out] use decode::SolAbiDecodeTrait;
+[out]             ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeSelectorTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:6:14
+[out] use encode::{SolAbiEncodeSelectorTrait, SolAbiEncodeTrait};
+[out]              ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:6:41
+[out] use encode::{SolAbiEncodeSelectorTrait, SolAbiEncodeTrait};
+[out]                                         ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeAsTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:7:16
+[out] use encode_as::SolAbiEncodeAsTrait;
+[out]                ^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::sol_abi::SolBytesTrait`
+[out]  --> /mnt/maat-workbench/src/sol_abi.cairo:8:16
+[out] use sol_bytes::SolBytesTrait;
+[out]                ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:20:44
+[out]         let (new_offset, decodedU8) = self.read_u256(offset);
+[out]                                            ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:28:45
+[out]         let (new_offset, decodedU16) = self.read_u256(offset);
+[out]                                             ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:36:45
+[out]         let (new_offset, decodedU32) = self.read_u256(offset);
+[out]                                             ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:44:45
+[out]         let (new_offset, decodedU64) = self.read_u256(offset);
+[out]                                             ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:52:46
+[out]         let (new_offset, decodedU128) = self.read_u256(offset);
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:60:46
+[out]         let (new_offset, decodedU256) = self.read_u256(offset);
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:72:46
+[out]         let (new_offset, decodedBool) = self.read_u256(offset);
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:80:49
+[out]         let (new_offset, decodedFelt252) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:88:49
+[out]         let (new_offset, decodedBytes31) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:103:47
+[out]         let (new_offset, decodedBytes) = self.read_u256(offset);
+[out]                                               ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:111:47
+[out]         let (new_offset, decodedBytes) = self.read_u256(offset);
+[out]                                               ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:123:49
+[out]         let (new_offset, decodedAddress) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/decode.cairo:134:49
+[out]         let (new_offset, decodedAddress) = self.read_u256(offset);
+[out]                                                 ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u32"` with no `#[feature("deprecated-append_u32")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u32`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:16:14
+[out]         self.append_u32(selector);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:39:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:44:14
+[out]         self.append_u8(x);
+[out]              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:51:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u16"` with no `#[feature("deprecated-append_u16")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u16`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:56:14
+[out]         self.append_u16(x);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:63:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u32"` with no `#[feature("deprecated-append_u32")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u32`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:68:14
+[out]         self.append_u32(x);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:75:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u64"` with no `#[feature("deprecated-append_u64")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u64`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:80:14
+[out]         self.append_u64(x);
+[out]              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:87:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u128"` with no `#[feature("deprecated-append_u128")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u128`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:92:14
+[out]         self.append_u128(x);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:99:14
+[out]         self.append_u256(x);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:104:14
+[out]         self.append_u256(x);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:116:18
+[out]             self.append_u256(1);
+[out]                  ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:118:18
+[out]             self.append_u256(0);
+[out]                  ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:125:18
+[out]             self.append_u8(1);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:127:18
+[out]             self.append_u8(0);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:135:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_felt252"` with no `#[feature("deprecated-append_felt252")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_felt252`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:140:14
+[out]         self.append_felt252(x);
+[out]              ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:147:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_bytes31"` with no `#[feature("deprecated-append_bytes31")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_bytes31`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:152:14
+[out]         self.append_bytes31(x);
+[out]              ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:163:14
+[out]         self.concat(@x);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:164:31
+[out]         let padding = 32 - (x.size() % 32);
+[out]                               ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:166:18
+[out]             self.concat(@BytesTrait::zero(padding));
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:172:14
+[out]         self.concat(@x);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:180:14
+[out]         self.concat(@x.into());
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:183:18
+[out]             self.concat(@BytesTrait::zero(padding));
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:189:14
+[out]         self.concat(@x.into());
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:202:14
+[out]         self.append_u256(address_u256);
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_address"` with no `#[feature("deprecated-append_address")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_address`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:207:14
+[out]         self.append_address(x);
+[out]              ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:215:14
+[out]         self.append_u256(x.into());
+[out]              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:223:14
+[out]         self.concat(@BytesTrait::new(20, array![address256.high, address256.low]));
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode.cairo:223:34
+[out]         self.concat(@BytesTrait::new(20, array![address256.high, address256.low]));
+[out]                                  ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:20:43
+[out]         let bytesRes: Bytes = BytesTrait::new(byteSize, array![x.high, x.low]);
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:21:14
+[out]         self.concat(@bytesRes);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:32:47
+[out]             let bytesRes: Bytes = BytesTrait::new(byteSize, array![x]);
+[out]                                               ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:33:18
+[out]             self.concat(@bytesRes);
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:44:43
+[out]         let bytesRes: Bytes = BytesTrait::new(byteSize, array![x.high, x.low]);
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:45:14
+[out]         self.concat(@bytesRes);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:55:43
+[out]         let bytesRes: Bytes = BytesTrait::new(byteSize, array![x.high, x.low]);
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:56:14
+[out]         self.concat(@bytesRes);
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:66:14
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:66:34
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]                                  ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:74:14
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/encode_as.cairo:74:34
+[out]         self.concat(@BytesTrait::new(byteSize, x.data()));
+[out]                                  ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:48:21
+[out]         BytesTrait::new_empty().encode_as(1, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:51:21
+[out]         BytesTrait::new_empty().encode_as(2, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:54:21
+[out]         BytesTrait::new_empty().encode_as(3, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:57:21
+[out]         BytesTrait::new_empty().encode_as(4, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:60:21
+[out]         BytesTrait::new_empty().encode_as(5, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:63:21
+[out]         BytesTrait::new_empty().encode_as(6, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:66:21
+[out]         BytesTrait::new_empty().encode_as(7, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:69:21
+[out]         BytesTrait::new_empty().encode_as(8, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:72:21
+[out]         BytesTrait::new_empty().encode_as(9, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:75:21
+[out]         BytesTrait::new_empty().encode_as(10, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:78:21
+[out]         BytesTrait::new_empty().encode_as(11, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:81:21
+[out]         BytesTrait::new_empty().encode_as(12, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:84:21
+[out]         BytesTrait::new_empty().encode_as(13, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:87:21
+[out]         BytesTrait::new_empty().encode_as(14, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:90:21
+[out]         BytesTrait::new_empty().encode_as(15, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:93:21
+[out]         BytesTrait::new_empty().encode_as(16, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:96:21
+[out]         BytesTrait::new_empty().encode_as(17, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:99:21
+[out]         BytesTrait::new_empty().encode_as(18, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:102:21
+[out]         BytesTrait::new_empty().encode_as(19, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:105:21
+[out]         BytesTrait::new_empty().encode_as(20, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:108:21
+[out]         BytesTrait::new_empty().encode_as(21, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:111:21
+[out]         BytesTrait::new_empty().encode_as(22, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:114:21
+[out]         BytesTrait::new_empty().encode_as(23, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:117:21
+[out]         BytesTrait::new_empty().encode_as(24, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:120:21
+[out]         BytesTrait::new_empty().encode_as(25, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:123:21
+[out]         BytesTrait::new_empty().encode_as(26, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:126:21
+[out]         BytesTrait::new_empty().encode_as(27, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:129:21
+[out]         BytesTrait::new_empty().encode_as(28, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:132:21
+[out]         BytesTrait::new_empty().encode_as(29, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:135:21
+[out]         BytesTrait::new_empty().encode_as(30, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:138:21
+[out]         BytesTrait::new_empty().encode_as(31, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:141:21
+[out]         BytesTrait::new_empty().encode_as(32, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/sol_abi/sol_bytes.cairo:145:21
+[out]         BytesTrait::new_empty().encode_as(len, val)
+[out]                     ^^^^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::tests::rlp_test::ByteArrayTraitExt`
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1:39
+[out] use alexandria_bytes::byte_array_ext::ByteArrayTraitExt;
+[out]                                       ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:9:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:21:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:33:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:45:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:57:46
+[out]     let (rlp_type, offset, size) = RLPTrait::decode_type(arr.span()).unwrap();
+[out]                                              ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:69:25
+[out]     let res = RLPTrait::decode_type(arr.span());
+[out]                         ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:80:25
+[out]     let res = RLPTrait::decode_type(arr.span());
+[out]                         ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:91:25
+[out]     let res = RLPTrait::decode_type(arr.span());
+[out]                         ^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:100:25
+[out]     let res = RLPTrait::decode(ArrayTrait::new().span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:111:30
+[out]     let rlp_item = RLPTrait::decode(arr.span()).unwrap();
+[out]                              ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:126:29
+[out]         let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                             ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:168:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:211:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:285:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:361:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:635:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:651:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:661:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:676:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:692:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:708:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1251:25
+[out]     let res = RLPTrait::decode(arr.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1908:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1919:25
+[out]     let res = RLPTrait::decode(arr.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1930:25
+[out]     let res = RLPTrait::encode(input.span());
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1942:25
+[out]     let res = RLPTrait::encode(array![input].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1954:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1966:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1980:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:1998:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2024:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2046:25
+[out]     let res = RLPTrait::encode(array![RLPItem::String(input.span())].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2066:25
+[out]     let res = RLPTrait::encode(input.span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2082:25
+[out]     let res = RLPTrait::encode(array![list].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2098:25
+[out]     let res = RLPTrait::encode(array![list].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/rlp_test.cairo:2726:25
+[out]     let res = RLPTrait::encode(array![list].span()).unwrap();
+[out]                         ^^^^^^
+[out] 
+[out] warn: Unused import: `alexandria_encoding::tests::sol_abi::FormatAsByteArray`
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:8:26
+[out] use core::to_byte_array::FormatAsByteArray;
+[out]                          ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:13:15
+[out]     if actual.size() != expected.size() {
+[out]               ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:13:34
+[out]     if actual.size() != expected.size() {
+[out]                                  ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u8"` with no `#[feature("deprecated-read_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u8`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:18:38
+[out]         let (_, actual_val) = actual.read_u8(i);
+[out]                                      ^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-read_u8"` with no `#[feature("deprecated-read_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u8`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:19:42
+[out]         let (_, expected_val) = expected.read_u8(i);
+[out]                                          ^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:17:22
+[out]     while i < actual.size() {
+[out]                      ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:25:19
+[out]     if i < actual.size() {
+[out]                   ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:33:39
+[out]     let expected: Bytes = BytesTrait::new(
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:72:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:79:49
+[out]     let arbitrary_data: ByteArray = BytesTrait::new(
+[out]                                                 ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:111:39
+[out]     let expected: Bytes = BytesTrait::new(
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:129:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:157:43
+[out]     let mut expected: Bytes = BytesTrait::new(
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:160:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:170:43
+[out]     let mut expected: Bytes = BytesTrait::new(
+[out]                                           ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:175:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:186:39
+[out]     let expected: Bytes = BytesTrait::new(4, array![0xa9059cbb000000000000000000000000]);
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:187:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:192:39
+[out]     let expected: Bytes = BytesTrait::new(
+[out]                                       ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:202:42
+[out]     let mut encoded: Bytes = BytesTrait::new_empty();
+[out]                                          ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:210:38
+[out]     let encoded: Bytes = BytesTrait::new(
+[out]                                      ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:310:46
+[out]     let mut bytesValAcc: Bytes = BytesTrait::new_empty();
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:311:17
+[out]     bytesValAcc.concat(@bytesVal5);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:312:17
+[out]     bytesValAcc.concat(@bytesVal9);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:321:46
+[out]     let mut bytesValAcc: Bytes = BytesTrait::new_empty();
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:322:17
+[out]     bytesValAcc.concat(@bytesVal18);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:323:17
+[out]     bytesValAcc.concat(@bytesVal3);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:331:21
+[out]         BytesTrait::new(16, array![0xa0a1a2a3a4a500000000000000000000]),
+[out]                     ^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:338:46
+[out]     let mut bytesValAcc: Bytes = BytesTrait::new_empty();
+[out]                                              ^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:339:17
+[out]     bytesValAcc.concat(@bytesVal6);
+[out]                 ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`."
+[out]  --> /mnt/maat-workbench/src/tests/sol_abi.cairo:340:17
+[out]     bytesValAcc.concat(@bytesVal19);
+[out]                 ^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 9 seconds
+[out]      Testing alexandria_encoding
+[out] running 139 tests
+[out] test alexandria_encoding::tests::base58_test::base58encode_empty_test ... ok (gas usage est.: 15040)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_default_value ... ok (gas usage est.: 18360)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_empty ... ok (gas usage est.: 5830)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_short_string_input_too_short ... ok (gas usage est.: 701120)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_string_default_value ... ok (gas usage est.: 18950)
+[out] test alexandria_encoding::tests::base58_test::base58encode_simple_test ... ok (gas usage est.: 56780)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_string_single_byte_lt_0x80 ... ok (gas usage est.: 19830)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_string_with_payload_len_on_1_byte ... ok (gas usage est.: 4633010)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_string_single_byte_ge_0x80 ... ok (gas usage est.: 31700)
+[out] test alexandria_encoding::tests::base58_test::base58encode_hello_world_test ... ok (gas usage est.: 877150)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_string_with_input_too_short ... ok (gas usage est.: 1618350)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_string ... ok (gas usage est.: 4002590)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_string_length_between_2_and_55 ... ok (gas usage est.: 37510)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_short_string ... ok (gas usage est.: 124670)
+[out] test alexandria_encoding::tests::base58_test::base58encode_address_test ... ok (gas usage est.: 6053830)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_string_with_payload_len_on_2_bytes ... ok (gas usage est.: 19471200)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_string_length_exactly_56 ... ok (gas usage est.: 632462)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_short_string_input_too_short ... ok (gas usage est.: 15160)
+[out] test alexandria_encoding::tests::base58_test::base58decode_empty_test ... ok (gas usage est.: 2530)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_string_with_payload_len_too_short ... ok (gas usage est.: 93800)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_string_length_greater_than_56 ... ok (gas usage est.: 656142)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_string_with_payload_len_on_1_byte ... ok (gas usage est.: 254300)
+[out] test alexandria_encoding::tests::base58_test::base58decode_simple_test ... ok (gas usage est.: 130020)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_short_list ... ok (gas usage est.: 1308520)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_string_with_input_too_short ... ok (gas usage est.: 32780)
+[out] test alexandria_encoding::tests::base58_test::base58decode_hello_world_test ... ok (gas usage est.: 905310)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_string_large_bytearray_inputs ... ok (gas usage est.: 5115352)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_short_nested_list ... ok (gas usage est.: 1521290)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_string_with_payload_len_on_2_bytes ... ok (gas usage est.: 965770)
+[out] test alexandria_encoding::tests::base58_test::base58encode_with_leading_zeros ... ok (gas usage est.: 76200)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_mutilple_string ... ok (gas usage est.: 91710)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_multi_list ... ok (gas usage est.: 939650)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_string_with_payload_len_too_short ... ok (gas usage est.: 9870)
+[out] test alexandria_encoding::tests::base58_test::base58decode_with_leading_zeros ... ok (gas usage est.: 153380)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_short_list ... ok (gas usage est.: 199350)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_short_list_with_input_too_short ... ok (gas usage est.: 271900)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_short_list ... ok (gas usage est.: 138160)
+[out] test alexandria_encoding::tests::base58_test::base58_all_zeros_test ... ok (gas usage est.: 169800)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_short_nested_list ... ok (gas usage est.: 193990)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_short_nested_list ... ok (gas usage est.: 218980)
+[out] test alexandria_encoding::tests::base58_test::base58_binary_data_test ... ok (gas usage est.: 706220)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_long_list ... ok (gas usage est.: 16118692)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_multi_list ... ok (gas usage est.: 149730)
+[out] test alexandria_encoding::tests::base58_test::base58_invalid_characters_test ... ok (gas usage est.: 453350)
+[out] test alexandria_encoding::tests::sol_abi::encode_test ... ok (gas usage est.: 10321300)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_short_list_with_input_too_short ... ok (gas usage est.: 12700)
+[out] test alexandria_encoding::tests::base58_test::base58_round_trip_test_1 ... ok (gas usage est.: 1424790)
+[out] test alexandria_encoding::tests::sol_abi::encode_packed_test ... ok (gas usage est.: 3501540)
+[out] test alexandria_encoding::tests::base58_test::base58_round_trip_test_2 ... ok (gas usage est.: 1367080)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_list ... ok (gas usage est.: 2808750)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_list ... ok (gas usage est.: 151080860)
+[out] test alexandria_encoding::tests::sol_abi::encoded_as_test ... ok (gas usage est.: 1276560)
+[out] test alexandria_encoding::tests::base58_test::base58_round_trip_test_3 ... ok (gas usage est.: 1248490)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_list_with_input_too_short ... ok (gas usage est.: 30660)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_list_with_input_too_short ... ok (gas usage est.: 840530)
+[out] test alexandria_encoding::tests::sol_abi::encoded_as_test_second ... ok (gas usage est.: 3082150)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_long_list_with_len_too_short ... ok (gas usage est.: 10340)
+[out] test alexandria_encoding::tests::base58_test::base58_single_byte_edge_cases ... ok (gas usage est.: 753560)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_long_list_with_len_too_short ... ok (gas usage est.: 95640)
+[out] test alexandria_encoding::tests::sol_abi::selector_test ... ok (gas usage est.: 492410)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_encode_empty_input_should_fail ... ok (gas usage est.: 5990)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_encode_ba_empty_test ... ok (gas usage est.: 19280)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_empty_input_should_fail ... ok (gas usage est.: 4370)
+[out] test alexandria_encoding::tests::base64_felt_test::base64encode_empty_test ... ok (gas usage est.: 805878)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_encode_ba_simple_test ... ok (gas usage est.: 196092)
+[out] test alexandria_encoding::tests::sol_abi::decode_test ... ok (gas usage est.: 4147950)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_default_value ... ok (gas usage est.: 36930)
+[out] test alexandria_encoding::tests::base64_felt_test::base64encode_simple_test ... ok (gas usage est.: 821397)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_encode_ba_hello_world_test ... ok (gas usage est.: 415608)
+[out] test alexandria_encoding::tests::sol_abi::sol_bytes_test ... ok (gas usage est.: 6841100)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_string_single_byte_lt_0x80 ... ok (gas usage est.: 78730)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_decode_ba_empty_test ... ok (gas usage est.: 5780)
+[out] test alexandria_encoding::tests::base64_felt_test::base64encode_hello_world_test ... ok (gas usage est.: 922694)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_url_decode_ba_with_plus_and_slash ... ok (gas usage est.: 168746)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_string_single_byte_ge_0x80 ... ok (gas usage est.: 116440)
+[out] test alexandria_encoding::tests::base64_felt_test::base64encode_with_plus_and_slash ... ok (gas usage est.: 827957)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_decode_ba_simple_test ... ok (gas usage est.: 144073)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_round_trip_test ... ok (gas usage est.: 2155714)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_string_length_between_2_and_55 ... ok (gas usage est.: 108040)
+[out] test alexandria_encoding::tests::base64_felt_test::base64urlencode_with_plus_and_slash ... ok (gas usage est.: 827957)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_decode_ba_hello_world_test ... ok (gas usage est.: 482793)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_binary_data_test ... ok (gas usage est.: 553546)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_string_length_exactly_56 ... ok (gas usage est.: 1646610)
+[out] test alexandria_encoding::tests::base64_test::base64encode_empty_test ... ok (gas usage est.: 16400)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_encode_ba_with_plus_and_slash ... ok (gas usage est.: 144222)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_longer_input_test ... ok (gas usage est.: 1879170)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_string_length_greater_than_56 ... ok (gas usage est.: 1710860)
+[out] test alexandria_encoding::tests::base64_test::base64encode_simple_test ... ok (gas usage est.: 51848)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_url_encode_ba_with_plus_and_slash ... ok (gas usage est.: 144222)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_sample_byte_values_test ... ok (gas usage est.: 1895420)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_decode_ba_with_plus_and_slash ... ok (gas usage est.: 168746)
+[out] test alexandria_encoding::tests::base64_test::base64encode_hello_world_test ... ok (gas usage est.: 142862)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_string_large_bytearray_inputs ... ok (gas usage est.: 10621930)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_double_padding_test ... ok (gas usage est.: 317395)
+[out] test alexandria_encoding::tests::base64_test::base64decode_empty_test ... ok (gas usage est.: 2900)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_short_nested_list_without_using_rlp_type ... ok (gas usage est.: 440150)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_mutilple_string ... ok (gas usage est.: 204050)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_single_padding_test ... ok (gas usage est.: 293058)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_byte ... ok (gas usage est.: 5090)
+[out] test alexandria_encoding::tests::base64_test::base64decode_simple_test ... ok (gas usage est.: 61833)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_short_list ... ok (gas usage est.: 507790)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_ba_no_padding_test ... ok (gas usage est.: 290451)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_short_string ... ok (gas usage est.: 6430)
+[out] test alexandria_encoding::tests::base64_test::base64decode_hello_world_test ... ok (gas usage est.: 245813)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_short_nested_list ... ok (gas usage est.: 561490)
+[out] test alexandria_encoding::tests::base64_byte_array_test::base64_url_ba_round_trip_test ... ok (gas usage est.: 588326)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_long_string ... ok (gas usage est.: 21660)
+[out] test alexandria_encoding::tests::base64_test::base64encode_with_plus_and_slash ... ok (gas usage est.: 53228)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_short_list ... ok (gas usage est.: 7470)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_encode_long_list ... ok (gas usage est.: 4839140)
+[out] test alexandria_encoding::tests::base64_test::base64urlencode_with_plus_and_slash ... ok (gas usage est.: 53228)
+[out] test alexandria_encoding::tests::base64_test::base64_longer_input_test ... ok (gas usage est.: 662646)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_long_list ... ok (gas usage est.: 22030)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_rlp_encode_legacy_tx_calldata_long ... ok (gas usage est.: 3835390)
+[out] test alexandria_encoding::tests::base64_test::base64decode_with_plus_and_slash ... ok (gas usage est.: 67376)
+[out] test alexandria_encoding::tests::base64_test::base64_sample_byte_values_test ... ok (gas usage est.: 655336)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_long_list_len_too_short ... ok (gas usage est.: 7930)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_rlp_encode_legacy_tx_calldata_long_without_using_rlp_type ... ok (gas usage est.: 1756280)
+[out] test alexandria_encoding::tests::base64_test::base64urldecode_with_plus_and_slash ... ok (gas usage est.: 67376)
+[out] test alexandria_encoding::tests::base64_test::base64_double_padding_test ... ok (gas usage est.: 115291)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_long_string_payload_too_long ... ok (gas usage est.: 11100)
+[out] test alexandria_encoding::tests::rlp_test::test_rlp_decode_type_long_list_payload_too_long ... ok (gas usage est.: 10970)
+[out] test alexandria_encoding::tests::base64_test::base64_round_trip_test ... ok (gas usage est.: 920888)
+[out] test alexandria_encoding::tests::base64_test::base64_single_padding_test ... ok (gas usage est.: 123134)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_short_list ... ok (gas usage est.: 436930)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_long_list_payload_too_long ... ok (gas usage est.: 323970)
+[out] test alexandria_encoding::tests::base64_test::base64_binary_data_test ... ok (gas usage est.: 201458)
+[out] test alexandria_encoding::tests::base64_test::base64_no_padding_test ... ok (gas usage est.: 132007)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_long_list ... ok (gas usage est.: 3205320)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_empty ... ok (gas usage est.: 4740)
+[out] test alexandria_encoding::tests::base64_test::base64url_round_trip_test ... ok (gas usage est.: 246648)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_byte ... ok (gas usage est.: 79810)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_long_list_len_too_short ... ok (gas usage est.: 95640)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_string_default_value ... ok (gas usage est.: 63360)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_short_string ... ok (gas usage est.: 142900)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_string ... ok (gas usage est.: 9728050)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_long_string_payload_too_long ... ok (gas usage est.: 479630)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_type_long_string ... ok (gas usage est.: 14358290)
+[out] test alexandria_encoding::tests::rlp_byte_array_test::test_ba_rlp_decode_short_string ... ok (gas usage est.: 2064150)
+[out] test result: ok. 139 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004056151s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `alexandria_bytes`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_bytes-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_bytes",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_bytes": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_bytes 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_math": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_data_structures`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_data_structures-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_data_structures",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_encoding`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_encoding",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_bytes": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_bytes 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_encoding": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_encoding 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_math": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_numeric": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_numeric 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_math`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_math-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_math",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_math": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_numeric`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_numeric-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_numeric",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_math": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_numeric": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_numeric 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_searching": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_searching 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_searching`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_searching-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_searching",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_searching": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_searching 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/base58.cairo (12)
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 25, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 32, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 49, Col 14]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 57, Col 14]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 41, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 68, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 89, Col 14]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 98, Col 18]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 115, Col 14]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 142, Col 18]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 150, Col 14]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 159, Col 14]
+[out] file:///mnt/maat-workbench/src/base64.cairo (3)
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 155, Col 11]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 267, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 328, Col 10]
+[out] file:///mnt/maat-workbench/src/rlp_byte_array.cairo (2)
+[out]   (W) Unused import: `alexandria_encoding::rlp_byte_array::UIntBytes` [Ln 2, Col 34]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 306, Col 10]
+[out] file:///mnt/maat-workbench/src/rlp.cairo (6)
+[out]   (W) Usage of deprecated feature `"deprecated-encode_string"` with no `#[feature("deprecated-encode_string")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array_string`." [Ln 100, Col 71]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 105, Col 40]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 123, Col 42]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 183, Col 44]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 199, Col 36]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 211, Col 26]
+[out] file:///mnt/maat-workbench/src/sol_abi.cairo (5)
+[out]   (W) Unused import: `alexandria_encoding::sol_abi::SolAbiDecodeTrait` [Ln 4, Col 12]
+[out]   (W) Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeSelectorTrait` [Ln 5, Col 13]
+[out]   (W) Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeTrait` [Ln 5, Col 40]
+[out]   (W) Unused import: `alexandria_encoding::sol_abi::SolAbiEncodeAsTrait` [Ln 6, Col 15]
+[out]   (W) Unused import: `alexandria_encoding::sol_abi::SolBytesTrait` [Ln 7, Col 15]
+[out] file:///mnt/maat-workbench/src/sol_abi/decode.cairo (13)
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 19, Col 43]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 27, Col 44]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 35, Col 44]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 43, Col 44]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 51, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 59, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 71, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 79, Col 48]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 87, Col 48]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 102, Col 46]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 110, Col 46]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 122, Col 48]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u256"` with no `#[feature("deprecated-read_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u256`." [Ln 133, Col 48]
+[out] file:///mnt/maat-workbench/src/sol_abi/encode_as.cairo (12)
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 19, Col 42]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 20, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 31, Col 46]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 32, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 43, Col 42]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 44, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 54, Col 42]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 55, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 65, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 65, Col 33]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 73, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 73, Col 33]
+[out] file:///mnt/maat-workbench/src/sol_abi/encode.cairo (33)
+[out]   (W) Usage of deprecated feature `"deprecated-append_u32"` with no `#[feature("deprecated-append_u32")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u32`." [Ln 15, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 38, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`." [Ln 43, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 50, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u16"` with no `#[feature("deprecated-append_u16")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u16`." [Ln 55, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 62, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u32"` with no `#[feature("deprecated-append_u32")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u32`." [Ln 67, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 74, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u64"` with no `#[feature("deprecated-append_u64")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u64`." [Ln 79, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 86, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u128"` with no `#[feature("deprecated-append_u128")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u128`." [Ln 91, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 98, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 103, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 115, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 117, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`." [Ln 124, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u8"` with no `#[feature("deprecated-append_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u8`." [Ln 126, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 134, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_felt252"` with no `#[feature("deprecated-append_felt252")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_felt252`." [Ln 139, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 146, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_bytes31"` with no `#[feature("deprecated-append_bytes31")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_bytes31`." [Ln 151, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 162, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`." [Ln 163, Col 30]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 165, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 171, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 179, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 182, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 188, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 201, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_address"` with no `#[feature("deprecated-append_address")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_address`." [Ln 206, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-append_u256"` with no `#[feature("deprecated-append_u256")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::append_u256`." [Ln 214, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 222, Col 13]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 222, Col 33]
+[out] file:///mnt/maat-workbench/src/sol_abi/sol_bytes.cairo (33)
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 47, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 50, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 53, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 56, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 59, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 62, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 65, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 68, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 71, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 74, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 77, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 80, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 83, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 86, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 89, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 92, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 95, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 98, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 101, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 104, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 107, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 110, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 113, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 116, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 119, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 122, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 125, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 128, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 131, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 134, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 137, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 140, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 144, Col 20]
+[out] file:///mnt/maat-workbench/src/tests/base58_test.cairo (8)
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 137, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 216, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 226, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 244, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 292, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 309, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 326, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 339, Col 10]
+[out] file:///mnt/maat-workbench/src/tests/base64_felt_test.cairo (1)
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 14, Col 11]
+[out] file:///mnt/maat-workbench/src/tests/rlp_test.cairo (37)
+[out]   (W) Unused import: `alexandria_encoding::tests::rlp_test::ByteArrayTraitExt` [Ln 0, Col 38]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 8, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 20, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 32, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 44, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 56, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 68, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 79, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode_type"` with no `#[feature("deprecated-decode_type")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array_type`." [Ln 90, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 99, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 110, Col 29]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 125, Col 28]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 167, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 210, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 284, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 360, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 634, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 650, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 660, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 675, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 691, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 707, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 1250, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 1907, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-decode"` with no `#[feature("deprecated-decode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::decode_byte_array`." [Ln 1918, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 1929, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 1941, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 1953, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 1965, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 1979, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 1997, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 2023, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 2045, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 2065, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 2081, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 2097, Col 24]
+[out]   (W) Usage of deprecated feature `"deprecated-encode"` with no `#[feature("deprecated-encode")]` attribute. Note: "Use `alexandria_encoding::rlp_byte_array::RLPTrait::encode_byte_array`." [Ln 2725, Col 24]
+[out] file:///mnt/maat-workbench/src/tests/sol_abi.cairo (32)
+[out]   (W) Unused import: `alexandria_encoding::tests::sol_abi::FormatAsByteArray` [Ln 7, Col 25]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 16, Col 10]
+[out]   (W) Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`." [Ln 12, Col 14]
+[out]   (W) Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`." [Ln 12, Col 33]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u8"` with no `#[feature("deprecated-read_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u8`." [Ln 17, Col 37]
+[out]   (W) Usage of deprecated feature `"deprecated-read_u8"` with no `#[feature("deprecated-read_u8")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::read_u8`." [Ln 18, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`." [Ln 16, Col 21]
+[out]   (W) Usage of deprecated feature `"deprecated-size"` with no `#[feature("deprecated-size")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::size`." [Ln 24, Col 18]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 32, Col 38]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 71, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 78, Col 48]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 110, Col 38]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 128, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 156, Col 42]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 159, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 169, Col 42]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 174, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 185, Col 38]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 186, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 191, Col 38]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 201, Col 41]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 209, Col 37]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 309, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 310, Col 16]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 311, Col 16]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 320, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 321, Col 16]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 322, Col 16]
+[out]   (W) Usage of deprecated feature `"deprecated-new"` with no `#[feature("deprecated-new")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new`." [Ln 330, Col 20]
+[out]   (W) Usage of deprecated feature `"deprecated-new_empty"` with no `#[feature("deprecated-new_empty")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayTraitExt::new_empty`." [Ln 337, Col 45]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 338, Col 16]
+[out]   (W) Usage of deprecated feature `"deprecated-concat"` with no `#[feature("deprecated-concat")]` attribute. Note: "Use `core::byte_array::concat`." [Ln 339, Col 16]
+[out] total: 0 errors, 197 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

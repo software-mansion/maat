@@ -1,0 +1,242 @@
+=== xoroshiro-1.1.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/xoroshiro/1.1.0 -o archive-615238761451753472.tar.zstd
+
+>>> tar --zstd -xf archive-615238761451753472.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.48.1          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 2244b05..377e6f3 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -26,7 +26,7 @@ keywords = [
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/milancermak/xoroshiro-cairo"
+[out] -cairo-version = "^2.7.0"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: '^2.7.0'
+[out]  
+[out]  [dependencies.starknet]
+[out]  version = ">=2.7.0"
+[out] @@ -38,3 +38,22 @@ sort-module-level-items = true
+[out]  [tool.snforge]
+[out]  max_n_steps = 200000000
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.48.1" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+
+>>> scarb tree -q --workspace
+[out] xoroshiro v1.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.0 (std)
+[out] └── [dev-dependencies]
+[out]     ├── snforge_std v0.48.1
+[out]     │   └── snforge_scarb_plugin v0.48.1
+[out]     └── snforge_scarb_plugin v0.48.1 (*)
+
+>>> scarb build --workspace --test
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(xoroshiro_unittest) xoroshiro v1.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:8:15
+[out]     use core::starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 3 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting xoroshiro v1.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:36:27
+[out]             self.s0.write((rotl(s0, 24) ^ s1 ^ (s1 * 65536)) & U64);
+[out]                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:36:48
+[out]             self.s0.write((rotl(s0, 24) ^ s1 ^ (s1 * 65536)) & U64);
+[out]                                                ^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:37:27
+[out]             self.s1.write((rotl(s1, 37) & U64));
+[out]                           ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:8:15
+[out]     use core::starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+[out]               ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:8:15
+[out]     use core::starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+[out]               ^^^^^^^^
+[out] 
+[out] error: lint checking `xoroshiro` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test xoroshiro (snforge test --fuzzer-seed 1)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(xoroshiro_unittest) xoroshiro v1.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:8:15
+[out]     use core::starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 1 second
+[out] 
+[out] 
+[out] Collected 2 test(s) from xoroshiro package
+[out] Running 2 test(s) from src/
+[out] [PASS] xoroshiro::xoroshiro::test::test_next_20 (l1_gas: ~0, l1_data_gas: ~288, l2_gas: ~67640000)
+[out] [PASS] xoroshiro::xoroshiro::test::test_successful_10K (l1_gas: ~0, l1_data_gas: ~288, l2_gas: ~32323000000)
+[out] Tests: 2 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> maat-test-ls
+[err]    0.004242232s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": null,
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": null,
+[out]     "dependencies": {},
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": true
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "xoroshiro",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": null,
+[out]     "edition": "2023_01",
+[out]     "version": null,
+[out]     "cfg_set": null,
+[out]     "dependencies": {},
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest",
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/xoroshiro.cairo (9)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 35, Col 26]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 35, Col 47]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 36, Col 26]
+[out]   (W) Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly" [Ln 7, Col 14]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 122, Col 16]
+[out]   (E) Identifier not found. [Ln 78, Col 8]
+[out]   (E) Ambiguous method call. More than one applicable trait function with a suitable self type was found: core::option::OptionTrait::unwrap and core::result::ResultTrait::unwrap. Consider adding type annotations or explicitly refer to the impl function. [Ln 83, Col 44]
+[out]   (E) Method `contract_class` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 83, Col 53]
+[out]   (E) Method `deploy` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 84, Col 52]
+[out] total: 4 errors, 5 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

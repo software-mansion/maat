@@ -1,0 +1,258 @@
+=== alexandria_sorting-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_sorting/0.5.1 -o archive-607884393647869952.tar.zstd
+
+>>> tar --zstd -xf archive-607884393647869952.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index feef6f0..179a6c8 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "A set of sorting algorithms"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/src/sorting"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_data_structures]
+[out] @@ -25,3 +25,22 @@ version = "^0.5.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(alexandria_sorting_unittest) alexandria_sorting v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `alexandria_sorting::interface::VecTrait`
+[out]  --> /mnt/maat-workbench/src/interface.cairo:1:51
+[out] use alexandria_data_structures::vec::{Felt252Vec, VecTrait};
+[out]                                                   ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_sorting (scarb cairo-test)
+[out]    Compiling test(alexandria_sorting_unittest) alexandria_sorting v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Unused import: `alexandria_sorting::interface::VecTrait`
+[out]  --> /mnt/maat-workbench/src/interface.cairo:1:51
+[out] use alexandria_data_structures::vec::{Felt252Vec, VecTrait};
+[out]                                                   ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+[out]      Testing alexandria_sorting
+[out] running 21 tests
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test_one_element ... ok (gas usage est.: 12050)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test_pre_sorted_2_same_values ... ok (gas usage est.: 50850)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test ... ok (gas usage est.: 298530)
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test ... ok (gas usage est.: 346950)
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test_pre_sorted ... ok (gas usage est.: 113560)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test_empty ... ok (gas usage est.: 6670)
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test_2_pre_sorted_decreasing ... ok (gas usage est.: 114360)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test_2_same_values ... ok (gas usage est.: 79550)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test_one_element ... ok (gas usage est.: 11440)
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test_empty ... ok (gas usage est.: 7380)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test_pre_sorted ... ok (gas usage est.: 50850)
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test_2_same_values ... ok (gas usage est.: 158420)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test_empty ... ok (gas usage est.: 13650)
+[out] test alexandria_sorting::tests::merge_sort_test::merge_sort_test_2_same_values_pre_sorted ... ok (gas usage est.: 155910)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test_pre_sorted_decreasing ... ok (gas usage est.: 236120)
+[out] test alexandria_sorting::tests::bubble_sort_test::bubble_sort_test_pre_sorted_decreasing ... ok (gas usage est.: 137250)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test_one_element ... ok (gas usage est.: 26770)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test_pre_sorted_2_same_values ... ok (gas usage est.: 222080)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test_pre_sorted ... ok (gas usage est.: 222080)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test ... ok (gas usage est.: 316630)
+[out] test alexandria_sorting::tests::quick_sort_test::quicksort_test_2_same_values ... ok (gas usage est.: 227330)
+[out] test result: ok. 21 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004018515s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `alexandria_data_structures`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_data_structures-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_data_structures",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_sorting`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_sorting",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_sorting": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_sorting 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/bubble_sort.cairo (1)
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 23, Col 12]
+[out] file:///mnt/maat-workbench/src/interface.cairo (1)
+[out]   (W) Unused import: `alexandria_sorting::interface::VecTrait` [Ln 0, Col 50]
+[out] file:///mnt/maat-workbench/src/quick_sort.cairo (3)
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 36, Col 15]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 40, Col 15]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 35, Col 10]
+[out] total: 0 errors, 5 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

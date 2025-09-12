@@ -1,0 +1,362 @@
+=== alexandria_numeric-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_numeric/0.5.1 -o archive-607884419352657920.tar.zstd
+
+>>> tar --zstd -xf archive-607884419352657920.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-04 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 5c9c1d1..eaea1cc 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "A set of numerical analysis libraries and algorithms"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/packages/numeric"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_math]
+[out] @@ -28,3 +28,22 @@ version = "^0.5.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] alexandria_numeric v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── alexandria_math v0.5.1
+[out] ├── alexandria_searching v0.5.1
+[out] │   └── alexandria_data_structures v0.5.1
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.0 (std)
+
+>>> scarb build --workspace --test
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(alexandria_numeric_unittest) alexandria_numeric v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 4 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting alexandria_numeric v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_numeric (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(alexandria_numeric_unittest) alexandria_numeric v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out]      Testing alexandria_numeric
+[out] running 31 tests
+[out] test alexandria_numeric::tests::integers_test::test_u32_from_bytes ... ok (gas usage est.: 13610)
+[out] test alexandria_numeric::tests::cumprod_test::cumprod_test ... ok (gas usage est.: 15200)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_constant_left_test ... ok (gas usage est.: 68640)
+[out] test alexandria_numeric::tests::integers_test::test_u32_to_bytes_leading_zeros ... ok (gas usage est.: 13912)
+[out] test alexandria_numeric::tests::integers_test::test_u32_from_bytes_too_big ... ok (gas usage est.: 800)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_constant_left_diff ... ok (gas usage est.: 249360)
+[out] test alexandria_numeric::tests::cumprod_test::cumprod_test_revert_empty ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_extrapolation_test ... ok (gas usage est.: 19870)
+[out] test alexandria_numeric::tests::integers_test::test_u32_to_bytes_full ... ok (gas usage est.: 16252)
+[out] test alexandria_numeric::tests::cumsum_test::cumsum_test ... ok (gas usage est.: 15400)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_constant_right_test ... ok (gas usage est.: 87620)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_linear_test ... ok (gas usage est.: 73560)
+[out] test alexandria_numeric::tests::cumsum_test::cumsum_test_revert_empty ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::integers_test::test_u32_to_bytes_partial ... ok (gas usage est.: 15082)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_revert_len_mismatch ... ok (gas usage est.: 8370)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_nearest_test ... ok (gas usage est.: 71660)
+[out] test alexandria_numeric::tests::diff_test::diff_test_revert_not_sorted ... ok (gas usage est.: 7280)
+[out] test alexandria_numeric::tests::diff_test::diff_test_revert_empty ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_revert_len_too_short ... ok (gas usage est.: 12130)
+[out] test alexandria_numeric::tests::diff_test::diff_test ... ok (gas usage est.: 26970)
+[out] test alexandria_numeric::tests::interpolate_test::interp_extrapolation_test ... ok (gas usage est.: 20270)
+[out] test alexandria_numeric::tests::interpolate_test::interp_constant_left_test ... ok (gas usage est.: 43590)
+[out] test alexandria_numeric::tests::interpolate_test::interp_linear_test ... ok (gas usage est.: 44100)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test ... ok (gas usage est.: 15720)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test_revert_len_too_short ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test_revert_len_mismatch ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_test::interp_nearest_test ... ok (gas usage est.: 46210)
+[out] test alexandria_numeric::tests::interpolate_test::interp_constant_right_test ... ok (gas usage est.: 51750)
+[out] test alexandria_numeric::tests::interpolate_test::interp_revert_len_mismatch ... ok (gas usage est.: 9470)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test_revert_not_sorted ... ok (gas usage est.: 11300)
+[out] test alexandria_numeric::tests::interpolate_test::interp_revert_len_too_short ... ok (gas usage est.: 13330)
+[out] test result: ok. 31 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004767216s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "alexandria_data_structures",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_data_structures-0.5.1/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_data_structures",
+[out]     "edition": "2023_11",
+[out]     "version": "0.5.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_data_structures": {
+[out]         "discriminator": "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "alexandria_math",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_math-0.5.1/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_math",
+[out]     "edition": "2023_11",
+[out]     "version": "0.5.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_math": {
+[out]         "discriminator": "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "alexandria_numeric",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_numeric",
+[out]     "edition": "2023_11",
+[out]     "version": "0.5.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_math": {
+[out]         "discriminator": "alexandria_math 0.5.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "alexandria_numeric": {
+[out]         "discriminator": "alexandria_numeric 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "alexandria_searching": {
+[out]         "discriminator": "alexandria_searching 0.5.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "alexandria_searching",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_searching-0.5.1/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_searching",
+[out]     "edition": "2023_11",
+[out]     "version": "0.5.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_data_structures": {
+[out]         "discriminator": "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "alexandria_searching": {
+[out]         "discriminator": "alexandria_searching 0.5.1 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] total: 0 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

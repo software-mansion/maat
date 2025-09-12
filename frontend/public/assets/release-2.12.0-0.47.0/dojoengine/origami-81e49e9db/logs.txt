@@ -1,0 +1,1189 @@
+=== dojoengine/origami-81e49e9db ===
+
+>>> git clone --depth 1 --no-tags https://github.com/dojoengine/origami .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index ad9ddd2..4cec18d 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -18,3 +18,14 @@ dojo = { git = "https://github.com/dojoengine/dojo", tag = "v1.6.1" }
+[out]  cubit = { git = "https://github.com/bengineer42/cubit", branch = "bump-cairo-gt-2.8" }
+[out]  starknet = "^2.10.1"
+[out]  cairo_test = "^2.10.1"
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/crates/algebra/Scarb.toml b/crates/algebra/Scarb.toml
+[out] index 8f84218..7f138d2 100644
+[out] --- a/crates/algebra/Scarb.toml
+[out] +++ b/crates/algebra/Scarb.toml
+[out] @@ -7,7 +7,16 @@ homepage = "https://github.com/dojoengine/origami/tree/main/crates/algebra"
+[out]  
+[out]  # TODO: update to edition 2024_07, some traits are deprecated and others no longer accessible.
+[out]  # Mostly related to `AddEq` -> `AddAssign` and so on.
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cubit.workspace = true
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/defi/Scarb.toml b/crates/defi/Scarb.toml
+[out] index f3edd6d..e03a2c3 100644
+[out] --- a/crates/defi/Scarb.toml
+[out] +++ b/crates/defi/Scarb.toml
+[out] @@ -4,8 +4,17 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "DeFi library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/defi"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cubit.workspace = true
+[out]  starknet.workspace = true
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/map/Scarb.toml b/crates/map/Scarb.toml
+[out] index 04fb073..be2c182 100644
+[out] --- a/crates/map/Scarb.toml
+[out] +++ b/crates/map/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Maps library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/map"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/random/Scarb.toml b/crates/random/Scarb.toml
+[out] index afd4125..659f1b4 100644
+[out] --- a/crates/random/Scarb.toml
+[out] +++ b/crates/random/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Random generator library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/random"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/rating/Scarb.toml b/crates/rating/Scarb.toml
+[out] index 2e7ba57..77a3f9a 100644
+[out] --- a/crates/rating/Scarb.toml
+[out] +++ b/crates/rating/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Rating related algorithm library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/rating"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/security/Scarb.toml b/crates/security/Scarb.toml
+[out] index d2204bf..a27238b 100644
+[out] --- a/crates/security/Scarb.toml
+[out] +++ b/crates/security/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Security library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/security"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out] ├── cairo_test v2.12.0 (std)
+[out] └── cubit v1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c)
+[out]     └── starknet v2.12.0 (std)
+[out] 
+[out] origami_defi v1.1.2 (/mnt/maat-workbench/crates/defi/Scarb.toml)
+[out] ├── cairo_test v2.12.0 (std) (*)
+[out] ├── cubit v1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c) (*)
+[out] └── starknet v2.12.0 (std) (*)
+[out] 
+[out] origami_map v1.1.2 (/mnt/maat-workbench/crates/map/Scarb.toml)
+[out] └── cairo_test v2.12.0 (std) (*)
+[out] 
+[out] origami_random v1.1.2 (/mnt/maat-workbench/crates/random/Scarb.toml)
+[out] └── cairo_test v2.12.0 (std) (*)
+[out] 
+[out] origami_rating v1.1.2 (/mnt/maat-workbench/crates/rating/Scarb.toml)
+[out] └── cairo_test v2.12.0 (std) (*)
+[out] 
+[out] origami_security v1.1.2 (/mnt/maat-workbench/crates/security/Scarb.toml)
+[out] └── cairo_test v2.12.0 (std) (*)
+
+>>> scarb build --workspace --test
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_algebra_unittest) origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out]    Compiling test(origami_defi_unittest) origami_defi v1.1.2 (/mnt/maat-workbench/crates/defi/Scarb.toml)
+[out]    Compiling test(origami_map_unittest) origami_map v1.1.2 (/mnt/maat-workbench/crates/map/Scarb.toml)
+[out]    Compiling test(origami_random_unittest) origami_random v1.1.2 (/mnt/maat-workbench/crates/random/Scarb.toml)
+[out]    Compiling test(origami_rating_unittest) origami_rating v1.1.2 (/mnt/maat-workbench/crates/rating/Scarb.toml)
+[out]    Compiling test(origami_security_unittest) origami_security v1.1.2 (/mnt/maat-workbench/crates/security/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 8 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out] warn: Unused import: `origami_algebra::vec2::FixedTrait`
+[out]  --> /mnt/maat-workbench/crates/algebra/src/vec2.cairo:1:33
+[out] use cubit::f128::types::fixed::{FixedTrait, ONE_u128};
+[out]                                 ^^^^^^^^^^
+[out] 
+[out] warn: Unused import: `origami_algebra::vec2::ONE_u128`
+[out]  --> /mnt/maat-workbench/crates/algebra/src/vec2.cairo:1:45
+[out] use cubit::f128::types::fixed::{FixedTrait, ONE_u128};
+[out]                                             ^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/vector.cairo:63:9-69:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/vector.cairo:83:9-89:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:60:9-68:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:76:9-89:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:107:9-121:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:135:9-154:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:179:9-187:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:211:9-219:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:253:13-260:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/algebra/src/matrix.cairo:243:9-263:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out]      Linting origami_defi v1.1.2 (/mnt/maat-workbench/crates/defi/Scarb.toml)
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/defi/src/auction/gda.cairo:63:24
+[out]         let num2 = exp((*self.decay_constant * quantity) / *self.emission_rate) - FixedTrait::ONE();
+[out]                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/defi/src/auction/vrgda.cairo:116:18
+[out]             * ln((logistic_limit_double / (sold + logistic_limit)) - FixedTrait::ONE())
+[out]                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/defi/src/auction/vrgda.cairo:116:43
+[out]             * ln((logistic_limit_double / (sold + logistic_limit)) - FixedTrait::ONE())
+[out]                                           ^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]      Linting origami_map v1.1.2 (/mnt/maat-workbench/crates/map/Scarb.toml)
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:114:59
+[out]                         if index == visited_span.len() || is_visited == true {
+[out]                                                           ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is.
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:79:13-83:13
+[out]               if (curent_neighbor.col == other.col) {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:113:21-122:21
+[out]                       loop {
+[out]  _____________________^
+[out] | ...
+[out] |                     };
+[out] |_____________________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:104:17-127:17
+[out]                   loop {
+[out]  _________________^
+[out] | ...
+[out] |                 };
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:97:13-128:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:92:9-131:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:73:17
+[out]             if (neighbors.len() == 0) {
+[out]                 ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:98:20
+[out]                 if queue.len() == 0 {
+[out]                    ^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/crates/map/src/hex.cairo:105:24
+[out]                     if neighbors.len() == 0 {
+[out]                        ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/map.cairo:167:9-174:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Unused import: `origami_map::finders::finder::NodeTrait`
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/finder.cairo:12:38
+[out] use origami_map::types::node::{Node, NodeTrait};
+[out]                                      ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/finder.cairo:40:33
+[out]                 && !visited.get((position + width).into()),
+[out]                                 ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/finder.cairo:43:33
+[out]                 && !visited.get((position - 1).into()),
+[out]                                 ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/finder.cairo:46:33
+[out]                 && !visited.get((position - width).into()),
+[out]                                 ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/finder.cairo:49:33
+[out]                 && !visited.get((position + 1).into()),
+[out]                                 ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/finder.cairo:113:9-119:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/astar.cairo:91:28-96:9
+[out]           let mut neighbor = match heap.get(neighbor_position.into()) {
+[out]  ____________________________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/greedy.cairo:89:28-92:9
+[out]           let mut neighbor = match heap.get(neighbor_position.into()) {
+[out]  ____________________________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/dfs.cairo:82:9-101:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/crates/map/src/finders/dijkstra.cairo:81:28-84:9
+[out]           let mut neighbor = match heap.get(neighbor_position.into()) {
+[out]  ____________________________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/crates/map/src/helpers/bitmap.cairo:17:46
+[out]             count += PrivateTrait::_popcount((x % 0x100000000).try_into().unwrap());
+[out]                                              ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead.
+[out]  --> /mnt/maat-workbench/crates/map/src/helpers/bitmap.cairo:115:13
+[out]         if (x & 0x1) > 0 {
+[out]             ^^^^^^^
+[out] 
+[out] warn: Unused import: `origami_map::helpers::heap::Node`
+[out]  --> /mnt/maat-workbench/crates/map/src/helpers/heap.cairo:9:31
+[out] use origami_map::types::node::Node;
+[out]                               ^^^^
+[out] 
+[out]      Linting origami_random v1.1.2 (/mnt/maat-workbench/crates/random/Scarb.toml)
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/crates/random/src/deck.cairo:146:9-151:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/crates/random/src/deck.cairo:85:9-94:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out]      Linting origami_rating v1.1.2 (/mnt/maat-workbench/crates/rating/Scarb.toml)
+[out]      Linting origami_security v1.1.2 (/mnt/maat-workbench/crates/security/Scarb.toml)
+[out] error: lint checking `origami_algebra`, `origami_defi`, `origami_map`, `origami_random` packages failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test origami_algebra (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_algebra_unittest) origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 1 second
+[out]      Testing origami_algebra
+[out] running 21 tests
+[out] test origami_algebra::vec2::tests::test_xx ... ok (gas usage est.: 5930)
+[out] test origami_algebra::vec2::tests::test_new ... ok (gas usage est.: 11060)
+[out] test origami_algebra::vector::tests::test_vector_dot_product ... ok (gas usage est.: 10580)
+[out] test origami_algebra::matrix::tests::test_matrix_square_multiplication ... ok (gas usage est.: 159600)
+[out] test origami_algebra::vec2::tests::test_splat ... ok (gas usage est.: 3800)
+[out] test origami_algebra::vec2::tests::test_xy ... ok (gas usage est.: 9660)
+[out] test origami_algebra::matrix::tests::test_matrix_get ... ok (gas usage est.: 7380)
+[out] test origami_algebra::matrix::tests::test_matrix_rectangle_multiplication ... ok (gas usage est.: 217000)
+[out] test origami_algebra::vec2::tests::test_yx ... ok (gas usage est.: 9660)
+[out] test origami_algebra::vec2::tests::test_select ... ok (gas usage est.: 25080)
+[out] test origami_algebra::matrix::tests::test_matrix_determinant_2x2 ... ok (gas usage est.: 25300)
+[out] test origami_algebra::matrix::tests::test_matrix_transpose ... ok (gas usage est.: 46620)
+[out] test origami_algebra::vec2::tests::test_yy ... ok (gas usage est.: 13190)
+[out] test origami_algebra::vec2::tests::test_dot ... ok (gas usage est.: 75070)
+[out] test origami_algebra::matrix::tests::test_matrix_determinant_3x3 ... ok (gas usage est.: 312070)
+[out] test origami_algebra::matrix::tests::test_matrix_addition ... ok (gas usage est.: 62930)
+[out] test origami_algebra::vector::tests::test_vector_get ... ok (gas usage est.: 4170)
+[out] test origami_algebra::vec2::tests::test_dot_into_vec ... ok (gas usage est.: 83530)
+[out] test origami_algebra::matrix::tests::test_matrix_inverse_2x2 ... ok (gas usage est.: 218120)
+[out] test origami_algebra::matrix::tests::test_matrix_subtraction ... ok (gas usage est.: 64230)
+[out] test origami_algebra::matrix::tests::test_matrix_inverse_3x3 ... ok (gas usage est.: 1230370)
+[out] test result: ok. 21 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test origami_defi (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_defi_unittest) origami_defi v1.1.2 (/mnt/maat-workbench/crates/defi/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 1 second
+[out]      Testing origami_defi
+[out] running 15 tests
+[out] test origami_defi::auction::gda::tests::continuous::test_price_1 ... ok (gas usage est.: 433770)
+[out] test origami_defi::auction::gda::tests::continuous::test_price_4 ... ok (gas usage est.: 433770)
+[out] test origami_defi::auction::gda::tests::continuous::test_price_2 ... ok (gas usage est.: 433770)
+[out] test origami_defi::auction::gda::tests::discrete::test_price_3 ... ok (gas usage est.: 425690)
+[out] test origami_defi::auction::gda::tests::discrete::test_initial_price ... ok (gas usage est.: 312270)
+[out] test origami_defi::auction::gda::tests::continuous::test_price_3 ... ok (gas usage est.: 433770)
+[out] test origami_defi::auction::gda::tests::discrete::test_price_4 ... ok (gas usage est.: 409150)
+[out] test origami_defi::auction::vrgda::tests::logistic::test_target_price ... ok (gas usage est.: 609970)
+[out] test origami_defi::auction::gda::tests::discrete::test_price_2 ... ok (gas usage est.: 402490)
+[out] test origami_defi::auction::vrgda::tests::linear::test_pricing_basic ... ok (gas usage est.: 66460)
+[out] test origami_defi::auction::gda::tests::discrete::test_price_1 ... ok (gas usage est.: 392610)
+[out] price 1288520754392000521816 target price 1280572973596917000000
+[out] test origami_defi::auction::vrgda::tests::logistic::test_pricing_basic ... ok (gas usage est.: 962200)
+[out] test origami_defi::auction::helpers::tests::test_days_convertions ... ok (gas usage est.: 39460)
+[out] test origami_defi::auction::vrgda::tests::linear::test_pricing_basic_reverse ... ok (gas usage est.: 66460)
+[out] test origami_defi::auction::vrgda::tests::logistic::test_pricing_basic_reverse ... ok (gas usage est.: 602240)
+[out] test result: ok. 15 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test origami_map (scarb cairo-test)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_map_unittest) origami_map v1.1.2 (/mnt/maat-workbench/crates/map/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 4 seconds
+[out]      Testing origami_map
+[out] running 75 tests
+[out] test origami_map::hex::tests::test_row_col ... ok (gas usage est.: 300)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_set ... ok (gas usage est.: 34350)
+[out] test origami_map::finders::astar::test::test_astar_search_small ... ok (gas usage est.: 908570)
+[out] test origami_map::finders::dfs::test::test_dfs_maze ... ok (gas usage est.: 1156810)
+[out] test origami_map::hex::tests::test_hex_tile_neighbors ... ok (gas usage est.: 300)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_set_unchanged ... ok (gas usage est.: 34350)
+[out] test origami_map::finders::astar::test::test_astar_search_impossible ... ok (gas usage est.: 533396)
+[out] test origami_map::finders::dijkstra::test::test_dijkstra_search_small ... ok (gas usage est.: 873520)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_unset ... ok (gas usage est.: 32080)
+[out] test origami_map::hex::tests::test_is_neighbor ... ok (gas usage est.: 62960)
+[out] test origami_map::finders::dijkstra::test::test_dijkstra_search_impossible ... ok (gas usage est.: 519376)
+[out] test origami_map::finders::astar::test::test_astar_search_medium ... ok (gas usage est.: 2402662)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_unset_unchanged ... ok (gas usage est.: 32080)
+[out] test origami_map::finders::dijkstra::test::test_dijkstra_search_medium ... ok (gas usage est.: 2295174)
+[out] test origami_map::hex::tests::test_tiles_within_range ... ok (gas usage est.: 9499620)
+[out] test origami_map::finders::astar::test::test_astar_search_large ... ok (gas usage est.: 17890050)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_least_significant_bit_null ... ok (gas usage est.: 3570)
+[out] test origami_map::map::tests::test_map_new ... ok (gas usage est.: 1100)
+[out] test origami_map::finders::dijkstra::test::test_dijkstra_search_large ... ok (gas usage est.: 22833330)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_least_significant_bit ... ok (gas usage est.: 39728)
+[out] test origami_map::map::tests::test_map_new_empty ... ok (gas usage est.: 103206)
+[out] test origami_map::finders::astar::test::test_astar_search_issue ... ok (gas usage est.: 32219332)
+[out] test origami_map::generators::digger::tests::test_digger_dig_corridor ... ok (gas usage est.: 1609862)
+[out] test origami_map::helpers::power::tests::test_two_power_exp_0 ... ok (gas usage est.: 2100)
+[out] test origami_map::finders::bfs::test::test_bfs_search_small ... ok (gas usage est.: 679730)
+[out] test origami_map::generators::digger::tests::test_digger_dig_maze_order_0 ... ok (gas usage est.: 4262378)
+[out] test origami_map::helpers::power::tests::test_two_power_exp_1 ... ok (gas usage est.: 2770)
+[out] test origami_map::map::tests::test_map_maze ... ok (gas usage est.: 30500820)
+[out] test origami_map::finders::bfs::test::test_bfs_search_impossible ... ok (gas usage est.: 407726)
+[out] test origami_map::generators::digger::tests::test_digger_dig_maze_order_1 ... ok (gas usage est.: 4373664)
+[out] test origami_map::helpers::power::tests::test_two_power_exp_255 ... ok (gas usage est.: 2770)
+[out] test origami_map::finders::bfs::test::test_bfs_search_medium ... ok (gas usage est.: 1613514)
+[out] test origami_map::helpers::heap::tests::test_heap_new ... ok (gas usage est.: 18220)
+[out] test origami_map::finders::bfs::test::test_bfs_single_cell_path ... ok (gas usage est.: 304344)
+[out] test origami_map::generators::mazer::tests::test_mazer_generate_order_0 ... ok (gas usage est.: 29987340)
+[out] test origami_map::helpers::heap::tests::test_heap_add ... ok (gas usage est.: 41880)
+[out] test origami_map::finders::bfs::test::test_bfs_maze ... ok (gas usage est.: 1377480)
+[out] test origami_map::helpers::heap::tests::test_heap_contains ... ok (gas usage est.: 44600)
+[out] test origami_map::map::tests::test_map_cave ... ok (gas usage est.: 128730628)
+[out] test origami_map::generators::mazer::tests::test_mazer_generate_order_1 ... ok (gas usage est.: 30241704)
+[out] test origami_map::finders::bfs::test::test_bfs_long_straight_path ... ok (gas usage est.: 621790)
+[out] test origami_map::helpers::heap::tests::test_heap_not_contains ... ok (gas usage est.: 29660)
+[out] test origami_map::generators::mazer::tests::test_mazer_generate_order_2 ... ok (gas usage est.: 491744)
+[out] test origami_map::finders::bfs::test::test_bfs_all_obstacles ... ok (gas usage est.: 158362)
+[out] test origami_map::helpers::heap::tests::test_heap_pop_front_sorted ... ok (gas usage est.: 140360)
+[out] test origami_map::map::tests::test_map_random_walk ... ok (gas usage est.: 35223332)
+[out] test origami_map::finders::greedy::test::test_greedy_search_small ... ok (gas usage est.: 851010)
+[out] test origami_map::helpers::heap::tests::test_heap_pop_front_reversed ... ok (gas usage est.: 148810)
+[out] test origami_map::finders::greedy::test::test_greedy_search_impossible ... ok (gas usage est.: 510136)
+[out] test origami_map::map::tests::test_map_compute_distribution ... ok (gas usage est.: 37624950)
+[out] test origami_map::helpers::heap::tests::test_heap_swap ... ok (gas usage est.: 100600)
+[out] test origami_map::generators::caver::tests::test_caver_generate ... ok (gas usage est.: 86737632)
+[out] test origami_map::finders::greedy::test::test_greedy_search_large ... ok (gas usage est.: 8249348)
+[out] test origami_map::helpers::heap::tests::test_heap_get ... ok (gas usage est.: 87150)
+[out] test origami_map::map::tests::test_map_search_path ... ok (gas usage est.: 34892896)
+[out] test origami_map::finders::dfs::test::test_dfs_search_small ... ok (gas usage est.: 653180)
+[out] test origami_map::helpers::heap::tests::test_heap_at ... ok (gas usage est.: 86720)
+[out] test origami_map::finders::finder::test::test_finder_euclidean ... ok (gas usage est.: 5240)
+[out] test origami_map::finders::dfs::test::test_dfs_search_impossible ... ok (gas usage est.: 432456)
+[out] test origami_map::helpers::heap::tests::test_heap_add_pop_add ... ok (gas usage est.: 95090)
+[out] test origami_map::generators::caver::tests::test_caver_new_seed_generate ... ok (gas usage est.: 86547892)
+[out] test origami_map::finders::finder::test::test_finder_manhattan ... ok (gas usage est.: 300)
+[out] test origami_map::finders::dfs::test::test_dfs_search_medium ... ok (gas usage est.: 1042432)
+[out] test origami_map::finders::finder::test::test_finder_check_corner ... ok (gas usage est.: 55740)
+[out] test origami_map::finders::dfs::test::test_dfs_single_cell_path ... ok (gas usage est.: 144082)
+[out] test origami_map::generators::walker::tests::test_walker_generate ... ok (gas usage est.: 30138242)
+[out] test origami_map::finders::finder::test::test_finder_check_edge ... ok (gas usage est.: 71270)
+[out] test origami_map::generators::spreader::tests::test_spreader_generate_large ... ok (gas usage est.: 14209280)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_popcount_small ... ok (gas usage est.: 35742)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_popcount_large ... ok (gas usage est.: 210244)
+[out] test origami_map::finders::finder::test::test_finder_check_inside ... ok (gas usage est.: 88320)
+[out] test origami_map::generators::spreader::tests::test_spreader_generate_small ... ok (gas usage est.: 1277104)
+[out] test origami_map::finders::finder::test::test_finder_path_with_parents ... ok (gas usage est.: 100690)
+[out] test origami_map::helpers::bitmap::tests::test_bitmap_get ... ok (gas usage est.: 15540)
+[out] test origami_map::finders::finder::test::test_finder_path_with_heap ... ok (gas usage est.: 296850)
+[out] test result: ok. 75 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test origami_random (scarb cairo-test)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_random_unittest) origami_random v1.1.2 (/mnt/maat-workbench/crates/random/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 0 seconds
+[out]      Testing origami_random
+[out] running 8 tests
+[out] test origami_random::deck::tests::test_deck_new_remove ... ok (gas usage est.: 135292)
+[out] test origami_random::deck::tests::test_deck_new_draw ... ok (gas usage est.: 162910)
+[out] test origami_random::dice::tests::test_dice_new_roll ... ok (gas usage est.: 75192)
+[out] test origami_random::deck::tests::test_deck_new_discard ... ok (gas usage est.: 210552)
+[out] test origami_random::dice::tests::test_dice_new_roll_overflow ... ok (gas usage est.: 13512)
+[out] test origami_random::deck::tests::test_deck_new_draw_revert_no_card_left ... ok (gas usage est.: 19320)
+[out] test origami_random::deck::tests::test_deck_from_bitmap ... ok (gas usage est.: 195567)
+[out] test origami_random::deck::tests::test_deck_new_withdraw ... ok (gas usage est.: 151748)
+[out] test result: ok. 8 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test origami_rating (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_rating_unittest) origami_rating v1.1.2 (/mnt/maat-workbench/crates/rating/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 0 seconds
+[out]      Testing origami_rating
+[out] running 6 tests
+[out] test origami_rating::elo::tests::test_elo_change_positive_03 ... ok (gas usage est.: 181840)
+[out] test origami_rating::elo::tests::test_elo_change_positive_02 ... ok (gas usage est.: 168070)
+[out] test origami_rating::elo::tests::test_elo_change_positive_01 ... ok (gas usage est.: 181840)
+[out] test origami_rating::elo::tests::test_elo_change_negative_01 ... ok (gas usage est.: 181490)
+[out] test origami_rating::elo::tests::test_elo_change_draw ... ok (gas usage est.: 181840)
+[out] test origami_rating::elo::tests::test_elo_change_negative_02 ... ok (gas usage est.: 167720)
+[out] test result: ok. 6 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test origami_security (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_security_unittest) origami_security v1.1.2 (/mnt/maat-workbench/crates/security/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 0 seconds
+[out]      Testing origami_security
+[out] running 2 tests
+[out] test origami_security::commitment::tests::test_security_commit_revert_zero ... ok (gas usage est.: 1200)
+[out] test origami_security::commitment::tests::test_security_commit_reveal ... ok (gas usage est.: 11622)
+[out] test result: ok. 2 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004649828s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/crates/algebra/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/crates/defi/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/crates/map/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/crates/random/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/crates/rating/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/crates/security/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "cubit",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/cubit-79j4nvhjjm5qc/32a20af/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "cubit",
+[out]     "edition": "2023_10",
+[out]     "version": "1.3.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "cubit": {
+[out]         "discriminator": "cubit 1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "origami_algebra",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/crates/algebra/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "origami_algebra",
+[out]     "edition": "2024_07",
+[out]     "version": "1.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "cubit": {
+[out]         "discriminator": "cubit 1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c)"
+[out]       },
+[out]       "origami_algebra": {
+[out]         "discriminator": "origami_algebra 1.1.2 (path+file:///mnt/maat-workbench/crates/algebra/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "origami_defi",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/crates/defi/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "origami_defi",
+[out]     "edition": "2024_07",
+[out]     "version": "1.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "cubit": {
+[out]         "discriminator": "cubit 1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c)"
+[out]       },
+[out]       "origami_defi": {
+[out]         "discriminator": "origami_defi 1.1.2 (path+file:///mnt/maat-workbench/crates/defi/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest",
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "origami_map",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/crates/map/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "origami_map",
+[out]     "edition": "2024_07",
+[out]     "version": "1.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "origami_map": {
+[out]         "discriminator": "origami_map 1.1.2 (path+file:///mnt/maat-workbench/crates/map/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "origami_random",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/crates/random/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "origami_random",
+[out]     "edition": "2024_07",
+[out]     "version": "1.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "origami_random": {
+[out]         "discriminator": "origami_random 1.1.2 (path+file:///mnt/maat-workbench/crates/random/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "origami_rating",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/crates/rating/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "origami_rating",
+[out]     "edition": "2024_07",
+[out]     "version": "1.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "origami_rating": {
+[out]         "discriminator": "origami_rating 1.1.2 (path+file:///mnt/maat-workbench/crates/rating/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "origami_security",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/crates/security/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "origami_security",
+[out]     "edition": "2024_07",
+[out]     "version": "1.1.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "origami_security": {
+[out]         "discriminator": "origami_security 1.1.2 (path+file:///mnt/maat-workbench/crates/security/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/crates/algebra/src/matrix.cairo (8)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 59, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 75, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 106, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 134, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 178, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 210, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 252, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 242, Col 8]
+[out] file:///mnt/maat-workbench/crates/algebra/src/vec2.cairo (26)
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 114, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 116, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 120, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 121, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 131, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 133, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 137, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 138, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 154, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 156, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 161, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 163, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 178, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 182, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 197, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 199, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 203, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 205, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 216, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 218, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 229, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 231, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 242, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 244, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 255, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 257, Col 15]
+[out] file:///mnt/maat-workbench/crates/algebra/src/vector.cairo (2)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 62, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 82, Col 8]
+[out] file:///mnt/maat-workbench/crates/defi/src/auction/gda.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 62, Col 23]
+[out] file:///mnt/maat-workbench/crates/defi/src/auction/vrgda.cairo (2)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 115, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 115, Col 42]
+[out] file:///mnt/maat-workbench/crates/map/src/finders/astar.cairo (1)
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 90, Col 27]
+[out] file:///mnt/maat-workbench/crates/map/src/finders/dfs.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 81, Col 8]
+[out] file:///mnt/maat-workbench/crates/map/src/finders/dijkstra.cairo (1)
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 80, Col 27]
+[out] file:///mnt/maat-workbench/crates/map/src/finders/finder.cairo (5)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 39, Col 32]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 42, Col 32]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 45, Col 32]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 48, Col 32]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 112, Col 8]
+[out] file:///mnt/maat-workbench/crates/map/src/finders/greedy.cairo (1)
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 88, Col 27]
+[out] file:///mnt/maat-workbench/crates/map/src/helpers/bitmap.cairo (2)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 16, Col 45]
+[out]   (W) Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead. [Ln 114, Col 12]
+[out] file:///mnt/maat-workbench/crates/map/src/hex.cairo (15)
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 113, Col 58]
+[out]   (W) Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is. [Ln 78, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 112, Col 20]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 103, Col 16]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 96, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 91, Col 8]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 72, Col 16]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 97, Col 19]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 104, Col 23]
+[out]   (W) Plugin diagnostic: redundant parentheses in enum call [Ln 154, Col 46]
+[out]   (W) Plugin diagnostic: redundant parentheses in enum call [Ln 159, Col 52]
+[out]   (W) Plugin diagnostic: redundant parentheses in enum call [Ln 164, Col 52]
+[out]   (W) Plugin diagnostic: redundant parentheses in enum call [Ln 169, Col 46]
+[out]   (W) Plugin diagnostic: redundant parentheses in enum call [Ln 174, Col 52]
+[out]   (W) Plugin diagnostic: redundant parentheses in enum call [Ln 179, Col 52]
+[out] file:///mnt/maat-workbench/crates/map/src/map.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 166, Col 8]
+[out] file:///mnt/maat-workbench/crates/random/src/deck.cairo (10)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 145, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 84, Col 8]
+[out]   (W) Plugin diagnostic: This operation results in the value being erased (e.g., multiplication by 0). Consider replacing the entire expression with 0. [Ln 179, Col 27]
+[out]   (W) Plugin diagnostic: This operation results in the value being erased (e.g., multiplication by 0). Consider replacing the entire expression with 0. [Ln 179, Col 38]
+[out]   (W) Plugin diagnostic: This operation results in the value being erased (e.g., multiplication by 0). Consider replacing the entire expression with 0. [Ln 179, Col 58]
+[out]   (W) Plugin diagnostic: This operation results in the value being erased (e.g., multiplication by 0). Consider replacing the entire expression with 0. [Ln 179, Col 68]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 179, Col 48]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 179, Col 68]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 211, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 227, Col 8]
+[out] total: 0 errors, 76 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

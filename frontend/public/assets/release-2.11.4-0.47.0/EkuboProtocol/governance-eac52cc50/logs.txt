@@ -1,0 +1,469 @@
+=== EkuboProtocol/governance-eac52cc50 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 2ef7b51..69a1a9a 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -3,7 +3,7 @@ name = "governance"
+[out]  version = "0.1.0"
+[out]  description = "Contracts for governance of Starknet-native protocols"
+[out]  homepage = "https://ekubo.org"
+[out] -cairo-version = ">=2.7.0"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '>=2.7.0'
+[out]  edition = '2024_07'
+[out]  
+[out]  [dependencies]
+[out] @@ -16,5 +16,21 @@ casm = true
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  [dev-dependencies]
+[out]  cairo_test = ">=2.7.0"
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(governance_unittest) governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/airdrop_test.cairo:10:22
+[out]     ContractAddress, contract_address_const, get_contract_address, syscalls::{deploy_syscall},
+[out]                      ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/call_trait_test.cairo:5:33
+[out] use starknet::{account::{Call}, contract_address_const, get_contract_address};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error[E0006]: Identifier not found.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:12:32
+[out]     ContractAddress, account::{AccountContractDispatcher, AccountContractDispatcherTrait},
+[out]                                ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error[E0006]: Identifier not found.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:12:59
+[out]     ContractAddress, account::{AccountContractDispatcher, AccountContractDispatcherTrait},
+[out]                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:13:5
+[out]     contract_address_const, get_block_timestamp, get_contract_address, syscalls::deploy_syscall,
+[out]     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:979:57
+[out]             calldata: array![Governor::TEST_CLASS_HASH].span(),
+[out]                                                         ^^^^
+[out] 
+[out] error[E0002]: Method `__validate__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1076:10
+[out]         .__validate__(array![]);
+[out]          ^^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1074:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__validate_declare__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1084:10
+[out]         .__validate_declare__(123);
+[out]          ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1082:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1092:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1090:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1100:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1098:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1108:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1106:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1115:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1113:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_test.cairo:10:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:181:26
+[out]                         .append()
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:191:22
+[out]                     .append()
+[out]                      ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2_test.cairo:11:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:77:18
+[out]                 .append()
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:98:17
+[out]             log.append()
+[out]                 ^^^^^^
+[out] 
+[out] error: could not compile `governance` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __GI___clone
+Process finished with exit code 1
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test governance (scarb cairo-test)
+[out]    Compiling test(governance_unittest) governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/airdrop_test.cairo:10:22
+[out]     ContractAddress, contract_address_const, get_contract_address, syscalls::{deploy_syscall},
+[out]                      ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/call_trait_test.cairo:5:33
+[out] use starknet::{account::{Call}, contract_address_const, get_contract_address};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error[E0006]: Identifier not found.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:12:32
+[out]     ContractAddress, account::{AccountContractDispatcher, AccountContractDispatcherTrait},
+[out]                                ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error[E0006]: Identifier not found.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:12:59
+[out]     ContractAddress, account::{AccountContractDispatcher, AccountContractDispatcherTrait},
+[out]                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:13:5
+[out]     contract_address_const, get_block_timestamp, get_contract_address, syscalls::deploy_syscall,
+[out]     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:979:57
+[out]             calldata: array![Governor::TEST_CLASS_HASH].span(),
+[out]                                                         ^^^^
+[out] 
+[out] error[E0002]: Method `__validate__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1076:10
+[out]         .__validate__(array![]);
+[out]          ^^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1074:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__validate_declare__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1084:10
+[out]         .__validate_declare__(123);
+[out]          ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1082:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1092:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1090:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1100:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1098:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1108:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1106:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] error[E0002]: Method `__execute__` not found on type `<missing>`. Consider importing one of the following traits: `starknet::AccountContract`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1115:79
+[out]     AccountContractDispatcher { contract_address: governor.contract_address }.__execute__(array![]);
+[out]                                                                               ^^^^^^^^^^^
+[out] 
+[out] warn[E0001]: Unused variable. Consider ignoring by prefixing with `_`.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:1113:27
+[out]     let (_staker, _token, governor, _config) = setup();
+[out]                           ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_test.cairo:10:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:181:26
+[out]                         .append()
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:191:22
+[out]                     .append()
+[out]                      ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2_test.cairo:11:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:77:18
+[out]                 .append()
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:98:17
+[out]             log.append()
+[out]                 ^^^^^^
+[out] 
+[out] error: could not compile `governance` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __GI___clone
+[err] Error: `scarb metadata` exited with error
+[err] 
+[err] Stack backtrace:
+[err]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[err]    1: scarb_cairo_test::main
+[err]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[err]    3: main
+[err]    4: __libc_start_call_main
+[err]    5: __libc_start_main_impl
+[err]    6: _start
+Process finished with exit code 1
+
+>>> maat-test-ls
+[err]    0.004189423s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `governance`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "governance",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 1,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "governance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "governance 0.1.0 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/airdrop_test.cairo (6)
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 241, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 260, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 741, Col 10]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 755, Col 11]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 783, Col 11]
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 9, Col 21]
+[out] file:///mnt/maat-workbench/src/call_trait_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 4, Col 32]
+[out] file:///mnt/maat-workbench/src/call_trait.cairo (1)
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 25, Col 12]
+[out] file:///mnt/maat-workbench/src/governor_test.cairo (2)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 12, Col 4]
+[out]   (E) Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>. [Ln 978, Col 56]
+[out] file:///mnt/maat-workbench/src/governor.cairo (2)
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 474, Col 12]
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 478, Col 12]
+[out] file:///mnt/maat-workbench/src/staker_log.cairo (2)
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead." [Ln 76, Col 17]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead." [Ln 97, Col 16]
+[out] file:///mnt/maat-workbench/src/staker_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 9, Col 15]
+[out] file:///mnt/maat-workbench/src/staker_v2_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 10, Col 15]
+[out] file:///mnt/maat-workbench/src/staker_v2.cairo (2)
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead." [Ln 180, Col 25]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` instead." [Ln 190, Col 21]
+[out] total: 1 errors, 17 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

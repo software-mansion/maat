@@ -1,0 +1,545 @@
+=== alexandria_math-0.6.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_math/0.6.0 -o archive-615499126662127616.tar.zstd
+
+>>> tar --zstd -xf archive-615499126662127616.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index da8fe7c..875bd9f 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "A set of math libraries and algorithms"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/packages/math"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.12.0"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: '^2.12.0'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies]
+[out] @@ -27,3 +27,19 @@ version = "^2.12.0"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+
+>>> scarb tree -q --workspace
+[out] alexandria_math v0.6.0 (/mnt/maat-workbench/Scarb.toml)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.0 (std)
+
+>>> scarb build --workspace --test
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(alexandria_math_unittest) alexandria_math v0.6.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:6:26
+[out]     let result = sha256::sha256(input);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:49:26
+[out]     let result = sha256::sha256(input);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:414:26
+[out]     let result = sha256::sha256(input);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:467:26
+[out]     let result = sha256::sha256(data);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-keccak"` with no `#[feature("deprecated-keccak")]` attribute. Note: "Use `core::keccak::compute_keccak_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/test_keccak256.cairo:1:33
+[out] use alexandria_math::keccak256::keccak256;
+[out]                                 ^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 24 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]      Linting alexandria_math v0.6.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead.
+[out]  --> /mnt/maat-workbench/src/bitmap.cairo:152:13
+[out]         if (x & 0x1) > 0 {
+[out]             ^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is.
+[out]  --> /mnt/maat-workbench/src/ed25519.cairo:285:9-289:9
+[out]           if (x == 0) {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead.
+[out]  --> /mnt/maat-workbench/src/ed25519.cairo:245:25
+[out]         let x_0: u256 = (last_byte.into() / 128) & 1; // bitshift of 255
+[out]                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: using `clone` on type which implements `Copy` trait
+[out]  --> /mnt/maat-workbench/src/ed25519.cairo:409:20
+[out]         res.append(v.clone());
+[out]                    ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/src/sha512.cairo:164:25-167:9
+[out]           let data: u64 = match data.try_into() {
+[out]  _________________________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: This operation doesn't change the value and can be simplified.
+[out]  --> /mnt/maat-workbench/src/sha512.cairo:392:64
+[out]         let new_word: u64 = math_shl_precomputed::<u64>((*data[i + 0]).into(), TWO_POW_56)
+[out]                                                                ^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead.
+[out]  --> /mnt/maat-workbench/src/u512_arithmetics.cairo:77:17-79:17
+[out]                   if did_overflow {
+[out]  _________________^
+[out] |                     panic!("u512 add overflow");
+[out] |                 }
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead.
+[out]  --> /mnt/maat-workbench/src/u512_arithmetics.cairo:116:17-118:17
+[out]                   if did_overflow {
+[out]  _________________^
+[out] |                     panic!("u512 sub overflow");
+[out] |                 }
+[out] |_________________^
+[out] 
+[out] error: lint checking `alexandria_math` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_math (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(alexandria_math_unittest) alexandria_math v0.6.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:6:26
+[out]     let result = sha256::sha256(input);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:49:26
+[out]     let result = sha256::sha256(input);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:414:26
+[out]     let result = sha256::sha256(input);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/sha256_test.cairo:467:26
+[out]     let result = sha256::sha256(data);
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-keccak"` with no `#[feature("deprecated-keccak")]` attribute. Note: "Use `core::keccak::compute_keccak_byte_array`."
+[out]  --> /mnt/maat-workbench/src/tests/test_keccak256.cairo:1:33
+[out] use alexandria_math::keccak256::keccak256;
+[out]                                 ^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 23 seconds
+[out]      Testing alexandria_math
+[out] running 207 tests
+[out] test alexandria_math::tests::decimal_test::test_decimal_string_parsing_edge_cases ... ok (gas usage est.: 402730)
+[out] test alexandria_math::tests::karatsuba_test::multiply_by_number_lt_ten ... ok (gas usage est.: 158280)
+[out] test alexandria_math::tests::aliquot_sum_test::zero_test ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_string ... ok (gas usage est.: 7653882)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_test ... ok (gas usage est.: 62000)
+[out] test alexandria_math::tests::decimal_test::test_decimal_equality ... ok (gas usage est.: 44560)
+[out] test alexandria_math::tests::aliquot_sum_test::one_test ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_long_input ... ok (gas usage est.: 58301856)
+[out] test alexandria_math::tests::aliquot_sum_test::two_test ... ok (gas usage est.: 2940)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_test_tryinto ... ok (gas usage est.: 51640)
+[out] test alexandria_math::tests::decimal_test::test_decimal_scale_constant ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_single_byte ... ok (gas usage est.: 7749202)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_test_inverse ... ok (gas usage est.: 54350)
+[out] test alexandria_math::tests::decimal_test::test_decimal_internal_representation ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::aliquot_sum_test::one_digit_number_test ... ok (gas usage est.: 11520)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_all_zeros ... ok (gas usage est.: 15227204)
+[out] test alexandria_math::tests::decimal_test::test_comprehensive_fractional_verification ... ok (gas usage est.: 167000)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_test_3 ... ok (gas usage est.: 46200)
+[out] test alexandria_math::tests::aliquot_sum_test::two_digit_number_test ... ok (gas usage est.: 26800)
+[out] test alexandria_math::tests::aliquot_sum_test::three_digit_number_test ... ok (gas usage est.: 653280)
+[out] test alexandria_math::tests::decimal_test::test_decimal_performance_operations ... ok (gas usage est.: 92420)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_test_4 ... ok (gas usage est.: 46200)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_all_ones ... ok (gas usage est.: 15227204)
+[out] test alexandria_math::tests::aliquot_sum_test::two_digit_prime_number_test ... ok (gas usage est.: 29680)
+[out] test alexandria_math::tests::decimal_test::test_decimal_mathematical_properties ... ok (gas usage est.: 298750)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_single_test ... ok (gas usage est.: 3900)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_exact_block_size ... ok (gas usage est.: 7727192)
+[out] test alexandria_math::tests::armstrong_number_test::one_digit_armstrong_number_test ... ok (gas usage est.: 14030)
+[out] test alexandria_math::tests::lcm_of_n_numbers_test::lcm_empty_input_test ... ok (gas usage est.: 1200)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_context_as_bytes ... ok (gas usage est.: 7642242)
+[out] test alexandria_math::tests::armstrong_number_test::two_digit_numbers_are_not_armstrong_numbers_test ... ok (gas usage est.: 23400)
+[out] test alexandria_math::tests::math_test::test_pow_power_2_all ... ok (gas usage est.: 6277410)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_context_as_array ... ok (gas usage est.: 7587442)
+[out] test alexandria_math::tests::armstrong_number_test::three_digit_armstrong_number_test ... ok (gas usage est.: 66980)
+[out] test alexandria_math::tests::math_test::pow_test ... ok (gas usage est.: 187020)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_context_conversions_consistency ... ok (gas usage est.: 7744202)
+[out] test alexandria_math::tests::armstrong_number_test::three_digit_non_armstrong_number_test ... ok (gas usage est.: 29980)
+[out] test alexandria_math::tests::math_test::count_digits_of_base_test ... ok (gas usage est.: 97440)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_different_messages_different_hash ... ok (gas usage est.: 15418614)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_get_bit_at_0 ... ok (gas usage est.: 19346)
+[out] test alexandria_math::tests::math_test::shl_should_not_overflow ... ok (gas usage est.: 486742)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_special_chars ... ok (gas usage est.: 7653682)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_get_bit_at_1 ... ok (gas usage est.: 32816)
+[out] test alexandria_math::tests::math_test::test_rotl_min ... ok (gas usage est.: 815020)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_test_0 ... ok (gas usage est.: 289485768)
+[out] test alexandria_math::tests::sha256_test::sha256_empty_test ... ok (gas usage est.: 7636222)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_get_bit_at_10 ... ok (gas usage est.: 132756)
+[out] test alexandria_math::tests::math_test::test_rotl_max ... ok (gas usage est.: 952640)
+[out] test alexandria_math::tests::sha256_test::sha256_random_data_test ... ok (gas usage est.: 7584862)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_set_bit_at_0 ... ok (gas usage est.: 36882)
+[out] test alexandria_math::tests::math_test::test_rotr_min ... ok (gas usage est.: 1406180)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_set_bit_at_1 ... ok (gas usage est.: 64842)
+[out] test alexandria_math::tests::sha256_test::sha256_lorem_ipsum_test ... ok (gas usage est.: 43929412)
+[out] test alexandria_math::tests::math_test::test_rotr_max ... ok (gas usage est.: 510540)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_set_bit_at_10 ... ok (gas usage est.: 263902)
+[out] test alexandria_math::tests::math_test::test_wrapping_math_non_wrapping ... ok (gas usage est.: 65640)
+[out] test alexandria_math::tests::sha256_test::sha256_url ... ok (gas usage est.: 29351768)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_most_significant_bit ... ok (gas usage est.: 17780)
+[out] test alexandria_math::tests::math_test::test_wrapping_math_wrapping ... ok (gas usage est.: 33720)
+[out] test alexandria_math::tests::sha512_test::test_sha512_lorem_ipsum ... ok (gas usage est.: 31549618)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_least_significant_bit ... ok (gas usage est.: 38498)
+[out] test alexandria_math::tests::mod_arithmetics_test::add_mod_p_test ... ok (gas usage est.: 48850)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_test_1 ... ok (gas usage est.: 280998588)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_nearest_left_significant_bit ... ok (gas usage est.: 120121)
+[out] test alexandria_math::tests::sha512_test::test_sha512_size_one ... ok (gas usage est.: 10956910)
+[out] test alexandria_math::tests::mod_arithmetics_test::add_mod_2_test ... ok (gas usage est.: 14300)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_nearest_right_significant_bit ... ok (gas usage est.: 87353)
+[out] test alexandria_math::tests::sha512_test::test_size_zero ... ok (gas usage est.: 10958850)
+[out] test alexandria_math::tests::mod_arithmetics_test::add_mod_1_test ... ok (gas usage est.: 20850)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_nearest_significant_bit_left_priority ... ok (gas usage est.: 209084)
+[out] test alexandria_math::tests::test_keccak256::test_keccak256_empty_bytes ... ok (gas usage est.: 239214)
+[out] test alexandria_math::tests::mod_arithmetics_test::sub_mod_test ... ok (gas usage est.: 134770)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_nearest_significant_bit_right_priority ... ok (gas usage est.: 210324)
+[out] test alexandria_math::tests::test_keccak256::test_keccak256_partial_bytes ... ok (gas usage est.: 257994)
+[out] test alexandria_math::tests::mod_arithmetics_test::sub_mod_1_test ... ok (gas usage est.: 127480)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_nearest_significant_bit_left_priority_at_index ... ok (gas usage est.: 229684)
+[out] test alexandria_math::tests::test_keccak256::test_keccak256_full_u256 ... ok (gas usage est.: 348294)
+[out] test alexandria_math::tests::mod_arithmetics_test::sub_mod_2_test ... ok (gas usage est.: 128840)
+[out] test alexandria_math::tests::bitmap_test::test_bitmap_nearest_significant_bit_right_priority_at_index ... ok (gas usage est.: 230924)
+[out] test alexandria_math::tests::trigonometry_test::sin_positive_test_1 ... ok (gas usage est.: 7790)
+[out] test alexandria_math::tests::mod_arithmetics_test::mult_mod_test ... ok (gas usage est.: 316040)
+[out] test alexandria_math::tests::collatz_sequence_test::collatz_sequence_10_test ... ok (gas usage est.: 35050)
+[out] test alexandria_math::tests::trigonometry_test::sin_negative_test_1 ... ok (gas usage est.: 25270)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_test_2 ... ok (gas usage est.: 281855548)
+[out] test alexandria_math::tests::mod_arithmetics_test::mult_mod_1_test ... ok (gas usage est.: 315640)
+[out] test alexandria_math::tests::collatz_sequence_test::collatz_sequence_15_test ... ok (gas usage est.: 97050)
+[out] test alexandria_math::tests::trigonometry_test::sin_positive_test_2 ... ok (gas usage est.: 11010)
+[out] test alexandria_math::tests::collatz_sequence_test::collatz_sequence_empty_test ... ok (gas usage est.: 800)
+[out] test alexandria_math::tests::mod_arithmetics_test::mult_mod_2_test ... ok (gas usage est.: 316440)
+[out] test alexandria_math::tests::trigonometry_test::sin_negative_test_2 ... ok (gas usage est.: 11950)
+[out] test alexandria_math::tests::const_pow_test::pow2_test ... ok (gas usage est.: 11620)
+[out] test alexandria_math::tests::mod_arithmetics_test::sqr_mod_test ... ok (gas usage est.: 194130)
+[out] test alexandria_math::tests::trigonometry_test::sin_positive_test_3 ... ok (gas usage est.: 7790)
+[out] test alexandria_math::tests::const_pow_test::pow2_u256_test ... ok (gas usage est.: 7740)
+[out] test alexandria_math::tests::trigonometry_test::cos_positive_test_1 ... ok (gas usage est.: 7790)
+[out] test alexandria_math::tests::mod_arithmetics_test::div_mod_test ... ok (gas usage est.: 207750)
+[out] test alexandria_math::tests::const_pow_test::pow10_test ... ok (gas usage est.: 9950)
+[out] test alexandria_math::tests::trigonometry_test::cos_negative_test_1 ... ok (gas usage est.: 25140)
+[out] test alexandria_math::tests::mod_arithmetics_test::pow_mod_test ... ok (gas usage est.: 23924640)
+[out] test alexandria_math::tests::const_pow_test::pow10_u256_test ... ok (gas usage est.: 10980)
+[out] test alexandria_math::tests::trigonometry_test::tan_positive_test_1 ... ok (gas usage est.: 24400)
+[out] test alexandria_math::tests::mod_arithmetics_test::pow_mod_1_test ... ok (gas usage est.: 23923240)
+[out] test alexandria_math::tests::const_pow_test::pow2_out_of_range_test ... ok (gas usage est.: 2470)
+[out] test alexandria_math::tests::trigonometry_test::tan_negative_test_1 ... ok (gas usage est.: 24400)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_test_3 ... ok (gas usage est.: 307409098)
+[out] test alexandria_math::tests::const_pow_test::pow2_u256_out_of_range_test ... ok (gas usage est.: 2470)
+[out] test alexandria_math::tests::u512_arithmetics_test::test_u512_add ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::mod_arithmetics_test::pow_mod_2_test ... ok (gas usage est.: 23923240)
+[out] test alexandria_math::tests::const_pow_test::pow10_out_of_range_test ... ok (gas usage est.: 2470)
+[out] test alexandria_math::tests::u512_arithmetics_test::test_u512_sub ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::opt_math_test::shl_should_not_overflow ... ok (gas usage est.: 481942)
+[out] test alexandria_math::tests::const_pow_test::pow10_u256_out_of_range_test ... ok (gas usage est.: 2570)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_to_ray_conversion ... ok (gas usage est.: 315320)
+[out] test alexandria_math::tests::opt_math_test::shr_should_not_underflow ... ok (gas usage est.: 17270)
+[out] test alexandria_math::tests::decimal_test::test_decimal_construction_from_int ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_to_wad_conversion ... ok (gas usage est.: 309860)
+[out] test alexandria_math::tests::opt_math_test::test_rotl_min ... ok (gas usage est.: 512363)
+[out] test alexandria_math::tests::decimal_test::test_decimal_construction_from_parts ... ok (gas usage est.: 81820)
+[out] test alexandria_math::tests::wad_ray_math_test::test_revertWhen_wad_mul_overflow ... ok (gas usage est.: 425340)
+[out] test alexandria_math::tests::opt_math_test::test_rotl_max ... ok (gas usage est.: 514343)
+[out] test alexandria_math::tests::decimal_test::test_decimal_basic_operations_integration ... ok (gas usage est.: 21980)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_mul_trivial ... ok (gas usage est.: 519940)
+[out] test alexandria_math::tests::opt_math_test::test_rotr_min ... ok (gas usage est.: 957103)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_invalid ... ok (gas usage est.: 288205058)
+[out] test alexandria_math::tests::decimal_test::test_decimal_string_conversion_integration ... ok (gas usage est.: 212390)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_mul_fractions ... ok (gas usage est.: 216390)
+[out] test alexandria_math::tests::opt_math_test::test_rotr_max ... ok (gas usage est.: 60613)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_invalid_length ... ok (gas usage est.: 10290)
+[out] test alexandria_math::tests::decimal_test::test_decimal_construction_from_felt ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::wad_ray_math_test::test_revertWhen_wad_div_zero ... ok (gas usage est.: 22640)
+[out] test alexandria_math::tests::ed25519_test::affine_point_op ... ok (gas usage est.: 353590)
+[out] test alexandria_math::tests::opt_math_test::test_wrapping_math_non_wrapping ... ok (gas usage est.: 91798)
+[out] test alexandria_math::tests::decimal_test::test_decimal_to_felt_conversion ... ok (gas usage est.: 15860)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_div_trivial ... ok (gas usage est.: 696350)
+[out] test alexandria_math::tests::opt_math_test::test_wrapping_math_wrapping ... ok (gas usage est.: 48254)
+[out] test alexandria_math::tests::decimal_test::test_decimal_addition ... ok (gas usage est.: 96340)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_div_fractions ... ok (gas usage est.: 97950)
+[out] test alexandria_math::tests::perfect_number_test::perfect_small_number_test ... ok (gas usage est.: 115900)
+[out] test alexandria_math::tests::decimal_test::test_decimal_subtraction ... ok (gas usage est.: 126890)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_mul_rounding ... ok (gas usage est.: 47000)
+[out] test alexandria_math::tests::perfect_number_test::perfect_big_number_test ... ok (gas usage est.: 1761000)
+[out] test alexandria_math::tests::decimal_test::test_decimal_multiplication ... ok (gas usage est.: 216270)
+[out] test alexandria_math::tests::wad_ray_math_test::test_wad_mul_rounding_up ... ok (gas usage est.: 177850)
+[out] test alexandria_math::tests::perfect_number_test::not_perfect_small_number_test ... ok (gas usage est.: 317370)
+[out] test alexandria_math::tests::decimal_test::test_decimal_division ... ok (gas usage est.: 220370)
+[out] test alexandria_math::tests::wad_ray_math_test::test_revertWhen_ray_mul_overflow ... ok (gas usage est.: 425340)
+[out] test alexandria_math::tests::perfect_number_test::not_perfect_big_number_test ... ok (gas usage est.: 1762230)
+[out] test alexandria_math::tests::decimal_test::test_decimal_operator_overloads ... ok (gas usage est.: 92420)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_mul_trivial ... ok (gas usage est.: 519940)
+[out] test alexandria_math::tests::perfect_number_test::perfect_numbers_test ... ok (gas usage est.: 149170)
+[out] test alexandria_math::tests::decimal_test::test_decimal_chained_operations ... ok (gas usage est.: 129520)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_mul_fractions ... ok (gas usage est.: 230970)
+[out] test alexandria_math::tests::ed25519_test::verify_signature_test_with_pub_key_having_consecutive_identical_bytes ... ok (gas usage est.: 317329572)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_test_empty ... ok (gas usage est.: 7752882)
+[out] test alexandria_math::tests::decimal_test::test_decimal_precision_boundaries ... ok (gas usage est.: 27500)
+[out] test alexandria_math::tests::wad_ray_math_test::test_revertWhen_ray_div_zero ... ok (gas usage est.: 22640)
+[out] test alexandria_math::tests::extended_euclidean_algorithm_test::extended_euclidean_algorithm_test ... ok (gas usage est.: 515030)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_standard_test_string_a ... ok (gas usage est.: 7749402)
+[out] test alexandria_math::tests::decimal_test::test_decimal_string_conversion_basic ... ok (gas usage est.: 641450)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_div_trivial ... ok (gas usage est.: 696350)
+[out] test alexandria_math::tests::fast_power_test::fast_power_test ... ok (gas usage est.: 1105700)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_standard_test_string_abc ... ok (gas usage est.: 7741442)
+[out] test alexandria_math::tests::decimal_test::test_decimal_string_parsing_basic ... ok (gas usage est.: 171270)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_div_fractions ... ok (gas usage est.: 97950)
+[out] test alexandria_math::tests::fast_power_test::fast_power_mod_test ... ok (gas usage est.: 1795970)
+[out] test alexandria_math::tests::gcd_of_n_numbers_test::gcd_test_3 ... ok (gas usage est.: 29510)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_standard_test_string_message_digest ... ok (gas usage est.: 7697662)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_mul_rounding ... ok (gas usage est.: 478960)
+[out] test alexandria_math::tests::fast_root_test::fast_sqrt_test_1 ... ok (gas usage est.: 193370)
+[out] test alexandria_math::tests::gcd_of_n_numbers_test::gcd_single_test ... ok (gas usage est.: 3890)
+[out] test alexandria_math::tests::wad_ray_math_test::test_ray_mul_rounding_up ... ok (gas usage est.: 207010)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_standard_test_string_alphabet ... ok (gas usage est.: 7649902)
+[out] test alexandria_math::tests::fast_root_test::fast_sqrt_test_2 ... ok (gas usage est.: 193370)
+[out] test alexandria_math::tests::gcd_of_n_numbers_test::gcd_empty_input_test ... ok (gas usage est.: 4970)
+[out] test alexandria_math::tests::zellers_congruence_test::zellers_congruence_test ... ok (gas usage est.: 106500)
+[out] test alexandria_math::tests::fast_root_test::fast_curt_test_1 ... ok (gas usage est.: 267970)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_standard_test_string_alphanumeric ... ok (gas usage est.: 15011344)
+[out] test alexandria_math::tests::i257_test::i257_test_add ... ok (gas usage est.: 11440)
+[out] test alexandria_math::tests::zellers_congruence_test::zellers_congruence_invalid_parameters_test ... ok (gas usage est.: 2000)
+[out] test alexandria_math::tests::fast_root_test::fast_nr_optimize_test_1 ... ok (gas usage est.: 909870)
+[out] test alexandria_math::tests::ripemd160_tests::ripemd160_standard_test_string_digits_repeated ... ok (gas usage est.: 14940204)
+[out] test alexandria_math::tests::i257_test::i257_test_sub ... ok (gas usage est.: 78710)
+[out] test alexandria_math::tests::i257_test::i257_test_into ... ok (gas usage est.: 4740)
+[out] test alexandria_math::tests::fast_root_test::fast_nr_optimize_test_2 ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::is_prime_test::is_prime_test_1 ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::i257_test::i257_test_mul ... ok (gas usage est.: 55320)
+[out] test alexandria_math::tests::is_power_of_two_test::is_power_of_two_test_1 ... ok (gas usage est.: 1983)
+[out] test alexandria_math::tests::fibonacci_test::fibonacci_test ... ok (gas usage est.: 25500)
+[out] test alexandria_math::tests::is_prime_test::is_prime_test_2 ... ok (gas usage est.: 900)
+[out] test alexandria_math::tests::i257_test::i257_test_is_zero ... ok (gas usage est.: 300)
+[out] test alexandria_math::tests::is_power_of_two_test::is_power_of_two_test_2 ... ok (gas usage est.: 1983)
+[out] test alexandria_math::tests::gcd_of_n_numbers_test::gcd_test ... ok (gas usage est.: 38050)
+[out] test alexandria_math::tests::is_prime_test::is_prime_test_3 ... ok (gas usage est.: 900)
+[out] test alexandria_math::tests::i257_test::i257_test_div_no_rem ... ok (gas usage est.: 226150)
+[out] test alexandria_math::tests::is_power_of_two_test::is_power_of_two_test_3 ... ok (gas usage est.: 2483)
+[out] test alexandria_math::tests::gcd_of_n_numbers_test::gcd_test_inverse ... ok (gas usage est.: 35500)
+[out] test alexandria_math::tests::is_prime_test::is_prime_test_4 ... ok (gas usage est.: 209370)
+[out] test alexandria_math::tests::i257_test::i257_test_div_rem ... ok (gas usage est.: 560010)
+[out] test alexandria_math::tests::is_power_of_two_test::is_power_of_two_test_4 ... ok (gas usage est.: 1983)
+[out] test alexandria_math::tests::karatsuba_test::multiply_distinct_size_positive_number ... ok (gas usage est.: 612200)
+[out] test alexandria_math::tests::i257_test::i257_test_partial_ord ... ok (gas usage est.: 28800)
+[out] test alexandria_math::tests::is_power_of_two_test::is_power_of_two_test_5 ... ok (gas usage est.: 1300)
+[out] test alexandria_math::tests::i257_test::i257_test_eq_not_eq ... ok (gas usage est.: 5300)
+[out] test alexandria_math::tests::i257_test::i257_test_equality ... ok (gas usage est.: 6600)
+[out] test alexandria_math::tests::i257_test::i257_test_div_sign_zero ... ok (gas usage est.: 45630)
+[out] test alexandria_math::tests::karatsuba_test::multiply_by_zero ... ok (gas usage est.: 4294966390)
+[out] test alexandria_math::tests::karatsuba_test::multiply_same_size_positive_number ... ok (gas usage est.: 4294965340)
+[out] test result: ok. 207 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004278914s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "alexandria_math",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "alexandria_math",
+[out]     "edition": "2023_11",
+[out]     "version": "0.6.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "alexandria_math": {
+[out]         "discriminator": "alexandria_math 0.6.0 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/bitmap.cairo (1)
+[out]   (W) Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead. [Ln 151, Col 12]
+[out] file:///mnt/maat-workbench/src/ed25519.cairo (3)
+[out]   (W) Plugin diagnostic: Each `if`-statement adds one level of nesting, which makes code look more complex than it really is. [Ln 284, Col 8]
+[out]   (W) Plugin diagnostic: You seem to be trying to use `&` for parity check. Consider using `DivRem::div_rem()` instead. [Ln 244, Col 24]
+[out]   (W) Plugin diagnostic: using `clone` on type which implements `Copy` trait [Ln 408, Col 19]
+[out] file:///mnt/maat-workbench/src/sha512.cairo (2)
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 163, Col 24]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 391, Col 63]
+[out] file:///mnt/maat-workbench/src/tests/sha256_test.cairo (4)
+[out]   (W) Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`." [Ln 5, Col 25]
+[out]   (W) Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`." [Ln 48, Col 25]
+[out]   (W) Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`." [Ln 413, Col 25]
+[out]   (W) Usage of deprecated feature `"deprecated-sha256"` with no `#[feature("deprecated-sha256")]` attribute. Note: "Use `core::sha256::compute_sha256_byte_array`." [Ln 466, Col 25]
+[out] file:///mnt/maat-workbench/src/tests/test_keccak256.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-keccak"` with no `#[feature("deprecated-keccak")]` attribute. Note: "Use `core::keccak::compute_keccak_byte_array`." [Ln 0, Col 32]
+[out] file:///mnt/maat-workbench/src/u512_arithmetics.cairo (2)
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 76, Col 16]
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 115, Col 16]
+[out] total: 0 errors, 13 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

@@ -1,0 +1,253 @@
+=== alexandria_searching-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_searching/0.5.1 -o archive-605325149072875520.tar.zstd
+
+>>> tar --zstd -xf archive-605325149072875520.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           23.11.0            ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-07-29 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 0b4967c..ff036b6 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "A set of searching algorithms"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/src/searching"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_data_structures]
+[out] @@ -25,3 +25,22 @@ version = "^0.5.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(alexandria_searching_unittest) alexandria_searching v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 6 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_searching (scarb cairo-test)
+[out]    Compiling test(alexandria_searching_unittest) alexandria_searching v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 6 seconds
+[out]      Testing alexandria_searching
+[out] running 28 tests
+[out] test alexandria_searching::tests::binary_search_closest_test::value_found ... ok (gas usage est.: 337190)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_1 ... ok (gas usage est.: 476810)
+[out] test alexandria_searching::tests::binary_search_closest_test::closest_value_found ... ok (gas usage est.: 447050)
+[out] test alexandria_searching::tests::bm_search_test::bm_search_test_1 ... ok (gas usage est.: 1126990)
+[out] test alexandria_searching::tests::binary_search_closest_test::value_not_found ... ok (gas usage est.: 225390)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_2 ... ok (gas usage est.: 6190)
+[out] test alexandria_searching::tests::bm_search_test::bm_search_test_2 ... ok (gas usage est.: 718290)
+[out] test alexandria_searching::tests::binary_search_closest_test::all_values ... ok (gas usage est.: 935990)
+[out] test alexandria_searching::tests::binary_search_closest_test::value_found_length_one ... ok (gas usage est.: 7260)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_3 ... ok (gas usage est.: 10300)
+[out] test alexandria_searching::tests::bm_search_test::bm_search_test_3 ... ok (gas usage est.: 1013650)
+[out] test alexandria_searching::tests::binary_search_test::value_found ... ok (gas usage est.: 227770)
+[out] test alexandria_searching::tests::binary_search_closest_test::value_not_found_length_one ... ok (gas usage est.: 6720)
+[out] test alexandria_searching::tests::dijkstra_test::add_edge ... ok (gas usage est.: 107820)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_4 ... ok (gas usage est.: 43640)
+[out] test alexandria_searching::tests::binary_search_test::value_not_found ... ok (gas usage est.: 177960)
+[out] test alexandria_searching::tests::binary_search_closest_test::zero_length_span ... ok (gas usage est.: 2980)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_5 ... ok (gas usage est.: 135040)
+[out] test alexandria_searching::tests::dijkstra_test::calculate_shortest_path ... ok (gas usage est.: 397680)
+[out] test alexandria_searching::tests::binary_search_test::value_found_length_one ... ok (gas usage est.: 5950)
+[out] test alexandria_searching::tests::binary_search_closest_test::length_two_span ... ok (gas usage est.: 43580)
+[out] test alexandria_searching::tests::binary_search_test::value_not_found_length_one ... ok (gas usage est.: 6150)
+[out] test alexandria_searching::tests::dijkstra_test::calculate_shortest_path_random ... ok (gas usage est.: 346770)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_6 ... ok (gas usage est.: 1212710)
+[out] test alexandria_searching::tests::binary_search_test::zero_length_span ... ok (gas usage est.: 2980)
+[out] test alexandria_searching::tests::binary_search_closest_test::length_three_span ... ok (gas usage est.: 134680)
+[out] test alexandria_searching::tests::dijkstra_test::calculate_shortest_path_node_visited ... ok (gas usage est.: 342150)
+[out] test alexandria_searching::tests::levenshtein_distance_test::bm_search_test_7 ... ok (gas usage est.: 1211090)
+[out] test result: ok. 28 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004464145s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `alexandria_data_structures`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/alexandria_data_structures-0.5.1/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_data_structures",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `alexandria_searching`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_searching",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "alexandria_searching": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_searching 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/bm_search.cairo (2)
+[out]   (W) Plugin diagnostic: Unnecessary sub operation in integer <= comparison. Use simplified comparison. [Ln 71, Col 15]
+[out]   (W) Plugin diagnostic: using [`<`, `<=`, `>=`, `>`] exit conditions is inefficient. Consider switching to `!=` or using ArrayTrait::multi_pop_front. [Ln 33, Col 11]
+[out] file:///mnt/maat-workbench/src/tests/dijkstra_test.cairo (2)
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 22, Col 38]
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 39, Col 38]
+[out] total: 0 errors, 4 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

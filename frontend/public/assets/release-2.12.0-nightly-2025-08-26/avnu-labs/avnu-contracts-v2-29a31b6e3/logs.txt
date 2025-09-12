@@ -1,0 +1,597 @@
+=== avnu-labs/avnu-contracts-v2-29a31b6e3 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/avnu-labs/avnu-contracts-v2 .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 152e7d6..305f77c 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -4,7 +4,7 @@ version = "1.0.0"
+[out]  description = "Best execution on Starknet. No fluff."
+[out]  homepage = "https://app.avnu.fi/"
+[out]  edition = "2024_07"
+[out] -cairo-version = "2.9.1"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: '2.9.1'
+[out]  
+[out]  [dependencies]
+[out]  starknet = "2.9.1"
+[out] @@ -19,3 +19,20 @@ sierra = true
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  max-line-length = 150
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── avnu_lib v0.1.0 (git+https://github.com/avnu-labs/avnu-contracts-lib?tag=v0.1.0#d9c44c62ce037e4c11440b1e07828d9075e490e2)
+[out] │   └── starknet v2.12.0 (std)
+[out] ├── starknet v2.12.0 (std) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.0 (std)
+
+>>> scarb build --workspace --test
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(avnu_unittest) avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/adapters/vstrk_adapter.cairo:15:37
+[out]     use starknet::{ContractAddress, contract_address_const};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]    Compiling test(avnu_tests) avnu_tests v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/jediswap_adapter_test.cairo:6:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/myswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/sithswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/tenkswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/fee_test.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/helper.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:8:27
+[out] use starknet::class_hash::class_hash_const;
+[out]                           ^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:10:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/helper.cairo:13:44
+[out] use starknet::{ClassHash, ContractAddress, contract_address_const};
+[out]                                            ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:8:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:39:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:84:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:110:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/tests/mocks/old_exchange.cairo:54:15
+[out]     use core::starknet::syscalls::replace_class_syscall;
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 8 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]      Linting avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/adapters/vstrk_adapter.cairo:15:37
+[out]     use starknet::{ContractAddress, contract_address_const};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/src/components/fee.cairo:217:24
+[out]                 assert(overflows == false, 'Overflow: Invalid fee');
+[out]                        ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/src/exchange.cairo:366:20
+[out]             assert(overflows == false, 'Overflow: Invalid fee');
+[out]                    ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/src/exchange.cairo:379:24
+[out]                 assert(overflows == false, 'Overflow: swap iteration');
+[out]                        ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly.
+[out]  --> /mnt/maat-workbench/src/exchange.cairo:442:20
+[out]             assert(overflows == false, 'Overflow: Invalid percent');
+[out]                    ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/src/exchange.cairo:401:16
+[out]             if routes.len() == 0 {
+[out]                ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/src/exchange.cairo:429:17
+[out]             if (routes.len() == 0) {
+[out]                 ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Consider using else if instead of else { if ... }
+[out]  --> /mnt/maat-workbench/src/math/sqrt_ratio.cairo:2:32-14:5
+[out]       let mut sqrt_ratio_limit = if is_token1 {
+[out]  ________________________________^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] error: lint checking `avnu` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test avnu (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(avnu_unittest) avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/adapters/vstrk_adapter.cairo:15:37
+[out]     use starknet::{ContractAddress, contract_address_const};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]    Compiling test(avnu_tests) avnu_tests v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/jediswap_adapter_test.cairo:6:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/myswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/sithswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/tenkswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/fee_test.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/helper.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:8:27
+[out] use starknet::class_hash::class_hash_const;
+[out]                           ^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:10:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/helper.cairo:13:44
+[out] use starknet::{ClassHash, ContractAddress, contract_address_const};
+[out]                                            ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:8:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:39:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:84:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:110:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/tests/mocks/old_exchange.cairo:54:15
+[out]     use core::starknet::syscalls::replace_class_syscall;
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+[out]      Testing avnu
+[out] running 85 tests
+[out] test avnu_tests::adapters::jediswap_adapter_test::Swap::should_call_jediswap ... ok (gas usage est.: 997830)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_sell_token_amount_is_0 ... ok (gas usage est.: 1394290)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_initialize_called_with_too_high_fees_bps ... ok (gas usage est.: 1027720)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_caller_balance_is_too_low ... ok (gas usage est.: 1756090)
+[out] test avnu_tests::adapters::jediswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 811180)
+[out] test avnu_tests::adapters::myswap_adapter_test::Swap::should_call_myswap ... ok (gas usage est.: 966160)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_caller_balance_is_too_low ... ok (gas usage est.: 1504810)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_initialize_called_twice_by_owner ... ok (gas usage est.: 1250040)
+[out] test avnu_tests::adapters::myswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 792380)
+[out] test avnu_tests::adapters::sithswap_adapter_test::Swap::should_call_sithswap ... ok (gas usage est.: 1002430)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_initialize_called_twice_by_anyone ... ok (gas usage est.: 1250540)
+[out] test avnu_tests::adapters::sithswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 808440)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees ... ok (gas usage est.: 4151130)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_fee_recipient_is_empty ... ok (gas usage est.: 3092430)
+[out] test avnu_tests::adapters::tenkswap_adapter_test::Swap::should_call_tenkswap ... ok (gas usage est.: 997830)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_owner_only_function_called_before_initialize ... ok (gas usage est.: 986540)
+[out] test avnu_tests::adapters::tenkswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 811180)
+[out] test avnu_tests::components::fee_test::GetSetFeesRecipient::should_set_fees_recipient ... ok (gas usage est.: 518580)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_routes_is_empty ... ok (gas usage est.: 1815580)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_old_function_called_after_upgrade ... ok (gas usage est.: 942810)
+[out] test avnu_tests::components::fee_test::GetSetFeesRecipient::set_fees_recipient_should_fail_for_unauthorized_access ... ok (gas usage est.: 347660)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::should_set_fees_bps_0 ... ok (gas usage est.: 434300)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_integrator_is_whitelisted ... ok (gas usage est.: 3957400)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_first_sell_token_is_not_sell_token ... ok (gas usage est.: 2074540)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::should_set_fees_bps_1 ... ok (gas usage est.: 515980)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::should_set_swap_exact_fees_bps ... ok (gas usage est.: 516180)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_0_should_fail_for_unathorized_access ... ok (gas usage est.: 347490)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_call_swap_when_fees_after_upgrade_before_initialize ... ok (gas usage est.: 3566510)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_1_should_fail_for_unathorized_access ... ok (gas usage est.: 347490)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_last_buy_token_is_not_buy_token ... ok (gas usage est.: 2656690)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_swap_exact_fees_bps_should_fail_for_unathorized_access ... ok (gas usage est.: 347490)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_integrator_fees_are_too_high ... ok (gas usage est.: 2859780)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_0_should_fail_for_too_high_bps ... ok (gas usage est.: 346860)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_1_should_fail_for_too_high_bps ... ok (gas usage est.: 346860)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_swap_exact_token_fees_bps_should_fail_for_too_high_bps ... ok (gas usage est.: 346860)
+[out] test avnu_tests::components::fee_test::GetTokenFeeConfig::should_return_default_config_value_when_token_config_not_stored ... ok (gas usage est.: 327540)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_fail_when_not_enough_sell_token ... ok (gas usage est.: 2700240)
+[out] test avnu_tests::components::fee_test::SetTokenFeeConfig::should_set_token_fee_config ... ok (gas usage est.: 449780)
+[out] test avnu_tests::components::fee_test::SetTokenFeeConfig::should_fail_when_caller_is_not_the_owner ... ok (gas usage est.: 354760)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_call_swap_when_fees_after_upgrade_after_initialize ... ok (gas usage est.: 4325670)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_min_when_u256_sub_Overflow ... ok (gas usage est.: 300)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_fail_when_beneficiary_is_not_the_caller ... ok (gas usage est.: 1298320)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_max_when_u256_add_Overflow ... ok (gas usage est.: 300)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_value_when_token0 ... ok (gas usage est.: 300)
+[out] test avnu_tests::components::fee_test::IsIntegratorWhitelisted::should_return_false_when_not_whitelisted ... ok (gas usage est.: 328490)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_value_when_token1 ... ok (gas usage est.: 300)
+[out] test avnu_tests::components::fee_test::SetWhitelistedIntegrator::should_whitelist_integrator ... ok (gas usage est.: 541050)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_complex_integrator_fees_less ... ok (gas usage est.: 643760)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_multiple_routes ... ok (gas usage est.: 5002230)
+[out] test avnu_tests::components::fee_test::SetWhitelistedIntegrator::should_fail_when_caller_is_not_the_owner ... ok (gas usage est.: 354720)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::upgrade_class_check_storage_without_initialization ... ok (gas usage est.: 1197810)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_complex_integrator_fees_less ... ok (gas usage est.: 643540)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_simple_no_integrator ... ok (gas usage est.: 401510)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_simple_integrator_fees_more ... ok (gas usage est.: 522750)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_simple_no_integrator ... ok (gas usage est.: 522520)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_complex_no_integrator ... ok (gas usage est.: 522730)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_complex_integrator_fees_more ... ok (gas usage est.: 643250)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_complex_no_integrator ... ok (gas usage est.: 522510)
+[out] test avnu_tests::components::fee_test::CollectFees::should_throw_collect_fee_exchange_and_high_integrator_fees ... ok (gas usage est.: 726570)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::upgrade_class_check_storage_with_initialization ... ok (gas usage est.: 1570530)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_simple_integrator_fees_less ... ok (gas usage est.: 523040)
+[out] test avnu_tests::exchange_test::GetAdapterClassHash::should_return_adapter_class_hash ... ok (gas usage est.: 579560)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_simple_integrator_fees_less ... ok (gas usage est.: 643550)
+[out] test avnu_tests::exchange_test::SetAdapterClassHash::should_set_adapter_class ... ok (gas usage est.: 784740)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_not_panic_if_owner_only_function_called_after_initialize ... ok (gas usage est.: 1287340)
+[out] test avnu_tests::exchange_test::SetAdapterClassHash::should_fail_when_caller_is_not_the_owner ... ok (gas usage est.: 606360)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap ... ok (gas usage est.: 3211440)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_multiple_routes ... ok (gas usage est.: 7978630)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_residual_tokens ... ok (gas usage est.: 3031050)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_last_buy_token_is_not_buy_token ... ok (gas usage est.: 2907970)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_routes_is_empty ... ok (gas usage est.: 2066860)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_route_percent_is_higher_than_100 ... ok (gas usage est.: 1977730)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_sell_token_amount_is_0 ... ok (gas usage est.: 1645570)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_fail_when_exchange_is_unknown ... ok (gas usage est.: 2171790)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_route_percent_is_higher_is_0 ... ok (gas usage est.: 1976960)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_fail_when_beneficiary_is_not_the_caller ... ok (gas usage est.: 1549600)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_fail_when_insufficient_tokens_received ... ok (gas usage est.: 2630180)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_first_sell_token_is_not_sell_token ... ok (gas usage est.: 2325820)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_integrator_is_whitelisted_policy_feeonsell ... ok (gas usage est.: 4180880)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_on_sell ... ok (gas usage est.: 4484610)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_swap_when_setting_buy_token ... ok (gas usage est.: 5212570)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_integrator_is_whitelisted_policy_feeonsell_2 ... ok (gas usage est.: 4605640)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_multiple_routes_policy_feeonsell ... ok (gas usage est.: 5236340)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_residual_tokens ... ok (gas usage est.: 3452580)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_swap_when_setting_buy_token_when_no_fees ... ok (gas usage est.: 4809580)
+[out] test result: ok. 85 passed; 0 failed; 0 ignored; 0 filtered out;
+[out] 
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004236532s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] Opening file:///mnt/maat-workbench/tests/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "avnu",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": null,
+[out]     "edition": "2023_01",
+[out]     "version": null,
+[out]     "cfg_set": null,
+[out]     "dependencies": {},
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest",
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": null,
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": null,
+[out]     "dependencies": {},
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": true
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/adapters/ekubo_adapter.cairo (4)
+[out]   (E) Identifier not found. [Ln 75, Col 8]
+[out]   (E) Identifier not found. [Ln 76, Col 8]
+[out]   (E) Identifier not found. [Ln 77, Col 8]
+[out]   (E) Identifier not found. [Ln 78, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/haiko_adapter.cairo (3)
+[out]   (E) Identifier not found. [Ln 26, Col 8]
+[out]   (E) Identifier not found. [Ln 27, Col 8]
+[out]   (E) Identifier not found. [Ln 28, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/haiko_replicating_solver_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 35, Col 8]
+[out]   (E) Identifier not found. [Ln 36, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/jediswap_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 11, Col 8]
+[out]   (E) Identifier not found. [Ln 12, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/myswap_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 9, Col 8]
+[out]   (E) Identifier not found. [Ln 10, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/myswapv2_adapter.cairo (3)
+[out]   (E) Identifier not found. [Ln 19, Col 8]
+[out]   (E) Identifier not found. [Ln 20, Col 8]
+[out]   (E) Identifier not found. [Ln 21, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/nostra_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 11, Col 8]
+[out]   (E) Identifier not found. [Ln 12, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/nostrav2_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 17, Col 8]
+[out]   (E) Identifier not found. [Ln 18, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/sithswap_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 18, Col 8]
+[out]   (E) Identifier not found. [Ln 19, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/starkdefi_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 19, Col 8]
+[out]   (E) Identifier not found. [Ln 20, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/tenkswap_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 11, Col 8]
+[out]   (E) Identifier not found. [Ln 12, Col 8]
+[out] file:///mnt/maat-workbench/src/adapters/vstrk_adapter.cairo (2)
+[out]   (E) Identifier not found. [Ln 13, Col 8]
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 14, Col 36]
+[out] file:///mnt/maat-workbench/src/components/fee.cairo (16)
+[out]   (E) Identifier not found. [Ln 33, Col 8]
+[out]   (E) Identifier not found. [Ln 34, Col 8]
+[out]   (E) Identifier not found. [Ln 35, Col 8]
+[out]   (E) Identifier not found. [Ln 36, Col 8]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 79, Col 47]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 89, Col 47]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 100, Col 47]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 111, Col 47]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 122, Col 47]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 132, Col 47]
+[out]   (E) Ambiguous method call. More than one applicable trait function with a suitable self type was found: core::zeroable::Zeroable::is_zero and core::num::traits::zero::Zero::is_zero. Consider adding type annotations or explicitly refer to the impl function. [Ln 213, Col 32]
+[out]   (E) Ambiguous method call. More than one applicable trait function with a suitable self type was found: core::zeroable::Zeroable::is_zero and core::num::traits::zero::Zero::is_zero. Consider adding type annotations or explicitly refer to the impl function. [Ln 213, Col 60]
+[out]   (E) Method `transfer` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 219, Col 22]
+[out]   (E) Trait `core::traits::Into::<core::integer::u128, ?0>` has multiple implementations, in: `core::traits::TIntoT::<core::integer::u128>`, `core::integer::U128IntoFelt252` [Ln 215, Col 76]
+[out]   (E) Variable not dropped. [Ln 193, Col 12]
+[out]     note: Trait has no implementation in context: core::traits::Drop::<<missing>>.
+[out]     note: Trait has no implementation in context: core::traits::Destruct::<<missing>>.
+[out]     note: Trait has no implementation in context: core::traits::PanicDestruct::<<missing>>.
+[out]   (E) Variable was previously moved. [Ln 204, Col 59]
+[out]     note: Trait has no implementation in context: core::traits::Copy::<<missing>>.
+[out] file:///mnt/maat-workbench/src/exchange.cairo (55)
+[out]   (W) Plugin diagnostic: Missing `ValidStorageTypeTrait` for member type. Inference failed with: `Cannot infer trait core::starknet::storage_access::StorePacking::<?0, ?1>. First generic argument must be known.`. Possible solutions: implement `Store`, mark type with `#[storage_node]`, or use valid args for `Vec` or `Map` library types. To suppress this warning, use `#[allow(starknet::invalid_storage_member_types)]`. [Ln 76, Col 13]
+[out]   (W) Plugin diagnostic: Missing `ValidStorageTypeTrait` for member type. Inference failed with: `Cannot infer trait core::starknet::storage_access::StorePacking::<?0, ?1>. First generic argument must be known.`. Possible solutions: implement `Store`, mark type with `#[storage_node]`, or use valid args for `Vec` or `Map` library types. To suppress this warning, use `#[allow(starknet::invalid_storage_member_types)]`. [Ln 78, Col 17]
+[out]   (W) Plugin diagnostic: Missing `ValidStorageTypeTrait` for member type. Inference failed with: `Cannot infer trait core::starknet::storage_access::StorePacking::<?0, ?1>. First generic argument must be known.`. Possible solutions: implement `Store`, mark type with `#[storage_node]`, or use valid args for `Vec` or `Map` library types. To suppress this warning, use `#[allow(starknet::invalid_storage_member_types)]`. [Ln 80, Col 20]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 400, Col 15]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 428, Col 16]
+[out]   (E) Identifier not found. [Ln 41, Col 8]
+[out]   (E) Identifier not found. [Ln 42, Col 8]
+[out]   (E) Identifier not found. [Ln 43, Col 8]
+[out]   (E) Identifier not found. [Ln 44, Col 8]
+[out]   (E) Identifier not found. [Ln 45, Col 8]
+[out]   (E) Identifier not found. [Ln 46, Col 8]
+[out]   (E) Identifier not found. [Ln 47, Col 8]
+[out]   (E) Identifier not found. [Ln 48, Col 8]
+[out]   (E) Wrong number of arguments. Expected 6, found: 2 [Ln 157, Col 25]
+[out]   (E) Wrong number of arguments. Expected 6, found: 5 [Ln 161, Col 21]
+[out]   (E) Method `assert_only_owner` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 169, Col 25]
+[out]   (E) Method `get_fees` not found on type `<missing>`. Consider importing one of the following traits: `crate::components::fee::FeeComponent::FeeInternal`. [Ln 198, Col 17]
+[out]   (E) Method `collect_fees` not found on type `<missing>`. Consider importing one of the following traits: `crate::components::fee::FeeComponent::FeeInternal`. [Ln 201, Col 25]
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 210, Col 62]
+[out]   (E) Method `collect_fees` not found on type `<missing>`. Consider importing one of the following traits: `crate::components::fee::FeeComponent::FeeInternal`. [Ln 211, Col 29]
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 213, Col 31]
+[out]   (E) Method `transfer` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 218, Col 22]
+[out]   (E) Trait `core::traits::Into::<avnu::exchange::Exchange::Swap, avnu::exchange::Exchange::Event>` has multiple implementations, in: `avnu::exchange::Exchange::EventFeeEventIntoEvent`, `avnu::exchange::Exchange::EventOwnableEventIntoEvent` [Ln 228, Col 17]
+[out]   (E) Method `transfer` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 270, Col 22]
+[out]   (E) Method `get_fees_recipient` not found on type `<missing>`. Consider importing one of the following traits: `crate::components::fee::IFee`, `crate::components::fee::IFeeDispatcherTrait`, `crate::components::fee::IFeeSafeDispatcherTrait`. [Ln 275, Col 46]
+[out]   (E) Ambiguous method call. More than one applicable trait function with a suitable self type was found: core::zeroable::Zeroable::is_zero and core::num::traits::zero::Zero::is_zero. Consider adding type annotations or explicitly refer to the impl function. [Ln 276, Col 39]
+[out]   (E) Method `transfer` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 277, Col 26]
+[out]   (E) Trait `core::traits::Into::<avnu::exchange::Exchange::Swap, avnu::exchange::Exchange::Event>` has multiple implementations, in: `avnu::exchange::Exchange::EventFeeEventIntoEvent`, `avnu::exchange::Exchange::EventOwnableEventIntoEvent` [Ln 282, Col 17]
+[out]   (E) Desnap operator can only be applied on snapshots [Ln 326, Col 19]
+[out]   (E) Desnap operator can only be applied on snapshots [Ln 327, Col 19]
+[out]   (E) Trait has no implementation in context: core::ops::index::IndexView::<core::array::Span::<<missing>>, core::felt252>. [Ln 324, Col 38]
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 339, Col 48]
+[out]   (E) Method `transferFrom` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 341, Col 23]
+[out]   (E) Method `clone` could not be called on type `core::array::Array::<<missing>>`. [Ln 356, Col 37]
+[out]     Candidate `core::clone::Clone::clone` inference failed with: Trait has no implementation in context: core::clone::Clone::<core::array::Array::<<missing>>>.
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 360, Col 58]
+[out]   (E) Method `get_swap_exact_token_to_fees_bps` not found on type `<missing>`. Consider importing one of the following traits: `crate::components::fee::IFee`, `crate::components::fee::IFeeDispatcherTrait`, `crate::components::fee::IFeeSafeDispatcherTrait`. [Ln 363, Col 43]
+[out]   (E) Method `clone` could not be called on type `core::array::Array::<<missing>>`. [Ln 383, Col 41]
+[out]     Candidate `core::clone::Clone::clone` inference failed with: Trait has no implementation in context: core::clone::Clone::<core::array::Array::<<missing>>>.
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 389, Col 50]
+[out]   (E) Desnap operator can only be applied on snapshots [Ln 408, Col 61]
+[out]   (E) Desnap operator can only be applied on snapshots [Ln 409, Col 61]
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 421, Col 42]
+[out]   (E) Method `balanceOf` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 439, Col 93]
+[out]   (E) Ambiguous method call. More than one applicable trait function with a suitable self type was found: core::zeroable::Zeroable::is_zero and core::num::traits::zero::Zero::is_zero. Consider adding type annotations or explicitly refer to the impl function. [Ln 445, Col 39]
+[out]   (E) Method `swap` not found on type `<missing>`. Consider importing one of the following traits: `crate::adapters::ISwapAdapter`, `crate::adapters::ISwapAdapterDispatcherTrait`, `crate::adapters::ISwapAdapterSafeDispatcherTrait`, `crate::adapters::ekubo_adapter::IEkuboRouter`, `crate::adapters::ekubo_adapter::IEkuboRouterDispatcherTrait`, `crate::adapters::ekubo_adapter::IEkuboRouterSafeDispatcherTrait`, `crate::adapters::haiko_adapter::IHaikoRouter`, `crate::adapters::haiko_adapter::IHaikoRouterDispatcherTrait`, `crate::adapters::haiko_adapter::IHaikoRouterSafeDispatcherTrait`, `crate::adapters::haiko_replicating_solver_adapter::IHaikoRouter`, `crate::adapters::haiko_replicating_solver_adapter::IHaikoRouterDispatcherTrait`, `crate::adapters::haiko_replicating_solver_adapter::IHaikoRouterSafeDispatcherTrait`, `crate::adapters::myswap_adapter::IMySwapRouter`, `crate::adapters::myswap_adapter::IMySwapRouterDispatcherTrait`, `crate::adapters::myswap_adapter::IMySwapRouterSafeDispatcherTrait`, `crate::adapters::myswapv2_adapter::IMySwapV2Router`, `crate::adapters::myswapv2_adapter::IMySwapV2RouterDispatcherTrait`, `crate::adapters::myswapv2_adapter::IMySwapV2RouterSafeDispatcherTrait`. [Ln 449, Col 17]
+[out]   (E) Type annotations needed. Failed to infer ?0. [Ln 73, Col 4]
+[out]   (E) Invalid drop trait implementation, Trait has no implementation in context: core::traits::Drop::<<missing>>. [Ln 73, Col 4]
+[out]   (E) Trait has no implementation in context: core::serde::Serde::<core::array::Array::<<missing>>>. [Ln 174, Col 8]
+[out]   (E) Trait has no implementation in context: core::serde::Serde::<core::array::Array::<<missing>>>. [Ln 242, Col 8]
+[out]   (E) Trait `core::traits::Into::<S, avnu::exchange::Exchange::Event>` has multiple implementations, in: `IntoImp`, `avnu::exchange::Exchange::EventFeeEventIntoEvent` [Ln 39, Col 0]
+[out]   (E) Invalid drop trait implementation, Trait has no implementation in context: core::traits::Drop::<<missing>>. [Ln 86, Col 30]
+[out]   (E) Trait has no implementation in context: core::traits::PartialEq::<<missing>>. [Ln 86, Col 36]
+[out]   (E) Type annotations needed. Failed to infer ?0. [Ln 86, Col 13]
+[out]   (E) Type annotations needed. Failed to infer ?0. [Ln 86, Col 13]
+[out]   (E) Identifier not found. [Ln 0, Col 4]
+[out]   (E) Trait has no implementation in context: core::serde::Serde::<core::array::Array::<<missing>>>. [Ln 3, Col 0]
+[out] file:///mnt/maat-workbench/src/math/sqrt_ratio.cairo (1)
+[out]   (W) Plugin diagnostic: Consider using else if instead of else { if ... } [Ln 1, Col 31]
+[out] total: 93 errors, 7 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

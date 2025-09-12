@@ -1,0 +1,164 @@
+=== xoroshiro-1.1.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/xoroshiro/1.1.0 -o archive-607884415722491904.tar.zstd
+
+>>> tar --zstd -xf archive-607884415722491904.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 2244b05..d1fb0cb 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -26,7 +26,7 @@ keywords = [
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/milancermak/xoroshiro-cairo"
+[out] -cairo-version = "^2.7.0"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.7.0'
+[out]  
+[out]  [dependencies.starknet]
+[out]  version = ">=2.7.0"
+[out] @@ -38,3 +38,22 @@ sort-module-level-items = true
+[out]  [tool.snforge]
+[out]  max_n_steps = 200000000
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(xoroshiro_unittest) xoroshiro v1.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:8:15
+[out]     use core::starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test xoroshiro (snforge test --fuzzer-seed 1)
+[out]    Compiling test(xoroshiro_unittest) xoroshiro v1.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/xoroshiro.cairo:8:15
+[out]     use core::starknet::storage::{StoragePointerReadAccess, StoragePointerWriteAccess};
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+[out] 
+[out] 
+[out] Collected 2 test(s) from xoroshiro package
+[out] Running 2 test(s) from src/
+[out] [PASS] xoroshiro::xoroshiro::test::test_next_20 (l1_gas: ~0, l1_data_gas: ~288, l2_gas: ~74240000)
+[out] [PASS] xoroshiro::xoroshiro::test::test_successful_10K (l1_gas: ~0, l1_data_gas: ~288, l2_gas: ~35491320000)
+[out] Tests: 2 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> maat-test-ls
+[err]    0.003909178s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: None,
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: None,
+[out]         dependencies: {},
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `xoroshiro`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: None,
+[out]         edition: V2023_01,
+[out]         version: None,
+[out]         cfg_set: None,
+[out]         dependencies: {},
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/xoroshiro.cairo (5)
+[out]   (W) Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly" [Ln 7, Col 14]
+[out]   (E) Identifier not found. [Ln 78, Col 8]
+[out]   (E) Ambiguous method call. More than one applicable trait function with a suitable self type was found: core::option::OptionTrait::unwrap and core::result::ResultTrait::unwrap. Consider adding type annotations or explicitly refer to the impl function. [Ln 83, Col 44]
+[out]   (E) Method `contract_class` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 83, Col 53]
+[out]   (E) Method `deploy` not found on type `<missing>`. Did you import the correct trait and impl? [Ln 84, Col 52]
+[out] total: 4 errors, 1 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

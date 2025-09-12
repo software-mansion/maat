@@ -1,0 +1,1441 @@
+=== x10xchange/starknet-perpetual-ef3154ea7 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/x10xchange/starknet-perpetual .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-09-10     ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 860b233..c50acb4 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -23,3 +23,14 @@ inlining-strategy = "avoid"
+[out]  
+[out]  [workspace.tool.scarb]
+[out]  allow-prebuilt-plugins = ["snforge_std"]
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] diff --git a/workspace/apps/perpetuals/contracts/Scarb.toml b/workspace/apps/perpetuals/contracts/Scarb.toml
+[out] index de2c219..244bd9d 100644
+[out] --- a/workspace/apps/perpetuals/contracts/Scarb.toml
+[out] +++ b/workspace/apps/perpetuals/contracts/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "perpetuals"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -25,6 +26,7 @@ sort-module-level-items = true
+[out]  
+[out]  [tool]
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [profile.dev.cairo]
+[out]  unstable-add-statements-code-locations-debug-info = true
+
+>>> scarb fetch
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `perpetuals` package also defines `profile` in the manifest
+[out] 
+[out]     Updating git repository https://github.com/starkware-libs/starkware-starknet-utils
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading openzeppelin_presets v1.0.0
+[out]  Downloading openzeppelin_security v1.0.0
+[out]  Downloading openzeppelin_merkle_tree v1.0.0
+[out]  Downloading openzeppelin_testing v4.2.0
+[out]  Downloading openzeppelin_governance v1.0.0
+[out]  Downloading openzeppelin v1.0.0
+[out]  Downloading openzeppelin_finance v1.0.0
+[out]  Downloading openzeppelin_upgrades v1.0.0
+
+>>> scarb tree -q --workspace
+[out] perpetuals v0.1.0 (/mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)
+[out] ├── openzeppelin v1.0.0
+[out] │   ├── openzeppelin_security v1.0.0
+[out] │   │   └── starknet v2.12.2 (std)
+[out] │   ├── starknet v2.12.2 (std) (*)
+[out] │   ├── openzeppelin_finance v1.0.0
+[out] │   │   ├── starknet v2.12.2 (std) (*)
+[out] │   │   ├── openzeppelin_token v1.0.0
+[out] │   │   │   ├── starknet v2.12.2 (std) (*)
+[out] │   │   │   ├── openzeppelin_account v1.0.0
+[out] │   │   │   │   ├── starknet v2.12.2 (std) (*)
+[out] │   │   │   │   ├── openzeppelin_utils v1.0.0
+[out] │   │   │   │   │   └── starknet v2.12.2 (std) (*)
+[out] │   │   │   │   └── openzeppelin_introspection v1.0.0
+[out] │   │   │   │       └── starknet v2.12.2 (std) (*)
+[out] │   │   │   ├── openzeppelin_access v1.0.0
+[out] │   │   │   │   ├── starknet v2.12.2 (std) (*)
+[out] │   │   │   │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   │   │   │   └── openzeppelin_introspection v1.0.0 (*)
+[out] │   │   │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   │   │   └── openzeppelin_introspection v1.0.0 (*)
+[out] │   │   └── openzeppelin_access v1.0.0 (*)
+[out] │   ├── openzeppelin_merkle_tree v1.0.0
+[out] │   ├── openzeppelin_presets v1.0.0
+[out] │   │   ├── starknet v2.12.2 (std) (*)
+[out] │   │   ├── openzeppelin_finance v1.0.0 (*)
+[out] │   │   ├── openzeppelin_token v1.0.0 (*)
+[out] │   │   ├── openzeppelin_account v1.0.0 (*)
+[out] │   │   ├── openzeppelin_access v1.0.0 (*)
+[out] │   │   ├── openzeppelin_upgrades v1.0.0
+[out] │   │   │   └── starknet v2.12.2 (std) (*)
+[out] │   │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   │   └── openzeppelin_introspection v1.0.0 (*)
+[out] │   ├── openzeppelin_token v1.0.0 (*)
+[out] │   ├── openzeppelin_governance v1.0.0
+[out] │   │   ├── starknet v2.12.2 (std) (*)
+[out] │   │   ├── openzeppelin_token v1.0.0 (*)
+[out] │   │   ├── openzeppelin_account v1.0.0 (*)
+[out] │   │   ├── openzeppelin_access v1.0.0 (*)
+[out] │   │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   │   └── openzeppelin_introspection v1.0.0 (*)
+[out] │   ├── openzeppelin_account v1.0.0 (*)
+[out] │   ├── openzeppelin_access v1.0.0 (*)
+[out] │   ├── openzeppelin_upgrades v1.0.0 (*)
+[out] │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   └── openzeppelin_introspection v1.0.0 (*)
+[out] ├── starknet v2.12.2 (std) (*)
+[out] ├── starkware_utils v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)
+[out] │   ├── openzeppelin v1.0.0 (*)
+[out] │   └── starknet v2.12.2 (std) (*)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.2 (std)
+[out]     ├── openzeppelin_testing v4.2.0
+[out]     │   ├── snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]     │   │   └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]     │   ├── starknet v2.12.2 (std) (*)
+[out]     │   ├── assert_macros v2.12.2 (std) (*)
+[out]     │   └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+[out]     ├── snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+[out]     ├── starkware_utils_testing v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)
+[out]     │   ├── assert_macros v2.12.2 (std) (*)
+[out]     │   ├── openzeppelin v1.0.0 (*)
+[out]     │   ├── openzeppelin_testing v4.2.0 (*)
+[out]     │   ├── snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+[out]     │   ├── starknet v2.12.2 (std) (*)
+[out]     │   ├── starkware_utils v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf) (*)
+[out]     │   └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+[out]     └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `perpetuals` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(perpetuals_unittest) perpetuals v0.1.0 (/mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 25 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `perpetuals` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting perpetuals v0.1.0 (/mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/components/assets/assets.cairo:700:56
+[out]                 previous_public_key_opt = Option::Some((*signed_price.signer_public_key));
+[out]                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead.
+[out]  --> /mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/value_risk_calculator.cairo:98:5-100:5
+[out]       if tvtr.before.total_risk.is_zero() || tvtr.after.total_risk.is_zero() {
+[out]  _____^
+[out] |         panic_with_byte_array(@position_not_healthy_nor_healthier(:position_id, :tvtr));
+[out] |     }
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead.
+[out]  --> /mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/value_risk_calculator.cairo:108:5-110:5
+[out]       if tvtr.after.total_risk >= tvtr.before.total_risk {
+[out]  _____^
+[out] |         panic_with_byte_array(@position_not_healthy_nor_healthier(:position_id, :tvtr));
+[out] |     }
+[out] |_____^
+[out] 
+[out] warn: Unused import: `perpetuals::core::value_risk_calculator::RiskFactorTrait`
+[out]  --> /mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/value_risk_calculator.cairo:11:43
+[out] use perpetuals::core::types::risk_factor::RiskFactorTrait;
+[out]                                           ^^^^^^^^^^^^^^^
+[out] 
+[out] error: lint checking `perpetuals` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.104811
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_alias_2
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `perpetuals` package also defines `profile` in the manifest
+[out] 
+[out]      Running test perpetuals (SNFORGE_BACKTRACE=1 snforge test)
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `perpetuals` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] [WARNING] To get accurate backtrace results, it is required to use the configuration available in the latest Cairo version. For more details, please visit https://foundry-rs.github.io/starknet-foundry/snforge-advanced-features/backtrace.html
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `perpetuals` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(perpetuals_unittest) perpetuals v0.1.0 (/mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 16 seconds
+[out] 
+[out] 
+[out] Collected 129 test(s) from perpetuals package
+[out] Running 129 test(s) from tests/
+[out] [PASS] perpetuals::core::types::balance::tests::test_add (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_add_assign (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_add_u64 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_balance_into_i64 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_i64_into_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_sub (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_sub_assign (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_funding_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~640000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_new_price (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::order::tests::test_order_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6040000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_balance_mul_handles_max_values_balance_and_price (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_new_price_over_limit (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] 
+[out] 
+[out] [PASS] perpetuals::core::types::price::tests::test_price_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_mul_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_mul_u32 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_new_invalid_max (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] 
+[out] 
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~200000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_new (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::set_owner_account::tests::test_set_owner_account_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6040000)
+[out] [PASS] perpetuals::core::types::set_public_key::tests::test_update_position_public_key_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6200000)
+[out] [PASS] perpetuals::core::types::transfer::tests::test_transfer_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6040000)
+[out] [PASS] perpetuals::core::types::withdraw::tests::test_withdraw_hash_struct (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~3080000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_change_multiple_assets (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~680000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_change_basic_case (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] perpetuals::core::types::withdraw::tests::test_withdraw_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6040000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_change_negative_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_empty_diff (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~240000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_empty_position_and_diff (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~160000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_evaluate_position_empty_position_and_empty_diff (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~160000)
+[out] [PASS] perpetuals::tests::components::test_nonce::test_nonce_getter (l1_gas: ~0, l1_data_gas: ~1312, l2_gas: ~2308160)
+[out] [PASS] perpetuals::tests::components::test_nonce::test_use_checked_nonce (l1_gas: ~0, l1_data_gas: ~1408, l2_gas: ~2668160)
+[out] [PASS] perpetuals::tests::components::test_nonce::test_use_checked_nonce_invalid_current (l1_gas: ~0, l1_data_gas: ~1408, l2_gas: ~2908160)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_long_deleverage_after_price_tick (l1_gas: ~0, l1_data_gas: ~24576, l2_gas: ~181686720)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_long_liquidate_after_price_tick (l1_gas: ~0, l1_data_gas: ~26496, l2_gas: ~212972160)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_long_liquidate_after_funding_tick (l1_gas: ~0, l1_data_gas: ~26784, l2_gas: ~243218560)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_long_deleverage_after_funding_tick (l1_gas: ~0, l1_data_gas: ~26592, l2_gas: ~341414400)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_short_deleverage_after_price_tick (l1_gas: ~0, l1_data_gas: ~24576, l2_gas: ~181846720)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_short_deleverage_after_funding_tick (l1_gas: ~0, l1_data_gas: ~26592, l2_gas: ~341414400)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_short_liquidate_after_funding_tick (l1_gas: ~0, l1_data_gas: ~26784, l2_gas: ~243218560)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_short_liquidate_after_price_tick (l1_gas: ~0, l1_data_gas: ~26496, l2_gas: ~213052160)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_after_funding_tick (l1_gas: ~0, l1_data_gas: ~11328, l2_gas: ~137146880)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_after_price_tick (l1_gas: ~0, l1_data_gas: ~9216, l2_gas: ~99545600)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_two_users_two_synthetics (l1_gas: ~0, l1_data_gas: ~26304, l2_gas: ~317276480)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_by_recieving_asset (l1_gas: ~0, l1_data_gas: ~9408, l2_gas: ~101985600)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_flow_get_risk_factor (l1_gas: ~0, l1_data_gas: ~9792, l2_gas: ~136472960)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_funding_index_rounding (l1_gas: ~0, l1_data_gas: ~9696, l2_gas: ~69114560)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_after_funding_tick (l1_gas: ~0, l1_data_gas: ~11808, l2_gas: ~150959040)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_after_price_tick (l1_gas: ~0, l1_data_gas: ~11328, l2_gas: ~147239040)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_reduce_synthetic (l1_gas: ~0, l1_data_gas: ~9408, l2_gas: ~65274880)
+[out] [PASS] perpetuals::tests::flow_tests::flow_tests::test_two_users_ten_synthetics_flow (l1_gas: ~0, l1_data_gas: ~36384, l2_gas: ~1182370560)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_deposit (l1_gas: ~0, l1_data_gas: ~10272, l2_gas: ~118467840)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_trade (l1_gas: ~0, l1_data_gas: ~10368, l2_gas: ~198228800)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_transfer (l1_gas: ~0, l1_data_gas: ~10080, l2_gas: ~126022080)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_healthy_liquidatable_deleveragable (l1_gas: ~0, l1_data_gas: ~10080, l2_gas: ~141197440)
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_late_funding (l1_gas: ~0, l1_data_gas: ~5856, l2_gas: ~12393920)
+[out] 
+[out] error occurred in contract 'Core'
+[out] stack backtrace:
+[out]    0: perpetuals::core::components::assets::assets::AssetsComponent::__wrapper__AssetsImpl__funding_tick
+[out]        at /mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/components/assets/assets.cairo:291:9
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_add_existed_oracle (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~9694400)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_transfer (l1_gas: ~0, l1_data_gas: ~8256, l2_gas: ~138842240)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_add_oracle_asset_name_too_long (l1_gas: ~0, l1_data_gas: ~4960, l2_gas: ~7167360)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_add_oracle_name_too_long (l1_gas: ~0, l1_data_gas: ~4960, l2_gas: ~7167360)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_add_synthetic_asset_existed_asset (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~9614400)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_transfer_withdraw_with_negative_collateral (l1_gas: ~0, l1_data_gas: ~9600, l2_gas: ~82744320)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_cancel_already_done_deposit (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~14722560)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_caller_failures (l1_gas: ~0, l1_data_gas: ~3552, l2_gas: ~7955200)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_cancel_deposit_before_cancellation_delay_passed (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~13381120)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_constructor (l1_gas: ~0, l1_data_gas: ~3232, l2_gas: ~3256960)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_cancel_deposit_different_hash (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~13301120)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_cancel_non_registered_deposit (l1_gas: ~0, l1_data_gas: ~6208, l2_gas: ~10715840)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_deactivate_nonexistent_synthetic_asset (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~9574400)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_double_cancel_deposit (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~14443520)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_deposit_already_registered (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~13381120)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_funding_tick_basic (l1_gas: ~0, l1_data_gas: ~5632, l2_gas: ~14120000)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_invalid_funding_len (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~9894400)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_expiration_validation (l1_gas: ~0, l1_data_gas: ~4704, l2_gas: ~14968640)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_invalid_funding_rate (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~13494400)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_invalid_set_public_key_request_wrong_owner (l1_gas: ~0, l1_data_gas: ~7456, l2_gas: ~12337280)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_change_sign (l1_gas: ~0, l1_data_gas: ~9504, l2_gas: ~57763200)
+[out] 
+[out] error occurred in contract 'Core'
+[out] stack backtrace:
+[out]    0: perpetuals::core::core::Core::__wrapper__CoreImpl__liquidate
+[out]        at /mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/core.cairo:645:9
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_invalid_trade_same_base_signs (l1_gas: ~0, l1_data_gas: ~6880, l2_gas: ~13257280)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_invalid_transfer_request_amount_is_zero (l1_gas: ~0, l1_data_gas: ~6880, l2_gas: ~12097280)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_new_position (l1_gas: ~0, l1_data_gas: ~6016, l2_gas: ~10655360)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_basic (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~10174400)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_even (l1_gas: ~0, l1_data_gas: ~5632, l2_gas: ~10655360)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_golden (l1_gas: ~0, l1_data_gas: ~5728, l2_gas: ~11016320)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_no_quorum (l1_gas: ~0, l1_data_gas: ~5536, l2_gas: ~9774400)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_odd (l1_gas: ~0, l1_data_gas: ~5728, l2_gas: ~11496320)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_old_oracle (l1_gas: ~0, l1_data_gas: ~5152, l2_gas: ~8328320)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_price_tick_unsorted (l1_gas: ~0, l1_data_gas: ~5248, l2_gas: ~9289280)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_set_existed_owner_account (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~10995840)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_set_owner_account_request_position_has_owner (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~11235840)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_set_owner_account_request_invalid_caller (l1_gas: ~0, l1_data_gas: ~6208, l2_gas: ~11355840)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_set_public_key_no_request (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~11876800)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_set_public_key_request_position_not_exist (l1_gas: ~0, l1_data_gas: ~5920, l2_gas: ~9754880)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_add_and_remove_oracle (l1_gas: ~0, l1_data_gas: ~5056, l2_gas: ~9110720)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_add_synthetic_asset (l1_gas: ~0, l1_data_gas: ~7648, l2_gas: ~13636800)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_cancel_deposit (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~15443520)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_deactivate_synthetic_asset (l1_gas: ~0, l1_data_gas: ~5440, l2_gas: ~10394880)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_signature_validation (l1_gas: ~0, l1_data_gas: ~10080, l2_gas: ~34381120)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_deleverage (l1_gas: ~0, l1_data_gas: ~7840, l2_gas: ~25548480)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_deposit (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~14381120)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_liquidate (l1_gas: ~0, l1_data_gas: ~8128, l2_gas: ~25114560)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_process_deposit (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~14402560)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_reject_deposit (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~15763520)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_remove_nonexistent_oracle (l1_gas: ~0, l1_data_gas: ~4960, l2_gas: ~6967360)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_set_owner_account (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~12253120)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_set_owner_account_request_using_public_key (l1_gas: ~0, l1_data_gas: ~6304, l2_gas: ~11487040)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_set_public_key (l1_gas: ~0, l1_data_gas: ~6592, l2_gas: ~13174080)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_set_public_key_request (l1_gas: ~0, l1_data_gas: ~6592, l2_gas: ~12048000)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_trade (l1_gas: ~0, l1_data_gas: ~8128, l2_gas: ~22550400)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_transfer_request_using_public_key (l1_gas: ~0, l1_data_gas: ~6976, l2_gas: ~12798720)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_transfer (l1_gas: ~0, l1_data_gas: ~6880, l2_gas: ~15340160)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_transfer_request_with_owner (l1_gas: ~0, l1_data_gas: ~7552, l2_gas: ~13038720)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw (l1_gas: ~0, l1_data_gas: ~6400, l2_gas: ~14759680)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw_request_with_owner (l1_gas: ~0, l1_data_gas: ~6976, l2_gas: ~12077760)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw_request_with_public_key (l1_gas: ~0, l1_data_gas: ~6688, l2_gas: ~11917760)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_unfair_deleverage (l1_gas: ~0, l1_data_gas: ~7840, l2_gas: ~19337280)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_validate_synthetic_prices_expired (l1_gas: ~0, l1_data_gas: ~6208, l2_gas: ~11595840)
+[out] 
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_validate_prices_no_update_needed (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~14202560)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_validate_prices (l1_gas: ~0, l1_data_gas: ~6496, l2_gas: ~21131840)
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_validate_synthetic_prices_pending_asset (l1_gas: ~0, l1_data_gas: ~6016, l2_gas: ~12795520)
+[out] Tests: 129 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[err]    0.004096055s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.2/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_finance": {
+[out]         "discriminator": "openzeppelin_finance 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_governance": {
+[out]         "discriminator": "openzeppelin_governance 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_merkle_tree": {
+[out]         "discriminator": "openzeppelin_merkle_tree 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_presets": {
+[out]         "discriminator": "openzeppelin_presets 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_security": {
+[out]         "discriminator": "openzeppelin_security 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_upgrades": {
+[out]         "discriminator": "openzeppelin_upgrades 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_access",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_access-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_access",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_account",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_account-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_account",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_finance",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_finance-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_finance",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_finance": {
+[out]         "discriminator": "openzeppelin_finance 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_governance",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_governance-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_governance",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_governance": {
+[out]         "discriminator": "openzeppelin_governance 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_introspection",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_introspection-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_introspection",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_merkle_tree",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_merkle_tree-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_merkle_tree",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_merkle_tree": {
+[out]         "discriminator": "openzeppelin_merkle_tree 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {}
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_presets",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_presets-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_presets",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_finance": {
+[out]         "discriminator": "openzeppelin_finance 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_presets": {
+[out]         "discriminator": "openzeppelin_presets 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_upgrades": {
+[out]         "discriminator": "openzeppelin_upgrades 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_security",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_security-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_security",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_security": {
+[out]         "discriminator": "openzeppelin_security 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_testing",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_testing-4.2.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_testing",
+[out]     "edition": "2024_07",
+[out]     "version": "4.2.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_testing": {
+[out]         "discriminator": "openzeppelin_testing 4.2.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_token",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_token-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_token",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_upgrades",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_upgrades-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_upgrades",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_upgrades": {
+[out]         "discriminator": "openzeppelin_upgrades 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_utils",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_utils-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_utils",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "perpetuals",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "perpetuals",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_testing": {
+[out]         "discriminator": "openzeppelin_testing 4.2.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "perpetuals": {
+[out]         "discriminator": "perpetuals 0.1.0 (path+file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       },
+[out]       "starkware_utils": {
+[out]         "discriminator": "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)"
+[out]       },
+[out]       "starkware_utils_testing": {
+[out]         "discriminator": "starkware_utils_testing 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {},
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "snforge_std",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.dev-uh1rofdq911ru/snforge_std-0.48.1+nightly-2025-08-26/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "snforge_std",
+[out]     "edition": "2024_07",
+[out]     "version": "0.48.1+nightly-2025-08-26",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "starkware_utils",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/611a670/packages/utils/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "starkware_utils",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "starkware_utils": {
+[out]         "discriminator": "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "starkware_utils_testing",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/611a670/packages/testing/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "starkware_utils_testing",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin": {
+[out]         "discriminator": "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_testing": {
+[out]         "discriminator": "openzeppelin_testing 4.2.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       },
+[out]       "starkware_utils": {
+[out]         "discriminator": "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)"
+[out]       },
+[out]       "starkware_utils_testing": {
+[out]         "discriminator": "starkware_utils_testing 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/components/assets/assets.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 699, Col 55]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/value_risk_calculator.cairo (2)
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 97, Col 4]
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 107, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/tests/flow_tests/perps_tests_facade.cairo (1)
+[out]   (W) Plugin diagnostic: using `clone` on type which implements `Copy` trait [Ln 1212, Col 19]
+[out] total: 0 errors, 4 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: SIGTERM

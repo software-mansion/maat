@@ -1,0 +1,786 @@
+=== pragma_lib-2.11.4 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/pragma_lib/2.11.4 -o archive-607884407153528832.tar.zstd
+
+>>> tar --zstd -xf archive-607884407153528832.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index fa4bd30..bbfe881 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -17,6 +17,7 @@ description = "Types and Dispatchers to interact with pragma"
+[out]  homepage = "https://github.com/astraly-labs/pragma-oracle/tree/main"
+[out]  readme = "README.md"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.openzeppelin]
+[out]  version = "^2.0.0"
+[out] @@ -24,3 +25,23 @@ version = "^2.0.0"
+[out]  [dependencies.starknet]
+[out]  version = "^2.11.4"
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(pragma_lib_unittest) pragma_lib v2.11.4 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 22 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test pragma_lib (scarb cairo-test)
+[out]    Compiling test(pragma_lib_unittest) pragma_lib v2.11.4 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 21 seconds
+[out]      Testing pragma_lib
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004155468s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_finance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_finance 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_governance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_governance 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_merkle_tree": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_merkle_tree 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_presets": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_presets 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_security": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_security 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_upgrades": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_upgrades 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_access`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_access-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_access",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_account`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_account-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_account",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_finance`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_finance-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_finance",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_finance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_finance 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_governance`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_governance-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_governance",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_governance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_governance 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_introspection`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_introspection-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_introspection",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_merkle_tree`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_merkle_tree-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_merkle_tree",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_merkle_tree": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_merkle_tree 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_presets`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_presets-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_presets",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_finance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_finance 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_presets": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_presets 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_upgrades": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_upgrades 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_security`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_security-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_security",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_security": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_security 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_token`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_token-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_token",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_upgrades`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_upgrades-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_upgrades",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_upgrades": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_upgrades 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_utils`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_utils-2.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_utils",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `pragma_lib`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "pragma_lib",
+[out]         ),
+[out]         edition: V2023_01,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin 2.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "pragma_lib": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "pragma_lib 2.11.4 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] total: 0 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: SIGTERM

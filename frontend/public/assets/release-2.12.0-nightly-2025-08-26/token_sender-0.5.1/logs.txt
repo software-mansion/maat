@@ -1,0 +1,615 @@
+=== token_sender-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/token_sender/0.5.1 -o archive-615499145721044992.tar.zstd
+
+>>> tar --zstd -xf archive-615499145721044992.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-26 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index d25419f..5a1f314 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -17,6 +17,7 @@ license = "MIT"
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.openzeppelin_token]
+[out]  version = "^1.0.0"
+[out] @@ -25,7 +26,7 @@ version = "^1.0.0"
+[out]  version = "^2.11.4"
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [[tool.snforge.fork]]
+[out]  name = "SEPOLIA_LATEST"
+[out] @@ -34,3 +35,20 @@ url = "https://starknet-sepolia.public.blastapi.io/rpc/v0_8"
+[out]  [tool.snforge.fork.block_id]
+[out]  tag = "latest"
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.48.1+nightly-2025-08-26", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]  Downloading openzeppelin_token v1.0.0
+[out]  Downloading snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]  Downloading openzeppelin_introspection v1.0.0
+[out]  Downloading openzeppelin_utils v1.0.0
+[out]  Downloading openzeppelin_access v1.0.0
+[out]  Downloading openzeppelin_account v1.0.0
+
+>>> scarb tree -q --workspace
+[out] token_sender v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── openzeppelin_token v1.0.0
+[out] │   ├── starknet v2.12.0 (std)
+[out] │   ├── openzeppelin_account v1.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   ├── openzeppelin_utils v1.0.0
+[out] │   │   │   └── starknet v2.12.0 (std) (*)
+[out] │   │   └── openzeppelin_introspection v1.0.0
+[out] │   │       └── starknet v2.12.0 (std) (*)
+[out] │   ├── openzeppelin_access v1.0.0
+[out] │   │   ├── starknet v2.12.0 (std) (*)
+[out] │   │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   │   └── openzeppelin_introspection v1.0.0 (*)
+[out] │   ├── openzeppelin_utils v1.0.0 (*)
+[out] │   └── openzeppelin_introspection v1.0.0 (*)
+[out] ├── starknet v2.12.0 (std) (*)
+[out] └── [dev-dependencies]
+[out]     ├── snforge_std v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]     │   └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)
+[out]     └── snforge_scarb_plugin v0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/) (*)
+
+>>> scarb build --workspace --test
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(token_sender_unittest) token_sender v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(token_sender_integrationtest) token_sender_integrationtest v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 9 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting token_sender v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: unnecessary declared unit return type `()`
+[out]  --> /mnt/maat-workbench/src/token_sender.cairo:18:17-22:11
+[out]       fn multisend(
+[out]  _________________^
+[out] | ...
+[out] |     ) -> ();
+[out] |___________^
+[out] 
+[out] error: lint checking `token_sender` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test token_sender (snforge test --fuzzer-seed 1)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(token_sender_unittest) token_sender v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(token_sender_integrationtest) token_sender_integrationtest v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 4 seconds
+[out] 
+[out] 
+[out] Collected 8 test(s) from token_sender package
+[out] Running 0 test(s) from src/
+[out] Running 8 test(s) from tests/
+[out] [IGNORE] token_sender_integrationtest::test_erc20::test_fork_transfer
+[out] Balance 1000000000
+[out] [PASS] token_sender_integrationtest::test_erc20::test_get_balance (l1_gas: ~0, l1_data_gas: ~672, l2_gas: ~520960)
+[out] [PASS] token_sender_integrationtest::test_erc20::should_panic_transfer (l1_gas: ~0, l1_data_gas: ~672, l2_gas: ~680960)
+[out] [PASS] token_sender_integrationtest::test_erc20::test_transfer_event (l1_gas: ~0, l1_data_gas: ~768, l2_gas: ~801920)
+[out] [PASS] token_sender_integrationtest::test_token_sender::test_single_send (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~2360640)
+[out] [PASS] token_sender_integrationtest::test_token_sender::test_single_send_fuzz (runs: 256, (l1_gas: {max: ~0, min: ~0, mean: ~0.00, std deviation: ~0.00}, l1_data_gas: {max: ~960, min: ~960, mean: ~960.00, std deviation: ~0.00}, l2_gas: {max: ~3560640, min: ~3480640, mean: ~3524077.50, std deviation: ~18046.71}))
+[out] [PASS] token_sender_integrationtest::test_erc20::test_transfer (l1_gas: ~0, l1_data_gas: ~768, l2_gas: ~961920)
+[out] Balance 1000000000
+[out] [PASS] token_sender_integrationtest::test_token_sender::test_multisend (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~2797440)
+[out] Tests: 7 passed, 0 failed, 1 ignored, 0 filtered out
+[out] Fuzzer seed: 1
+[out] 
+
+>>> maat-test-ls
+[err]    0.004377406s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_access",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_access-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_access",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_account",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_account-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_account",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_introspection",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_introspection-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_introspection",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_token",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_token-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_token",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_access": {
+[out]         "discriminator": "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_account": {
+[out]         "discriminator": "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_introspection": {
+[out]         "discriminator": "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "openzeppelin_utils",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_utils-1.0.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "openzeppelin_utils",
+[out]     "edition": "2024_07",
+[out]     "version": "1.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_utils": {
+[out]         "discriminator": "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "snforge_std",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.dev-uh1rofdq911ru/snforge_std-0.48.1+nightly-2025-08-26/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "snforge_std",
+[out]     "edition": "2024_07",
+[out]     "version": "0.48.1+nightly-2025-08-26",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "token_sender",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "token_sender",
+[out]     "edition": "2024_07",
+[out]     "version": "0.5.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       },
+[out]       "token_sender": {
+[out]         "discriminator": "token_sender 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "token_sender_integrationtest",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/tests/test_token_sender.cairo",
+[out]     "/mnt/maat-workbench/tests/test_erc20.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "token_sender_integrationtest",
+[out]     "edition": "2024_07",
+[out]     "version": "0.5.1",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "openzeppelin_token": {
+[out]         "discriminator": "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]       },
+[out]       "token_sender": {
+[out]         "discriminator": "token_sender 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.48.1+nightly-2025-08-26 (registry+https://scarbs.dev/)"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/token_sender.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary declared unit return type `()` [Ln 17, Col 16]
+[out] total: 0 errors, 1 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

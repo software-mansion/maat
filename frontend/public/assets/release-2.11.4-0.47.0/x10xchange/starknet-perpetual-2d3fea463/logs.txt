@@ -1,0 +1,1986 @@
+=== x10xchange/starknet-perpetual-2d3fea463 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/x10xchange/starknet-perpetual .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 860b233..37ce773 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -23,3 +23,14 @@ inlining-strategy = "avoid"
+[out]  
+[out]  [workspace.tool.scarb]
+[out]  allow-prebuilt-plugins = ["snforge_std"]
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/workspace/apps/perpetuals/contracts/Scarb.toml b/workspace/apps/perpetuals/contracts/Scarb.toml
+[out] index de2c219..0a27625 100644
+[out] --- a/workspace/apps/perpetuals/contracts/Scarb.toml
+[out] +++ b/workspace/apps/perpetuals/contracts/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "perpetuals"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -25,6 +26,7 @@ sort-module-level-items = true
+[out]  
+[out]  [tool]
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [profile.dev.cairo]
+[out]  unstable-add-statements-code-locations-debug-info = true
+
+>>> scarb fetch
+[out]     Updating git repository https://github.com/starkware-libs/starkware-starknet-utils
+[out]  Downloading openzeppelin_testing v4.2.0
+[out]  Downloading snforge_scarb_plugin v0.45.0
+[out]  Downloading snforge_std v0.45.0
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(perpetuals_unittest) perpetuals v0.1.0 (/mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 43 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test perpetuals (SNFORGE_BACKTRACE=1 snforge test)
+[out] [WARNING] Package snforge_std version does not meet the recommended version requirement ^0.47.0, it might result in unexpected behaviour
+[out] [WARNING] To get accurate backtrace results, it is required to use the configuration available in the latest Cairo version. For more details, please visit https://foundry-rs.github.io/starknet-foundry/snforge-advanced-features/backtrace.html
+[out]    Compiling test(perpetuals_unittest) perpetuals v0.1.0 (/mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 43 seconds
+[out] 
+[out] 
+[out] Collected 130 test(s) from perpetuals package
+[out] Running 130 test(s) from tests/
+[out] [PASS] perpetuals::core::types::balance::tests::test_add_assign (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_add (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_add_u64 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_balance_into_i64 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_sub (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_i64_into_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_funding_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~640000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::balance::tests::test_sub_assign (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::order::tests::test_order_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6480000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::funding::tests::test_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_new_price (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_new_price_over_limit (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] 
+[out] 
+[out] [PASS] perpetuals::core::types::price::tests::test_price_balance_mul_handles_max_values_balance_and_price (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_mul_u32 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::price::tests::test_price_mul_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_is_non_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_is_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~200000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_new (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_new_invalid_max (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] 
+[out] 
+[out] [PASS] perpetuals::core::types::set_public_key::tests::test_update_position_public_key_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6760000)
+[out] [PASS] perpetuals::core::types::transfer::tests::test_transfer_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6480000)
+[out] [PASS] perpetuals::core::types::risk_factor::tests::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] perpetuals::core::types::set_owner_account::tests::test_set_owner_account_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6520000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_change_basic_case (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] perpetuals::core::types::withdraw::tests::test_withdraw_type_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6480000)
+[out] [PASS] perpetuals::core::types::withdraw::tests::test_withdraw_hash_struct (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~3320000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_assert_healthy_or_healthier_negative_1bps_change (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1560000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_change_negative_balance (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_empty_position_and_diff (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~160000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_change_multiple_assets (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~640000)
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_calculate_position_tvtr_empty_diff (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~240000)
+[out] [FAIL] perpetuals::tests::components::test_nonce::test_use_checked_nonce
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [PASS] perpetuals::core::value_risk_calculator::tests::test_evaluate_position_empty_position_and_empty_diff (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~160000)
+[out] [FAIL] perpetuals::tests::components::test_nonce::test_use_checked_nonce_invalid_current
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x1, 0x494e56414c49445f4e4f4e43453a2063757272656e74213d72656365697665, 0x642030213d3135, 0x7] (INVALID_NONCE: current!=received 0!=15)
+[out] 
+[out] [FAIL] perpetuals::tests::components::test_nonce::test_nonce_getter
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_long_liquidate_after_price_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_long_deleverage_after_funding_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_long_liquidate_after_funding_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_long_deleverage_after_price_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_short_liquidate_after_funding_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_short_deleverage_after_price_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_short_deleverage_after_funding_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_short_liquidate_after_price_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_two_users_ten_synthetics_flow
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_after_funding_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::flow_tests::test_two_users_two_synthetics
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_after_price_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_by_recieving_asset
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_late_funding
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x53594e5448455449435f455850495245445f5052494345] (SYNTHETIC_EXPIRED_PRICE)
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_funding_index_rounding
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_flow_get_risk_factor
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_change_sign
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x494e56414c49445f424153455f4348414e4745] (INVALID_BASE_CHANGE)
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_after_funding_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_after_price_tick
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_reduce_synthetic
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_healthy_liquidatable_deleveragable
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_deposit
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_trade
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_transfer
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_transfer
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::flow_tests::unit_flow_tests::test_transfer_withdraw_with_negative_collateral
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_add_oracle_asset_name_too_long
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x41535345545f4e414d455f544f4f5f4c4f4e47] (ASSET_NAME_TOO_LONG)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_add_existed_oracle
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4f5241434c455f414c52454144595f455849535453] (ORACLE_ALREADY_EXISTS)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_cancel_already_done_deposit
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4445504f5349545f414c52454144595f50524f434553534544] (DEPOSIT_ALREADY_PROCESSED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_add_synthetic_asset_existed_asset
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x53594e5448455449435f414c52454144595f455849535453] (SYNTHETIC_ALREADY_EXISTS)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_add_oracle_name_too_long
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4f5241434c455f4e414d455f544f4f5f4c4f4e47] (ORACLE_NAME_TOO_LONG)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_caller_failures
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_cancel_deposit_different_hash
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4445504f5349545f4e4f545f52454749535445524544] (DEPOSIT_NOT_REGISTERED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_cancel_deposit_before_cancellation_delay_passed
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4445504f5349545f4e4f545f43414e43454c41424c45] (DEPOSIT_NOT_CANCELABLE)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_cancel_non_registered_deposit
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4445504f5349545f4e4f545f52454749535445524544] (DEPOSIT_NOT_REGISTERED)
+[out] 
+[out] [PASS] perpetuals::tests::unit_tests::unit_tests::test_constructor (l1_gas: ~0, l1_data_gas: ~3232, l2_gas: ~3256960)
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_deposit_already_registered
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4445504f5349545f414c52454144595f52454749535445524544] (DEPOSIT_ALREADY_REGISTERED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_deactivate_nonexistent_synthetic_asset
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x53594e5448455449435f4e4f545f455849535453] (SYNTHETIC_NOT_EXISTS)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_double_cancel_deposit
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4445504f5349545f414c52454144595f43414e43454c4544] (DEPOSIT_ALREADY_CANCELED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_expiration_validation
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_invalid_funding_rate
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x4, 0x494e56414c49445f46554e44494e475f524154452073796e7468657469635f, 0x69643a2041737365744964207b2076616c75653a2037323035313533313539, 0x34313934333732353735313132383438303334323730333131343936323239, 0x37383936373537313432313530323738393630303230323433303832303934, 0x303638207d, 0x5] (INVALID_FUNDING_RATE synthetic_id: AssetId { value: 720515315941943725751128480342703114962297896757142150278960020243082094068 })
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_funding_tick_basic
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_invalid_funding_len
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x494e56414c49445f46554e44494e475f5449434b5f4c454e] (INVALID_FUNDING_TICK_LEN)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_invalid_transfer_request_amount_is_zero
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x494e56414c49445f5a45524f5f414d4f554e54] (INVALID_ZERO_AMOUNT)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_invalid_set_public_key_request_wrong_owner
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x43414c4c45525f49535f4e4f545f4f574e45525f4143434f554e54] (CALLER_IS_NOT_OWNER_ACCOUNT)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_invalid_trade_same_base_signs
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x494e56414c49445f414d4f554e545f5349474e] (INVALID_AMOUNT_SIGN)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_new_position
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_golden
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_basic
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_even
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_no_quorum
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x51554f52554d5f4e4f545f52454143484544] (QUORUM_NOT_REACHED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_old_oracle
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x494e56414c49445f50524943455f54494d455354414d50] (INVALID_PRICE_TIMESTAMP)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_odd
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_price_tick_unsorted
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x5349474e45445f5052494345535f554e534f52544544] (SIGNED_PRICES_UNSORTED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_set_existed_owner_account
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x504f534954494f4e5f4841535f4f574e45525f4143434f554e54] (POSITION_HAS_OWNER_ACCOUNT)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_set_public_key_no_request
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x524551554553545f4e4f545f52454749535445524544] (REQUEST_NOT_REGISTERED)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_set_owner_account_request_invalid_caller
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x43414c4c45525f49535f4e4f545f4f574e45525f4143434f554e54] (CALLER_IS_NOT_OWNER_ACCOUNT)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_set_owner_account_request_position_has_owner
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x504f534954494f4e5f4841535f4f574e45525f4143434f554e54] (POSITION_HAS_OWNER_ACCOUNT)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_set_public_key_request_position_not_exist
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x504f534954494f4e5f444f45534e545f4558495354] (POSITION_DOESNT_EXIST)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_add_and_remove_oracle
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_add_synthetic_asset
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_cancel_deposit
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_signature_validation
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_deleverage
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_deactivate_synthetic_asset
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_deposit
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_liquidate
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_process_deposit
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_reject_deposit
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_set_owner_account
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_remove_nonexistent_oracle
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x4f5241434c455f4e4f545f455849535453] (ORACLE_NOT_EXISTS)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_set_public_key_request
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_set_public_key
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_set_owner_account_request_using_public_key
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_trade
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_transfer
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_transfer_request_with_owner
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_transfer_request_using_public_key
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_validate_prices
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw_request_with_owner
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_unfair_deleverage
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x2, 0x504f534954494f4e5f49535f4e4f545f464149525f44454c45564552414745, 0x20706f736974696f6e5f69643a20506f736974696f6e4964207b2076616c75, 0x653a2032207d, 0x6] (POSITION_IS_NOT_FAIR_DELEVERAGE position_id: PositionId { value: 2 })
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw_request_with_public_key
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_validate_synthetic_prices_expired
+[out] 
+[out] Failure data:
+[out]     Incorrect panic data
+[out]     Actual:    [0x46a6158a16a947e5916b2a2ca68501a45e93d7110e81aa2d6438b1c57c879a3, 0x6, 0x52656164696e672066726f6d20627566666572206661696c65642c20746869, 0x732063616e206265206361757365642062792063616c6c696e672073746172, 0x6b6e65743a3a74657374696e673a3a6368656174636f646520776974682069, 0x6e76616c696420617267756d656e74732e0a50726f6261626c792060736e66, 0x6f7267655f737464602f60736e636173745f737464602076657273696f6e20, 0x697320696e636f6d70617469626c652c20636865636b2061626f766520666f, 0x7220696e636f6d7061746962696c697479207761726e696e672e0a, 0x1b] (Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out] Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out] )
+[out]     Expected:  [0x53594e5448455449435f455850495245445f5052494345] (SYNTHETIC_EXPIRED_PRICE)
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_validate_prices_no_update_needed
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] [FAIL] perpetuals::tests::unit_tests::unit_tests::test_validate_synthetic_prices_pending_asset
+[out] 
+[out] Failure data:
+[out]     "Reading from buffer failed, this can be caused by calling starknet::testing::cheatcode with invalid arguments.
+[out]     Probably `snforge_std`/`sncast_std` version is incompatible, check above for incompatibility warning.
+[out]     "
+[out] 
+[out] Tests: 42 passed, 88 failed, 0 ignored, 0 filtered out
+[out] 
+[out] Failures:
+[out]     perpetuals::tests::components::test_nonce::test_use_checked_nonce
+[out]     perpetuals::tests::components::test_nonce::test_use_checked_nonce_invalid_current
+[out]     perpetuals::tests::components::test_nonce::test_nonce_getter
+[out]     perpetuals::tests::flow_tests::flow_tests::test_long_liquidate_after_price_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_long_deleverage_after_funding_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_long_liquidate_after_funding_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_long_deleverage_after_price_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_short_liquidate_after_funding_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_short_deleverage_after_price_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_short_deleverage_after_funding_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_short_liquidate_after_price_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_two_users_ten_synthetics_flow
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_after_funding_tick
+[out]     perpetuals::tests::flow_tests::flow_tests::test_two_users_two_synthetics
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_after_price_tick
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_deleverage_by_recieving_asset
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_late_funding
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_funding_index_rounding
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_flow_get_risk_factor
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_change_sign
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_after_funding_tick
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_liquidate_after_price_tick
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_reduce_synthetic
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_healthy_liquidatable_deleveragable
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_deposit
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_trade
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_status_change_by_transfer
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_transfer
+[out]     perpetuals::tests::flow_tests::unit_flow_tests::test_transfer_withdraw_with_negative_collateral
+[out]     perpetuals::tests::unit_tests::unit_tests::test_add_oracle_asset_name_too_long
+[out]     perpetuals::tests::unit_tests::unit_tests::test_add_existed_oracle
+[out]     perpetuals::tests::unit_tests::unit_tests::test_cancel_already_done_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_add_synthetic_asset_existed_asset
+[out]     perpetuals::tests::unit_tests::unit_tests::test_add_oracle_name_too_long
+[out]     perpetuals::tests::unit_tests::unit_tests::test_caller_failures
+[out]     perpetuals::tests::unit_tests::unit_tests::test_cancel_deposit_different_hash
+[out]     perpetuals::tests::unit_tests::unit_tests::test_cancel_deposit_before_cancellation_delay_passed
+[out]     perpetuals::tests::unit_tests::unit_tests::test_cancel_non_registered_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_deposit_already_registered
+[out]     perpetuals::tests::unit_tests::unit_tests::test_deactivate_nonexistent_synthetic_asset
+[out]     perpetuals::tests::unit_tests::unit_tests::test_double_cancel_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_expiration_validation
+[out]     perpetuals::tests::unit_tests::unit_tests::test_invalid_funding_rate
+[out]     perpetuals::tests::unit_tests::unit_tests::test_funding_tick_basic
+[out]     perpetuals::tests::unit_tests::unit_tests::test_invalid_funding_len
+[out]     perpetuals::tests::unit_tests::unit_tests::test_invalid_transfer_request_amount_is_zero
+[out]     perpetuals::tests::unit_tests::unit_tests::test_invalid_set_public_key_request_wrong_owner
+[out]     perpetuals::tests::unit_tests::unit_tests::test_invalid_trade_same_base_signs
+[out]     perpetuals::tests::unit_tests::unit_tests::test_new_position
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_golden
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_basic
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_even
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_no_quorum
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_old_oracle
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_odd
+[out]     perpetuals::tests::unit_tests::unit_tests::test_price_tick_unsorted
+[out]     perpetuals::tests::unit_tests::unit_tests::test_set_existed_owner_account
+[out]     perpetuals::tests::unit_tests::unit_tests::test_set_public_key_no_request
+[out]     perpetuals::tests::unit_tests::unit_tests::test_set_owner_account_request_invalid_caller
+[out]     perpetuals::tests::unit_tests::unit_tests::test_set_owner_account_request_position_has_owner
+[out]     perpetuals::tests::unit_tests::unit_tests::test_set_public_key_request_position_not_exist
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_add_and_remove_oracle
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_add_synthetic_asset
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_cancel_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_signature_validation
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_deleverage
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_deactivate_synthetic_asset
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_liquidate
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_process_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_reject_deposit
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_set_owner_account
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_remove_nonexistent_oracle
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_set_public_key_request
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_set_public_key
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_set_owner_account_request_using_public_key
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_trade
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_transfer
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_transfer_request_with_owner
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_transfer_request_using_public_key
+[out]     perpetuals::tests::unit_tests::unit_tests::test_validate_prices
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw_request_with_owner
+[out]     perpetuals::tests::unit_tests::unit_tests::test_unfair_deleverage
+[out]     perpetuals::tests::unit_tests::unit_tests::test_successful_withdraw_request_with_public_key
+[out]     perpetuals::tests::unit_tests::unit_tests::test_validate_synthetic_prices_expired
+[out]     perpetuals::tests::unit_tests::unit_tests::test_validate_prices_no_update_needed
+[out]     perpetuals::tests::unit_tests::unit_tests::test_validate_synthetic_prices_pending_asset
+Process finished with exit code 1
+
+>>> maat-test-ls
+[err]    0.004076105s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_finance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_finance 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_governance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_governance 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_merkle_tree": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_merkle_tree 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_presets": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_presets 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_security": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_security 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_upgrades": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_upgrades 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_access`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_access-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_access",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_account`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_account-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_account",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_finance`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_finance-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_finance",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_finance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_finance 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_governance`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_governance-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_governance",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_governance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_governance 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_introspection`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_introspection-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_introspection",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_merkle_tree`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_merkle_tree-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_merkle_tree",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_merkle_tree": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_merkle_tree 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_presets`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_presets-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_presets",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_finance": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_finance 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_presets": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_presets 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_upgrades": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_upgrades 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_security`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_security-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_security",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_security": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_security 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_testing`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_testing-4.2.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_testing",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 4,
+[out]                 minor: 2,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_testing": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_testing 4.2.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.45.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_token`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_token-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_token",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_access": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_access 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_account": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_account 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_introspection": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_introspection 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_token": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_token 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_upgrades`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_upgrades-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_upgrades",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_upgrades": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_upgrades 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `openzeppelin_utils`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/openzeppelin_utils-1.0.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "openzeppelin_utils",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_utils 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `perpetuals`: `["/mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "perpetuals",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 1,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_testing": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_testing 4.2.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "perpetuals": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "perpetuals 0.1.0 (path+file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.45.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "starkware_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)",
+[out]                 ),
+[out]             },
+[out]             "starkware_utils_testing": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "starkware_utils_testing 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `snforge_std`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.45.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "snforge_std",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 45,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.45.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `starkware_utils`: `["/mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/611a670/packages/utils/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "starkware_utils",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "starknet-contract",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "starkware_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `starkware_utils_testing`: `["/mnt/maat-cache/scarb/registry/git/checkouts/starkware-starknet-utils-co5ag083kk1bq/611a670/packages/testing/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "starkware_utils_testing",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 1,
+[out]                 minor: 0,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "openzeppelin": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin 1.0.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "openzeppelin_testing": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "openzeppelin_testing 4.2.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.45.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "starkware_utils": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "starkware_utils 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)",
+[out]                 ),
+[out]             },
+[out]             "starkware_utils_testing": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "starkware_utils_testing 1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?branch=main#611a67045314a48a1623a1b4695578a4ad2f3dcf)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/balance.cairo (10)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 106, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 114, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 123, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 130, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 137, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 143, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 149, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 155, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 161, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 167, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/funding.cairo (4)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 133, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 138, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 144, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 151, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/order.cairo (1)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 108, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/price.cairo (9)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 182, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 188, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 189, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 194, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 201, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 209, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 215, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 221, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 227, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/risk_factor.cairo (7)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 95, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 101, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 102, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 107, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 112, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 118, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 125, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/set_owner_account.cairo (1)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 46, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/set_public_key.cairo (1)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 45, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/transfer.cairo (1)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 53, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/types/withdraw.cairo (2)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 55, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 63, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/core/value_risk_calculator.cairo (7)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 300, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 346, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 369, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 420, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 512, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 553, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 580, Col 4]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/tests/components/test_nonce.cairo (4)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 25, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 32, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 42, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 43, Col 0]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/tests/flow_tests/flow_tests.cairo (10)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 97, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 208, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 259, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 299, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 350, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 390, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 440, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 488, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 539, Col 0]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/tests/flow_tests/unit_flow_tests.cairo (18)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 6, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 180, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 311, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 455, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 654, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 844, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 965, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1023, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1099, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1202, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1452, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1628, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1784, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2068, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2069, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2097, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2098, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2196, Col 0]
+[out] file:///mnt/maat-workbench/workspace/apps/perpetuals/contracts/src/tests/unit_tests/unit_tests.cairo (88)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 69, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 101, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 297, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 417, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 716, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 766, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 802, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 803, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 835, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 836, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 868, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 928, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 929, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 962, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1046, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1047, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1070, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1112, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1113, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1128, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1221, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1290, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1291, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1325, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1389, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1462, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1539, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1540, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1558, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1559, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1593, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1594, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1644, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1645, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1690, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1691, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1729, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1851, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1852, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1921, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 1965, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2011, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2108, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2109, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2165, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2294, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2334, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2407, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2408, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2440, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2441, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2477, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2478, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2510, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2554, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2598, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2689, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2690, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2734, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2735, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2795, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2837, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2932, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 2974, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3013, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3014, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3044, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3045, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3069, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3127, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3196, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3255, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3256, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3272, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3273, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3324, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3325, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3360, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3447, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3503, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3504, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3526, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3527, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3549, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3550, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3585, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 3586, Col 0]
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 1286, Col 8]
+[out] total: 162 errors, 1 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: SIGTERM

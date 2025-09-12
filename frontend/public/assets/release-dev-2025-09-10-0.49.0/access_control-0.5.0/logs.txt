@@ -1,0 +1,268 @@
+=== access_control-0.5.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/access_control/0.5.0 -o archive-621372264444243968.tar.zstd
+
+>>> tar --zstd -xf archive-621372264444243968.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-09-10  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.49.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 2e13f03..992cd20 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -24,7 +24,7 @@ keywords = [
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/lindy-labs/access_control"
+[out] -cairo-version = "^2.11.4"
+[out] +cairo-version = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: '^2.11.4'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.starknet]
+[out] @@ -35,5 +35,23 @@ max-line-length = 120
+[out]  sort-module-level-items = true
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +assert_macros = ">= 2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.2+dev-2025-09-10" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.49.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.49.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading snforge_scarb_plugin v0.49.0
+[out]  Downloading snforge_std v0.49.0
+
+>>> scarb tree -q --workspace
+[out] access_control v0.5.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.2 (std)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.2 (std)
+[out]     ├── snforge_std v0.49.0
+[out]     │   └── snforge_scarb_plugin v0.49.0
+[out]     └── snforge_scarb_plugin v0.49.0 (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(access_control_unittest) access_control v0.5.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 3 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting access_control v0.5.0 (/mnt/maat-workbench/Scarb.toml)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test access_control (snforge test --fuzzer-seed 1)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(access_control_unittest) access_control v0.5.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out] 
+[out] 
+[out] Collected 13 test(s) from access_control package
+[out] Running 13 test(s) from src/
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_accept_admin (l1_gas: ~0, l1_data_gas: ~160, l2_gas: ~527040)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_grant_role_multiple_users (l1_gas: ~0, l1_data_gas: ~352, l2_gas: ~442880)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_revoke_role (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~522880)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_grant_role (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~452160)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_revoke_role_not_admin (l1_gas: ~0, l1_data_gas: ~160, l2_gas: ~270720)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_accept_admin_not_pending_admin (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~416320)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_assert_has_role (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~452160)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_set_pending_admin (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~256320)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_assert_has_role_panics (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~452160)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_initializer (l1_gas: ~0, l1_data_gas: ~160, l2_gas: ~190720)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_set_pending_admin_not_admin (l1_gas: ~0, l1_data_gas: ~160, l2_gas: ~270720)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_renounce_role (l1_gas: ~0, l1_data_gas: ~256, l2_gas: ~633600)
+[out] [PASS] access_control::tests::test_access_control::test_access_control::test_grant_role_not_admin (l1_gas: ~0, l1_data_gas: ~160, l2_gas: ~190720)
+[out] Tests: 13 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[err]    0.004225139s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "access_control",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "access_control",
+[out]     "edition": "2024_07",
+[out]     "version": "0.5.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "access_control": {
+[out]         "discriminator": "access_control 0.5.0 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.49.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {},
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.49.0 (registry+https://scarbs.xyz/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.2/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.2",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "snforge_std",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.49.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "snforge_std",
+[out]     "edition": "2024_07",
+[out]     "version": "0.49.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.49.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.49.0 (registry+https://scarbs.xyz/)"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] total: 0 errors, 0 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

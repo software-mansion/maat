@@ -1,0 +1,334 @@
+=== EkuboProtocol/revenue-buybacks-0c7dfc156 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/EkuboProtocol/revenue-buybacks .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 0fcc4dc..4e491cf 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -3,7 +3,7 @@ name = "ekubo_rb"
+[out]  version = "0.1.0"
+[out]  description = "Owner for the Ekubo core contract that allows anyone to trigger buybacks via TWAMM"
+[out]  homepage = "https://ekubo.org"
+[out] -cairo-version = ">=2.7.0"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: '>=2.7.0'
+[out]  edition = '2024_07'
+[out]  
+[out]  [dependencies]
+[out] @@ -13,6 +13,8 @@ starknet = ">=2.7.0"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  [[target.starknet-contract]]
+[out]  allowed-libfuncs-list.name = "audited"
+[out]  casm = true
+[out] @@ -24,4 +26,17 @@ block_id.number = "691381"
+[out]  
+[out]  [dev-dependencies]
+[out]  snforge_std = { git = "https://github.com/foundry-rs/starknet-foundry.git", tag = "v0.29.0" }
+[out] -assert_macros = "2.8.0"
+[out] \ No newline at end of file
+[out] +assert_macros = "2.8.0"
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out]     Updating git repository https://github.com/ekuboprotocol/abis
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] ekubo_rb v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── ekubo v0.1.0 (git+https://github.com/ekuboprotocol/abis#0bd97534dfa42271a7667a37b8a19464a7ded716)
+[out] │   └── starknet v2.12.0 (std)
+[out] ├── starknet v2.12.0 (std) (*)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.0 (std)
+[out]     ├── snforge_std v0.47.0
+[out]     │   └── snforge_scarb_plugin v0.47.0
+[out]     └── snforge_scarb_plugin v0.47.0 (*)
+
+>>> scarb build --workspace --test
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(ekubo_rb_unittest) ekubo_rb v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:16:37
+[out] use starknet::{get_block_timestamp, contract_address_const, ContractAddress};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting ekubo_rb v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead.
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks.cairo:141:13-145:13
+[out]               if let Option::Some(config) = self.config_overrides.read(sell_token) {
+[out]  _____________^
+[out] | ...
+[out] |             }
+[out] |_____________^
+[out] 
+[out] error: lint checking `ekubo_rb` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test ekubo_rb (snforge test --fuzzer-seed 1)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(ekubo_rb_unittest) ekubo_rb v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/revenue_buybacks_test.cairo:16:37
+[out] use starknet::{get_block_timestamp, contract_address_const, ContractAddress};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out] [ERROR] Error while calling RPC method spec_version: error sending request for url (https://free-rpc.nethermind.io/mainnet-juno)
+Process finished with exit code 2
+
+>>> maat-test-ls
+[err]    0.004318701s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "ekubo",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/git/checkouts/abis-lekred8o2pj10/0bd9753/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "ekubo",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "ekubo": {
+[out]         "discriminator": "ekubo 0.1.0 (git+https://github.com/ekuboprotocol/abis#0bd97534dfa42271a7667a37b8a19464a7ded716)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "ekubo_rb",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "ekubo_rb",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "ekubo": {
+[out]         "discriminator": "ekubo 0.1.0 (git+https://github.com/ekuboprotocol/abis#0bd97534dfa42271a7667a37b8a19464a7ded716)"
+[out]       },
+[out]       "ekubo_rb": {
+[out]         "discriminator": "ekubo_rb 0.1.0 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.47.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Starknet"
+[out]     ],
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.47.0 (registry+https://scarbs.xyz/)"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "snforge_std",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.47.0/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "snforge_std",
+[out]     "edition": "2024_07",
+[out]     "version": "0.47.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "snforge_std": {
+[out]         "discriminator": "snforge_std 0.47.0 (registry+https://scarbs.xyz/)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "proc_macros": [
+[out]       "snforge_scarb_plugin 0.47.0 (registry+https://scarbs.xyz/)"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/revenue_buybacks_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 15, Col 36]
+[out] file:///mnt/maat-workbench/src/revenue_buybacks.cairo (1)
+[out]   (W) Plugin diagnostic: Manual `unwrap_or` detected. Consider using `unwrap_or()` instead. [Ln 140, Col 12]
+[out] total: 0 errors, 2 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

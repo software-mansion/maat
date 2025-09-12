@@ -1,0 +1,535 @@
+=== wadray-0.6.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/wadray/0.6.1 -o archive-605325165187391488.tar.zstd
+
+>>> tar --zstd -xf archive-605325165187391488.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           23.11.0            ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-07-29 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index a1cf99c..9994fbf 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -25,7 +25,7 @@ keywords = [
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/lindy-labs/wadray"
+[out] -cairo-version = "^2.11.4"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.4'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.starknet]
+[out] @@ -36,5 +36,23 @@ max-line-length = 120
+[out]  sort-module-level-items = true
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +assert_macros = ">= 2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-07-29", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out]  Downloading snforge_scarb_plugin v0.47.0+nightly-2025-07-29 (registry+https://scarbs.dev/)
+[out]  Downloading snforge_std v0.47.0+nightly-2025-07-29 (registry+https://scarbs.dev/)
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling snforge_scarb_plugin v0.47.0+nightly-2025-07-29 (registry+https://scarbs.dev/)
+[out]     Updating crates.io index
+[out]  Downloading crates ...
+[out]   Downloaded autocfg v1.5.0
+[out]   Downloaded cairo-lang-macro-attributes v0.2.0-rc.1
+[out]   Downloaded cairo-lang-macro v0.2.0-rc.1
+[out]   Downloaded zerovec-derive v0.11.1
+[out]   Downloaded cairo-lang-debug v2.12.0-rc.3
+[out]   Downloaded borsh v1.5.7
+[out]   Downloaded zerovec v0.11.2
+[out]   Downloaded indexmap v2.10.0
+[out]   Downloaded zerofrom v0.1.6
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded toml_write v0.1.2
+[out]   Downloaded zerofrom-derive v0.1.6
+[out]   Downloaded xxhash-rust v0.8.15
+[out]   Downloaded yoke-derive v0.8.0
+[out]   Downloaded unicode-ident v1.0.18
+[out]   Downloaded zerotrie v0.2.2
+[out]   Downloaded url v2.5.4
+[out]   Downloaded toml_edit v0.22.27
+[out]   Downloaded tracing-core v0.1.34
+[out]   Downloaded tracing v0.1.41
+[out]   Downloaded serde_derive v1.0.219
+[out]   Downloaded winnow v0.7.12
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded itertools v0.14.0
+[out]   Downloaded smallvec v1.15.1
+[out]   Downloaded serde v1.0.219
+[out]   Downloaded proc-macro2 v1.0.95
+[out]   Downloaded parking_lot_core v0.9.11
+[out]   Downloaded once_cell v1.21.3
+[out]   Downloaded syn v2.0.104
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded memchr v2.7.5
+[out]   Downloaded idna v1.0.3
+[out]   Downloaded yoke v0.8.0
+[out]   Downloaded xshell v0.2.7
+[out]   Downloaded triomphe v0.1.14
+[out]   Downloaded tracing-attributes v0.1.30
+[out]   Downloaded rust-analyzer-salsa v0.17.0-pre.6
+[out]   Downloaded toml v0.8.23
+[out]   Downloaded stable_deref_trait v1.2.0
+[out]   Downloaded smol_str v0.3.2
+[out]   Downloaded relative-path v1.9.3
+[out]   Downloaded percent-encoding v2.3.1
+[out]   Downloaded litemap v0.8.0
+[out]   Downloaded linkme-impl v0.3.33
+[out]   Downloaded cairo-lang-syntax v2.12.0-rc.3
+[out]   Downloaded utf8_iter v1.0.4
+[out]   Downloaded unescaper v0.1.6
+[out]   Downloaded toml_datetime v0.6.11
+[out]   Downloaded tinystr v0.8.1
+[out]   Downloaded thiserror-impl v2.0.12
+[out]   Downloaded synstructure v0.13.2
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded libc v0.2.174
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded potential_utf v0.1.2
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded xshell-macros v0.2.7
+[out]   Downloaded semver v1.0.26
+[out]   Downloaded pin-project-lite v0.2.16
+[out]   Downloaded parking_lot v0.12.4
+[out]   Downloaded writeable v0.6.1
+[out]   Downloaded thiserror v2.0.12
+[out]   Downloaded serde_spanned v0.6.9
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]   Downloaded quote v1.0.40
+[out]   Downloaded oorandom v11.1.5
+[out]   Downloaded lock_api v0.4.13
+[out]   Downloaded linkme v0.3.33
+[out]   Downloaded indoc v2.0.5
+[out]   Downloaded icu_properties v2.0.1
+[out]   Downloaded icu_normalizer_data v2.0.0
+[out]   Downloaded icu_locale_core v2.0.0
+[out]   Downloaded hashbrown v0.15.4
+[out]   Downloaded genco v0.17.10
+[out]   Downloaded form_urlencoded v1.2.1
+[out]   Downloaded foldhash v0.1.5
+[out]   Downloaded displaydoc v0.2.5
+[out]   Downloaded cairo-lang-parser v2.12.0-rc.3
+[out]   Downloaded idna_adapter v1.2.1
+[out]   Downloaded icu_properties_data v2.0.1
+[out]   Downloaded icu_collections v2.0.0
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded genco-macros v0.17.10
+[out]   Downloaded either v1.15.0
+[out]   Downloaded data-encoding v2.9.0
+[out]   Downloaded cfg_aliases v0.2.1
+[out]   Downloaded cairo-lang-utils v2.12.0-rc.3
+[out]   Downloaded cairo-lang-primitive-token v1.0.0
+[out]   Downloaded icu_provider v2.0.0
+[out]   Downloaded icu_normalizer v2.0.0
+[out]   Downloaded equivalent v1.0.2
+[out]   Downloaded colored v3.0.0
+[out]   Downloaded cfg-if v1.0.1
+[out]   Downloaded cairo-lang-syntax-codegen v2.12.0-rc.3
+[out]   Downloaded cairo-lang-quote v0.1.0-rc.0
+[out]   Downloaded cairo-lang-macro-stable v2.0.0-rc.0
+[out]   Downloaded cairo-lang-diagnostics v2.12.0-rc.3
+[out]   Downloaded allocator-api2 v0.2.21
+[out]   Downloaded bumpalo v3.17.0
+[out]   Downloaded cairo-lang-filesystem v2.12.0-rc.3
+[out]    Compiling proc-macro2 v1.0.95
+[out]    Compiling unicode-ident v1.0.18
+[out]    Compiling stable_deref_trait v1.2.0
+[out]    Compiling serde v1.0.219
+[out]    Compiling autocfg v1.5.0
+[out]    Compiling smallvec v1.15.1
+[out]    Compiling foldhash v0.1.5
+[out]    Compiling equivalent v1.0.2
+[out]    Compiling allocator-api2 v0.2.21
+[out]    Compiling num-traits v0.2.19
+[out]    Compiling libc v0.2.174
+[out]    Compiling lock_api v0.4.13
+[out]    Compiling quote v1.0.40
+[out]    Compiling parking_lot_core v0.9.11
+[out]    Compiling syn v2.0.104
+[out]    Compiling scopeguard v1.2.0
+[out]    Compiling writeable v0.6.1
+[out]    Compiling num-integer v0.1.46
+[out]    Compiling once_cell v1.21.3
+[out]    Compiling cfg-if v1.0.1
+[out]    Compiling either v1.15.0
+[out]    Compiling litemap v0.8.0
+[out]    Compiling itertools v0.14.0
+[out]    Compiling tracing-core v0.1.34
+[out]    Compiling winnow v0.7.12
+[out]    Compiling semver v1.0.26
+[out]    Compiling icu_properties_data v2.0.1
+[out]    Compiling icu_normalizer_data v2.0.0
+[out]    Compiling pin-project-lite v0.2.16
+[out]    Compiling heck v0.4.1
+[out]    Compiling toml_write v0.1.2
+[out]    Compiling parking_lot v0.12.4
+[out]    Compiling genco-macros v0.17.10
+[out]    Compiling thiserror v2.0.12
+[out]    Compiling rustc-hash v1.1.0
+[out]    Compiling oorandom v11.1.5
+[out]    Compiling path-clean v1.0.1
+[out]    Compiling synstructure v0.13.2
+[out]    Compiling linkme-impl v0.3.33
+[out]    Compiling xshell-macros v0.2.7
+[out]    Compiling xxhash-rust v0.8.15
+[out]    Compiling relative-path v1.9.3
+[out]    Compiling data-encoding v2.9.0
+[out]    Compiling cairo-lang-primitive-token v1.0.0
+[out]    Compiling xshell v0.2.7
+[out]    Compiling scarb-stable-hash v1.0.0
+[out]    Compiling utf8_iter v1.0.4
+[out]    Compiling percent-encoding v2.3.1
+[out]    Compiling form_urlencoded v1.2.1
+[out]    Compiling cairo-lang-quote v0.1.0-rc.0
+[out]    Compiling cairo-lang-macro-stable v2.0.0-rc.0
+[out]    Compiling colored v3.0.0
+[out]    Compiling bumpalo v3.17.0
+[out]    Compiling indoc v2.0.5
+[out]    Compiling serde_derive v1.0.219
+[out]    Compiling zerofrom-derive v0.1.6
+[out]    Compiling yoke-derive v0.8.0
+[out]    Compiling zerovec-derive v0.11.1
+[out]    Compiling displaydoc v0.2.5
+[out]    Compiling tracing-attributes v0.1.30
+[out]    Compiling zerofrom v0.1.6
+[out]    Compiling yoke v0.8.0
+[out]    Compiling zerovec v0.11.2
+[out]    Compiling zerotrie v0.2.2
+[out]    Compiling rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]    Compiling tinystr v0.8.1
+[out]    Compiling potential_utf v0.1.2
+[out]    Compiling icu_locale_core v2.0.0
+[out]    Compiling icu_collections v2.0.0
+[out]    Compiling icu_provider v2.0.0
+[out]    Compiling tracing v0.1.41
+[out]    Compiling thiserror-impl v2.0.12
+[out]    Compiling icu_normalizer v2.0.0
+[out]    Compiling icu_properties v2.0.1
+[out]    Compiling unescaper v0.1.6
+[out]    Compiling hashbrown v0.15.4
+[out]    Compiling num-bigint v0.4.6
+[out]    Compiling serde_spanned v0.6.9
+[out]    Compiling indexmap v2.10.0
+[out]    Compiling toml_datetime v0.6.11
+[out]    Compiling smol_str v0.3.2
+[out]    Compiling triomphe v0.1.14
+[out]    Compiling idna_adapter v1.2.1
+[out]    Compiling genco v0.17.10
+[out]    Compiling cairo-lang-utils v2.12.0-rc.3
+[out]    Compiling toml_edit v0.22.27
+[out]    Compiling cairo-lang-debug v2.12.0-rc.3
+[out]    Compiling rust-analyzer-salsa v0.17.0-pre.6
+[out]    Compiling toml v0.8.23
+[out]    Compiling cairo-lang-syntax-codegen v2.12.0-rc.3
+[out]    Compiling cairo-lang-filesystem v2.12.0-rc.3
+[out]    Compiling cairo-lang-syntax v2.12.0-rc.3
+[out]    Compiling cairo-lang-diagnostics v2.12.0-rc.3
+[out]    Compiling idna v1.0.3
+[out] error[E0658]: use of unstable library feature `unsigned_is_multiple_of`
+[out]   --> /opt/cargo/registry/src/index.crates.io-1949cf8c6b5b557f/cairo-lang-syntax-2.12.0-rc.3/src/node/element_list.rs:47:43
+[out]    |
+[out] 47 |         !self.node.get_children(db).len().is_multiple_of(2)
+[out]    |                                           ^^^^^^^^^^^^^^
+[out]    |
+[out]    = note: see issue #128101 <https://github.com/rust-lang/rust/issues/128101> for more information
+[out]    Compiling linkme v0.3.33
+[out]    Compiling cairo-lang-macro-attributes v0.2.0-rc.1
+[out]    Compiling url v2.5.4
+[out]    Compiling cairo-lang-macro v0.2.0-rc.1
+[out] For more information about this error, try `rustc --explain E0658`.
+[out] error: could not compile `cairo-lang-syntax` (lib) due to 1 previous error
+[out] warning: build failed, waiting for other jobs to finish...
+[out] error: process did not exit successfully: exit status: 101
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::compiler::plugin::proc_macro::compilation::run_cargo
+[out]    3: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    4: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    5: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    6: start_thread
+[out]    7: __clone
+[out] error: could not compile `snforge_scarb_plugin` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __clone
+Process finished with exit code 1
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test wadray (snforge test --fuzzer-seed 1)
+[out] [ERROR] On Scarb versions < 2.12.0, the `snforge_std` package must be replaced with `snforge_std_deprecated`. Please update it in Scarb.toml
+Process finished with exit code 2
+
+>>> maat-test-ls
+[err]    0.003850985s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `snforge_std`: `["/mnt/maat-cache/scarb/registry/src/scarbs.dev-uh1rofdq911ru/snforge_std-0.47.0+nightly-2025-07-29/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "snforge_std",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 47,
+[out]                 patch: 0,
+[out]                 build: BuildMetadata("nightly-2025-07-29"),
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0+nightly-2025-07-29 (registry+https://scarbs.dev/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `wadray`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "wadray",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 6,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0+nightly-2025-07-29 (registry+https://scarbs.dev/)",
+[out]                 ),
+[out]             },
+[out]             "wadray": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "wadray 0.6.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/tests/test_wadray_signed.cairo (40)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 8, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 31, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 48, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 65, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 102, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 125, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 126, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 133, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 134, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 141, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 142, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 149, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 150, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 157, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 174, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 191, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 274, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 294, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 351, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 406, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 413, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 420, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 441, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 464, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 472, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 483, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 518, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 529, Col 4]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 80, Col 45]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 97, Col 45]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 219, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 220, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 228, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 229, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 259, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 260, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 268, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 269, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 522, Col 16]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 526, Col 16]
+[out] file:///mnt/maat-workbench/src/tests/test_wadray.cairo (40)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 7, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 36, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 54, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 83, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 101, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 160, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 178, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 193, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 210, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 224, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 225, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 230, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 231, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 236, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 253, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 268, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 279, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 287, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 294, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 321, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 332, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 361, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 390, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 438, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 486, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 497, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 508, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 519, Col 0]
+[out]   (W) Plugin diagnostic: Subtraction with identical operands, this operation always results in zero and may indicate a logic error [Ln 57, Col 15]
+[out]   (W) Plugin diagnostic: Subtraction with identical operands, this operation always results in zero and may indicate a logic error [Ln 70, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 299, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 300, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 305, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 306, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 309, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 310, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 315, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 316, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 325, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 329, Col 13]
+[out] total: 56 errors, 24 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

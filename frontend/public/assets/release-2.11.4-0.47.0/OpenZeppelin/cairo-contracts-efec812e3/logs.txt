@@ -1,0 +1,470 @@
+=== OpenZeppelin/cairo-contracts-efec812e3 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/OpenZeppelin/cairo-contracts .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 1ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 0425a0a..e2cfa41 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -22,6 +22,7 @@ readme = "README.md"
+[out]  version.workspace = true
+[out]  keywords.workspace = true
+[out]  edition.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [workspace.package]
+[out]  version = "3.0.0-alpha.0"
+[out] @@ -81,8 +82,23 @@ allow-prebuilt-plugins = ["snforge_std"]
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [profile.dev.cairo]
+[out]  unstable-add-statements-functions-debug-info = true
+[out]  unstable-add-statements-code-locations-debug-info = true
+[out]  inlining-strategy = "avoid"
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/access/Scarb.toml b/packages/access/Scarb.toml
+[out] index 2ab2428..12be116 100644
+[out] --- a/packages/access/Scarb.toml
+[out] +++ b/packages/access/Scarb.toml
+[out] @@ -10,7 +10,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -21,6 +21,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -38,3 +39,6 @@ openzeppelin_test_common = { path = "../test_common" }
+[out]  allowed-libfuncs-list.name = "experimental"
+[out]  sierra = true
+[out]  casm = false
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/account/Scarb.toml b/packages/account/Scarb.toml
+[out] index e6ad023..1be386b 100644
+[out] --- a/packages/account/Scarb.toml
+[out] +++ b/packages/account/Scarb.toml
+[out] @@ -10,7 +10,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -21,6 +21,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -51,3 +52,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::src9::SRC9AccountMock",
+[out]      "openzeppelin_test_common::mocks::simple::SimpleMock",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/finance/Scarb.toml b/packages/finance/Scarb.toml
+[out] index d0d87b8..d0d42fc 100644
+[out] --- a/packages/finance/Scarb.toml
+[out] +++ b/packages/finance/Scarb.toml
+[out] @@ -10,7 +10,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -21,6 +21,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -48,3 +49,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::vesting::StepsVestingMock",
+[out]      "openzeppelin_test_common::mocks::vesting::ERC20OptionalTransferPanicMock",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/governance/Scarb.toml b/packages/governance/Scarb.toml
+[out] index 9efd3df..8afddc3 100644
+[out] --- a/packages/governance/Scarb.toml
+[out] +++ b/packages/governance/Scarb.toml
+[out] @@ -10,7 +10,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -21,6 +21,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -62,3 +63,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::votes::ERC20TimestampVotesMock",
+[out]      "openzeppelin_test_common::mocks::votes::LegacyERC20VotesMock",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/introspection/Scarb.toml b/packages/introspection/Scarb.toml
+[out] index 9a339fc..bbcb860 100644
+[out] --- a/packages/introspection/Scarb.toml
+[out] +++ b/packages/introspection/Scarb.toml
+[out] @@ -11,7 +11,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -22,6 +22,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -37,3 +38,6 @@ openzeppelin_test_common = { path = "../test_common" }
+[out]  allowed-libfuncs-list.name = "experimental"
+[out]  sierra = true
+[out]  casm = false
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/macros/Scarb.toml b/packages/macros/Scarb.toml
+[out] index 3a98477..fd351f8 100644
+[out] --- a/packages/macros/Scarb.toml
+[out] +++ b/packages/macros/Scarb.toml
+[out] @@ -8,7 +8,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -20,3 +20,9 @@ license-file.workspace = true
+[out]  
+[out]  [tool]
+[out]  fmt.workspace = true
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "cargo test" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/merkle_tree/Scarb.toml b/packages/merkle_tree/Scarb.toml
+[out] index 6e7382e..27cf755 100644
+[out] --- a/packages/merkle_tree/Scarb.toml
+[out] +++ b/packages/merkle_tree/Scarb.toml
+[out] @@ -8,7 +8,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -19,9 +19,15 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dev-dependencies]
+[out]  assert_macros.workspace = true
+[out]  starknet.workspace = true
+[out]  snforge_std.workspace = true
+[out]  openzeppelin_testing = { path = "../testing" }
+[out] +
+[out] +[dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/presets/Scarb.toml b/packages/presets/Scarb.toml
+[out] index 392622d..34a1748 100644
+[out] --- a/packages/presets/Scarb.toml
+[out] +++ b/packages/presets/Scarb.toml
+[out] @@ -9,7 +9,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -20,6 +20,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -60,3 +61,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::src5::SRC5Mock",
+[out]      "openzeppelin_test_common::mocks::non_implementing::NonImplementingMock",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/security/Scarb.toml b/packages/security/Scarb.toml
+[out] index 5929a94..8e1685a 100644
+[out] --- a/packages/security/Scarb.toml
+[out] +++ b/packages/security/Scarb.toml
+[out] @@ -10,7 +10,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -21,6 +21,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -44,3 +45,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::security::ReentrancyMock",
+[out]      "openzeppelin_test_common::mocks::security::Attacker",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/test_common/Scarb.toml b/packages/test_common/Scarb.toml
+[out] index fbf5c5e..9941093 100644
+[out] --- a/packages/test_common/Scarb.toml
+[out] +++ b/packages/test_common/Scarb.toml
+[out] @@ -3,7 +3,7 @@ name = "openzeppelin_test_common"
+[out]  readme = "README.md"
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -15,6 +15,7 @@ keywords.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -37,3 +38,8 @@ openzeppelin_utils = { path = "../utils" }
+[out]  allowed-libfuncs-list.name = "experimental"
+[out]  sierra = true
+[out]  casm = false
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/testing/Scarb.toml b/packages/testing/Scarb.toml
+[out] index 7d860e1..a3f5956 100644
+[out] --- a/packages/testing/Scarb.toml
+[out] +++ b/packages/testing/Scarb.toml
+[out] @@ -9,7 +9,7 @@ keywords = [
+[out]  ]
+[out]  version = "4.4.0"
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -20,8 +20,14 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  assert_macros.workspace = true
+[out]  starknet.workspace = true
+[out]  snforge_std.workspace = true
+[out] +
+[out] +[dev-dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/token/Scarb.toml b/packages/token/Scarb.toml
+[out] index fee63ea..0c84cdb 100644
+[out] --- a/packages/token/Scarb.toml
+[out] +++ b/packages/token/Scarb.toml
+[out] @@ -11,7 +11,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -22,6 +22,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -61,3 +62,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::non_implementing::NonImplementingMock",
+[out]      "openzeppelin_test_common::mocks::src5::SRC5Mock",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/upgrades/Scarb.toml b/packages/upgrades/Scarb.toml
+[out] index 876051b..5d932ce 100644
+[out] --- a/packages/upgrades/Scarb.toml
+[out] +++ b/packages/upgrades/Scarb.toml
+[out] @@ -10,7 +10,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -21,6 +21,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -44,3 +45,6 @@ build-external-contracts = [
+[out]      "openzeppelin_test_common::mocks::upgrades::UpgradesV1",
+[out]      "openzeppelin_test_common::mocks::upgrades::UpgradesV2",
+[out]  ]
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/utils/Scarb.toml b/packages/utils/Scarb.toml
+[out] index 95a5a59..580f0f5 100644
+[out] --- a/packages/utils/Scarb.toml
+[out] +++ b/packages/utils/Scarb.toml
+[out] @@ -11,7 +11,7 @@ keywords = [
+[out]  ]
+[out]  version.workspace = true
+[out]  edition.workspace = true
+[out] -cairo-version.workspace = true
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: {'workspace': True}
+[out]  scarb-version.workspace = true
+[out]  authors.workspace = true
+[out]  description.workspace = true
+[out] @@ -22,6 +22,7 @@ license-file.workspace = true
+[out]  [tool]
+[out]  fmt.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -41,3 +42,6 @@ fuzzing = []
+[out]  allowed-libfuncs-list.name = "experimental"
+[out]  sierra = true
+[out]  casm = false
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] error: cannot get dependencies of `openzeppelin_account@3.0.0-alpha.0`
+[out] 
+[out] Caused by:
+[out]     cannot find package `starknet ^2.12.0-rc.2`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[out]    1: scarb::resolver::algorithm::scarb_resolver::{{closure}}
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __GI___clone
+Process finished with exit code 1
+
+>>> scarb tree -q --workspace
+Process finished with exit code -1
+
+>>> scarb build --workspace --test
+Process finished with exit code -1
+
+>>> scarb lint --workspace --deny-warnings
+Process finished with exit code -1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+Process finished with exit code -1
+
+>>> maat-test-ls
+Process finished with exit code -1

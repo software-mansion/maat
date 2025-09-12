@@ -1,0 +1,435 @@
+=== EkuboProtocol/governance-eac52cc50 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           24.5.0             ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-08-04 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 2ef7b51..6125b49 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -3,7 +3,7 @@ name = "governance"
+[out]  version = "0.1.0"
+[out]  description = "Contracts for governance of Starknet-native protocols"
+[out]  homepage = "https://ekubo.org"
+[out] -cairo-version = ">=2.7.0"
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: '>=2.7.0'
+[out]  edition = '2024_07'
+[out]  
+[out]  [dependencies]
+[out] @@ -16,5 +16,21 @@ casm = true
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  [dev-dependencies]
+[out]  cairo_test = ">=2.7.0"
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.47.0+nightly-2025-08-04", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.0 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.0 (std)
+
+>>> scarb build --workspace --test
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(governance_unittest) governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/airdrop_test.cairo:10:22
+[out]     ContractAddress, contract_address_const, get_contract_address, syscalls::{deploy_syscall},
+[out]                      ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/call_trait_test.cairo:5:33
+[out] use starknet::{account::{Call}, contract_address_const, get_contract_address};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/src/governor.cairo:476:13
+[out]             0
+[out]             ^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/src/governor.cairo:480:13
+[out]             0
+[out]             ^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:13:5
+[out]     contract_address_const, get_block_timestamp, get_contract_address, syscalls::deploy_syscall,
+[out]     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:979:57
+[out]             calldata: array![Governor::TEST_CLASS_HASH].span(),
+[out]                                                         ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_test.cairo:10:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:181:26
+[out]                         .append()
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:191:22
+[out]                     .append()
+[out]                      ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2_test.cairo:11:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:77:18
+[out]                 .append()
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:98:17
+[out]             log.append()
+[out]                 ^^^^^^
+[out] 
+[out] error: could not compile `governance` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::compile::compile_unit_inner
+[out]    3: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    4: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    5: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    6: start_thread
+[out]    7: __GI___clone
+Process finished with exit code 1
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead.
+[out]  --> /mnt/maat-workbench/src/call_trait.cairo:25:9-27:9
+[out]           if (result.is_err()) {
+[out]  _________^
+[out] |             panic(result.unwrap_err());
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:185:35
+[out]                                 + ((timestamp - last_snapshot.timestamp).into() * amount_delegated.into()),
+[out]                                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:185:36
+[out]                                 + ((timestamp - last_snapshot.timestamp).into() * amount_delegated.into()),
+[out]                                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:181:26
+[out]                         .append()
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:191:22
+[out]                     .append()
+[out]                      ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:77:18
+[out]                 .append()
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:98:17
+[out]             log.append()
+[out]                 ^^^^^^
+[out] 
+[out] error: lint checking `governance` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test governance (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.dev/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(governance_unittest) governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/airdrop_test.cairo:10:22
+[out]     ContractAddress, contract_address_const, get_contract_address, syscalls::{deploy_syscall},
+[out]                      ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/call_trait_test.cairo:5:33
+[out] use starknet::{account::{Call}, contract_address_const, get_contract_address};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/src/governor.cairo:476:13
+[out]             0
+[out]             ^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/src/governor.cairo:480:13
+[out]             0
+[out]             ^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:13:5
+[out]     contract_address_const, get_block_timestamp, get_contract_address, syscalls::deploy_syscall,
+[out]     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>.
+[out]  --> /mnt/maat-workbench/src/governor_test.cairo:979:57
+[out]             calldata: array![Governor::TEST_CLASS_HASH].span(),
+[out]                                                         ^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_test.cairo:10:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:181:26
+[out]                         .append()
+[out]                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2.cairo:191:22
+[out]                     .append()
+[out]                      ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/staker_v2_test.cairo:11:16
+[out] use starknet::{contract_address_const, get_contract_address, syscalls::deploy_syscall};
+[out]                ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:77:18
+[out]                 .append()
+[out]                  ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/staker_log.cairo:98:17
+[out]             log.append()
+[out]                 ^^^^^^
+[out] 
+[out] error: could not compile `governance` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::compile::compile_unit_inner
+[out]    3: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    4: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    5: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    6: start_thread
+[out]    7: __GI___clone
+[err] Error: `scarb` command exited with error
+[err] 
+[err] Stack backtrace:
+[err]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[err]    1: scarb_cairo_test::main
+[err]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[err]    3: main
+[err]    4: __libc_start_call_main
+[err]    5: __libc_start_main_impl
+[err]    6: _start
+Process finished with exit code 1
+
+>>> maat-test-ls
+[err]    0.004538605s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "governance",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "governance",
+[out]     "edition": "2024_07",
+[out]     "version": "0.1.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "governance": {
+[out]         "discriminator": "governance 0.1.0 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest",
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/airdrop_test.cairo (3)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 244, Col 82]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 263, Col 82]
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 9, Col 21]
+[out] file:///mnt/maat-workbench/src/call_trait_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 4, Col 32]
+[out] file:///mnt/maat-workbench/src/call_trait.cairo (1)
+[out]   (W) Plugin diagnostic: Manual assert detected. Consider using assert!() macro instead. [Ln 24, Col 8]
+[out] file:///mnt/maat-workbench/src/governor_test.cairo (4)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 771, Col 45]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 777, Col 17]
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 12, Col 4]
+[out]   (E) Trait has no implementation in context: core::array::ToSpanTrait::<core::array::Array::<core::starknet::class_hash::ClassHash>, core::felt252>. [Ln 978, Col 56]
+[out] file:///mnt/maat-workbench/src/governor.cairo (2)
+[out]   (W) Unreachable code [Ln 475, Col 12]
+[out]   (W) Unreachable code [Ln 479, Col 12]
+[out] file:///mnt/maat-workbench/src/staker_log.cairo (2)
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead." [Ln 76, Col 17]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead." [Ln 97, Col 16]
+[out] file:///mnt/maat-workbench/src/staker_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 9, Col 15]
+[out] file:///mnt/maat-workbench/src/staker_v2_test.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 10, Col 15]
+[out] file:///mnt/maat-workbench/src/staker_v2.cairo (4)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 184, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 184, Col 35]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead." [Ln 180, Col 25]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead." [Ln 190, Col 21]
+[out] total: 1 errors, 18 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

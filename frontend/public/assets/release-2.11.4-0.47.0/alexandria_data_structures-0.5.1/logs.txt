@@ -1,0 +1,559 @@
+=== alexandria_data_structures-0.5.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_data_structures/0.5.1 -o archive-607884385187958784.tar.zstd
+
+>>> tar --zstd -xf archive-607884385187958784.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 6cb2944..8cbb367 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "A set of Cairo data structure libraries and algorithms"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/packages/data_structures"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies]
+[out] @@ -24,3 +24,22 @@ re-export-cairo-plugins = []
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(alexandria_data_structures_unittest) alexandria_data_structures v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-BitArrayTrait"` with no `#[feature("deprecated-BitArrayTrait")]` attribute. Note: "Use `alexandria_bytes::bit_array`."
+[out]  --> /mnt/maat-workbench/src/bit_array.cairo:132:22
+[out] impl BitArrayImpl of BitArrayTrait {
+[out]                      ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteAppender"` with no `#[feature("deprecated-ByteAppender")]` attribute. Note: "Use `alexandria_bytes::byte_appender`."
+[out]  --> /mnt/maat-workbench/src/byte_appender.cairo:157:69
+[out] impl ByteAppenderImpl<T, +Drop<T>, +ByteAppenderSupportTrait<T>> of ByteAppender<T> {
+[out]                                                                     ^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`."
+[out]  --> /mnt/maat-workbench/src/byte_array_ext.cairo:1:46
+[out] use alexandria_data_structures::byte_reader::ByteReader;
+[out]                                              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`."
+[out]  --> /mnt/maat-workbench/src/byte_reader.cairo:178:6
+[out] > of ByteReader<T> {
+[out]      ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-BitArrayTrait"` with no `#[feature("deprecated-BitArrayTrait")]` attribute. Note: "Use `alexandria_bytes::bit_array`."
+[out]  --> /mnt/maat-workbench/src/tests/bit_array.cairo:2:15
+[out]     BitArray, BitArrayTrait, one_shift_left_bytes_felt252, shift_bit,
+[out]               ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteAppender"` with no `#[feature("deprecated-ByteAppender")]` attribute. Note: "Use `alexandria_bytes::byte_appender`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_appender.cairo:1:48
+[out] use alexandria_data_structures::byte_appender::ByteAppender;
+[out]                                                ^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-into()"` with no `#[feature("deprecated-into()")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayIntoArrayU8::into()`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_array_ext.cairo:1:50
+[out] use alexandria_data_structures::byte_array_ext::{ByteArrayIntoArrayU8, SpanU8IntoBytearray};
+[out]                                                  ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-into()"` with no `#[feature("deprecated-into()")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::SpanU8IntoBytearray::into()`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_array_ext.cairo:1:72
+[out] use alexandria_data_structures::byte_array_ext::{ByteArrayIntoArrayU8, SpanU8IntoBytearray};
+[out]                                                                        ^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_reader.cairo:1:47
+[out] use alexandria_data_structures::byte_reader::{ByteReader, ByteReaderState};
+[out]                                               ^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 8 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_data_structures (scarb cairo-test)
+[out]    Compiling test(alexandria_data_structures_unittest) alexandria_data_structures v0.5.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-BitArrayTrait"` with no `#[feature("deprecated-BitArrayTrait")]` attribute. Note: "Use `alexandria_bytes::bit_array`."
+[out]  --> /mnt/maat-workbench/src/bit_array.cairo:132:22
+[out] impl BitArrayImpl of BitArrayTrait {
+[out]                      ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteAppender"` with no `#[feature("deprecated-ByteAppender")]` attribute. Note: "Use `alexandria_bytes::byte_appender`."
+[out]  --> /mnt/maat-workbench/src/byte_appender.cairo:157:69
+[out] impl ByteAppenderImpl<T, +Drop<T>, +ByteAppenderSupportTrait<T>> of ByteAppender<T> {
+[out]                                                                     ^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`."
+[out]  --> /mnt/maat-workbench/src/byte_array_ext.cairo:1:46
+[out] use alexandria_data_structures::byte_reader::ByteReader;
+[out]                                              ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`."
+[out]  --> /mnt/maat-workbench/src/byte_reader.cairo:178:6
+[out] > of ByteReader<T> {
+[out]      ^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-BitArrayTrait"` with no `#[feature("deprecated-BitArrayTrait")]` attribute. Note: "Use `alexandria_bytes::bit_array`."
+[out]  --> /mnt/maat-workbench/src/tests/bit_array.cairo:2:15
+[out]     BitArray, BitArrayTrait, one_shift_left_bytes_felt252, shift_bit,
+[out]               ^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteAppender"` with no `#[feature("deprecated-ByteAppender")]` attribute. Note: "Use `alexandria_bytes::byte_appender`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_appender.cairo:1:48
+[out] use alexandria_data_structures::byte_appender::ByteAppender;
+[out]                                                ^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-into()"` with no `#[feature("deprecated-into()")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayIntoArrayU8::into()`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_array_ext.cairo:1:50
+[out] use alexandria_data_structures::byte_array_ext::{ByteArrayIntoArrayU8, SpanU8IntoBytearray};
+[out]                                                  ^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-into()"` with no `#[feature("deprecated-into()")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::SpanU8IntoBytearray::into()`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_array_ext.cairo:1:72
+[out] use alexandria_data_structures::byte_array_ext::{ByteArrayIntoArrayU8, SpanU8IntoBytearray};
+[out]                                                                        ^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`."
+[out]  --> /mnt/maat-workbench/src/tests/byte_reader.cairo:1:47
+[out] use alexandria_data_structures::byte_reader::{ByteReader, ByteReaderState};
+[out]                                               ^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 8 seconds
+[out]      Testing alexandria_data_structures
+[out] running 270 tests
+[out] test alexandria_data_structures::tests::array_ext::append_all::of_felt ... ok (gas usage est.: 11550)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_sequence ... ok (gas usage est.: 1162680)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_le ... ok (gas usage est.: 129460)
+[out] test alexandria_data_structures::tests::span_ext::remove_back_n::exact_len ... ok (gas usage est.: 3850)
+[out] test alexandria_data_structures::tests::array_ext::append_all::of_u128 ... ok (gas usage est.: 11850)
+[out] test alexandria_data_structures::tests::span_ext::remove_back_n::more_then_len ... ok (gas usage est.: 3840)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_le_arr ... ok (gas usage est.: 80070)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_sequence_arr ... ok (gas usage est.: 393950)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_neg ... ok (gas usage est.: 104160)
+[out] test alexandria_data_structures::tests::stack::felt252_stack_new_test ... ok (gas usage est.: 9310)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_sequence_le ... ok (gas usage est.: 1162680)
+[out] test alexandria_data_structures::tests::array_ext::append_all::destination_empty ... ok (gas usage est.: 13020)
+[out] test alexandria_data_structures::tests::stack::felt252_stack_is_empty_test ... ok (gas usage est.: 9310)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_neg_arr ... ok (gas usage est.: 210750)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_sequence_le_arr ... ok (gas usage est.: 393950)
+[out] test alexandria_data_structures::tests::array_ext::append_all::source_empty ... ok (gas usage est.: 13020)
+[out] test alexandria_data_structures::tests::array_ext::append_all::both_empty ... ok (gas usage est.: 3770)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_le_neg ... ok (gas usage est.: 248220)
+[out] test alexandria_data_structures::tests::stack::felt252_stack_push_test ... ok (gas usage est.: 24550)
+[out] test alexandria_data_structures::tests::byte_reader::test_clone_byte_array_reader ... ok (gas usage est.: 610200)
+[out] test alexandria_data_structures::tests::array_ext::extend_from_span::of_felt ... ok (gas usage est.: 37770)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_le_neg_arr ... ok (gas usage est.: 169810)
+[out] test alexandria_data_structures::tests::byte_reader::test_clone_array_of_bytes_reader ... ok (gas usage est.: 212410)
+[out] test alexandria_data_structures::tests::stack::felt252_stack_peek_test ... ok (gas usage est.: 27120)
+[out] test alexandria_data_structures::tests::array_ext::extend_from_span::of_u128 ... ok (gas usage est.: 38370)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64 ... ok (gas usage est.: 57780)
+[out] test alexandria_data_structures::tests::stack::felt252_stack_pop_test ... ok (gas usage est.: 27120)
+[out] test alexandria_data_structures::tests::byte_reader::test_byte_array_reader_equals_array_of_bytes_reader ... ok (gas usage est.: 982910)
+[out] test alexandria_data_structures::tests::array_ext::extend_from_span::empty_array ... ok (gas usage est.: 26060)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_arr ... ok (gas usage est.: 191530)
+[out] test alexandria_data_structures::tests::stack::felt252_stack_push_pop_push_test ... ok (gas usage est.: 32050)
+[out] test alexandria_data_structures::tests::queue::queue_new_test ... ok (gas usage est.: 800)
+[out] test alexandria_data_structures::tests::array_ext::extend_from_span::empty_span ... ok (gas usage est.: 19350)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_le ... ok (gas usage est.: 191220)
+[out] test alexandria_data_structures::tests::queue::queue_is_empty_test ... ok (gas usage est.: 800)
+[out] test alexandria_data_structures::tests::stack::nullable_stack_new_test ... ok (gas usage est.: 9310)
+[out] test alexandria_data_structures::tests::array_ext::extend_from_span::from_self ... ok (gas usage est.: 37070)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_le_arr ... ok (gas usage est.: 145750)
+[out] test alexandria_data_structures::tests::stack::nullable_stack_is_empty_test ... ok (gas usage est.: 9310)
+[out] test alexandria_data_structures::tests::queue::queue_enqueue_test ... ok (gas usage est.: 2600)
+[out] test alexandria_data_structures::tests::array_ext::concat::of_felt ... ok (gas usage est.: 63430)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_neg ... ok (gas usage est.: 64600)
+[out] test alexandria_data_structures::tests::stack::nullable_stack_push_test ... ok (gas usage est.: 25150)
+[out] test alexandria_data_structures::tests::queue::queue_peek_front_test ... ok (gas usage est.: 2700)
+[out] test alexandria_data_structures::tests::array_ext::concat::of_u128 ... ok (gas usage est.: 64330)
+[out] test alexandria_data_structures::tests::stack::nullable_stack_peek_test ... ok (gas usage est.: 28640)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_neg_arr ... ok (gas usage est.: 198350)
+[out] test alexandria_data_structures::tests::queue::queue_dequeue_test ... ok (gas usage est.: 2700)
+[out] test alexandria_data_structures::tests::array_ext::concat::empty_array_1 ... ok (gas usage est.: 29230)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_le_neg ... ok (gas usage est.: 198440)
+[out] test alexandria_data_structures::tests::stack::nullable_stack_pop_test ... ok (gas usage est.: 28640)
+[out] test alexandria_data_structures::tests::span_ext::pop_front_n::of_felt ... ok (gas usage est.: 8560)
+[out] test alexandria_data_structures::tests::array_ext::concat::empty_array_2 ... ok (gas usage est.: 29430)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i64_le_neg_arr ... ok (gas usage est.: 152970)
+[out] test alexandria_data_structures::tests::stack::nullable_stack_push_pop_push_test ... ok (gas usage est.: 34290)
+[out] test alexandria_data_structures::tests::span_ext::pop_front_n::of_u128 ... ok (gas usage est.: 5890)
+[out] test alexandria_data_structures::tests::array_ext::concat::both_empty ... ok (gas usage est.: 7640)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128 ... ok (gas usage est.: 77420)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_new_test ... ok (gas usage est.: 9310)
+[out] test alexandria_data_structures::tests::span_ext::pop_front_n::empty_array ... ok (gas usage est.: 4780)
+[out] test alexandria_data_structures::tests::array_ext::pop_front_n::of_felt ... ok (gas usage est.: 13620)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_arr ... ok (gas usage est.: 371810)
+[out] test alexandria_data_structures::tests::span_ext::pop_front_n::pop_zero ... ok (gas usage est.: 7510)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_len_test ... ok (gas usage est.: 17910)
+[out] test alexandria_data_structures::tests::array_ext::pop_front_n::of_u128 ... ok (gas usage est.: 11150)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_le ... ok (gas usage est.: 334380)
+[out] test alexandria_data_structures::tests::span_ext::pop_front_n::exact_len ... ok (gas usage est.: 5690)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_get_test ... ok (gas usage est.: 22250)
+[out] test alexandria_data_structures::tests::array_ext::pop_front_n::empty_array ... ok (gas usage est.: 4370)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_le_arr ... ok (gas usage est.: 276310)
+[out] test alexandria_data_structures::tests::span_ext::pop_front_n::more_then_len ... ok (gas usage est.: 4980)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_at_test ... ok (gas usage est.: 20270)
+[out] test alexandria_data_structures::tests::array_ext::pop_front_n::pop_zero ... ok (gas usage est.: 7170)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_neg ... ok (gas usage est.: 44820)
+[out] test alexandria_data_structures::tests::span_ext::pop_back_n::of_felt ... ok (gas usage est.: 8560)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_at_out_of_bounds_test ... ok (gas usage est.: 10310)
+[out] test alexandria_data_structures::tests::array_ext::pop_front_n::exact_len ... ok (gas usage est.: 13790)
+[out] test alexandria_data_structures::tests::span_ext::pop_back_n::of_u128 ... ok (gas usage est.: 5890)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_neg_arr ... ok (gas usage est.: 192050)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_push_test ... ok (gas usage est.: 20680)
+[out] test alexandria_data_structures::tests::array_ext::pop_front_n::more_then_len ... ok (gas usage est.: 13690)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_le_neg ... ok (gas usage est.: 173550)
+[out] test alexandria_data_structures::tests::span_ext::pop_back_n::empty_array ... ok (gas usage est.: 4780)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_set_test ... ok (gas usage est.: 23030)
+[out] test alexandria_data_structures::tests::array_ext::remove_front_n::of_felt ... ok (gas usage est.: 9350)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i128_le_neg_arr ... ok (gas usage est.: 144550)
+[out] test alexandria_data_structures::tests::span_ext::pop_back_n::pop_zero ... ok (gas usage est.: 8150)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_set_test_expect_error ... ok (gas usage est.: 16800)
+[out] test alexandria_data_structures::tests::array_ext::remove_front_n::of_u128 ... ok (gas usage est.: 9450)
+[out] test alexandria_data_structures::tests::byte_array_ext::test_span_u8_into_byte_array ... ok (gas usage est.: 237470)
+[out] test alexandria_data_structures::tests::span_ext::pop_back_n::exact_len ... ok (gas usage est.: 5690)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_index_trait_test ... ok (gas usage est.: 29830)
+[out] test alexandria_data_structures::tests::array_ext::remove_front_n::empty_array ... ok (gas usage est.: 3470)
+[out] test alexandria_data_structures::tests::span_ext::pop_back_n::more_then_len ... ok (gas usage est.: 4980)
+[out] test alexandria_data_structures::tests::vec::felt252_vec_index_trait_out_of_bounds_test ... ok (gas usage est.: 10310)
+[out] test alexandria_data_structures::tests::byte_array_ext::test_byte_array_into_array_u8 ... ok (gas usage est.: 1589850)
+[out] test alexandria_data_structures::tests::array_ext::remove_front_n::remove_zero ... ok (gas usage est.: 7210)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16 ... ok (gas usage est.: 79180)
+[out] test alexandria_data_structures::tests::span_ext::remove_front_n::of_felt ... ok (gas usage est.: 5020)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_new_test ... ok (gas usage est.: 9310)
+[out] test alexandria_data_structures::tests::array_ext::remove_front_n::exact_len ... ok (gas usage est.: 10990)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_arr ... ok (gas usage est.: 19990)
+[out] test alexandria_data_structures::tests::span_ext::remove_front_n::of_u128 ... ok (gas usage est.: 5120)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_len_test ... ok (gas usage est.: 18010)
+[out] test alexandria_data_structures::tests::array_ext::remove_front_n::more_then_len ... ok (gas usage est.: 11390)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_le ... ok (gas usage est.: 79180)
+[out] test alexandria_data_structures::tests::span_ext::remove_front_n::empty_array ... ok (gas usage est.: 3410)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_get_test ... ok (gas usage est.: 22790)
+[out] test alexandria_data_structures::tests::array_ext::reversed::of_felt ... ok (gas usage est.: 42140)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_le_arr ... ok (gas usage est.: 19990)
+[out] test alexandria_data_structures::tests::span_ext::remove_front_n::remove_zero ... ok (gas usage est.: 6980)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_at_test ... ok (gas usage est.: 20690)
+[out] test alexandria_data_structures::tests::array_ext::reversed::of_u128 ... ok (gas usage est.: 27560)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::span_ext::remove_front_n::exact_len ... ok (gas usage est.: 4220)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_at_out_of_bounds_test ... ok (gas usage est.: 10310)
+[out] test alexandria_data_structures::tests::array_ext::reversed::even ... ok (gas usage est.: 21120)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::span_ext::remove_front_n::more_then_len ... ok (gas usage est.: 4210)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_push_test ... ok (gas usage est.: 21100)
+[out] test alexandria_data_structures::tests::array_ext::reversed::size_1 ... ok (gas usage est.: 7640)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_le_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::span_ext::remove_back_n::of_felt ... ok (gas usage est.: 4650)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_set_test ... ok (gas usage est.: 23650)
+[out] test alexandria_data_structures::tests::array_ext::reversed::empty ... ok (gas usage est.: 4070)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u16_le_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::span_ext::remove_back_n::of_u128 ... ok (gas usage est.: 4750)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_set_test_expect_error ... ok (gas usage est.: 19170)
+[out] test alexandria_data_structures::tests::array_ext::contains::of_felt ... ok (gas usage est.: 30600)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32 ... ok (gas usage est.: 109220)
+[out] test alexandria_data_structures::tests::span_ext::remove_back_n::empty_array ... ok (gas usage est.: 3040)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_index_trait_test ... ok (gas usage est.: 30670)
+[out] test alexandria_data_structures::tests::array_ext::contains::of_u128 ... ok (gas usage est.: 30900)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_arr ... ok (gas usage est.: 27890)
+[out] test alexandria_data_structures::tests::span_ext::remove_back_n::remove_zero ... ok (gas usage est.: 6410)
+[out] test alexandria_data_structures::tests::vec::nullable_vec_index_trait_out_of_bounds_test ... ok (gas usage est.: 10310)
+[out] test alexandria_data_structures::tests::array_ext::contains::empty_array ... ok (gas usage est.: 3870)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_le ... ok (gas usage est.: 109220)
+[out] test alexandria_data_structures::tests::array_ext::max::max_one_item ... ok (gas usage est.: 4870)
+[out] test alexandria_data_structures::tests::array_ext::unique::duplicate_middle ... ok (gas usage est.: 78130)
+[out] test alexandria_data_structures::tests::array_ext::position::of_felt ... ok (gas usage est.: 37220)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_le_arr ... ok (gas usage est.: 27890)
+[out] test alexandria_data_structures::tests::array_ext::max::empty ... ok (gas usage est.: 1400)
+[out] test alexandria_data_structures::tests::array_ext::unique::duplicate_back ... ok (gas usage est.: 83270)
+[out] test alexandria_data_structures::tests::array_ext::position::of_u128 ... ok (gas usage est.: 37520)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::array_ext::max_position::max_position ... ok (gas usage est.: 61210)
+[out] test alexandria_data_structures::tests::array_ext::unique::without_duplicates ... ok (gas usage est.: 47590)
+[out] test alexandria_data_structures::tests::array_ext::position::empty_array ... ok (gas usage est.: 3970)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::array_ext::max_position::max_position_empty_array ... ok (gas usage est.: 1400)
+[out] test alexandria_data_structures::tests::bit_array::test_append_bit ... ok (gas usage est.: 7346900)
+[out] test alexandria_data_structures::tests::array_ext::occurrences::of_felt ... ok (gas usage est.: 105180)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_le_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::array_ext::max_position::max_position_one_item ... ok (gas usage est.: 5670)
+[out] test alexandria_data_structures::tests::bit_array::test_at ... ok (gas usage est.: 2912290)
+[out] test alexandria_data_structures::tests::array_ext::occurrences::of_u128 ... ok (gas usage est.: 106980)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u32_le_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::array_ext::dedup::all_different ... ok (gas usage est.: 34730)
+[out] test alexandria_data_structures::tests::bit_array::test_at_none ... ok (gas usage est.: 22910)
+[out] test alexandria_data_structures::tests::array_ext::occurrences::empty_array ... ok (gas usage est.: 4170)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64 ... ok (gas usage est.: 169300)
+[out] test alexandria_data_structures::tests::array_ext::dedup::one_match ... ok (gas usage est.: 39700)
+[out] test alexandria_data_structures::tests::bit_array::test_index ... ok (gas usage est.: 44490)
+[out] test alexandria_data_structures::tests::array_ext::min::of_felt ... ok (gas usage est.: 28480)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_arr ... ok (gas usage est.: 43690)
+[out] test alexandria_data_structures::tests::array_ext::dedup::two_matches ... ok (gas usage est.: 43570)
+[out] test alexandria_data_structures::tests::bit_array::test_index_fail ... ok (gas usage est.: 23410)
+[out] test alexandria_data_structures::tests::array_ext::min::of_u128 ... ok (gas usage est.: 28480)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_le ... ok (gas usage est.: 169300)
+[out] test alexandria_data_structures::tests::array_ext::dedup::one_match_more ... ok (gas usage est.: 47440)
+[out] test alexandria_data_structures::tests::bit_array::test_len ... ok (gas usage est.: 42780)
+[out] test alexandria_data_structures::tests::array_ext::min::one_item ... ok (gas usage est.: 5470)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_le_arr ... ok (gas usage est.: 43690)
+[out] test alexandria_data_structures::tests::array_ext::dedup::all_same ... ok (gas usage est.: 18580)
+[out] test alexandria_data_structures::tests::bit_array::test_pop_front ... ok (gas usage est.: 25890)
+[out] test alexandria_data_structures::tests::array_ext::min::empty ... ok (gas usage est.: 1400)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::array_ext::dedup::one_elem ... ok (gas usage est.: 13310)
+[out] test alexandria_data_structures::tests::bit_array::test_pop_front_empty ... ok (gas usage est.: 20440)
+[out] test alexandria_data_structures::tests::array_ext::min_position::of_u128 ... ok (gas usage est.: 57150)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::array_ext::dedup::no_elem ... ok (gas usage est.: 5770)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_be ... ok (gas usage est.: 2991460)
+[out] test alexandria_data_structures::tests::array_ext::min_position::min_position_empty_array ... ok (gas usage est.: 1400)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_le_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::array_ext::dedup::multiple_duplicates_same ... ok (gas usage est.: 48650)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_le ... ok (gas usage est.: 3925220)
+[out] test alexandria_data_structures::tests::array_ext::min_position::min_position_one_item ... ok (gas usage est.: 5070)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u64_le_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::array_ext::unique::one_duplicate ... ok (gas usage est.: 63180)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_be_u256 ... ok (gas usage est.: 9423580)
+[out] test alexandria_data_structures::tests::array_ext::max::max ... ok (gas usage est.: 27940)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128 ... ok (gas usage est.: 322210)
+[out] test alexandria_data_structures::tests::array_ext::unique::all_same ... ok (gas usage est.: 27200)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_le_u256 ... ok (gas usage est.: 10052260)
+[out] test alexandria_data_structures::tests::array_ext::max::max_empty_array ... ok (gas usage est.: 3970)
+[out] test alexandria_data_structures::tests::array_ext::unique::empty ... ok (gas usage est.: 4880)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128_arr ... ok (gas usage est.: 108040)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128_le ... ok (gas usage est.: 322210)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_be_u512 ... ok (gas usage est.: 22275690)
+[out] test alexandria_data_structures::tests::array_ext::unique::duplicate_front ... ok (gas usage est.: 67850)
+[out] test alexandria_data_structures::tests::byte_reader::test_len_arr ... ok (gas usage est.: 382710)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128_le_arr ... ok (gas usage est.: 108040)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u256 ... ok (gas usage est.: 598930)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128_le_none_arr ... ok (gas usage est.: 14970)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_le_u512 ... ok (gas usage est.: 22384370)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u256_arr ... ok (gas usage est.: 206500)
+[out] test alexandria_data_structures::tests::byte_reader::test_reader_helper ... ok (gas usage est.: 63320)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_be_half ... ok (gas usage est.: 2994530)
+[out] test alexandria_data_structures::tests::byte_reader::test_word_u128_le_none ... ok (gas usage est.: 52020)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u256_le ... ok (gas usage est.: 598930)
+[out] test alexandria_data_structures::tests::byte_reader::test_reader_helper_arr ... ok (gas usage est.: 233350)
+[out] test alexandria_data_structures::tests::bit_array::test_read_word_le_half ... ok (gas usage est.: 3930290)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u256_le_arr ... ok (gas usage est.: 206500)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u32 ... ok (gas usage est.: 57780)
+[out] test alexandria_data_structures::tests::byte_reader::test_len ... ok (gas usage est.: 1146450)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_be ... ok (gas usage est.: 6419070)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u512 ... ok (gas usage est.: 1145450)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u32_arr ... ok (gas usage est.: 100890)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_be_half ... ok (gas usage est.: 3211550)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u512_arr ... ok (gas usage est.: 396900)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_be_u512 ... ok (gas usage est.: 25687760)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u32_le ... ok (gas usage est.: 126220)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_le ... ok (gas usage est.: 6525290)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u512_le ... ok (gas usage est.: 1145450)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_le_u512 ... ok (gas usage est.: 26114590)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u32_le_arr ... ok (gas usage est.: 76930)
+[out] test alexandria_data_structures::tests::byte_reader::test_read_u512_le_arr ... ok (gas usage est.: 396900)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_le_half ... ok (gas usage est.: 3261870)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u64 ... ok (gas usage est.: 57780)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u512_arr ... ok (gas usage est.: 739200)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_be_u256 ... ok (gas usage est.: 12849650)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u64_arr ... ok (gas usage est.: 191530)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u512_le ... ok (gas usage est.: 638740)
+[out] test alexandria_data_structures::tests::bit_array::test_write_word_le_u256 ... ok (gas usage est.: 13062960)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u64_le ... ok (gas usage est.: 187980)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u512_le_arr ... ok (gas usage est.: 541920)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_arr ... ok (gas usage est.: 106470)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i8 ... ok (gas usage est.: 29050)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u64_le_arr ... ok (gas usage est.: 142610)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_le ... ok (gas usage est.: 172020)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i8_arr ... ok (gas usage est.: 19140)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u128 ... ok (gas usage est.: 77420)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_le_arr ... ok (gas usage est.: 89690)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i8_neg ... ok (gas usage est.: 32460)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u128_arr ... ok (gas usage est.: 371810)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_neg ... ok (gas usage est.: 183280)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i8_neg_arr ... ok (gas usage est.: 22550)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u128_le ... ok (gas usage est.: 331140)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_neg_arr ... ok (gas usage est.: 235550)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16 ... ok (gas usage est.: 90520)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u128_le_arr ... ok (gas usage est.: 273170)
+[out] test alexandria_data_structures::tests::bit_array::test_stress_test ... ok (gas usage est.: 479249730)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u256 ... ok (gas usage est.: 77420)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_le_neg ... ok (gas usage est.: 347780)
+[out] test alexandria_data_structures::tests::bit_array::test_serde_serialize ... ok (gas usage est.: 15070)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i16_le_neg_arr ... ok (gas usage est.: 203490)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u256_arr ... ok (gas usage est.: 371810)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32 ... ok (gas usage est.: 57780)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u256_le ... ok (gas usage est.: 332440)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u256_le_arr ... ok (gas usage est.: 273170)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_i32_arr ... ok (gas usage est.: 100890)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u512 ... ok (gas usage est.: 129800)
+[out] test alexandria_data_structures::tests::bit_array::test_serde_ser_deser ... ok (gas usage est.: 76477530)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u16_arr ... ok (gas usage est.: 106470)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u16 ... ok (gas usage est.: 90520)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u16_le ... ok (gas usage est.: 165840)
+[out] test alexandria_data_structures::tests::byte_appender::test_append_u16_le_arr ... ok (gas usage est.: 83510)
+[out] test result: ok. 270 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[err]    0.203263670s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `alexandria_data_structures`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "alexandria_data_structures",
+[out]         ),
+[out]         edition: V2023_11,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 5,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "alexandria_data_structures": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "alexandria_data_structures 0.5.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/bit_array.cairo (2)
+[out]   (W) Plugin diagnostic: Leaving `panic` in the code is discouraged. [Ln 511, Col 8]
+[out]   (W) Usage of deprecated feature `"deprecated-BitArrayTrait"` with no `#[feature("deprecated-BitArrayTrait")]` attribute. Note: "Use `alexandria_bytes::bit_array`." [Ln 131, Col 21]
+[out] file:///mnt/maat-workbench/src/byte_appender.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-ByteAppender"` with no `#[feature("deprecated-ByteAppender")]` attribute. Note: "Use `alexandria_bytes::byte_appender`." [Ln 156, Col 68]
+[out] file:///mnt/maat-workbench/src/byte_array_ext.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`." [Ln 0, Col 45]
+[out] file:///mnt/maat-workbench/src/byte_reader.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`." [Ln 177, Col 5]
+[out] file:///mnt/maat-workbench/src/tests/bit_array.cairo (5)
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 32, Col 20]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 35, Col 16]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 51, Col 12]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 52, Col 12]
+[out]   (W) Usage of deprecated feature `"deprecated-BitArrayTrait"` with no `#[feature("deprecated-BitArrayTrait")]` attribute. Note: "Use `alexandria_bytes::bit_array`." [Ln 1, Col 14]
+[out] file:///mnt/maat-workbench/src/tests/byte_appender.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-ByteAppender"` with no `#[feature("deprecated-ByteAppender")]` attribute. Note: "Use `alexandria_bytes::byte_appender`." [Ln 0, Col 47]
+[out] file:///mnt/maat-workbench/src/tests/byte_array_ext.cairo (2)
+[out]   (W) Usage of deprecated feature `"deprecated-into()"` with no `#[feature("deprecated-into()")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::ByteArrayIntoArrayU8::into()`." [Ln 0, Col 49]
+[out]   (W) Usage of deprecated feature `"deprecated-into()"` with no `#[feature("deprecated-into()")]` attribute. Note: "Use `alexandria_bytes::byte_array_ext::SpanU8IntoBytearray::into()`." [Ln 0, Col 71]
+[out] file:///mnt/maat-workbench/src/tests/byte_reader.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-ByteReader"` with no `#[feature("deprecated-ByteReader")]` attribute. Note: "Use `alexandria_bytes::byte_reader`." [Ln 0, Col 46]
+[out] total: 0 errors, 14 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

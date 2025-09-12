@@ -1,0 +1,357 @@
+=== wadray-0.6.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/wadray/0.6.1 -o archive-607884414883631104.tar.zstd
+
+>>> tar --zstd -xf archive-607884414883631104.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.47.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index a1cf99c..0eedc22 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -25,7 +25,7 @@ keywords = [
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/lindy-labs/wadray"
+[out] -cairo-version = "^2.11.4"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: '^2.11.4'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.starknet]
+[out] @@ -36,5 +36,23 @@ max-line-length = 120
+[out]  sort-module-level-items = true
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +assert_macros = ">= 2.11.4" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.47.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.47.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out]  Downloading snforge_std v0.47.0
+[out]  Downloading snforge_scarb_plugin v0.47.0
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(wadray_unittest) wadray v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 6 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test wadray (snforge test --fuzzer-seed 1)
+[out]    Compiling test(wadray_unittest) wadray v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 6 seconds
+[out] 
+[out] 
+[out] Collected 50 test(s) from wadray package
+[out] Running 50 test(s) from src/
+[out] [PASS] wadray::tests::test_wadray::test_wadray_into_unsigned (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_bounded (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_add (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_add_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_zero (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_add_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray::test_conversions (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_add_sub (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~120000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_bounded (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray::test_conversions_from_primitive_types (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_display_and_debug (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~240000)
+[out] [PASS] wadray::tests::test_wadray::test_default (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_div_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray::test_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~360000)
+[out] [PASS] wadray::tests::test_wadray::test_div_of_0 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~400000)
+[out] [PASS] wadray::tests::test_wadray::test_div_ray_fail (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray::test_div_wad_fail (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_default (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~880000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_display_and_debug (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~240000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_div_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_into_conversions (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_mul_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_mul_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1400000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_pow_signed_wad (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~280000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_pow_signed_ray (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~280000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_signed (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_neg (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_signed_ray_neg_zero_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_signed_wad_neg_zero_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_signed_ray_zero_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_signed_wad_zero_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_sub_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_zero_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~600000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_store_packing (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~240000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_zero_cmp (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_zero_one (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_comparisons2 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_conversions (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] [PASS] wadray::tests::test_wadray::test_sqrt_ray (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~880000)
+[out] [PASS] wadray::tests::test_wadray::test_pow_wad (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray::test_one (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_pow_ray (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray::test_sub (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_sub_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_u256_try_into_wadray (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray::test_sqrt_wad (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~880000)
+[out] [PASS] wadray::tests::test_wadray::test_mul_eq (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~320000)
+[out] [PASS] wadray::tests::test_wadray::test_comparisons1 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~40000)
+[out] [PASS] wadray::tests::test_wadray_signed::test_wadray_signed::test_comparison (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~80000)
+[out] Tests: 50 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> maat-test-ls
+[err]    0.003918529s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `snforge_std`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.47.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "snforge_std",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 47,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `wadray`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "wadray",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 6,
+[out]                 patch: 1,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.47.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "wadray": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "wadray 0.6.1 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/tests/test_wadray_signed.cairo (40)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 8, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 31, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 48, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 65, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 102, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 125, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 126, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 133, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 134, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 141, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 142, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 149, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 150, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 157, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 174, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 191, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 274, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 294, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 351, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 406, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 413, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 420, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 441, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 464, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 472, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 483, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 518, Col 4]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 529, Col 4]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 80, Col 45]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 97, Col 45]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 219, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 220, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 228, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 229, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 259, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 260, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 268, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 269, Col 15]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 522, Col 16]
+[out]   (W) Plugin diagnostic: Unnecessary comparison with a boolean value. Use the variable directly. [Ln 526, Col 16]
+[out] file:///mnt/maat-workbench/src/tests/test_wadray.cairo (40)
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 7, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 36, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 54, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 83, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 101, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 160, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 178, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 193, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 210, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 224, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 225, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 230, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 231, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 236, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 253, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 268, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 279, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 287, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 294, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 321, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 332, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 361, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 390, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 438, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 486, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 497, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 508, Col 0]
+[out]   (E) Plugin diagnostic: Unsupported attribute. [Ln 519, Col 0]
+[out]   (W) Plugin diagnostic: Subtraction with identical operands, this operation always results in zero and may indicate a logic error [Ln 57, Col 15]
+[out]   (W) Plugin diagnostic: Subtraction with identical operands, this operation always results in zero and may indicate a logic error [Ln 70, Col 15]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 299, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 300, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 305, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in true and may indicate a logic error [Ln 306, Col 11]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 309, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 310, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 315, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 316, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 325, Col 13]
+[out]   (W) Plugin diagnostic: Comparison with identical operands, this operation always results in false and may indicate a logic error [Ln 329, Col 13]
+[out] total: 56 errors, 24 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

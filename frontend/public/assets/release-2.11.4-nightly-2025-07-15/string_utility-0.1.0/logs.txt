@@ -1,0 +1,293 @@
+=== string_utility-0.1.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/string_utility/0.1.0 -o archive-600372615941496832.tar.zstd
+
+>>> tar --zstd -xf archive-600372615941496832.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version            Source                        Installed
+[out] nodejs           23.11.0            ASDF_NODEJS_VERSION           true
+[out] scarb            2.11.4             ASDF_SCARB_VERSION            true
+[out] starknet-foundry nightly-2025-07-15 ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 7a33051..0c8d812 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -13,7 +13,30 @@
+[out]  name = "string_utility"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.11.4" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies.starknet]
+[out]  version = "^2.9.2"
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "*" # NOTE: added by maat-patch, was: None
+[out] +assert_macros = "2.9.2" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.11.4" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = {version = "0.46.0+nightly-2025-07-15", registry = "https://scarbs.dev/"} # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out]  Downloading snforge_std v0.46.0
+[out]  Downloading snforge_scarb_plugin v0.46.0
+
+>>> scarb tree -q --workspace
+[out] error: no such command: `tree`
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::kind::Adhoc::new
+[out]    1: anyhow::__private::format_err.100642
+[out]    2: scarb::commands::run
+[out]    3: scarb::main
+[out]    4: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    5: main
+[out]    6: __libc_start_call_main
+[out]    7: __libc_start_main_impl
+[out]    8: _start
+Process finished with exit code 1
+
+>>> scarb build --workspace --test
+[out]    Compiling test(string_utility_unittest) string_utility v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(string_utility_integrationtest) string_utility_integrationtest v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: external contracts not found for selectors: `string_utility::*`
+[out]     Finished `dev` profile target(s) in 9 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[err] error: unexpected argument '--deny-warnings' found
+[err] 
+[err]   tip: a similar argument exists: '--no-warnings'
+[err] 
+[err] Usage: scarb lint --workspace --no-warnings
+[err] 
+[err] For more information, try '--help'.
+Process finished with exit code 2
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test string_utility (scarb cairo-test)
+[out]    Compiling test(string_utility_unittest) string_utility v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(string_utility_integrationtest) string_utility_integrationtest v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: external contracts not found for selectors: `string_utility::*`
+[out]     Finished `dev` profile target(s) in 9 seconds
+[out]      Testing string_utility
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+[out] 
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004319678s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] 
+[out] - `core`: `["/mnt/maat-cache/scarb/registry/std/v2.11.4/core/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "core",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 2,
+[out]                 minor: 11,
+[out]                 patch: 4,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: true,
+[out]             associated_item_constraints: true,
+[out]             coupons: true,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `snforge_std`: `["/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_std-0.46.0/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "snforge_std",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 46,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.46.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `string_utility`: `["/mnt/maat-workbench/src/lib.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "string_utility",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 1,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "lib",
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.46.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "string_utility": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "string_utility 0.1.0 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] - `string_utility_integrationtest`: `["/mnt/maat-workbench/tests/test_contract.cairo"]`
+[out]     ```rust
+[out]     CrateSettings {
+[out]         name: Some(
+[out]             "string_utility_integrationtest",
+[out]         ),
+[out]         edition: V2024_07,
+[out]         version: Some(
+[out]             Version {
+[out]                 major: 0,
+[out]                 minor: 1,
+[out]                 patch: 0,
+[out]             },
+[out]         ),
+[out]         cfg_set: Some(
+[out]             CfgSet(
+[out]                 target: "test",
+[out]                 test,
+[out]             ),
+[out]         ),
+[out]         dependencies: {
+[out]             "core": DependencySettings {
+[out]                 discriminator: None,
+[out]             },
+[out]             "snforge_std": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "snforge_std 0.46.0 (registry+https://scarbs.xyz/)",
+[out]                 ),
+[out]             },
+[out]             "string_utility": DependencySettings {
+[out]                 discriminator: Some(
+[out]                     "string_utility 0.1.0 (path+file:///mnt/maat-workbench/Scarb.toml)",
+[out]                 ),
+[out]             },
+[out]         },
+[out]         experimental_features: ExperimentalFeaturesConfig {
+[out]             negative_impls: false,
+[out]             associated_item_constraints: false,
+[out]             coupons: false,
+[out]         },
+[out]     }
+[out]     ```
+[out] 
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/lib.cairo (24)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 155, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 170, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 190, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 205, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 231, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 238, Col 24]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 241, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 255, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 265, Col 24]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 268, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 278, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 283, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 312, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 317, Col 34]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 344, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 356, Col 24]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 364, Col 28]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 368, Col 28]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 381, Col 24]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 386, Col 42]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 397, Col 38]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 433, Col 20]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 441, Col 24]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found after break. Consider removing them. [Ln 445, Col 24]
+[out] total: 0 errors, 24 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0

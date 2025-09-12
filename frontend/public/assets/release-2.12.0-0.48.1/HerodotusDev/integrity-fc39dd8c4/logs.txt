@@ -1,0 +1,1264 @@
+=== HerodotusDev/integrity-fc39dd8c4 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/HerodotusDev/integrity .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            2.12.0          ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.48.1          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index b9c9605..139314d 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -7,6 +7,7 @@ readme = "README.md"
+[out]  repository = "https://github.com/HerodotusDev/integrity"
+[out]  license = "Apache-2.0"
+[out]  keywords = ["STARK proof", "verifier", "cairo_verifier"]
+[out] +cairo-version = "2.12.0" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet = "2.8.4"
+[out] @@ -40,3 +41,20 @@ monolith = []
+[out]  split = []
+[out]  
+[out]  default = ["recursive", "keccak", "monolith"]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.48.1" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.48.1" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] integrity v2.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.0 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.0 (std)
+
+>>> scarb build --workspace --test
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(integrity_unittest) integrity v2.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:8:1-13:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:15:1-19:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:21:1-25:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:57:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:152:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/proxy.cairo:84:9
+[out]         starknet::event::EventEmitter
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:94:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:304:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/lib_utils.cairo:6:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 8 seconds
+
+>>> scarb lint --workspace --deny-warnings
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]      Linting lib(integrity) integrity v2.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/air/layouts/recursive/public_input.cairo:83:9-92:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/air/public_input.cairo:92:5-100:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/air/public_input.cairo:112:5-121:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/air/public_input.cairo:67:5-73:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/air/public_memory.cairo:85:9-96:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/air/public_memory.cairo:106:5-114:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/channel/channel.cairo:52:9-57:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/common/array_append.cairo:52:9-57:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/common/array_append.cairo:60:9-65:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/common/array_append.cairo:225:9-230:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/common/array_append.cairo:234:9-239:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/common/array_extend.cairo:4:9-9:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         }
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/array_print.cairo:7:9-13:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/array_print.cairo:20:9-26:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:411:18
+[out]     new_h.append((*s.h[0]) ^ v0 ^ v8);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:412:18
+[out]     new_h.append((*s.h[1]) ^ v1 ^ v9);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:413:18
+[out]     new_h.append((*s.h[2]) ^ v2 ^ v10);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:414:18
+[out]     new_h.append((*s.h[3]) ^ v3 ^ v11);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:415:18
+[out]     new_h.append((*s.h[4]) ^ v4 ^ v12);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:416:18
+[out]     new_h.append((*s.h[5]) ^ v5 ^ v13);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:417:18
+[out]     new_h.append((*s.h[6]) ^ v6 ^ v14);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:418:18
+[out]     new_h.append((*s.h[7]) ^ v7 ^ v15);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:83:5-89:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:273:5-408:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: This operation doesn't change the value and can be simplified.
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:87:29
+[out]         m.append(load32(*in[4 * i + 0], *in[4 * i + 1], *in[4 * i + 2], *in[4 * i + 3]));
+[out]                             ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:437:13-443:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:446:13-452:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:478:17-484:17
+[out]                   loop {
+[out]  _________________^
+[out] | ...
+[out] |                 };
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:465:13-490:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:496:9-502:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:504:9-510:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:511:9-516:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:538:5-544:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s_u8.cairo:545:5-551:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:382:18
+[out]     new_h.append((*s.h[0]) ^ v0 ^ v8);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:383:18
+[out]     new_h.append((*s.h[1]) ^ v1 ^ v9);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:384:18
+[out]     new_h.append((*s.h[2]) ^ v2 ^ v10);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:385:18
+[out]     new_h.append((*s.h[3]) ^ v3 ^ v11);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:386:18
+[out]     new_h.append((*s.h[4]) ^ v4 ^ v12);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:387:18
+[out]     new_h.append((*s.h[5]) ^ v5 ^ v13);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:388:18
+[out]     new_h.append((*s.h[6]) ^ v6 ^ v14);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:389:18
+[out]     new_h.append((*s.h[7]) ^ v7 ^ v15);
+[out]                  ^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:245:5-379:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:408:13-414:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:417:13-423:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:449:17-455:17
+[out]                   loop {
+[out]  _________________^
+[out] | ...
+[out] |                 };
+[out] |_________________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:436:13-461:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:467:9-473:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:475:9-481:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:482:9-487:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:509:5-515:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/blake2s.cairo:516:5-522:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/math.cairo:9:5-19:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/merge_sort.cairo:34:9-40:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/merge_sort.cairo:13:5-44:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/common/powers_array.cairo:7:5-16:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/fri.cairo:25:9-41:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/fri.cairo:61:9-67:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/fri.cairo:93:13-101:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/fri.cairo:107:13-114:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/fri.cairo:84:9-127:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/deserialization/stark.cairo:135:31
+[out]                         hash: (*self.continuous_page_headers[i + 2]).into(),
+[out]                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/stark.cairo:99:9-109:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/stark.cairo:113:9-121:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/deserialization/stark.cairo:125:9-141:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: This operation doesn't change the value and can be simplified.
+[out]  --> /mnt/maat-workbench/src/domains.cairo:29:51
+[out]         let eval_generator = pow(FIELD_GENERATOR, STARK_PRIME_MINUS_ONE * 1 / eval_domain_size);
+[out]                                                   ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: This operation doesn't change the value and can be simplified.
+[out]  --> /mnt/maat-workbench/src/domains.cairo:31:52
+[out]         let trace_generator = pow(FIELD_GENERATOR, STARK_PRIME_MINUS_ONE * 1 / trace_domain_size);
+[out]                                                    ^^^^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/fri/fri.cairo:99:5-109:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/fri/fri.cairo:281:17
+[out]         .update((*state.n_layers).into())
+[out]                 ^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: unnecessary double parentheses found. Consider removing them.
+[out]  --> /mnt/maat-workbench/src/fri/fri.cairo:309:47
+[out]     let mut hash = PoseidonImpl::new().update((*state.iter).into());
+[out]                                               ^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/fri/fri_config.cairo:44:9-59:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/fri/fri_first_layer.cairo:12:5-30:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/fri/fri_last_layer.cairo:6:5-17:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     }
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/fri/fri_layer.cairo:41:5-57:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/fri/fri_layer.cairo:84:5-119:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/src/fri/fri_layer.cairo:85:12
+[out]         if queries.len() == 0 {
+[out]            ^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/oods.cairo:102:5-137:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/queries/queries.cairo:27:5-38:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/queries/queries.cairo:58:5-70:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead
+[out]  --> /mnt/maat-workbench/src/queries/queries.cairo:48:8
+[out]     if input.len() == 0 {
+[out]        ^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/queries/queries.cairo:86:5-101:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/stark.cairo:159:9-171:9
+[out]           loop {
+[out]  _________^
+[out] | ...
+[out] |         };
+[out] |_________^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/table_commitment/table_commitment.cairo:105:5-110:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/table_commitment/table_commitment.cairo:127:5-144:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in`
+[out]  --> /mnt/maat-workbench/src/vector_commitment/vector_commitment.cairo:161:5-173:5
+[out]       loop {
+[out]  _____^
+[out] | ...
+[out] |     };
+[out] |_____^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:8:1-13:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:15:1-19:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:21:1-25:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:93:13-112:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:57:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:152:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/proxy.cairo:84:9
+[out]         starknet::event::EventEmitter
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:243:13-262:13
+[out]               loop {
+[out]  _____________^
+[out] | ...
+[out] |             };
+[out] |_____________^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:94:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:304:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/lib_utils.cairo:6:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: lint checking `integrity` failed due to previous errors
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err.104347
+[out]    2: scarb::ops::lint::lint
+[out]    3: scarb::commands::lint::do_lint
+[out]    4: scarb::commands::run
+[out]    5: scarb::main
+[out]    6: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    7: main
+[out]    8: __libc_start_call_main
+[out]    9: __libc_start_main_impl
+[out]   10: _start
+Process finished with exit code 1
+
+>>> SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out]      Running test integrity (scarb cairo-test)
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(integrity_unittest) integrity v2.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:8:1-13:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:15:1-19:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:21:1-25:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:57:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:152:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/proxy.cairo:84:9
+[out]         starknet::event::EventEmitter
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:94:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:304:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/lib_utils.cairo:6:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 7 seconds
+[out]      Testing integrity
+[out] running 97 tests
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_2 ... ok (gas usage est.: 11264)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_9_reversed ... ok (gas usage est.: 352940)
+[out] test integrity::air::public_input::tests::test_get_public_input_hash ... ok (gas usage est.: 718031)
+[out] test integrity::common::tests::test_math::test_pow_2 ... ok (gas usage est.: 2672070)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_3 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_10_reversed ... ok (gas usage est.: 393080)
+[out] test integrity::common::tests::test_math::test_div_rem_felt252 ... ok (gas usage est.: 15410)
+[out] test integrity::channel::tests::test_random_felt_to_prover::test_random_felts_to_prover_0 ... ok (gas usage est.: 3491)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_4 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_10_random ... ok (gas usage est.: 419900)
+[out] test integrity::channel::tests::test_random_felt_to_prover::test_random_felts_to_prover_1 ... ok (gas usage est.: 3491)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_0 ... ok (gas usage est.: 8680)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_5 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_1 ... ok (gas usage est.: 12920)
+[out] test integrity::channel::tests::test_random_felts_to_prover::test_random_felts_to_prover ... ok (gas usage est.: 24133)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_27_random ... ok (gas usage est.: 1439860)
+[out] test integrity::channel::tests::test_read_felt_from_prover::test_read_felt_from_prover_0 ... ok (gas usage est.: 10192)
+[out] test integrity::common::tests::test_powers_array::test_powers_array_0 ... ok (gas usage est.: 86840)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_2_sorted ... ok (gas usage est.: 48440)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_6 ... ok (gas usage est.: 6332)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_7 ... ok (gas usage est.: 11264)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_2_unsorted ... ok (gas usage est.: 48910)
+[out] test integrity::channel::tests::test_read_felt_from_prover::test_read_felt_from_prover_1 ... ok (gas usage est.: 10192)
+[out] test integrity::domains::tests::test_domain_creation ... ok (gas usage est.: 6757720)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_256 ... ok (gas usage est.: 11664)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_3_reversed ... ok (gas usage est.: 90320)
+[out] test integrity::channel::tests::test_read_felt_vector_from_prover::test_read_felt_vector_from_prover_0 ... ok (gas usage est.: 257403)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula2 ... ok (gas usage est.: 38460)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_0 ... ok (gas usage est.: 2870)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_4_reversed ... ok (gas usage est.: 124440)
+[out] test integrity::channel::tests::test_read_uint64_from_prover::test_read_uint64_from_prover_0 ... ok (gas usage est.: 10192)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula4 ... ok (gas usage est.: 38860)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_1 ... ok (gas usage est.: 4840)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_1 ... ok (gas usage est.: 4270)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_5_reversed ... ok (gas usage est.: 174280)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula8 ... ok (gas usage est.: 39660)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_2 ... ok (gas usage est.: 12320)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_2 ... ok (gas usage est.: 4370)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_6_reversed ... ok (gas usage est.: 211410)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula16 ... ok (gas usage est.: 41260)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_3 ... ok (gas usage est.: 29150)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_3 ... ok (gas usage est.: 10650)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_7_reversed ... ok (gas usage est.: 247940)
+[out] test integrity::fri::tests::test_last_layer::test_verify_last_layer1 ... ok (gas usage est.: 6984680)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_4 ... ok (gas usage est.: 13390)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_8_reversed ... ok (gas usage est.: 288650)
+[out] test integrity::common::tests::test_math::test_pow_1 ... ok (gas usage est.: 1088660)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_2 ... ok (gas usage est.: 33048)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_5 ... ok (gas usage est.: 108760)
+[out] test integrity::fri::tests::test_last_layer::test_verify_last_layer2 ... ok (gas usage est.: 1357300)
+[out] test integrity::common::tests::test_blake2s_u8::test_blake2s_v2 ... ok (gas usage est.: 4551006)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_0 ... ok (gas usage est.: 64496)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_3 ... ok (gas usage est.: 64496)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer1 ... ok (gas usage est.: 131770)
+[out] test integrity::common::tests::test_blake2s_u8::test_truncated_blake2s ... ok (gas usage est.: 2550374)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_1 ... ok (gas usage est.: 33048)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer2 ... ok (gas usage est.: 163020)
+[out] test integrity::common::tests::test_blake2s_u8::test_blake2s_v1 ... ok (gas usage est.: 4524670)
+[out] test integrity::common::tests::test_blake2s::test_blake2s_v1 ... ok (gas usage est.: 3886840)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer3 ... ok (gas usage est.: 213700)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer13 ... ok (gas usage est.: 473050)
+[out] test integrity::queries::tests::test_usort::test_usort_3 ... ok (gas usage est.: 445650)
+[out] test integrity::common::tests::test_blake2s::test_blake2s_v2 ... ok (gas usage est.: 3913176)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer4 ... ok (gas usage est.: 293840)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer14 ... ok (gas usage est.: 457030)
+[out] test integrity::queries::tests::test_usort::test_usort_4 ... ok (gas usage est.: 405680)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_0 ... ok (gas usage est.: 6432)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer5 ... ok (gas usage est.: 245530)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer15 ... ok (gas usage est.: 605310)
+[out] test integrity::queries::tests::test_usort::test_usort_5 ... ok (gas usage est.: 55220)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_1 ... ok (gas usage est.: 11264)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer16 ... ok (gas usage est.: 583290)
+[out] test integrity::table_commitment::tests::test_table_commitment_commit::test_table_commitment_commit ... ok (gas usage est.: 12792)
+[out] test integrity::stark::tests::test_stark_commit::test_stark_commit ... ok (gas usage est.: 7976261)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer6 ... ok (gas usage est.: 309910)
+[out] test integrity::oods::tests::test_verify_oods ... ok (gas usage est.: 4747170)
+[out] test integrity::table_commitment::tests::test_table_commitment_decommit::test_table_commitment_decommit ... ok (gas usage est.: 6005179)
+[out] test integrity::proof_of_work::tests::test_proof_of_work::test_verify_proof_of_work_0 ... ok (gas usage est.: 638948)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_commit::test_vector_commit ... ok (gas usage est.: 11392)
+[out] test integrity::proof_of_work::tests::test_proof_of_work::test_verify_proof_of_work_1 ... ok (gas usage est.: 639848)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer7 ... ok (gas usage est.: 408450)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_decommit::test_vector_commitment_decommit ... ok (gas usage est.: 1984059)
+[out] test integrity::queries::tests::test_generate_queries::test_generate_queries_0 ... ok (gas usage est.: 515410)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer8 ... ok (gas usage est.: 581420)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_validate::test_validate_vector_commitment ... ok (gas usage est.: 1800)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer9 ... ok (gas usage est.: 246700)
+[out] test integrity::stark::tests::test_stark_proof_verify::test_stark_proof_fibonacci_verify ... ok (gas usage est.: 70569555)
+[out] test integrity::queries::tests::test_queries_to_points::test_queries_to_points_0 ... ok (gas usage est.: 6245894)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_validate::test_invalid_validate_vector_commitment_1 ... ok (gas usage est.: 1800)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer10 ... ok (gas usage est.: 455390)
+[out] test integrity::queries::tests::test_usort::test_usort_0 ... ok (gas usage est.: 15890)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_validate::test_invalid_validate_vector_commitment_2 ... ok (gas usage est.: 1800)
+[out] test integrity::queries::tests::test_usort::test_usort_1 ... ok (gas usage est.: 3370)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer11 ... ok (gas usage est.: 410560)
+[out] test integrity::queries::tests::test_usort::test_usort_2 ... ok (gas usage est.: 451030)
+[out] test integrity::stark::tests::test_stark_verify::test_stark_verify ... ok (gas usage est.: 31722152)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer12 ... ok (gas usage est.: 580710)
+[out] test result: ok. 97 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> maat-test-ls
+[err]    0.004930102s  WARN cairo_language_server::config: client does not support `workspace/configuration` requests, config will not be reloaded
+[out] Opening file:///mnt/maat-workbench/src/lib.cairo
+[out] 
+[out] ==============================
+[out] Analysis completed, server is idle.
+[out] 
+[out] ==============================
+[out] # Analyzed Crates
+[out] ---
+[out] ```json
+[out] {
+[out]   "name": "core",
+[out]   "source_paths": [
+[out]     "/mnt/maat-cache/scarb/registry/std/v2.12.0/core/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "core",
+[out]     "edition": "2024_07",
+[out]     "version": "2.12.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ]
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": true,
+[out]       "associated_item_constraints": true,
+[out]       "coupons": true,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": "Off",
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "Executable",
+[out]       "CairoTest"
+[out]     ]
+[out]   }
+[out] }
+[out] 
+[out] {
+[out]   "name": "integrity",
+[out]   "source_paths": [
+[out]     "/mnt/maat-workbench/src/lib.cairo"
+[out]   ],
+[out]   "settings": {
+[out]     "name": "integrity",
+[out]     "edition": "2023_01",
+[out]     "version": "2.0.0",
+[out]     "cfg_set": [
+[out]       [
+[out]         "feature",
+[out]         "_verifier_logic"
+[out]       ],
+[out]       [
+[out]         "feature",
+[out]         "default"
+[out]       ],
+[out]       [
+[out]         "feature",
+[out]         "keccak"
+[out]       ],
+[out]       [
+[out]         "feature",
+[out]         "monolith"
+[out]       ],
+[out]       [
+[out]         "feature",
+[out]         "recursive"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "lib"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "starknet-contract"
+[out]       ],
+[out]       [
+[out]         "target",
+[out]         "test"
+[out]       ],
+[out]       "test"
+[out]     ],
+[out]     "dependencies": {
+[out]       "core": {
+[out]         "discriminator": null
+[out]       },
+[out]       "integrity": {
+[out]         "discriminator": "integrity 2.0.0 (path+file:///mnt/maat-workbench/Scarb.toml)"
+[out]       }
+[out]     },
+[out]     "experimental_features": {
+[out]       "negative_impls": false,
+[out]       "associated_item_constraints": false,
+[out]       "coupons": false,
+[out]       "user_defined_inline_macros": false
+[out]     }
+[out]   },
+[out]   "linter_configuration": {
+[out]     "include_compiler_generated_files": false
+[out]   },
+[out]   "plugins": {
+[out]     "builtin_plugins": [
+[out]       "AssertMacros",
+[out]       "CairoTest",
+[out]       "Starknet"
+[out]     ]
+[out]   }
+[out] }
+[out] ```
+[out] 
+[out] ==============================
+[out] file:///mnt/maat-workbench/src/air/layouts/recursive/public_input.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 82, Col 8]
+[out] file:///mnt/maat-workbench/src/air/public_input.cairo (3)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 91, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 111, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 66, Col 4]
+[out] file:///mnt/maat-workbench/src/air/public_memory.cairo (2)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 84, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 105, Col 4]
+[out] file:///mnt/maat-workbench/src/channel/channel.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 51, Col 8]
+[out] file:///mnt/maat-workbench/src/common/array_append.cairo (4)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 51, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 59, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 224, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 233, Col 8]
+[out] file:///mnt/maat-workbench/src/common/array_extend.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 3, Col 8]
+[out] file:///mnt/maat-workbench/src/common/array_print.cairo (2)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 6, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 19, Col 8]
+[out] file:///mnt/maat-workbench/src/common/blake2s_u8.cairo (20)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 410, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 411, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 412, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 413, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 414, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 415, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 416, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 417, Col 17]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 82, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 272, Col 4]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 86, Col 28]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 436, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 445, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 477, Col 16]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 464, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 495, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 503, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 510, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 537, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 544, Col 4]
+[out] file:///mnt/maat-workbench/src/common/blake2s.cairo (18)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 381, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 382, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 383, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 384, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 385, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 386, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 387, Col 17]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 388, Col 17]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 244, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 407, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 416, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 448, Col 16]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 435, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 466, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 474, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 481, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 508, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 515, Col 4]
+[out] file:///mnt/maat-workbench/src/common/math.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 8, Col 4]
+[out] file:///mnt/maat-workbench/src/common/merge_sort.cairo (2)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 33, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 12, Col 4]
+[out] file:///mnt/maat-workbench/src/common/powers_array.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 6, Col 4]
+[out] file:///mnt/maat-workbench/src/common/tests/test_blake2s_u8.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 8, Col 19]
+[out] file:///mnt/maat-workbench/src/common/tests/test_blake2s.cairo (1)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 8, Col 19]
+[out] file:///mnt/maat-workbench/src/contracts/fact_registry.cairo (3)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 242, Col 12]
+[out]   (W) Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly" [Ln 93, Col 8]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead." [Ln 303, Col 57]
+[out] file:///mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo (3)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 92, Col 12]
+[out]   (W) Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly" [Ln 56, Col 8]
+[out]   (W) Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead." [Ln 151, Col 57]
+[out] file:///mnt/maat-workbench/src/contracts/proxy.cairo (1)
+[out]   (W) Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly" [Ln 83, Col 8]
+[out] file:///mnt/maat-workbench/src/deserialization/fri.cairo (5)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 24, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 60, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 92, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 106, Col 12]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 83, Col 8]
+[out] file:///mnt/maat-workbench/src/deserialization/stark.cairo (4)
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 134, Col 30]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 98, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 112, Col 8]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 124, Col 8]
+[out] file:///mnt/maat-workbench/src/domains.cairo (2)
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 28, Col 50]
+[out]   (W) Plugin diagnostic: This operation doesn't change the value and can be simplified. [Ln 30, Col 51]
+[out] file:///mnt/maat-workbench/src/fri/fri_config.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 43, Col 8]
+[out] file:///mnt/maat-workbench/src/fri/fri_first_layer.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 11, Col 4]
+[out] file:///mnt/maat-workbench/src/fri/fri_last_layer.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 5, Col 4]
+[out] file:///mnt/maat-workbench/src/fri/fri_layer.cairo (3)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 40, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 83, Col 4]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 84, Col 11]
+[out] file:///mnt/maat-workbench/src/fri/fri.cairo (3)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 98, Col 4]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 280, Col 16]
+[out]   (W) Plugin diagnostic: unnecessary double parentheses found. Consider removing them. [Ln 308, Col 46]
+[out] file:///mnt/maat-workbench/src/lib_utils.cairo (1)
+[out]   (W) Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead." [Ln 5, Col 32]
+[out] file:///mnt/maat-workbench/src/oods.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 101, Col 4]
+[out] file:///mnt/maat-workbench/src/queries/queries.cairo (4)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 26, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 57, Col 4]
+[out]   (W) Plugin diagnostic: Manual check for `is_empty` detected. Consider using `is_empty()` instead [Ln 47, Col 7]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 85, Col 4]
+[out] file:///mnt/maat-workbench/src/settings.cairo (3)
+[out]   (W) Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]` [Ln 7, Col 0]
+[out]   (W) Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]` [Ln 14, Col 0]
+[out]   (W) Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]` [Ln 20, Col 0]
+[out] file:///mnt/maat-workbench/src/stark.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 158, Col 8]
+[out] file:///mnt/maat-workbench/src/table_commitment/table_commitment.cairo (2)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 104, Col 4]
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop`. Consider replacing this `loop` with a `while` loop for clarity and conciseness [Ln 126, Col 4]
+[out] file:///mnt/maat-workbench/src/vector_commitment/vector_commitment.cairo (1)
+[out]   (W) Plugin diagnostic: you seem to be trying to use `loop` for iterating over a span. Consider using `for in` [Ln 160, Col 4]
+[out] total: 0 errors, 98 warnings, 0 infos, 0 hints
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 0
