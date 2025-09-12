@@ -118,12 +118,17 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                         {testName}
                         <br />
                         <span className="text-base-content/60 text-xs font-normal">
-                          {uniformRev && `${uniformRev}, `}
-                          {!isSingleReport && (
-                            <>
-                              σ=<Duration value={stddev} />
-                            </>
-                          )}
+                          {(() => {
+                            const parts = [];
+                            if (uniformRev) parts.push(uniformRev);
+                            if (!isSingleReport) parts.push(<>σ=<Duration value={stddev} /></>);
+                            return parts.map((part, index) => (
+                              <span key={index}>
+                                {index > 0 && ", "}
+                                {part}
+                              </span>
+                            ));
+                          })()}
                         </span>
                       </>
                     }
