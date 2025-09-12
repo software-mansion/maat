@@ -119,8 +119,11 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                         <br />
                         <span className="text-base-content/60 text-xs font-normal">
                           {uniformRev && `${uniformRev}, `}
-                          {!isSingleReport && <>σ=</>}
-                          <Duration value={stddev} />
+                          {!isSingleReport && (
+                            <>
+                              σ=<Duration value={stddev} />
+                            </>
+                          )}
                         </span>
                       </>
                     }
