@@ -4,10 +4,10 @@ import type { Trend } from "./trends.ts";
 
 export interface RichCellProps {
   value: ReactNode | null;
-  href?: string | null;
-  bullet?: ReactNode | null;
-  trend?: Trend | null;
-  rev?: string | null;
+  href?: string | null | false;
+  bullet?: ReactNode | null | false;
+  trend?: Trend | null | false;
+  rev?: string | null | false;
 }
 
 export function RichCell({ value, href, bullet, trend, rev }: RichCellProps) {

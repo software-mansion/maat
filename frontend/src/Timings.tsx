@@ -1,4 +1,5 @@
 import { useAtomValue } from "jotai";
+import { Fragment, type ReactNode } from "react";
 
 import { Duration } from "./Duration.tsx";
 import { Q } from "./Q.tsx";
@@ -46,16 +47,16 @@ function TimingSection({ stepName }: { stepName: StepName }) {
   const pivotReport = useAtomValue(pivotReportAtom);
   const mostVariableSteps = findMostVariableSteps(selectedReports, pivotReport, stepName);
   const isSingleReport = selectedReports.length === 1;
-  
+
   let title;
   if (isSingleReport) {
     title = (
       <>
         {`Top ${mostVariableSteps.length} slowest projects `}
         <Q>
-          Ma'at shows the top 10 projects with the slowest timing performance. Projects are
-          sorted by execution time (slowest first), then alphabetically. Only projects with
-          successful timing measurements are included.
+          Ma'at shows the top 10 projects with the slowest timing performance. Projects are sorted
+          by execution time (slowest first), then alphabetically. Only projects with successful
+          timing measurements are included.
         </Q>
       </>
     );
@@ -64,16 +65,16 @@ function TimingSection({ stepName }: { stepName: StepName }) {
       <>
         {`Top ${mostVariableSteps.length} most variable projects `}
         <Q>
-          Ma'at shows the top 10 projects with the most variable timing performance
-          compared to a reference report. Projects are sorted by variance (highest first),
-          then alphabetically. Only projects with at least 2 valid timing measurements are
-          included. Variance is calculated using the reference report's timing as the
-          expected value, measuring how much other timings deviate from this baseline.
+          Ma'at shows the top 10 projects with the most variable timing performance compared to a
+          reference report. Projects are sorted by variance (highest first), then alphabetically.
+          Only projects with at least 2 valid timing measurements are included. Variance is
+          calculated using the reference report's timing as the expected value, measuring how much
+          other timings deviate from this baseline.
         </Q>
       </>
     );
   }
-  
+
   return (
     <Section id={`timings-${stepName}`}>
       <SectionTitle>{Steps[stepName].humanName} Timings</SectionTitle>
@@ -87,7 +88,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
               const value = report.metrics[Steps[stepName].meanKey];
               const pivotValue = pivotReport?.metrics[Steps[stepName].meanKey] ?? null;
               const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].meanKey]);
-              const trend = durationTrend(value, pivotValue, allValues);
+              const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
               return <RichCell value={value && <Duration value={value} />} trend={trend} />;
             }}
           />
@@ -97,19 +98,34 @@ function TimingSection({ stepName }: { stepName: StepName }) {
               const value = report.metrics[Steps[stepName].medianKey];
               const pivotValue = pivotReport?.metrics[Steps[stepName].medianKey] ?? null;
               const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].medianKey]);
-              const trend = durationTrend(value, pivotValue, allValues);
+              const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
               return <RichCell value={value && <Duration value={value} />} trend={trend} />;
             }}
           />
         </tbody>
         {mostVariableSteps.length > 0 && (
           <>
-            <ReportTableSection
-              title={title}
-            />
+            <ReportTableSection title={title} />
             <tbody>
               {mostVariableSteps.map(({ testName, values, stddev }) => {
+                let titleSecondRowParts: ReactNode[] = [];
+
                 const uniformRev = determineUniformRevForTest(vm, selection, testName);
+                if (uniformRev) {
+                  titleSecondRowParts.push(uniformRev);
+                }
+
+                if (!isSingleReport) {
+                  titleSecondRowParts.push(
+                    <Fragment key="stddev">
+                      σ=
+                      <Duration value={stddev} />
+                    </Fragment>,
+                  );
+                }
+
+                titleSecondRowParts = intersperse(titleSecondRowParts, ", ");
+
                 return (
                   <ReportTableRow
                     key={testName}
@@ -118,17 +134,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                         {testName}
                         <br />
                         <span className="text-base-content/60 text-xs font-normal">
-                          {(() => {
-                            const parts = [];
-                            if (uniformRev) parts.push(uniformRev);
-                            if (!isSingleReport) parts.push(<>σ=<Duration value={stddev} /></>);
-                            return parts.map((part, index) => (
-                              <span key={index}>
-                                {index > 0 && ", "}
-                                {part}
-                              </span>
-                            ));
-                          })()}
+                          {titleSecondRowParts}
                         </span>
                       </>
                     }
@@ -136,7 +142,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                       const value = values[report.title] ?? null;
                       const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
                       const allValues = selectedReports.map((r) => values[r.title] ?? null);
-                      const trend = durationTrend(value, pivotValue, allValues);
+                      const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
 
                       const test = report.tests.find((t) => t.name === testName);
                       const logsHref = test && urlOf(test.logsHref);
@@ -178,28 +184,28 @@ function findMostVariableSteps(
     return stepReport != null && stepReport.executionTime != null && stepReport.exitCode === 0;
   }
 
-  // Single-report mode: show top N slowest timings
+  // Single-report mode: show top N slowest timings.
   if (selectedReports.length === 1) {
     const report = selectedReports[0]!;
-    const candidates = report.tests
+    return report.tests
       .filter((test) => isSuccessfulStep(test[stepName]))
       .map((test) => ({
         testName: test.name,
         values: { [report.title]: test[stepName]!.executionTime! },
         executionTime: durationTotal(test[stepName]!.executionTime!),
       }))
-      .sort((a, b) => Number(b.executionTime - a.executionTime) || a.testName.localeCompare(b.testName))
+      .sort(
+        (a, b) => Number(b.executionTime - a.executionTime) || a.testName.localeCompare(b.testName),
+      )
       .slice(0, 10)
       .map(({ executionTime, ...props }) => ({
         ...props,
         stddev: serializeDuration(durationFromTotal(executionTime)),
       }));
-    
-    return candidates;
   }
 
-  // Multi-report mode: show most variable timings (existing logic)
-  
+  // Multi-report mode: show most variable timings (existing logic).
+
   // List of tests from the pivot report which passed the step successfully.
   const pivotSuccessfulTests = new Set(
     pivotReport.tests.filter((t) => isSuccessfulStep(t[stepName])).map((t: Test) => t.name),
@@ -255,4 +261,15 @@ function findMostVariableSteps(
         }) as const,
     )
     .slice(0, 10);
+}
+
+function intersperse<T, S>(items: readonly T[], sep: S): (T | S)[] {
+  const out: (T | S)[] = [];
+  let first = true;
+  for (const item of items) {
+    if (!first) out.push(sep);
+    out.push(item);
+    first = false;
+  }
+  return out;
 }

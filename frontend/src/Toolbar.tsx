@@ -4,13 +4,13 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { VscFold, VscPin, VscUnfold, VscWarning } from "react-icons/vsc";
 
 import {
+  type ReportTitle,
   openSectionsAtom,
   pivotAtom,
-  type ReportTitle,
   selectedReportsAtom,
   selectedSliceAtom,
   toolbarPinnedAtom,
-  vm
+  vm,
 } from "./atoms";
 
 export function Toolbar() {
