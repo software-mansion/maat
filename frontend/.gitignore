@@ -24,5 +24,3 @@ dist-ssr
 *.sw?
 
 .maat-generated/
-public/assets/
-src/view-model.json

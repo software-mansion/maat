@@ -47,6 +47,33 @@ function TimingSection({ stepName }: { stepName: StepName }) {
   const mostVariableSteps = findMostVariableSteps(selectedReports, pivotReport, stepName);
   const isSingleReport = selectedReports.length === 1;
   
+  let title;
+  if (isSingleReport) {
+    title = (
+      <>
+        {`Top ${mostVariableSteps.length} slowest projects `}
+        <Q>
+          Ma'at shows the top 10 projects with the slowest timing performance. Projects are
+          sorted by execution time (slowest first), then alphabetically. Only projects with
+          successful timing measurements are included.
+        </Q>
+      </>
+    );
+  } else {
+    title = (
+      <>
+        {`Top ${mostVariableSteps.length} most variable projects `}
+        <Q>
+          Ma'at shows the top 10 projects with the most variable timing performance
+          compared to a reference report. Projects are sorted by variance (highest first),
+          then alphabetically. Only projects with at least 2 valid timing measurements are
+          included. Variance is calculated using the reference report's timing as the
+          expected value, measuring how much other timings deviate from this baseline.
+        </Q>
+      </>
+    );
+  }
+  
   return (
     <Section id={`timings-${stepName}`}>
       <SectionTitle>{Steps[stepName].humanName} Timings</SectionTitle>
@@ -78,18 +105,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
         {mostVariableSteps.length > 0 && (
           <>
             <ReportTableSection
-              title={
-                <>
-                  {isSingleReport
-                    ? `Top ${mostVariableSteps.length} slowest projects `
-                    : `Top ${mostVariableSteps.length} most variable projects `}
-                  <Q>
-                    {isSingleReport
-                      ? "Ma'at shows the top 10 projects with the slowest timing performance. Projects are sorted by execution time (slowest first), then alphabetically. Only projects with successful timing measurements are included."
-                      : "Ma'at shows the top 10 projects with the most variable timing performance compared to a reference report. Projects are sorted by variance (highest first), then alphabetically. Only projects with at least 2 valid timing measurements are included. Variance is calculated using the reference report's timing as the expected value, measuring how much other timings deviate from this baseline."}
-                  </Q>
-                </>
-              }
+              title={title}
             />
             <tbody>
               {mostVariableSteps.map(({ testName, values, stddev }) => {
@@ -103,7 +119,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                         <br />
                         <span className="text-base-content/60 text-xs font-normal">
                           {uniformRev && `${uniformRev}, `}
-                          {isSingleReport ? '' : 'σ='}
+                          {!isSingleReport && <>σ=</>}
                           <Duration value={stddev} />
                         </span>
                       </>
