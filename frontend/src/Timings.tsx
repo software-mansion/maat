@@ -45,6 +45,8 @@ function TimingSection({ stepName }: { stepName: StepName }) {
   const selectedReports = useAtomValue(selectedReportsAtom);
   const pivotReport = useAtomValue(pivotReportAtom);
   const mostVariableSteps = findMostVariableSteps(selectedReports, pivotReport, stepName);
+  const isSingleReport = selectedReports.length === 1;
+  
   return (
     <Section id={`timings-${stepName}`}>
       <SectionTitle>{Steps[stepName].humanName} Timings</SectionTitle>
@@ -78,13 +80,13 @@ function TimingSection({ stepName }: { stepName: StepName }) {
             <ReportTableSection
               title={
                 <>
-                  {`Top ${mostVariableSteps.length} most variable projects `}
+                  {isSingleReport
+                    ? `Top ${mostVariableSteps.length} slowest projects `
+                    : `Top ${mostVariableSteps.length} most variable projects `}
                   <Q>
-                    Ma'at shows the top 10 projects with the most variable timing performance
-                    compared to a reference report. Projects are sorted by variance (highest first),
-                    then alphabetically. Only projects with at least 2 valid timing measurements are
-                    included. Variance is calculated using the reference report's timing as the
-                    expected value, measuring how much other timings deviate from this baseline.
+                    {isSingleReport
+                      ? "Ma'at shows the top 10 projects with the slowest timing performance. Projects are sorted by execution time (slowest first), then alphabetically. Only projects with successful timing measurements are included."
+                      : "Ma'at shows the top 10 projects with the most variable timing performance compared to a reference report. Projects are sorted by variance (highest first), then alphabetically. Only projects with at least 2 valid timing measurements are included. Variance is calculated using the reference report's timing as the expected value, measuring how much other timings deviate from this baseline."}
                   </Q>
                 </>
               }
@@ -101,7 +103,7 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                         <br />
                         <span className="text-base-content/60 text-xs font-normal">
                           {uniformRev && `${uniformRev}, `}
-                          σ=
+                          {isSingleReport ? '' : 'σ='}
                           <Duration value={stddev} />
                         </span>
                       </>
@@ -152,6 +154,28 @@ function findMostVariableSteps(
     return stepReport != null && stepReport.executionTime != null && stepReport.exitCode === 0;
   }
 
+  // Single-report mode: show top N slowest timings
+  if (selectedReports.length === 1) {
+    const report = selectedReports[0]!;
+    const candidates = report.tests
+      .filter((test) => isSuccessfulStep(test[stepName]))
+      .map((test) => ({
+        testName: test.name,
+        values: { [report.title]: test[stepName]!.executionTime! },
+        executionTime: durationTotal(test[stepName]!.executionTime!),
+      }))
+      .sort((a, b) => Number(b.executionTime - a.executionTime) || a.testName.localeCompare(b.testName))
+      .slice(0, 10)
+      .map(({ executionTime, ...props }) => ({
+        ...props,
+        stddev: serializeDuration(durationFromTotal(executionTime)),
+      }));
+    
+    return candidates;
+  }
+
+  // Multi-report mode: show most variable timings (existing logic)
+  
   // List of tests from the pivot report which passed the step successfully.
   const pivotSuccessfulTests = new Set(
     pivotReport.tests.filter((t) => isSuccessfulStep(t[stepName])).map((t: Test) => t.name),
