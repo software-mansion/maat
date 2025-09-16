@@ -30,6 +30,8 @@ ecosystem: Ecosystem = [
             # Spam.
             "dl_alexandria_storage",
             "dl_alexandria_utils",
+            # Garaga makes sth (prob LS) resolve indefinitely.
+            "garaga",
         ]
     ),
     # github("CarmineOptions/konoha"), # Depends on ancient OZ
