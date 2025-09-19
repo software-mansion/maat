@@ -2,7 +2,6 @@ import importlib.util
 from typing import Self, Callable
 
 from pydantic import BaseModel, ConfigDict
-from rich.console import Console
 
 from maat.ecosystem.spec import Ecosystem, ReportNameGenerationContext
 from maat.installation import REPO
@@ -27,9 +26,8 @@ class WorkspaceSettings(BaseModel):
         # Construct the path to the workspace Python script
         settings_script = REPO / "workspaces" / f"{workspace_name}.py"
         if not settings_script.exists():
-            console = Console()
-            console.log(
-                f"[yellow] Workspace [bold]{workspace_name}`[/bold] settings script not found, copying from [bold]local_example.py[/bold]..."
+            print(
+                f"⚠️ Workspace '{workspace_name}' settings script not found, copying from local_example.py..."
             )
             settings_script.write_text(
                 (REPO / "workspaces" / "local_example.py").read_text(), encoding="utf-8"

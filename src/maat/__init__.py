@@ -4,9 +4,7 @@ import subprocess
 from pathlib import Path
 
 import click
-import rich.traceback
 from python_on_whales import DockerClient, Image
-from rich.console import Console
 
 from maat import sandbox, web
 from maat.installation import REPO
@@ -19,12 +17,12 @@ from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
 from maat.runner.planner import prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
+from maat.utils.log import log, track
 from maat.utils.shell import join_command
 from maat.web.report_info import ReportInfo
 from maat.web.slices import make_slices
 from maat.workspace import Workspace
 
-pass_console = click.make_pass_decorator(Console, ensure=True)
 pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
 
 
@@ -144,7 +142,9 @@ def tool_versions(f=None, /, optional_if_pull: bool = False):
                 kwargs["foundry"] = foundry
             else:
                 # Trim whitespace from provided foundry version
-                kwargs["foundry"] = kwargs["foundry"].strip() if kwargs["foundry"] else None
+                kwargs["foundry"] = (
+                    kwargs["foundry"].strip() if kwargs["foundry"] else None
+                )
 
             return ctx.invoke(f, *args, **kwargs)
 
@@ -158,11 +158,9 @@ def tool_versions(f=None, /, optional_if_pull: bool = False):
 
 def load_sandbox_image(f):
     @pass_docker
-    @pass_console
     @click.pass_context
     def new_func(
         ctx,
-        console: Console,
         docker: DockerClient,
         *args,
         pull: str | None,
@@ -177,13 +175,10 @@ def load_sandbox_image(f):
             )
 
         if pull:
-            with console.status(f"Pulling sandbox image: {pull}..."):
+            with track(f"Pulling sandbox image: {pull}"):
                 sandbox_image = docker.image.pull(pull)
-                console.log(f":rocket: Successfully pulled sandbox image: {pull}")
         else:
-            sandbox_image = sandbox.build(
-                scarb=scarb, foundry=foundry, docker=docker, console=console
-            )
+            sandbox_image = sandbox.build(scarb=scarb, foundry=foundry, docker=docker)
 
         kwargs["sandbox_image"] = sandbox_image
         return ctx.invoke(f, *args, **kwargs)
@@ -211,22 +206,19 @@ def cli() -> None:
 @tool_versions(optional_if_pull=True)
 @load_sandbox_image
 @pass_docker
-@pass_console
 def run_local(
-    console: Console,
     docker: DockerClient,
     workspace: Workspace,
     sandbox_image: Image,
     jobs: int | None,
 ) -> None:
-    console.log(f":test_tube: Running experiment within workspace: [bold]{workspace}")
+    log(f"🧪 Running experiment within workspace: {workspace}")
 
     plan = prepare_plan(
         workspace=workspace,
         sandbox=sandbox_image,
         partitions=1,
         docker=docker,
-        console=console,
     )
 
     reporter = Reporter(plan)
@@ -236,14 +228,12 @@ def run_local(
         jobs=jobs,
         docker=docker,
         reporter=reporter,
-        console=console,
     )
 
     report = reporter.finish()
 
     analyse_report(
         report=report,
-        console=console,
     )
 
     save_report(report, plan.report_path())
@@ -277,9 +267,7 @@ def run_local(
 @load_workspace(optional=True)
 @tool_versions
 @pass_docker
-@pass_console
 def build_sandbox(
-    console: Console,
     docker: DockerClient,
     workspace: Workspace,
     scarb: Semver,
@@ -294,7 +282,6 @@ def build_sandbox(
         scarb=scarb,
         foundry=foundry,
         docker=docker,
-        console=console,
         cache_from=cache_from,
         cache_to=cache_to,
         cache=cache,
@@ -317,9 +304,7 @@ def build_sandbox(
     help="Directory where assets should be exported to.",
     required=True,
 )
-@pass_console
 def export_web_assets(
-    console: Console,
     reports: tuple[Path, ...],
     view_model: Path,
     assets: Path,
@@ -341,11 +326,10 @@ def export_web_assets(
 @click.option(
     "--all", is_flag=True, help="Reanalyse all reports in the reports directory."
 )
-@pass_console
-def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
+def reanalyse(report: Path = None, all: bool = False) -> None:
     def reanalyse_file(report_file: Path):
         editor = ReportEditor.read(report_file)
-        analyse_report(report=editor.report, console=console)
+        analyse_report(report=editor.report)
         editor.save()
 
     match (report, all):
@@ -355,11 +339,11 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
             reports_dir = REPO / "reports"
             report_files = list(reports_dir.glob("*.json"))
             if not report_files:
-                console.log("No reports found in the reports directory.")
+                log("No reports found in the reports directory.")
                 return
 
             for report_file in report_files:
-                console.log(f"Reanalysing report: {report_file.name}")
+                log(f"Reanalysing report: {report_file.name}")
                 reanalyse_file(report_file)
         case (report, False):
             reanalyse_file(report)
@@ -377,9 +361,7 @@ def reanalyse(console: Console, report: Path = None, all: bool = False) -> None:
 @tool_versions
 @load_sandbox_image
 @pass_docker
-@pass_console
 def checkout(
-    console: Console,
     docker: DockerClient,
     workspace: Workspace,
     sandbox_image: Image,
@@ -390,7 +372,6 @@ def checkout(
         sandbox=sandbox_image,
         partitions=1,
         docker=docker,
-        console=console,
     )
 
     test = plan.partitions[0].test_by_name(test_name)
@@ -406,50 +387,49 @@ def checkout(
     checkout_dir = REPO / "checkouts" / test_name
 
     with (
-        console.status("Running checkout steps...") as status,
         ephemeral_volume(docker) as cache_volume,
         ephemeral_volume(docker) as workbench_volume,
     ):
         for step in steps:
-            status.update(step.name)
-            docker_run_step(
-                docker=docker,
-                image=sandbox_image,
-                command=step.run if isinstance(step.run, list) else step.run.split(),
-                cache_volume=cache_volume,
-                workbench_volume=workbench_volume,
-                raise_on_nonzero_exit=True,
-                env=step.env,
-                workdir=step.workdir,
+            with track(step.name):
+                docker_run_step(
+                    docker=docker,
+                    image=sandbox_image,
+                    command=step.run
+                    if isinstance(step.run, list)
+                    else step.run.split(),
+                    cache_volume=cache_volume,
+                    workbench_volume=workbench_volume,
+                    raise_on_nonzero_exit=True,
+                    env=step.env,
+                    workdir=step.workdir,
+                )
+
+        with track("Copying workbench contents"):
+            if checkout_dir.exists():
+                shutil.rmtree(checkout_dir)
+            checkout_dir.mkdir(parents=True, exist_ok=True)
+
+            docker.volume.copy(
+                source=(workbench_volume, "."),
+                destination=checkout_dir,
             )
-
-        status.update("Copying workbench contents...")
-
-        if checkout_dir.exists():
-            shutil.rmtree(checkout_dir)
-        checkout_dir.mkdir(parents=True, exist_ok=True)
-
-        docker.volume.copy(
-            source=(workbench_volume, "."),
-            destination=checkout_dir,
-        )
 
     asdf_set(checkout_dir, "scarb", plan.scarb)
     asdf_set(checkout_dir, "starknet-foundry", plan.foundry)
 
-    console.log(f":file_folder: Checked out {checkout_dir}")
+    log(f"📂 Checked out {checkout_dir}")
 
 
 @cli.command(
     help="Remove report files that are not included in any slice (apart from 'All')."
 )
-@pass_console
-def gc_reports(console: Console) -> None:
+def gc_reports() -> None:
     reports_dir = REPO / "reports"
     report_files = list(reports_dir.glob("*.json"))
 
     if not report_files:
-        console.log("No reports found in the reports directory.")
+        print("No reports found in the reports directory.")
         return
 
     # Load all reports
@@ -461,7 +441,7 @@ def gc_reports(console: Console) -> None:
             metrics = Metrics.compute(report, meta)
             report_infos.append(ReportInfo(report=report, meta=meta, metrics=metrics))
         except Exception as e:
-            console.log(f"Error loading report {report_file.name}: {e}")
+            log(f"Error loading report {report_file.name}: {e}")
             continue
 
     # Create slices
@@ -483,15 +463,15 @@ def gc_reports(console: Console) -> None:
 
     # Remove reports
     if not reports_to_remove:
-        console.log("No unused reports found.")
+        log("No unused reports found.")
         return
 
-    console.log(f"Found {len(reports_to_remove)} unused reports:")
+    log(f"Found {len(reports_to_remove)} unused reports:")
     for report_file in reports_to_remove:
-        console.log(f"  - {report_file.name}")
+        log(f"  - {report_file.name}")
         report_file.unlink()
 
-    console.log(f"Removed {len(reports_to_remove)} unused reports.")
+    log(f"Removed {len(reports_to_remove)} unused reports.")
 
 
 @cli.command(help="Prepare a Plan and serialize it to JSON.")
@@ -515,9 +495,7 @@ def gc_reports(console: Console) -> None:
 @tool_versions
 @load_sandbox_image
 @pass_docker
-@pass_console
 def plan(
-    console: Console,
     docker: DockerClient,
     workspace: Workspace,
     sandbox_image: Image,
@@ -529,7 +507,6 @@ def plan(
         sandbox=sandbox_image,
         partitions=partitions,
         docker=docker,
-        console=console,
     )
 
     json_data = plan.model_dump_json(indent=2) + "\n"
@@ -555,15 +532,13 @@ def plan(
     default=None,
 )
 @pass_docker
-@pass_console
 def run_plan(
-    console: Console,
     docker: DockerClient,
     plan_file: Path,
     partition: int | None,
     jobs: int | None,
 ) -> None:
-    console.log(f":test_tube: Running plan from file: [bold]{plan_file}")
+    print(f"🧪 Running plan from file: {plan_file}")
 
     plan = Plan.model_validate_json(plan_file.read_bytes())
 
@@ -591,14 +566,12 @@ def run_plan(
         jobs=jobs,
         docker=docker,
         reporter=reporter,
-        console=console,
     )
 
     report = reporter.finish()
 
     analyse_report(
         report=report,
-        console=console,
     )
 
     save_report(report, plan.report_path(partition=partition))
@@ -618,15 +591,11 @@ def run_plan(
     nargs=-1,
     required=True,
 )
-@pass_console
 def merge_reports(
-    console: Console,
     output: Path,
     paths: tuple[Path, ...],
 ) -> None:
-    console.log(
-        f":test_tube: Merging reports: [bold]{', '.join(str(p) for p in paths)}"
-    )
+    print(f"🧪 Merging reports: {', '.join(str(p) for p in paths)}")
 
     reports = [read_report(path) for path in paths]
 
@@ -638,9 +607,7 @@ def merge_reports(
 
 @cli.command(help="Rerun experiments from report files with the same parameters.")
 @click.argument("reports", type=PathParamType, nargs=-1, required=True)
-@pass_console
 def rerun_all(
-    console: Console,
     reports: tuple[Path, ...],
 ) -> None:
     for report_path in reports:
@@ -659,10 +626,9 @@ def rerun_all(
             f"foundry={report.foundry}",
         ]
 
-        console.log(">", join_command(cmd))
+        log(">", join_command(cmd))
         subprocess.run(cmd, check=True)
 
 
 if __name__ == "__main__":
-    rich.traceback.install(show_locals=True)
     cli()

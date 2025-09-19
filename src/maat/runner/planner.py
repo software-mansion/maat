@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 
+from maat.utils.log import track
 from python_on_whales import DockerClient, Image
-from rich.console import Console
 
 from maat.ecosystem.spec import EcosystemProject, ReportNameGenerationContext
 from maat.ecosystem.utils import flatten_ecosystem
@@ -66,11 +66,10 @@ def prepare_plan(
     sandbox: Image | str,
     partitions: int,
     docker: DockerClient,
-    console: Console,
 ) -> Plan:
     scarb, foundry = tool_versions(sandbox, docker)
 
-    with console.status("Collecting ecosystem..."):
+    with track("Collecting ecosystem"):
         tests = []
         for project in flatten_ecosystem(workspace.settings.ecosystem):
             steps = project.setup() + _workflow(project=project, scarb=scarb)

@@ -2,8 +2,8 @@ import importlib.resources
 from pathlib import Path
 from typing import NamedTuple
 
+from maat.utils.log import track, log
 from python_on_whales import DockerClient, Image
-from rich.console import Console
 
 from maat.model import Semver
 from maat.utils.docker import inspect_image
@@ -18,7 +18,6 @@ def build(
     scarb: Semver,
     foundry: Semver,
     docker: DockerClient,
-    console: Console,
     cache_from: str | dict[str, str] | list[dict[str, str]] | None = None,
     cache_to: str | dict[str, str] | None = None,
     cache: bool = True,
@@ -38,7 +37,7 @@ def build(
         case dict():
             output_dict = output
 
-    with console.status("Building sandbox image..."):
+    with track("Building sandbox image"):
         with importlib.resources.path("maat.agent") as path:
             image = docker.buildx.build(
                 context_path=str(path),
@@ -65,9 +64,7 @@ def build(
     if iidfile:
         iidfile.write_text(image.id)
 
-    console.log(
-        f":rocket: Successfully built sandbox image: {' or '.join(image.repo_tags)}"
-    )
+    log(f"🚀 Successfully built sandbox image: {' or '.join(image.repo_tags)}")
 
     return image
 

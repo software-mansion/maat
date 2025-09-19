@@ -1,8 +1,5 @@
 import re
 
-from rich.console import Console
-from rich.progress import track
-
 from maat.model import (
     Analyser,
     Label,
@@ -13,9 +10,10 @@ from maat.model import (
     TestReport,
     TestsSummary,
 )
+from maat.utils.log import track
 
 
-def analyse_report(report: Report, console: Console):
+def analyse_report(report: Report):
     analyzers: list[Analyser] = [
         tests_summary,
         label,  # NOTE: This analyser depends on all previous ones.
@@ -25,13 +23,9 @@ def analyse_report(report: Report, console: Console):
         (analyzer, test) for test in report.tests for analyzer in analyzers
     ]
 
-    for analyser, test in track(
-        jobs,
-        console=console,
-        description="Analysing results...",
-        transient=True,
-    ):
-        analyser(test)
+    with track("Analysing results"):
+        for analyser, test in jobs:
+            analyser(test)
 
 
 def tests_summary(test: TestReport):
