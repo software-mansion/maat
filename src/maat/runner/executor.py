@@ -1,25 +1,16 @@
 import os
+import traceback
 from concurrent.futures import ThreadPoolExecutor
-from contextlib import contextmanager
-from datetime import timedelta
 from pathlib import Path
 
 from python_on_whales import DockerClient, DockerException, Image, Volume
-from rich.console import Console
-from rich.progress import (
-    BarColumn,
-    Progress,
-    SpinnerColumn,
-    TaskProgressColumn,
-    TextColumn,
-    TimeElapsedColumn,
-)
 
-from maat.model import EXIT_RUNNER_SKIPPED, Plan, PlanPartitionView, Step, Test
+from maat.model import EXIT_RUNNER_SKIPPED, Plan, PlanPartitionView, Test
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
+from maat.utils.log import log, track
 from maat.utils.shell import split_command
 from maat.utils.slugify import slugify
 from maat.utils.unique_id import snowflake_id
@@ -30,7 +21,6 @@ def execute_plan(
     jobs: int | None,
     docker: DockerClient,
     reporter: Reporter,
-    console: Console,
 ):
     for partition in plan.partition_views():
         execute_plan_partition(
@@ -38,7 +28,6 @@ def execute_plan(
             jobs=jobs,
             docker=docker,
             reporter=reporter,
-            console=console,
         )
 
 
@@ -47,30 +36,16 @@ def execute_plan_partition(
     jobs: int | None,
     docker: DockerClient,
     reporter: Reporter,
-    console: Console,
 ):
     jobs = determine_jobs_amount(jobs)
     ct = CancellationToken()
 
     with (
-        Progress(
-            SpinnerColumn(),
-            TextColumn("[progress.description]{task.description}"),
-            BarColumn(),
-            TaskProgressColumn(),
-            TimeElapsedColumn(),
-            console=console,
-        ) as progress,
         ThreadPoolExecutor(max_workers=jobs) as pool,
         ephemeral_volume(docker) as cache_volume,
     ):
-        task = progress.add_task("Experimenting", total=len(partition.test_suite.tests))
-
-        def elapsed() -> timedelta:
-            return timedelta(seconds=progress.tasks[task].finished_time or 0)
 
         def worker_main(current_test: Test):
-            # noinspection PyBroadException
             try:
                 _execute_test(
                     test=current_test,
@@ -79,13 +54,11 @@ def execute_plan_partition(
                     ct=ct,
                     docker=docker,
                     reporter=reporter,
-                    progress=progress,
                 )
-                progress.advance(task)
             except CancelledException:
                 pass
             except Exception:
-                progress.console.print_exception()
+                traceback.print_exc()
 
         for test in partition.test_suite.tests:
             pool.submit(worker_main, test)
@@ -93,24 +66,11 @@ def execute_plan_partition(
         try:
             pool.shutdown(wait=True)
         except KeyboardInterrupt:
-            progress.console.log(
-                f":warning: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description]Cancelling experiment, sending SIGKILL to all containers...[/progress.description]"
-            )
-            progress.update(task, description="Cancelling")
-
+            log("⚠️ Cancelling experiment, sending SIGKILL to all containers...")
             ct.cancel(docker)
             pool.shutdown(wait=True)
-
-            progress.update(task, visible=False)
-            progress.console.log(
-                f":test_tube: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description bold]Experiment cancelled[/progress.description bold]"
-            )
+            log("🧪 Experiment cancelled")
             raise
-
-        progress.update(task, visible=False)
-        progress.console.log(
-            f":test_tube: [progress.elapsed]{elapsed()}[/progress.elapsed] [progress.description bold]Experiment[/progress.description bold]"
-        )
 
 
 def _execute_test(
@@ -120,28 +80,31 @@ def _execute_test(
     ct: CancellationToken,
     docker: DockerClient,
     reporter: Reporter,
-    progress: Progress,
 ):
     ct.raise_if_cancelled()
 
     test_reporter = reporter.test(test)
 
     with (
-        TestProgress(test, progress) as test_progress,
+        track(test.name),
         ephemeral_volume(docker) as workbench_volume,
     ):
+        ct.raise_if_cancelled()
+
+        setup_failed = False
+
         for step in test.steps:
             ct.raise_if_cancelled()
 
             # Skip execution if a setup step has failed but still create a report.
-            if test_progress.setup_failed:
+            if setup_failed:
                 # Mark as skipped due to a setup failure.
                 with test_reporter.step(step) as step_reporter:
                     step_reporter.set_exit_code(EXIT_RUNNER_SKIPPED)
                 continue
 
             with (
-                test_progress.will_run_step(step),
+                track(f"{test.name}: `{step.name}`"),
                 test_reporter.step(step) as step_reporter,
             ):
                 exit_code = docker_run_step(
@@ -159,66 +122,7 @@ def _execute_test(
 
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
                 if step.setup and exit_code != 0:
-                    test_progress.setup_failed = True
-
-
-class TestProgress:
-    """
-    A context manager to handle test execution monitoring and progress reporting.
-    Manages status icons, task creation, progress updates, and final reporting.
-    """
-
-    def __init__(self, test: Test, progress: Progress):
-        self._test = test
-        self._progress = progress
-        self._task = self._progress.add_task(
-            description=self._test.name,
-            start=False,
-            total=sum(not s.setup for s in self._test.steps),
-        )
-
-        self.setup_failed = False
-
-    def __enter__(self):
-        self._progress.console.log(
-            f":arrow_forward: [progress.description]{self._test.name}[/progress.description]"
-        )
-        return self
-
-    def __exit__(self, exc_type, exc_val, exc_tb):
-        if exc_type or self.setup_failed:
-            status_icon = ":x:"
-        else:
-            status_icon = ":white_check_mark:"
-
-        # Hide task and log final status.
-        self._progress.update(self._task, visible=False)
-        self._progress.console.log(
-            "%s [progress.elapsed]%s[/progress.elapsed] [progress.description]%s[/progress.description]"
-            % (
-                status_icon,
-                timedelta(seconds=self._progress.tasks[self._task].finished_time or 0),
-                self._test.name,
-            )
-        )
-
-        return False  # Don't suppress exceptions.
-
-    @contextmanager
-    def will_run_step(self, step: Step):
-        self._progress.update(
-            self._task,
-            description=f"{self._test.name}: {truncate_with_ellipsis(step.name, max_length=24)}",
-        )
-
-        if not step.setup and self._progress.tasks[self._task].start_time is None:
-            self._progress.start_task(self._task)
-
-        try:
-            yield
-        finally:
-            if not step.setup:
-                self._progress.advance(self._task)
+                    setup_failed = True
 
 
 def docker_run_step(
