@@ -4,6 +4,7 @@ import threading
 import time
 
 from python_on_whales import DockerClient, DockerException
+from python_on_whales.exceptions import NoSuchContainer
 
 
 class CancellationToken:
@@ -40,6 +41,8 @@ class CancellationToken:
         for container in containers:
             try:
                 container.kill()
+            except NoSuchContainer:
+                continue
             except DockerException as e:
                 if "is not running" in str(e):
                     continue
