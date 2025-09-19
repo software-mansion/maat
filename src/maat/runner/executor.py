@@ -42,7 +42,6 @@ def execute_plan_partition(
 
     with (
         ThreadPoolExecutor(max_workers=jobs) as pool,
-        ephemeral_volume(docker) as cache_volume,
     ):
 
         def worker_main(current_test: Test):
@@ -50,7 +49,6 @@ def execute_plan_partition(
                 _execute_test(
                     test=current_test,
                     sandbox=partition.plan.sandbox,
-                    cache_volume=cache_volume,
                     ct=ct,
                     docker=docker,
                     reporter=reporter,
@@ -76,7 +74,6 @@ def execute_plan_partition(
 def _execute_test(
     test: Test,
     sandbox: Image | str,
-    cache_volume: Volume,
     ct: CancellationToken,
     docker: DockerClient,
     reporter: Reporter,
@@ -87,6 +84,7 @@ def _execute_test(
 
     with (
         track(test.name),
+        ephemeral_volume(docker) as cache_volume,
         ephemeral_volume(docker) as workbench_volume,
     ):
         ct.raise_if_cancelled()
