@@ -1,12 +1,14 @@
 import os
 import traceback
 from concurrent.futures import ThreadPoolExecutor
+from contextlib import ExitStack
 from pathlib import Path
 
 from python_on_whales import DockerClient, DockerException, Image, Volume
 
 from maat.model import EXIT_RUNNER_SKIPPED, Plan, PlanPartitionView, Test
 from maat.report.reporter import Reporter, StepReporter
+from maat.runner.bake_volume import bake_volume
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
@@ -42,7 +44,6 @@ def execute_plan_partition(
 
     with (
         ThreadPoolExecutor(max_workers=jobs) as pool,
-        ephemeral_volume(docker) as cache_volume,
     ):
 
         def worker_main(current_test: Test):
@@ -50,7 +51,6 @@ def execute_plan_partition(
                 _execute_test(
                     test=current_test,
                     sandbox=partition.plan.sandbox,
-                    cache_volume=cache_volume,
                     ct=ct,
                     docker=docker,
                     reporter=reporter,
@@ -76,7 +76,6 @@ def execute_plan_partition(
 def _execute_test(
     test: Test,
     sandbox: Image | str,
-    cache_volume: Volume,
     ct: CancellationToken,
     docker: DockerClient,
     reporter: Reporter,
@@ -85,16 +84,30 @@ def _execute_test(
 
     test_reporter = reporter.test(test)
 
-    with (
-        track(test.name),
-        ephemeral_volume(docker) as workbench_volume,
-    ):
+    with track(test.name), ExitStack() as volumes:
+        # Create cache and workbench volumes which contents will be mutated during the setup phase.
+        # We will bake these volumes' contents into the sandbox image and delete them afterwards.
+        cache_volume = volumes.enter_context(ephemeral_volume(docker))
         ct.raise_if_cancelled()
 
+        workbench_volume = volumes.enter_context(ephemeral_volume(docker))
+        ct.raise_if_cancelled()
+
+        # We will run setup on the sandbox image, and then this will become the image with baked-in
+        # cache and workbench volumes.
+        image = sandbox
+
+        is_setup_phase = True
         setup_failed = False
 
         for step in test.steps:
             ct.raise_if_cancelled()
+
+            # Raise if a sudden setup step exists after a non-setup one.
+            if not is_setup_phase and step.setup:
+                raise RuntimeError(
+                    f"Setup step `{step.name}` found after non-setup step in test: {test.name}"
+                )
 
             # Skip execution if a setup step has failed but still create a report.
             if setup_failed:
@@ -103,13 +116,44 @@ def _execute_test(
                     step_reporter.set_exit_code(EXIT_RUNNER_SKIPPED)
                 continue
 
+            # Check if we've just exited the setup phase and have to prepare the test image.
+            if is_setup_phase and not step.setup:
+                is_setup_phase = False
+
+                with track(f"{test.name}: baking test image"):
+                    image = bake_volume(
+                        docker=docker,
+                        image=image,
+                        volume=cache_volume,
+                        mount=MAAT_CACHE,
+                        ct=ct,
+                    )
+                    ct.raise_if_cancelled()
+
+                    image = bake_volume(
+                        docker=docker,
+                        image=image,
+                        volume=workbench_volume,
+                        mount=MAAT_WORKBENCH,
+                        ct=ct,
+                    )
+                    ct.raise_if_cancelled()
+
+                    # We don't need volumes any more, so we can delete them and stop mounting.
+                    cache_volume, workbench_volume = None, None
+                    volumes.close()
+
+            assert is_setup_phase == step.setup, "setup phase transition messed up"
+
+            ct.raise_if_cancelled()
+
             with (
                 track(f"{test.name}: `{step.name}`"),
                 test_reporter.step(step) as step_reporter,
             ):
                 exit_code = docker_run_step(
                     docker=docker,
-                    image=sandbox,
+                    image=image,
                     command=split_command(step.run),
                     container_name=f"maat-{slugify(test.name)}-{slugify(step.name)}-{snowflake_id()}",
                     cache_volume=cache_volume,
@@ -129,8 +173,8 @@ def docker_run_step(
     docker: DockerClient,
     image: Image | str,
     command: list[str],
-    cache_volume: Volume,
-    workbench_volume: Volume,
+    cache_volume: Volume | None = None,
+    workbench_volume: Volume | None = None,
     container_name: str | None = None,
     ct: CancellationToken | None = None,
     step_reporter: StepReporter | None = None,
@@ -156,6 +200,12 @@ def docker_run_step(
     else:
         real_workdir = MAAT_WORKBENCH
 
+    volumes = []
+    if cache_volume is not None:
+        volumes.append((cache_volume, MAAT_CACHE, "rw"))
+    if workbench_volume is not None:
+        volumes.append((workbench_volume, MAAT_WORKBENCH, "rw"))
+
     try:
         stream = docker.container.run(
             image=image,
@@ -164,10 +214,7 @@ def docker_run_step(
             name=container_name,
             labels=labels,
             remove=True,
-            volumes=[
-                (cache_volume, MAAT_CACHE, "rw"),
-                (workbench_volume, MAAT_WORKBENCH, "rw"),
-            ],
+            volumes=volumes,
             workdir=real_workdir,
             stream=True,
         )

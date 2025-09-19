@@ -33,6 +33,8 @@ class Step(BaseModel):
     setup: bool = False
     """
     Setup steps halt test on failure and progress bars behaves differently for these.
+    They also have a permission to mutate the workspace and cache directories
+    (non-setup steps volumes are cloned before execution).
     """
     checkout: bool = Field(default_factory=lambda data: data["setup"])
     """
