@@ -127,8 +127,8 @@ def docker_run_step(
     docker: DockerClient,
     image: Image | str,
     command: list[str],
-    cache_volume: Volume,
-    workbench_volume: Volume,
+    cache_volume: Volume | None = None,
+    workbench_volume: Volume | None = None,
     container_name: str | None = None,
     ct: CancellationToken | None = None,
     step_reporter: StepReporter | None = None,
@@ -154,6 +154,12 @@ def docker_run_step(
     else:
         real_workdir = MAAT_WORKBENCH
 
+    volumes = []
+    if cache_volume is not None:
+        volumes.append((cache_volume, MAAT_CACHE, "rw"))
+    if workbench_volume is not None:
+        volumes.append((workbench_volume, MAAT_WORKBENCH, "rw"))
+
     try:
         stream = docker.container.run(
             image=image,
@@ -162,10 +168,7 @@ def docker_run_step(
             name=container_name,
             labels=labels,
             remove=True,
-            volumes=[
-                (cache_volume, MAAT_CACHE, "rw"),
-                (workbench_volume, MAAT_WORKBENCH, "rw"),
-            ],
+            volumes=volumes,
             workdir=real_workdir,
             stream=True,
         )
