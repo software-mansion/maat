@@ -21,6 +21,10 @@ on:
         required: false
         description: Starknet Foundry version
         type: string
+      notify_team:
+        description: "Notify team"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -203,7 +207,7 @@ jobs:
 
       - name: Trigger Web workflow
         if: github.ref == 'refs/heads/main'
-        run: gh workflow run web.yml --ref "${{ github.ref }}" -f experiment_name="${{ env.REPORT_NAME }}"
+        run: gh workflow run web.yml --ref "${{ github.ref }}" -f experiment_name="${{ env.REPORT_NAME }}" -f notify_team=${{ inputs.notify_team }}
         env:
           GH_TOKEN: ${{ github.token }}
 
