@@ -39,6 +39,7 @@ ecosystem: Ecosystem = [
     github("EkuboProtocol/abis"),
     github("EkuboProtocol/governance"),
     github("EkuboProtocol/revenue-buybacks"),
+    github("EkuboProtocol/starknet-contracts"),
     github("HerodotusDev/integrity"),
     github("OpenZeppelin/cairo-contracts"),
     # github("argentlabs/argent-contracts-starknet"), # Depends on ancient OZ
