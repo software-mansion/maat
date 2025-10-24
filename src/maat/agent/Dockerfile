@@ -34,7 +34,7 @@ EOF
 
 # Install Rust, this will use RUSTUP_TOOLCHAIN from environment.
 ENV RUST_BACKTRACE=1
-ARG RUSTUP_TOOLCHAIN=1.88
+ARG RUSTUP_TOOLCHAIN=1.89
 ENV RUSTUP_TOOLCHAIN="$RUSTUP_TOOLCHAIN"
 RUN rustup-init -y --no-modify-path && cargo --version
 
