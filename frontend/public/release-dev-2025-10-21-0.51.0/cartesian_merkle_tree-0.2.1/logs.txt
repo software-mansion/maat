@@ -1,0 +1,170 @@
+=== cartesian_merkle_tree-0.2.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/cartesian_merkle_tree/0.2.1 -o archive-635806021588697088.tar.zstd
+
+>>> tar --zstd -xf archive-635806021588697088.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 6be4c63..f9483ac 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -28,6 +28,7 @@ license = "MIT"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/ametel01/cartesian-merkle-tree"
+[out]  re-export-cairo-plugins = []
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [package.urls]
+[out]  "Bug Reports" = "https://github.com/ametel01/cartesian-merkle-tree/issues"
+[out] @@ -45,3 +46,19 @@ version = "^0.48.1"
+[out]  [tool.snforge]
+[out]  exit_first = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading snforge_scarb_plugin v0.51.0
+[out]  Downloading snforge_std v0.51.0
+
+>>> scarb tree -q --workspace
+[out] cartesian_merkle_tree v0.2.1 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.3 (std)
+[out]     ├── snforge_std v0.51.0
+[out]     │   └── snforge_scarb_plugin v0.51.0
+[out]     └── snforge_scarb_plugin v0.51.0 (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(cartesian_merkle_tree_unittest) cartesian_merkle_tree v0.2.1 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(cartesian_merkle_tree_integrationtest) cartesian_merkle_tree_integrationtest v0.2.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: external contracts not found for selectors: `cartesian_merkle_tree::*`
+[out]     Finished `dev` profile target(s) in 5 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test cartesian_merkle_tree (snforge test --fuzzer-seed 1)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(cartesian_merkle_tree_unittest) cartesian_merkle_tree v0.2.1 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(cartesian_merkle_tree_integrationtest) cartesian_merkle_tree_integrationtest v0.2.1 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: external contracts not found for selectors: `cartesian_merkle_tree::*`
+[out]     Finished `dev` profile target(s) in 5 seconds
+[out] 
+[out] 
+[out] Collected 47 test(s) from cartesian_merkle_tree package
+[out] Running 24 test(s) from src/
+[out] [PASS] cartesian_merkle_tree::library::node::tests::test_node_creation (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~15540)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_generation_existing_key (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~212281)
+[out] [PASS] cartesian_merkle_tree::library::node::tests::test_update_merkle_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~24463)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_empty_tree (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~15640)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_algorithm_6_example (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~15540)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_algorithm_7_exclusion_proof (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~16040)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_after_modification (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~444840)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_heap_property_maintained (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~333832)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_remove_maintains_merkle_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~178123)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_remove_leaf (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~190363)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_multiple_inserts (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~418071)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_remove_node_with_one_child (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~245149)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_single_insert (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~36293)
+[out] [PASS] cartesian_merkle_tree::library::utils::tests::test_calculate_merkle_hash (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~33024)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_remove_non_existent (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~107792)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_remove_root (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~226097)
+[out] [PASS] cartesian_merkle_tree::library::utils::tests::test_calculate_priority (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~19322)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_invalid_verification (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~269495)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_complex_removal_sequence (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~874663)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_verification_existing (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~485925)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_simple_proof (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~81055)
+[out] [PASS] cartesian_merkle_tree::library::tree::tests::test_empty_tree (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_generation_non_existing_key (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~218581)
+[out] [PASS] cartesian_merkle_tree::library::proof::tests::test_proof_verification_non_existing (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~270955)
+[out] Running 23 test(s) from tests/
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_calculate_priority (l1_gas: ~0, l1_data_gas: ~576, l2_gas: ~625364)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_empty_tree_proof (l1_gas: ~0, l1_data_gas: ~192, l2_gas: ~578210)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_generate_proof_existing (l1_gas: ~0, l1_data_gas: ~1344, l2_gas: ~2447643)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_generate_proof_non_existing (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~1626838)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_insert_duplicate (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~1670088)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_insert_multiple (l1_gas: ~0, l1_data_gas: ~2112, l2_gas: ~5733767)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_complex_operations (l1_gas: ~0, l1_data_gas: ~4512, l2_gas: ~29479439)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_non_existence_proof (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~1963482)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_insert_single (l1_gas: ~0, l1_data_gas: ~576, l2_gas: ~796423)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_merkle_hash_determinism (l1_gas: ~0, l1_data_gas: ~2688, l2_gas: ~4153846)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_proof_after_modifications (l1_gas: ~0, l1_data_gas: ~1728, l2_gas: ~5087048)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_remove_leaf (l1_gas: ~0, l1_data_gas: ~1344, l2_gas: ~3087625)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_large_tree (l1_gas: ~0, l1_data_gas: ~8256, l2_gas: ~64541336)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_search_not_found (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~1331108)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_remove_node_with_one_child (l1_gas: ~0, l1_data_gas: ~1440, l2_gas: ~3566017)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_verify_proof_invalid_root (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~1747958)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_state_persistence (l1_gas: ~0, l1_data_gas: ~1824, l2_gas: ~8495770)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_verify_proof_valid (l1_gas: ~0, l1_data_gas: ~1728, l2_gas: ~4079744)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_proof_consistency (l1_gas: ~0, l1_data_gas: ~2112, l2_gas: ~10295671)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_remove_nonexistent (l1_gas: ~0, l1_data_gas: ~576, l2_gas: ~827843)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_remove_root (l1_gas: ~0, l1_data_gas: ~576, l2_gas: ~903103)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_verify_proof_wrong_key (l1_gas: ~0, l1_data_gas: ~960, l2_gas: ~1957552)
+[out] [PASS] cartesian_merkle_tree_integrationtest::integration::test_contract_search_empty (l1_gas: ~0, l1_data_gas: ~192, l2_gas: ~326460)
+[out] Tests: 47 passed, 0 failed, 0 ignored, 0 filtered out
+[out] 
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

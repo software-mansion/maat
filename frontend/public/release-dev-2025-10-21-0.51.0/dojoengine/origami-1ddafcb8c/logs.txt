@@ -1,0 +1,282 @@
+=== dojoengine/origami-1ddafcb8c ===
+
+>>> git clone --depth 1 --no-tags https://github.com/dojoengine/origami .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 14cd203..734f2ad 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -17,3 +17,14 @@ edition = "2024_07"
+[out]  cubit = { git = "https://github.com/bengineer42/cubit", branch = "bump-cairo-gt-2.8" }
+[out]  starknet = "^2.12.2"
+[out]  cairo_test = "^2.12.2"
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/crates/algebra/Scarb.toml b/crates/algebra/Scarb.toml
+[out] index ba349e4..24c2642 100644
+[out] --- a/crates/algebra/Scarb.toml
+[out] +++ b/crates/algebra/Scarb.toml
+[out] @@ -4,9 +4,16 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Algebra library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/algebra"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cubit.workspace = true
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/defi/Scarb.toml b/crates/defi/Scarb.toml
+[out] index 7dddf20..5643e17 100644
+[out] --- a/crates/defi/Scarb.toml
+[out] +++ b/crates/defi/Scarb.toml
+[out] @@ -4,6 +4,7 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "DeFi library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/defi"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  cubit.workspace = true
+[out] @@ -11,3 +12,9 @@ starknet.workspace = true
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/map/Scarb.toml b/crates/map/Scarb.toml
+[out] index 8df097d..8091df1 100644
+[out] --- a/crates/map/Scarb.toml
+[out] +++ b/crates/map/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Maps library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/map"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/random/Scarb.toml b/crates/random/Scarb.toml
+[out] index 53b73e4..b6c0a6e 100644
+[out] --- a/crates/random/Scarb.toml
+[out] +++ b/crates/random/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Random generator library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/random"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/rating/Scarb.toml b/crates/rating/Scarb.toml
+[out] index ddfe3ee..2790644 100644
+[out] --- a/crates/rating/Scarb.toml
+[out] +++ b/crates/rating/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Rating related algorithm library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/rating"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/crates/security/Scarb.toml b/crates/security/Scarb.toml
+[out] index 9add4ee..4c0a4e0 100644
+[out] --- a/crates/security/Scarb.toml
+[out] +++ b/crates/security/Scarb.toml
+[out] @@ -4,6 +4,15 @@ version.workspace = true
+[out]  edition.workspace = true
+[out]  description = "Security library for Dojo based games."
+[out]  homepage = "https://github.com/dojoengine/origami/tree/main/crates/security"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test.workspace = true
+[out] +
+[out] +[dependencies]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+
+>>> scarb fetch
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+
+>>> scarb tree -q --workspace
+[out] origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out] ├── cubit v1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c)
+[out] │   └── starknet v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std)
+[out] 
+[out] origami_defi v1.1.2 (/mnt/maat-workbench/crates/defi/Scarb.toml)
+[out] ├── cubit v1.3.0 (git+https://github.com/bengineer42/cubit?branch=bump-cairo-gt-2.8#32a20af893b3e26e6f5cf436c509457d6500ca5c) (*)
+[out] ├── starknet v2.12.3 (std) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+[out] 
+[out] origami_map v1.1.2 (/mnt/maat-workbench/crates/map/Scarb.toml)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+[out] 
+[out] origami_random v1.1.2 (/mnt/maat-workbench/crates/random/Scarb.toml)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+[out] 
+[out] origami_rating v1.1.2 (/mnt/maat-workbench/crates/rating/Scarb.toml)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+[out] 
+[out] origami_security v1.1.2 (/mnt/maat-workbench/crates/security/Scarb.toml)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_algebra_unittest) origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out] error: Trait has no implementation in context: core::traits::Into::<core::integer::u256, core::felt252>.
+[out]  --> /mnt/maat-cache/scarb/registry/git/checkouts/cubit-79j4nvhjjm5qc/32a20af/src/f128/types/fixed.cairo:529:28
+[out]         let sign: bool = q.into() == 1;
+[out]                            ^^^^
+[out] 
+[out] error: could not compile `origami_algebra` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __clone
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test origami_algebra (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(origami_algebra_unittest) origami_algebra v1.1.2 (/mnt/maat-workbench/crates/algebra/Scarb.toml)
+[out] error: Trait has no implementation in context: core::traits::Into::<core::integer::u256, core::felt252>.
+[out]  --> /mnt/maat-cache/scarb/registry/git/checkouts/cubit-79j4nvhjjm5qc/32a20af/src/f128/types/fixed.cairo:529:28
+[out]         let sign: bool = q.into() == 1;
+[out]                            ^^^^
+[out] 
+[out] error: could not compile `origami_algebra` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __clone
+[err] Error: `scarb` command exited with error
+[err] 
+[err] Stack backtrace:
+[err]    0: anyhow::error::<impl core::convert::From<E> for anyhow::Error>::from
+[err]    1: scarb_cairo_test::main
+[err]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[err]    3: std::rt::lang_start::{{closure}}
+[err]    4: std::rt::lang_start_internal
+[err]    5: main
+[err]    6: __libc_start_call_main
+[err]    7: __libc_start_main_alias_2
+[err]    8: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

@@ -173,13 +173,13 @@ def _lint_label(lint: StepReport) -> Label:
 def _detect_test_runner(rep: StepReport) -> str:
     """
     Detect which test runner was used based on the log output.
-    Returns either 'snforge' or 'cairo-test'.
+    Returns 'snforge', 'cairo-test', or 'unknown' if the runner cannot be determined.
     """
     if rep.log_str is None:
         return "unknown"
     
     # Look for "Running test <package> (snforge test ...)" pattern
-    if re.search(r"^\[out]\s+Running test\s+\S+\s+\(snforge test", rep.log_str, re.M):
+    if re.search(r"^\[out]\s+Running test\s+\S+\s+\(snforge test\b", rep.log_str, re.M):
         return "snforge"
     
     # Look for "Running test <package> (scarb cairo-test)" pattern

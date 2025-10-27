@@ -1,0 +1,141 @@
+=== shell-1.0.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/shell/1.0.0 -o archive-635806069131132928.tar.zstd
+
+>>> tar --zstd -xf archive-635806069131132928.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index e8d92fc..4cb0865 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -19,7 +19,7 @@ documentation = "https://docs.swmansion.com/cairo-oracle/shell/"
+[out]  license = "MIT"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/software-mansion/cairo-oracle"
+[out] -cairo-version = "^2.12.3"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: '^2.12.3'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.oracle]
+[out] @@ -28,3 +28,20 @@ version = "^1.0.0"
+[out]  [dev-dependencies.cairo_test]
+[out]  version = "^2"
+[out]  
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] shell v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── oracle v1.0.0
+[out] │   └── cairo_test v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(shell_unittest) shell v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 2 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test shell (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(shell_unittest) shell v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out]      Testing shell
+[out] running 6 tests
+[out] test shell::tests::exec_success ... failed to run
+[out] test shell::tests::output_failure ... failed to run
+[out] test shell::tests::output_success ... failed to run
+[out] test shell::tests::exec_failure ... failed to run
+[out] test shell::tests::exec_nonexistent_command ... failed to run
+[out] test shell::tests::output_nonexistent_command ... failed to run
+[out] failures:
+[out]    shell::tests::exec_success - Got an exception while executing a hint: Oracles are experimental feature. To enable, pass --experimental-oracles CLI flag.
+[out]    shell::tests::output_failure - Got an exception while executing a hint: Oracles are experimental feature. To enable, pass --experimental-oracles CLI flag.
+[out]    shell::tests::output_success - Got an exception while executing a hint: Oracles are experimental feature. To enable, pass --experimental-oracles CLI flag.
+[out]    shell::tests::exec_failure - Got an exception while executing a hint: Oracles are experimental feature. To enable, pass --experimental-oracles CLI flag.
+[out]    shell::tests::exec_nonexistent_command - Got an exception while executing a hint: Oracles are experimental feature. To enable, pass --experimental-oracles CLI flag.
+[out]    shell::tests::output_nonexistent_command - Got an exception while executing a hint: Oracles are experimental feature. To enable, pass --experimental-oracles CLI flag.
+[out] 
+[err] Error: test result: FAILED. 0 passed; 6 failed; 0 ignored
+[err] 
+[err] Stack backtrace:
+[err]    0: anyhow::error::<impl anyhow::Error>::msg
+[err]    1: cairo_lang_test_runner::CompiledTestRunner::run
+[err]    2: scarb_cairo_test::main
+[err]    3: std::sys::backtrace::__rust_begin_short_backtrace
+[err]    4: std::rt::lang_start::{{closure}}
+[err]    5: std::rt::lang_start_internal
+[err]    6: main
+[err]    7: __libc_start_call_main
+[err]    8: __libc_start_main_alias_2
+[err]    9: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

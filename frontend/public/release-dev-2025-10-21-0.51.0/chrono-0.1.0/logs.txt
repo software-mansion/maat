@@ -1,0 +1,224 @@
+=== chrono-0.1.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/chrono/0.1.0 -o archive-635806024080113664.tar.zstd
+
+>>> tar --zstd -xf archive-635806024080113664.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 1ba8715..4bf1a0f 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -25,7 +25,7 @@ keywords = [
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/KaizeNodeLabs/starkiro"
+[out] -cairo-version = "^2.11.2"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: '^2.11.2'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.starknet]
+[out] @@ -35,5 +35,23 @@ version = "^2.11.2"
+[out]  sort-module-level-items = true
+[out]  
+[out]  [tool.scarb]
+[out] -allow-prebuilt-plugins = ["snforge_std"]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out] +
+[out] +[dev-dependencies]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +assert_macros = "*" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]  Downloading snforge_scarb_plugin v0.51.0
+[out]  Downloading snforge_std v0.51.0
+
+>>> scarb tree -q --workspace
+[out] chrono v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.3 (std)
+[out]     ├── snforge_std v0.51.0
+[out]     │   └── snforge_scarb_plugin v0.51.0
+[out]     └── snforge_scarb_plugin v0.51.0 (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(chrono_unittest) chrono v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(chrono_integrationtest) chrono_integrationtest v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: external contracts not found for selectors: `chrono::*`
+[out]     Finished `dev` profile target(s) in 14 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test chrono (snforge test --fuzzer-seed 1)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(chrono_unittest) chrono v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]    Compiling test(chrono_integrationtest) chrono_integrationtest v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: external contracts not found for selectors: `chrono::*`
+[out]     Finished `dev` profile target(s) in 14 seconds
+[out] 
+[out] 
+[out] Collected 75 test(s) from chrono package
+[out] Running 75 test(s) from tests/
+[out] [PASS] chrono_integrationtest::date::test_date_bounds (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~338578)
+[out] [PASS] chrono_integrationtest::date::test_date_add_days (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1319796)
+[out] [PASS] chrono_integrationtest::date::diff_months (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2854306)
+[out] [PASS] chrono_integrationtest::contract::test_contract (l1_gas: ~0, l1_data_gas: ~192, l2_gas: ~2505365)
+[out] [PASS] chrono_integrationtest::internals::test_mdf_new_range (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~15110)
+[out] [PASS] chrono_integrationtest::date::test_date_weekday (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~244485)
+[out] [PASS] chrono_integrationtest::date::test_date_with_fields (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1661670)
+[out] [PASS] chrono_integrationtest::date::test_date_with_ordinal (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~468312)
+[out] [PASS] chrono_integrationtest::date::test_date_yearflags (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~570698)
+[out] [PASS] chrono_integrationtest::date::test_isoweekdate_with_yearflags (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2251390)
+[out] [PASS] chrono_integrationtest::date::test_leap_year (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~6126056)
+[out] [PASS] chrono_integrationtest::date::test_readme_doomsday (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~59322331)
+[out] [PASS] chrono_integrationtest::date::test_with_0_overflow (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~74959)
+[out] [PASS] chrono_integrationtest::datetime::test_datetime_add (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2799701)
+[out] [PASS] chrono_integrationtest::datetime::test_datetime_add_sub_invariant (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~288823)
+[out] [PASS] chrono_integrationtest::datetime::test_datetime_sub (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1092620)
+[out] [PASS] chrono_integrationtest::examples::test_examples (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2039994)
+[out] [PASS] chrono_integrationtest::date::test_weekday_with_yearflags (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~281630741)
+[out] [PASS] chrono_integrationtest::time::test_time_sub (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~35380)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~73180)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_abs (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_checked_ops (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~25620)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_div (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~71660)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_fmt (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~323600)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_mul (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~149630)
+[out] [PASS] chrono_integrationtest::months::test_month_enum_try_from (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~262338)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_num_days (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~44620)
+[out] [PASS] chrono_integrationtest::internals::test_mdf_fields (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~326681617)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_ord (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_num_seconds (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::months::test_month_partial_ord (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::months::test_month_num_days (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~156734)
+[out] [PASS] chrono_integrationtest::months::test_months_as_u32 (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::time::test_time_add (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~111440)
+[out] [PASS] chrono_integrationtest::time::test_time_fmt (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~61710)
+[out] [PASS] chrono_integrationtest::time::test_time_hms (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [FAIL] chrono_integrationtest::internals::test_mdf_valid
+[out] 
+[out] Failure data:
+[out]     Could not reach the end of the program. RunResources has no remaining steps.
+[out] 
+[out]     Suggestion: Consider using the flag `--max-n-steps` to increase allowed limit of steps
+[out] [PASS] chrono_integrationtest::time::test_time_overflowing_add (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~55300)
+[out] [PASS] chrono_integrationtest::internals::test_year_flags_ndays_from_year (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~141920)
+[out] [PASS] chrono_integrationtest::internals::test_year_flags_nisoweeks (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~203940)
+[out] [PASS] chrono_integrationtest::isoweek::test_iso_week_equivalence_for_first_week (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~296098)
+[out] [PASS] chrono_integrationtest::isoweek::test_iso_week_equivalence_for_last_week (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~304178)
+[out] [PASS] chrono_integrationtest::isoweek::test_iso_week_ordering_for_first_week (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~453948)
+[out] [PASS] chrono_integrationtest::isoweek::test_iso_week_ordering_for_last_week (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~470108)
+[out] [PASS] chrono_integrationtest::months::test_month_enum_primitive_parse (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~261768)
+[out] [PASS] chrono_integrationtest::months::test_month_enum_succ_pred (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~19040)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_seconds_min_underflow (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_seconds_min_underflow_panic (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~14440)
+[out] [PASS] chrono_integrationtest::traits::test_num_days_in_month (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~495979)
+[out] [PASS] chrono_integrationtest::traits::test_num_days_from_ce_against_alternative_impl (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~42512847)
+[out] [PASS] chrono_integrationtest::week::test_week (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2300569)
+[out] [PASS] chrono_integrationtest::week::test_week_checked_no_panic (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~474216)
+[out] [PASS] chrono_integrationtest::week::test_week_min_max (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~110556)
+[out] [PASS] chrono_integrationtest::weekday::test_days_since (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~682930)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_seconds_max_overflow (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_seconds_max_overflow_panic (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~14440)
+[out] [FAIL] chrono_integrationtest::date::test_weeks_from
+[out] 
+[out] Failure data:
+[out]     Could not reach the end of the program. RunResources has no remaining steps.
+[out] 
+[out]     Suggestion: Consider using the flag `--max-n-steps` to increase allowed limit of steps
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_seconds_min_allowed (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::date::test_date_from_ymd (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~476123)
+[out] [PASS] chrono_integrationtest::date::test_date_signed_duration_since (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2465210)
+[out] [PASS] chrono_integrationtest::date::test_date_from_yo (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1705056)
+[out] [PASS] chrono_integrationtest::date::test_date_fields (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~5287468)
+[out] [PASS] chrono_integrationtest::date::test_date_fmt (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~566993)
+[out] [PASS] chrono_integrationtest::date::test_date_from_isoywd (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2006826)
+[out] [PASS] chrono_integrationtest::date::test_date_pred (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~764033)
+[out] [PASS] chrono_integrationtest::date::test_date_num_days_from_ce (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~25009972)
+[out] [PASS] chrono_integrationtest::date::test_date_from_num_days_from_ce (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13802936)
+[out] [PASS] chrono_integrationtest::date::test_date_from_weekday_of_month_opt (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~2312798)
+[out] [PASS] chrono_integrationtest::internals::test_mdf_with_fields (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~679347193)
+[out] [PASS] chrono_integrationtest::date::test_date_succ (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~728033)
+[out] [PASS] chrono_integrationtest::date::test_date_sub_days (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~1565234)
+[out] [PASS] chrono_integrationtest::time_delta::test_duration_seconds_max_allowed (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~13840)
+[out] [PASS] chrono_integrationtest::date::test_date_checked_add_signed (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~3163310)
+[out] [PASS] chrono_integrationtest::date::test_date_to_mdf_to_date (l1_gas: ~0, l1_data_gas: ~0, l2_gas: ~562743757)
+[out] [FAIL] chrono_integrationtest::date::test_date_from_isoywd_and_iso_week
+[out] 
+[out] Failure data:
+[out]     Could not reach the end of the program. RunResources has no remaining steps.
+[out] 
+[out]     Suggestion: Consider using the flag `--max-n-steps` to increase allowed limit of steps
+[out] Running 0 test(s) from src/
+[out] Tests: 72 passed, 3 failed, 0 ignored, 0 filtered out
+[out] 
+[out] Failures:
+[out]     chrono_integrationtest::internals::test_mdf_valid
+[out]     chrono_integrationtest::date::test_weeks_from
+[out]     chrono_integrationtest::date::test_date_from_isoywd_and_iso_week
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

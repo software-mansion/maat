@@ -1,0 +1,351 @@
+=== avnu-labs/avnu-contracts-v2-29a31b6e3 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/avnu-labs/avnu-contracts-v2 .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 152e7d6..1b43354 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -4,7 +4,7 @@ version = "1.0.0"
+[out]  description = "Best execution on Starknet. No fluff."
+[out]  homepage = "https://app.avnu.fi/"
+[out]  edition = "2024_07"
+[out] -cairo-version = "2.9.1"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: '2.9.1'
+[out]  
+[out]  [dependencies]
+[out]  starknet = "2.9.1"
+[out] @@ -19,3 +19,20 @@ sierra = true
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  max-line-length = 150
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── avnu_lib v0.1.0 (git+https://github.com/avnu-labs/avnu-contracts-lib?tag=v0.1.0#d9c44c62ce037e4c11440b1e07828d9075e490e2)
+[out] │   └── starknet v2.12.3 (std)
+[out] ├── starknet v2.12.3 (std) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(avnu_unittest) avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/adapters/vstrk_adapter.cairo:15:37
+[out]     use starknet::{ContractAddress, contract_address_const};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]    Compiling test(avnu_tests) avnu_tests v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/jediswap_adapter_test.cairo:6:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/myswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/sithswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/tenkswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/fee_test.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/helper.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:8:27
+[out] use starknet::class_hash::class_hash_const;
+[out]                           ^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:10:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/helper.cairo:13:44
+[out] use starknet::{ClassHash, ContractAddress, contract_address_const};
+[out]                                            ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:8:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:39:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:84:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:110:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/tests/mocks/old_exchange.cairo:54:15
+[out]     use core::starknet::syscalls::replace_class_syscall;
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 7 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test avnu (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(avnu_unittest) avnu v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/adapters/vstrk_adapter.cairo:15:37
+[out]     use starknet::{ContractAddress, contract_address_const};
+[out]                                     ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]    Compiling test(avnu_tests) avnu_tests v1.0.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/jediswap_adapter_test.cairo:6:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/myswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/sithswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/adapters/tenkswap_adapter_test.cairo:4:20
+[out]     use starknet::{contract_address_const, get_caller_address};
+[out]                    ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/fee_test.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/components/helper.cairo:4:15
+[out] use starknet::contract_address_const;
+[out]               ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:8:27
+[out] use starknet::class_hash::class_hash_const;
+[out]                           ^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/exchange_test.cairo:10:33
+[out] use starknet::{ContractAddress, contract_address_const};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/helper.cairo:13:44
+[out] use starknet::{ClassHash, ContractAddress, contract_address_const};
+[out]                                            ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:8:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:39:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:84:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/tests/mocks/mock_amm.cairo:110:19
+[out]     use starknet::contract_address_const;
+[out]                   ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/tests/mocks/old_exchange.cairo:54:15
+[out]     use core::starknet::syscalls::replace_class_syscall;
+[out]               ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 7 seconds
+[out]      Testing avnu
+[out] running 85 tests
+[out] test avnu_tests::components::fee_test::SetTokenFeeConfig::should_fail_when_caller_is_not_the_owner ... ok (gas usage est.: 354760)
+[out] test avnu_tests::components::fee_test::IsIntegratorWhitelisted::should_return_false_when_not_whitelisted ... ok (gas usage est.: 328490)
+[out] test avnu_tests::adapters::jediswap_adapter_test::Swap::should_call_jediswap ... ok (gas usage est.: 997430)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_sell_token_amount_is_0 ... ok (gas usage est.: 1394090)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_caller_balance_is_too_low ... ok (gas usage est.: 1755190)
+[out] test avnu_tests::adapters::jediswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 810880)
+[out] test avnu_tests::components::fee_test::SetWhitelistedIntegrator::should_whitelist_integrator ... ok (gas usage est.: 541130)
+[out] test avnu_tests::components::fee_test::SetWhitelistedIntegrator::should_fail_when_caller_is_not_the_owner ... ok (gas usage est.: 354720)
+[out] test avnu_tests::adapters::myswap_adapter_test::Swap::should_call_myswap ... ok (gas usage est.: 965660)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_simple_no_integrator ... ok (gas usage est.: 401110)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_caller_balance_is_too_low ... ok (gas usage est.: 1504610)
+[out] test avnu_tests::adapters::myswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 792080)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_simple_no_integrator ... ok (gas usage est.: 522220)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_complex_no_integrator ... ok (gas usage est.: 522330)
+[out] test avnu_tests::adapters::sithswap_adapter_test::Swap::should_call_sithswap ... ok (gas usage est.: 1002030)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_complex_no_integrator ... ok (gas usage est.: 522210)
+[out] test avnu_tests::adapters::sithswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 808140)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees ... ok (gas usage est.: 4149710)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_simple_integrator_fees_less ... ok (gas usage est.: 522640)
+[out] test avnu_tests::adapters::tenkswap_adapter_test::Swap::should_call_tenkswap ... ok (gas usage est.: 997430)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_fee_recipient_is_empty ... ok (gas usage est.: 3092530)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_simple_integrator_fees_less ... ok (gas usage est.: 643250)
+[out] test avnu_tests::adapters::tenkswap_adapter_test::Swap::should_fail_when_invalid_additional_swap_params ... ok (gas usage est.: 810880)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_complex_integrator_fees_less ... ok (gas usage est.: 643360)
+[out] test avnu_tests::components::fee_test::GetSetFeesRecipient::should_set_fees_recipient ... ok (gas usage est.: 518580)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_routes_is_empty ... ok (gas usage est.: 1815380)
+[out] test avnu_tests::components::fee_test::GetSetFeesRecipient::set_fees_recipient_should_fail_for_unauthorized_access ... ok (gas usage est.: 347660)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_complex_integrator_fees_less ... ok (gas usage est.: 643240)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::should_set_fees_bps_0 ... ok (gas usage est.: 434300)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_buy_simple_integrator_fees_more ... ok (gas usage est.: 522350)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_integrator_is_whitelisted ... ok (gas usage est.: 3956070)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::should_set_fees_bps_1 ... ok (gas usage est.: 515980)
+[out] test avnu_tests::components::fee_test::GetFees::fee_on_sell_complex_integrator_fees_more ... ok (gas usage est.: 642950)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_first_sell_token_is_not_sell_token ... ok (gas usage est.: 2074240)
+[out] test avnu_tests::components::fee_test::CollectFees::should_throw_collect_fee_exchange_and_high_integrator_fees ... ok (gas usage est.: 726370)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::should_set_swap_exact_fees_bps ... ok (gas usage est.: 516180)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_0_should_fail_for_unathorized_access ... ok (gas usage est.: 347490)
+[out] test avnu_tests::exchange_test::GetAdapterClassHash::should_return_adapter_class_hash ... ok (gas usage est.: 579560)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_1_should_fail_for_unathorized_access ... ok (gas usage est.: 347490)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_last_buy_token_is_not_buy_token ... ok (gas usage est.: 2656190)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_swap_exact_fees_bps_should_fail_for_unathorized_access ... ok (gas usage est.: 347490)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_integrator_fees_are_too_high ... ok (gas usage est.: 2858960)
+[out] test avnu_tests::exchange_test::SetAdapterClassHash::should_set_adapter_class ... ok (gas usage est.: 784740)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_0_should_fail_for_too_high_bps ... ok (gas usage est.: 346860)
+[out] test avnu_tests::exchange_test::SetAdapterClassHash::should_fail_when_caller_is_not_the_owner ... ok (gas usage est.: 606360)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_fees_bps_1_should_fail_for_too_high_bps ... ok (gas usage est.: 346860)
+[out] test avnu_tests::components::fee_test::GetSetFeeBps::set_swap_exact_token_fees_bps_should_fail_for_too_high_bps ... ok (gas usage est.: 346860)
+[out] test avnu_tests::components::fee_test::GetTokenFeeConfig::should_return_default_config_value_when_token_config_not_stored ... ok (gas usage est.: 327540)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_fail_when_not_enough_sell_token ... ok (gas usage est.: 2700420)
+[out] test avnu_tests::components::fee_test::SetTokenFeeConfig::should_set_token_fee_config ... ok (gas usage est.: 449780)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_fail_when_beneficiary_is_not_the_caller ... ok (gas usage est.: 1298120)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap ... ok (gas usage est.: 3210400)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_multiple_routes ... ok (gas usage est.: 5000710)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_last_buy_token_is_not_buy_token ... ok (gas usage est.: 2906770)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::upgrade_class_check_storage_without_initialization ... ok (gas usage est.: 1197810)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_fail_when_exchange_is_unknown ... ok (gas usage est.: 2170970)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_residual_tokens ... ok (gas usage est.: 3030410)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::upgrade_class_check_storage_with_initialization ... ok (gas usage est.: 1570530)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_sell_token_amount_is_0 ... ok (gas usage est.: 1644670)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_fail_when_insufficient_tokens_received ... ok (gas usage est.: 2629540)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_not_panic_if_owner_only_function_called_after_initialize ... ok (gas usage est.: 1287340)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_fail_when_beneficiary_is_not_the_caller ... ok (gas usage est.: 1548700)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_initialize_called_with_too_high_fees_bps ... ok (gas usage est.: 1027720)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_multiple_routes ... ok (gas usage est.: 7976790)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_integrator_is_whitelisted_policy_feeonsell ... ok (gas usage est.: 4179670)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_initialize_called_twice_by_owner ... ok (gas usage est.: 1250040)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_routes_is_empty ... ok (gas usage est.: 2065960)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_initialize_called_twice_by_anyone ... ok (gas usage est.: 1250540)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_on_sell ... ok (gas usage est.: 4483310)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_route_percent_is_higher_than_100 ... ok (gas usage est.: 1977010)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_owner_only_function_called_before_initialize ... ok (gas usage est.: 986540)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_integrator_is_whitelisted_policy_feeonsell_2 ... ok (gas usage est.: 4604340)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_route_percent_is_higher_is_0 ... ok (gas usage est.: 1976240)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_panic_if_old_function_called_after_upgrade ... ok (gas usage est.: 942810)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_call_swap_when_fees_after_upgrade_before_initialize ... ok (gas usage est.: 3565180)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_throw_error_when_first_sell_token_is_not_sell_token ... ok (gas usage est.: 2324820)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_max_when_u256_add_Overflow ... ok (gas usage est.: 300)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_value_when_token0 ... ok (gas usage est.: 300)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_value_when_token1 ... ok (gas usage est.: 300)
+[out] test avnu_tests::exchange_test::MultiRouteSwap::should_call_swap_when_fees_and_multiple_routes_policy_feeonsell ... ok (gas usage est.: 5234940)
+[out] test avnu_tests::math::sqrt_ratio_test::ComputeSqrtRatioLimit::should_return_min_when_u256_sub_Overflow ... ok (gas usage est.: 300)
+[out] test avnu_tests::exchange_test::UpgradeClassAndMigration::should_call_swap_when_fees_after_upgrade_after_initialize ... ok (gas usage est.: 4324250)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_swap_when_setting_buy_token ... ok (gas usage est.: 5212450)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_swap_when_setting_buy_token_when_no_fees ... ok (gas usage est.: 4809460)
+[out] test avnu_tests::exchange_test::SwapExactTokenTo::should_throw_error_when_residual_tokens ... ok (gas usage est.: 3452680)
+[out] test result: ok. 85 passed; 0 failed; 0 ignored; 0 filtered out;
+[out] 
+[out] running 0 tests
+[out] test result: ok. 0 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

@@ -1,0 +1,297 @@
+=== starkware-libs/starknet-staking-e346aec41 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/starkware-libs/starknet-staking .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 08a16e8..03fa007 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -26,3 +26,14 @@ block_id.tag = "latest"
+[out]  
+[out]  [workspace.tool.scarb]
+[out]  allow-prebuilt-plugins = ["snforge_std"]
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/workspace/apps/staking/contracts/Scarb.toml b/workspace/apps/staking/contracts/Scarb.toml
+[out] index 80c124d..3a928af 100644
+[out] --- a/workspace/apps/staking/contracts/Scarb.toml
+[out] +++ b/workspace/apps/staking/contracts/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "staking"
+[out]  version = "1.14.5"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet.workspace = true
+[out] @@ -14,7 +15,7 @@ snforge_std.workspace = true
+[out]  starkware_utils_testing.workspace = true
+[out]  
+[out]  [scripts]
+[out] -test = "snforge test"
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: 'snforge test'
+[out]  
+[out]  [lib]
+[out]  
+[out] @@ -30,6 +31,7 @@ sort-module-level-items = true
+[out]  [tool]
+[out]  snforge.workspace = true
+[out]  scarb.workspace = true
+[out] +scarb.allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  
+[out]  [features]
+[out]  fork_test = []
+
+>>> scarb fetch
+[out]     Updating git repository https://github.com/starkware-libs/starkware-starknet-utils
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading snforge_scarb_plugin v0.51.0
+[out]  Downloading openzeppelin_presets v2.0.0
+[out]  Downloading snforge_std v0.51.0
+[out]  Downloading openzeppelin_finance v2.0.0
+[out]  Downloading openzeppelin_governance v2.0.0
+[out]  Downloading openzeppelin_account v2.0.0
+[out]  Downloading openzeppelin_merkle_tree v2.0.0
+[out]  Downloading openzeppelin v2.0.0
+[out]  Downloading openzeppelin_upgrades v2.0.0
+[out]  Downloading openzeppelin_utils v2.0.0
+[out]  Downloading openzeppelin_access v2.0.0
+[out]  Downloading openzeppelin_security v2.0.0
+[out]  Downloading openzeppelin_introspection v2.0.0
+[out]  Downloading openzeppelin_token v2.0.0
+
+>>> scarb tree -q --workspace
+[out] staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out] ├── openzeppelin v2.0.0
+[out] │   ├── openzeppelin_security v2.0.0
+[out] │   │   └── starknet v2.12.3 (std)
+[out] │   ├── starknet v2.12.3 (std) (*)
+[out] │   ├── openzeppelin_introspection v2.0.0
+[out] │   │   └── starknet v2.12.3 (std) (*)
+[out] │   ├── openzeppelin_merkle_tree v2.0.0
+[out] │   ├── openzeppelin_upgrades v2.0.0
+[out] │   │   └── starknet v2.12.3 (std) (*)
+[out] │   ├── openzeppelin_utils v2.0.0
+[out] │   │   └── starknet v2.12.3 (std) (*)
+[out] │   ├── openzeppelin_access v2.0.0
+[out] │   │   ├── starknet v2.12.3 (std) (*)
+[out] │   │   └── openzeppelin_introspection v2.0.0 (*)
+[out] │   ├── openzeppelin_account v2.0.0
+[out] │   │   ├── starknet v2.12.3 (std) (*)
+[out] │   │   ├── openzeppelin_introspection v2.0.0 (*)
+[out] │   │   └── openzeppelin_utils v2.0.0 (*)
+[out] │   ├── openzeppelin_token v2.0.0
+[out] │   │   ├── starknet v2.12.3 (std) (*)
+[out] │   │   ├── openzeppelin_introspection v2.0.0 (*)
+[out] │   │   ├── openzeppelin_utils v2.0.0 (*)
+[out] │   │   ├── openzeppelin_access v2.0.0 (*)
+[out] │   │   └── openzeppelin_account v2.0.0 (*)
+[out] │   ├── openzeppelin_governance v2.0.0
+[out] │   │   ├── starknet v2.12.3 (std) (*)
+[out] │   │   ├── openzeppelin_introspection v2.0.0 (*)
+[out] │   │   ├── openzeppelin_utils v2.0.0 (*)
+[out] │   │   ├── openzeppelin_access v2.0.0 (*)
+[out] │   │   ├── openzeppelin_account v2.0.0 (*)
+[out] │   │   └── openzeppelin_token v2.0.0 (*)
+[out] │   ├── openzeppelin_finance v2.0.0
+[out] │   │   ├── starknet v2.12.3 (std) (*)
+[out] │   │   ├── openzeppelin_access v2.0.0 (*)
+[out] │   │   └── openzeppelin_token v2.0.0 (*)
+[out] │   └── openzeppelin_presets v2.0.0
+[out] │       ├── starknet v2.12.3 (std) (*)
+[out] │       ├── openzeppelin_introspection v2.0.0 (*)
+[out] │       ├── openzeppelin_upgrades v2.0.0 (*)
+[out] │       ├── openzeppelin_utils v2.0.0 (*)
+[out] │       ├── openzeppelin_access v2.0.0 (*)
+[out] │       ├── openzeppelin_account v2.0.0 (*)
+[out] │       ├── openzeppelin_token v2.0.0 (*)
+[out] │       └── openzeppelin_finance v2.0.0 (*)
+[out] ├── starknet v2.12.3 (std) (*)
+[out] ├── starkware_utils v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=c19a9487eb7377a147a63189bc8dd4c126b61522#c19a9487eb7377a147a63189bc8dd4c126b61522)
+[out] │   ├── openzeppelin v2.0.0 (*)
+[out] │   └── starknet v2.12.3 (std) (*)
+[out] └── [dev-dependencies]
+[out]     ├── assert_macros v2.12.3 (std)
+[out]     ├── snforge_std v0.51.0
+[out]     │   └── snforge_scarb_plugin v0.51.0
+[out]     ├── starkware_utils_testing v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=c19a9487eb7377a147a63189bc8dd4c126b61522#c19a9487eb7377a147a63189bc8dd4c126b61522)
+[out]     │   ├── assert_macros v2.12.3 (std) (*)
+[out]     │   ├── openzeppelin v2.0.0 (*)
+[out]     │   ├── snforge_std v0.51.0 (*)
+[out]     │   ├── starknet v2.12.3 (std) (*)
+[out]     │   ├── starkware_utils v1.0.0 (git+https://github.com/starkware-libs/starkware-starknet-utils?rev=c19a9487eb7377a147a63189bc8dd4c126b61522#c19a9487eb7377a147a63189bc8dd4c126b61522) (*)
+[out]     │   └── snforge_scarb_plugin v0.51.0 (*)
+[out]     └── snforge_scarb_plugin v0.51.0 (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(contracts_unittest) staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out] error: Type annotations needed. Failed to infer ?2.
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/flow_test/utils.cairo:768:72
+[out]         self.dispatcher().contract_parameters_v1().try_into().unwrap().unclaimed_rewards
+[out]                                                                        ^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: could not compile `staking` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __clone
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test staking (snforge test --fuzzer-seed 1)
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils_testing` package also defines `profile` in the manifest
+[out] 
+[out] warn: in context of a workspace, only the `profile` set in the workspace manifest is applied,
+[out] but the `starkware_utils` package also defines `profile` in the manifest
+[out] 
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(contracts_unittest) staking v1.14.5 (/mnt/maat-workbench/workspace/apps/staking/contracts/Scarb.toml)
+[out] error: Type annotations needed. Failed to infer ?2.
+[out]  --> /mnt/maat-workbench/workspace/apps/staking/contracts/src/flow_test/utils.cairo:768:72
+[out]         self.dispatcher().contract_parameters_v1().try_into().unwrap().unclaimed_rewards
+[out]                                                                        ^^^^^^^^^^^^^^^^^
+[out] 
+[out] error: could not compile `staking` due to previous error
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: anyhow::__private::format_err
+[out]    2: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    3: core::ops::function::FnOnce::call_once{{vtable.shim}}
+[out]    4: std::sys::pal::unix::thread::Thread::new::thread_start
+[out]    5: start_thread
+[out]    6: __clone
+[out] [ERROR] Failed to build test artifacts with Scarb: `scarb` exited with error
+Process finished with exit code 2
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

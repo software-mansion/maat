@@ -1,0 +1,269 @@
+=== EkuboProtocol/governance-799840d4a ===
+
+>>> git clone --depth 1 --no-tags https://github.com/EkuboProtocol/governance .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index f03a95b..9486e09 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -3,7 +3,7 @@ name = "governance"
+[out]  version = "0.1.0"
+[out]  description = "Contracts for governance of Starknet-native protocols"
+[out]  homepage = "https://ekubo.org"
+[out] -cairo-version = ">=2.12.0"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: '>=2.12.0'
+[out]  edition = '2024_07'
+[out]  
+[out]  [dependencies]
+[out] @@ -16,5 +16,21 @@ casm = true
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out]  [dev-dependencies]
+[out]  cairo_test = ">=2.12.0"
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+
+>>> scarb tree -q --workspace
+[out] governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out]    Compiling test(governance_unittest) governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 8 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test governance (scarb cairo-test)
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(governance_unittest) governance v0.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 8 seconds
+[out]      Testing governance
+[out] running 156 tests
+[out] test governance::airdrop_test::test_selector ... ok (gas usage est.: 900)
+[out] test governance::airdrop_test::test_hash ... ok (gas usage est.: 15360)
+[out] test governance::airdrop_test::test_compute_pedersen_root_example_lt ... ok (gas usage est.: 16650)
+[out] test governance::airdrop_test::test_compute_pedersen_root_example_gt ... ok (gas usage est.: 16650)
+[out] test governance::staker_test::test_get_delegated_cumulative_fails_future ... ok (gas usage est.: 362820)
+[out] test governance::staker_v2_test::test_get_average_delegated_future_non_zero ... ok (gas usage est.: 420160)
+[out] test governance::airdrop_test::test_compute_pedersen_root_example_eq ... ok (gas usage est.: 16650)
+[out] test governance::airdrop_test::test_compute_pedersen_root_empty ... ok (gas usage est.: 4470)
+[out] test governance::airdrop_test::test_compute_pedersen_root_recursive ... ok (gas usage est.: 28830)
+[out] test governance::staker_test::test_get_delegated_cumulative_fails_future_non_zero_ts ... ok (gas usage est.: 363420)
+[out] test governance::staker_v2_test::test_approve_sets_allowance ... ok (gas usage est.: 508560)
+[out] test governance::staker_test::test_get_delegated_at_fails_future ... ok (gas usage est.: 399440)
+[out] test governance::airdrop_test::test_claim_single_recipient ... ok (gas usage est.: 1192836)
+[out] test governance::governor_test::test_cancel_after_voting_end_should_fail ... ok (gas usage est.: 3298157)
+[out] test governance::staker_test::test_get_delegated_at_fails_future_non_zero_ts ... ok (gas usage est.: 400040)
+[out] test governance::airdrop_test::test_claim_128_single_recipient_tree ... ok (gas usage est.: 1226026)
+[out] test governance::staker_v2_test::test_delegate_count_lags ... ok (gas usage est.: 2947703)
+[out] test governance::airdrop_test::test_double_claim ... ok (gas usage est.: 1297819)
+[out] test governance::staker_v2_test::test_get_delegated_cumulative ... ok (gas usage est.: 2175993)
+[out] test governance::airdrop_test::test_double_claim_128_single_recipient_tree ... ok (gas usage est.: 1400569)
+[out] test governance::staker_test::test_get_average_delegated ... ok (gas usage est.: 5032100)
+[out] test governance::staker_v2_test::test_get_delegated_cumulative_fails_future ... ok (gas usage est.: 362980)
+[out] test governance::airdrop_test::test_invalid_proof_single_entry ... ok (gas usage est.: 847616)
+[out] test governance::governor_test::test_execute_valid_proposal ... ok (gas usage est.: 7019132)
+[out] test governance::staker_v2_test::test_get_delegated_cumulative_fails_future_non_zero_ts ... ok (gas usage est.: 363580)
+[out] test governance::airdrop_test::test_invalid_proof_fake_entry ... ok (gas usage est.: 834876)
+[out] test governance::airdrop_test::test_compute_root_of_group_empty ... ok (gas usage est.: 1200)
+[out] test governance::staker_v2_test::test_get_delegated_at_fails_future ... ok (gas usage est.: 399760)
+[out] test governance::airdrop_test::test_compute_root_of_group ... ok (gas usage est.: 202410)
+[out] test governance::airdrop_test::test_compute_root_of_group_large ... ok (gas usage est.: 6607720)
+[out] test governance::staker_test::test_transfer_delegates_moved ... ok (gas usage est.: 2178230)
+[out] test governance::airdrop_test::test_compute_root_of_group_large_odd ... ok (gas usage est.: 6709770)
+[out] test governance::staker_v2_test::test_get_delegated_at_fails_future_non_zero_ts ... ok (gas usage est.: 400360)
+[out] test governance::governor_test::test_canceled_proposal_cannot_be_executed ... ok (gas usage est.: 3842552)
+[out] test governance::airdrop_test::test_claim_two_claims ... ok (gas usage est.: 2123902)
+[out] test governance::staker_test::test_delegate_undelegate ... ok (gas usage est.: 4432230)
+[out] test governance::governor_test::test_execute_before_voting_ends_should_fail ... ok (gas usage est.: 3363322)
+[out] test governance::airdrop_test::test_claim_two_claims_via_claim_128 ... ok (gas usage est.: 1942168)
+[out] test governance::staker_v2_test::test_get_average_delegated ... ok (gas usage est.: 5662829)
+[out] test governance::airdrop_test::test_claim_three_claims_one_invalid_via_claim_128 ... ok (gas usage est.: 1096040)
+[out] test governance::staker_test::stake_withdraw::test_takes_approved_token ... ok (gas usage est.: 1618020)
+[out] test governance::governor_test::test_execute_quorum_not_met_should_fail ... ok (gas usage est.: 3365672)
+[out] test governance::airdrop_test::test_claim_from_end_of_tree ... ok (gas usage est.: 1687029)
+[out] test governance::staker_v2_test::test_transfer_delegates_moved ... ok (gas usage est.: 2597359)
+[out] test governance::staker_test::stake_withdraw::test_fails_allowance_large ... ok (gas usage est.: 860800)
+[out] test governance::staker_test::stake_withdraw::test_fails_insufficient_balance ... ok (gas usage est.: 1029770)
+[out] test governance::airdrop_test::test_claim_from_end_of_tree_large ... ok (gas usage est.: 1768929)
+[out] test governance::staker_v2_test::test_staker_delegated_snapshot_store_pack ... ok (gas usage est.: 23270)
+[out] test governance::staker_v2_test::test_staker_delegated_snapshot_store_unpack ... ok (gas usage est.: 67780)
+[out] test governance::staker_v2_test::test_staker_delegated_snapshot_store_pack_unpack ... ok (gas usage est.: 142090)
+[out] test governance::staker_v2_test::test_staker_delegated_snapshot_pack_max_timestamp_and_delegated ... ok (gas usage est.: 5600)
+[out] test governance::staker_v2_test::test_staker_delegated_snapshot_pack_max_timestamp_plus_one ... ok (gas usage est.: 5300)
+[out] test governance::staker_v2_test::test_staker_delegated_snapshot_pack_max_delegated_cumulative ... ok (gas usage est.: 1200)
+[out] test governance::airdrop_test::test_claim_from_end_of_tree_middle_of_bitmap ... ok (gas usage est.: 1768929)
+[out] test governance::staker_v2_test::test_get_average_delegated_order_same ... ok (gas usage est.: 418560)
+[out] test governance::staker_v2_test::test_delegate_undelegate ... ok (gas usage est.: 5607569)
+[out] test governance::governor_test::test_execute_no_majority_should_fail ... ok (gas usage est.: 6186122)
+[out] test governance::staker_v2_test::test_get_average_delegated_order_backwards ... ok (gas usage est.: 418560)
+[out] test governance::airdrop_test::test_double_claim_from_generated_tree ... ok (gas usage est.: 1687029)
+[out] test governance::staker_v2_test::test_get_average_delegated_future ... ok (gas usage est.: 419560)
+[out] test governance::staker_v2_test::stake_withdraw::test_takes_approved_token ... ok (gas usage est.: 1778363)
+[out] test governance::airdrop_test::test_double_claim_after_other_claim ... ok (gas usage est.: 2295245)
+[out] test governance::staker_v2_test::stake_withdraw::test_fails_allowance_large ... ok (gas usage est.: 1095856)
+[out] test governance::governor_test::test_execute_before_execution_window_begins ... ok (gas usage est.: 3818092)
+[out] test governance::airdrop_test::test_claim_before_funded ... ok (gas usage est.: 834336)
+[out] test governance::staker_v2_test::staker_staked_seconds_per_total_staked_calculation::test_raises_error_if_no_history_exists_and_withdrawal_happens ... ok (gas usage est.: 3715261)
+[out] test governance::staker_v2_test::stake_withdraw::test_fails_insufficient_balance ... ok (gas usage est.: 1264826)
+[out] test governance::airdrop_test::test_multiple_claims_from_generated_tree ... ok (gas usage est.: 1984412)
+[out] test governance::staker_v2_test::staker_staked_seconds_per_total_staked_calculation::test_should_return_0_if_no_data_found ... ok (gas usage est.: 443150)
+[out] test governance::call_trait_test::test_hash_address_entry_point_one ... ok (gas usage est.: 31660)
+[out] test governance::governor_test::test_execute_after_execution_window_ends ... ok (gas usage est.: 3819232)
+[out] test governance::call_trait_test::test_hash_address_data_one ... ok (gas usage est.: 39950)
+[out] test governance::airdrop_test::test_claim_128_fails_if_not_id_aligned ... ok (gas usage est.: 556340)
+[out] test governance::call_trait_test::test_hash_address_data_one_two ... ok (gas usage est.: 48040)
+[out] test governance::call_trait_test::test_execute_contract_not_deployed ... ok (gas usage est.: 75410)
+[out] test governance::call_trait_test::test_execute_invalid_entry_point ... ok (gas usage est.: 226950)
+[out] test governance::airdrop_test::test_claim_128_empty ... ok (gas usage est.: 498210)
+[out] test governance::call_trait_test::test_execute_invalid_call_data_too_short ... ok (gas usage est.: 219420)
+[out] test governance::airdrop_test::test_claim_128_too_many_claims ... ok (gas usage est.: 2132600)
+[out] test governance::call_trait_test::test_execute_valid_call_data ... ok (gas usage est.: 435240)
+[out] test governance::call_trait_test::test_hash_no_collision_span_length ... ok (gas usage est.: 111892)
+[out] test governance::execution_state_test::test_three_tuple_storage_forward_back ... ok (gas usage est.: 100270)
+[out] test governance::governor_test::test_hash_call ... ok (gas usage est.: 49515)
+[out] test governance::governor_test::test_setup ... ok (gas usage est.: 976230)
+[out] test governance::governor_test::test_verify_votes_are_counted_over_voting_weight_smoothing_duration_from_start ... ok (gas usage est.: 7366282)
+[out] test governance::staker_v2_test::staker_staked_seconds_per_total_staked_calculation::test_check_total_staked_calculations ... ok (gas usage est.: 12637491)
+[out] test governance::governor_test::test_propose ... ok (gas usage est.: 2642832)
+[out] test governance::governor_test::test_quorum_counts_only_yes_votes_not_met ... ok (gas usage est.: 5227822)
+[out] test governance::governor_test::test_propose_has_active_proposal ... ok (gas usage est.: 2993171)
+[out] test governance::governor_test::test_proposer_can_cancel_and_re_propose ... ok (gas usage est.: 3902854)
+[out] test governance::governor_test::test_quorum_counts_only_yes_votes_exactly_met ... ok (gas usage est.: 6249938)
+[out] test governance::governor_test::test_proposer_can_wait_out_original_proposal_and_re_propose ... ok (gas usage est.: 3452984)
+[out] test governance::governor_test::test_execute_emits_logs_from_data ... ok (gas usage est.: 6417848)
+[out] test governance::staker_v2_test::staker_staked_seconds_per_total_staked_calculation::test_get_time_weighted_total_staked_sum_at ... ok (gas usage est.: 16549133)
+[out] test governance::governor_test::test_proposer_can_cancel_and_propose_different ... ok (gas usage est.: 3901954)
+[out] test governance::governor_test::test_execute_already_executed_should_fail ... ok (gas usage est.: 6312207)
+[out] test governance::governor_test::test_propose_already_exists_should_suceed ... ok (gas usage est.: 5346014)
+[out] test governance::staker_v2_test::staker_staked_seconds_per_total_staked_calculation::test_should_stake_10000_tokens_for_5_seconds_adding_10000_every_second_to_staked_seconds ... ok (gas usage est.: 8370009)
+[out] test governance::staker_log_test::test_staking_log_packing ... ok (gas usage est.: 69225)
+[out] test governance::governor_test::test_propose_below_threshold_should_fail ... ok (gas usage est.: 1171334)
+[out] test governance::governor_test::test_governor_validate_fails ... ok (gas usage est.: 584180)
+[out] test governance::governor_test::test_governor_validate_declare_fails ... ok (gas usage est.: 581690)
+[out] test governance::governor_test::test_governor_execute_fails_from_non_zero ... ok (gas usage est.: 614940)
+[out] test governance::governor_test::test_execute_invalid_call_id ... ok (gas usage est.: 5483412)
+[out] test governance::governor_test::test_governor_execute_fails_tx_version_0 ... ok (gas usage est.: 615130)
+[out] test governance::governor_test::test_upgrade_fails_if_not_self_call ... ok (gas usage est.: 609150)
+[out] test governance::governor_test::test_vote_yes ... ok (gas usage est.: 5153297)
+[out] test governance::governor_test::test_governor_execute_fails_tx_version_1 ... ok (gas usage est.: 615130)
+[out] test governance::governor_test::test_governor_execute_succeeds_version_simulate ... ok (gas usage est.: 611630)
+[out] test governance::governor_test::test_anyone_can_vote ... ok (gas usage est.: 3742447)
+[out] test governance::governor_test::test_upgrade_succeeds_self_call ... ok (gas usage est.: 5465170)
+[out] test governance::governor_test::test_send_message_to_l1_fails_if_not_self_call ... ok (gas usage est.: 624490)
+[out] test governance::governor_test::test_describe_proposal_successful ... ok (gas usage est.: 3294647)
+[out] test governance::governor_test::test_reconfigure_succeeds_self_call ... ok (gas usage est.: 7793570)
+[out] test governance::staker_test::test_staker_delegated_snapshot_store_pack ... ok (gas usage est.: 23270)
+[out] test governance::staker_test::test_staker_delegated_snapshot_store_unpack ... ok (gas usage est.: 67780)
+[out] test governance::staker_test::test_staker_delegated_snapshot_store_pack_unpack ... ok (gas usage est.: 142090)
+[out] test governance::staker_test::test_staker_delegated_snapshot_pack_max_timestamp_and_delegated ... ok (gas usage est.: 5600)
+[out] test governance::staker_test::test_staker_delegated_snapshot_pack_max_timestamp_plus_one ... ok (gas usage est.: 5300)
+[out] test governance::staker_test::test_staker_delegated_snapshot_pack_max_delegated_cumulative ... ok (gas usage est.: 1200)
+[out] test governance::governor_test::test_propose_and_describe_successful ... ok (gas usage est.: 2721034)
+[out] test governance::staker_test::test_get_average_delegated_order_same ... ok (gas usage est.: 418240)
+[out] test governance::governor_test::test_send_message_to_l1_succeeds_self_call ... ok (gas usage est.: 5520134)
+[out] test governance::staker_test::test_get_average_delegated_order_backwards ... ok (gas usage est.: 418240)
+[out] test governance::governor_test::test_reconfigure_fails_if_not_self_call ... ok (gas usage est.: 737340)
+[out] test governance::staker_test::test_get_average_delegated_future ... ok (gas usage est.: 419240)
+[out] test governance::governor_test::test_describe_proposal_fails_for_unknown_proposal ... ok (gas usage est.: 3064027)
+[out] test governance::staker_test::test_get_average_delegated_future_non_zero ... ok (gas usage est.: 419840)
+[out] test governance::staker_test::test_approve_sets_allowance ... ok (gas usage est.: 508560)
+[out] test governance::governor_test::test_vote_before_voting_start_should_fail ... ok (gas usage est.: 3363277)
+[out] test governance::governor_test::test_describe_proposal_fails_if_canceled ... ok (gas usage est.: 3529977)
+[out] test governance::governor_test::test_describe_proposal_fails_if_not_proposer ... ok (gas usage est.: 723480)
+[out] test governance::staker_test::test_delegate_count_lags ... ok (gas usage est.: 2695290)
+[out] test governance::governor_test::test_vote_already_voted_should_fail ... ok (gas usage est.: 4232677)
+[out] test governance::staker_test::test_get_delegated_cumulative ... ok (gas usage est.: 1976680)
+[out] test governance::governor_test::test_vote_already_voted_different_vote_should_fail ... ok (gas usage est.: 4054637)
+[out] test governance::governor_test::test_describe_proposal_fails_if_executed ... ok (gas usage est.: 6661102)
+[out] test governance::governor_test::test_vote_no_staking_after_period_starts ... ok (gas usage est.: 4837297)
+[out] test governance::governor_test::test_vote_after_voting_period_should_fail ... ok (gas usage est.: 3363547)
+[out] test governance::governor_test::test_cancel_fails_if_not_from_proposer ... ok (gas usage est.: 3283687)
+[out] test governance::governor_test::test_vote_invalid_proposal ... ok (gas usage est.: 1000460)
+[out] test governance::governor_test::test_cancel_fails_if_proposal_not_exists ... ok (gas usage est.: 940540)
+[out] test governance::governor_test::test_cancel_fails_if_already_canceled ... ok (gas usage est.: 3748327)
+[out] test governance::governor_test::test_vote_after_cancel_proposal ... ok (gas usage est.: 3808657)
+[out] test governance::governor_test::test_cancel_by_proposer ... ok (gas usage est.: 3567712)
+[out] test governance::governor_test::test_double_cancel_by_proposer ... ok (gas usage est.: 3761197)
+[out] test governance::governor_test::test_cancel_by_non_proposer ... ok (gas usage est.: 3283687)
+[out] test governance::airdrop_test::test_claim_128_large_tree ... ok (gas usage est.: 123225040)
+[out] test governance::airdrop_test::test_claim_128_double_claim ... ok (gas usage est.: 65117142)
+[out] test governance::airdrop_test::refundable::test_refundable_transfers_token_at_refund_timestamp ... ok (gas usage est.: 3618620)
+[out] test governance::airdrop_test::refundable::test_refundable_reverts_before_timestamp ... ok (gas usage est.: 770800)
+[out] test governance::airdrop_test::refundable::test_not_refundable_reverts ... ok (gas usage est.: 489210)
+[out] test governance::airdrop_test::refundable::test_not_refundable_reverts_after_time ... ok (gas usage est.: 489700)
+[out] test governance::call_trait_test::test_hash_empty ... ok (gas usage est.: 31660)
+[out] test governance::call_trait_test::test_hash_empty_different_state ... ok (gas usage est.: 31660)
+[out] test governance::call_trait_test::test_hash_address_one ... ok (gas usage est.: 31660)
+[out] test result: ok. 156 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

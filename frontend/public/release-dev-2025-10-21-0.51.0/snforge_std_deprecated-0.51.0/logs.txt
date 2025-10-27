@@ -1,0 +1,311 @@
+=== snforge_std_deprecated-0.51.0 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/snforge_std_deprecated/0.51.0 -o archive-635806078698340352.tar.zstd
+
+>>> tar --zstd -xf archive-635806078698340352.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index bd9afaa..0370cf5 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -18,9 +18,22 @@ documentation = "https://foundry-rs.github.io/starknet-foundry/appendix/snforge-
+[out]  license-file = "LICENSE"
+[out]  readme = "README.md"
+[out]  repository = "https://github.com/foundry-rs/starknet-foundry"
+[out] -cairo-version = "<=2.11.4"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: '<=2.11.4'
+[out]  re-export-cairo-plugins = ["snforge_scarb_plugin_deprecated"]
+[out]  
+[out]  [dependencies.snforge_scarb_plugin_deprecated]
+[out]  version = "^0.51.0"
+[out]  
+[out] +
+[out] +[scripts]
+[out] +test = "snforge test --fuzzer-seed 1" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+
+>>> scarb fetch
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]  Downloading snforge_scarb_plugin_deprecated v0.51.0
+
+>>> scarb tree -q --workspace
+[out] snforge_std_deprecated v0.51.0 (/mnt/maat-workbench/Scarb.toml)
+[out] └── snforge_scarb_plugin_deprecated v0.51.0
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling snforge_scarb_plugin_deprecated v0.51.0
+[out]     Updating crates.io index
+[out]  Downloading crates ...
+[out]   Downloaded cairo-lang-macro-stable v1.0.0
+[out]   Downloaded cairo-lang-macro-attributes v0.1.0
+[out]   Downloaded cairo-lang-macro v0.1.0
+[out]   Downloaded autocfg v1.5.0
+[out]   Downloaded allocator-api2 v0.2.21
+[out]   Downloaded cairo-lang-filesystem v2.10.1
+[out]   Downloaded cairo-lang-diagnostics v2.10.1
+[out]   Downloaded cairo-lang-debug v2.10.1
+[out]   Downloaded ahash v0.8.12
+[out]   Downloaded indoc v2.0.5
+[out]   Downloaded idna_adapter v1.2.1
+[out]   Downloaded icu_properties v2.0.1
+[out]   Downloaded zerovec-derive v0.11.1
+[out]   Downloaded linkme v0.3.35
+[out]   Downloaded parking_lot_core v0.9.12
+[out]   Downloaded path-clean v1.0.1
+[out]   Downloaded num-integer v0.1.46
+[out]   Downloaded zerotrie v0.2.2
+[out]   Downloaded yoke-derive v0.8.0
+[out]   Downloaded cfg-if v1.0.4
+[out]   Downloaded xxhash-rust v0.8.15
+[out]   Downloaded xshell-macros v0.2.7
+[out]   Downloaded zerovec v0.11.4
+[out]   Downloaded zerofrom-derive v0.1.6
+[out]   Downloaded toml v0.8.23
+[out]   Downloaded writeable v0.6.1
+[out]   Downloaded semver v1.0.27
+[out]   Downloaded tracing-core v0.1.34
+[out]   Downloaded proc-macro2 v1.0.101
+[out]   Downloaded url v2.5.4
+[out]   Downloaded tracing v0.1.41
+[out]   Downloaded serde v1.0.228
+[out]   Downloaded hashbrown v0.14.5
+[out]   Downloaded winnow v0.7.13
+[out]   Downloaded hashbrown v0.16.0
+[out]   Downloaded zerocopy v0.8.27
+[out]   Downloaded idna v1.1.0
+[out]   Downloaded cairo-lang-syntax v2.10.1
+[out]   Downloaded syn v2.0.107
+[out]   Downloaded cairo-lang-parser v2.10.1
+[out]   Downloaded icu_properties_data v2.0.1
+[out]   Downloaded toml_edit v0.22.27
+[out]   Downloaded num-bigint v0.4.6
+[out]   Downloaded itertools v0.12.1
+[out]   Downloaded indexmap v2.12.0
+[out]   Downloaded icu_normalizer v2.0.0
+[out]   Downloaded genco v0.17.10
+[out]   Downloaded smallvec v1.15.1
+[out]   Downloaded serde_derive v1.0.228
+[out]   Downloaded rust-analyzer-salsa v0.17.0-pre.6
+[out]   Downloaded serde_core v1.0.228
+[out]   Downloaded num-traits v0.2.19
+[out]   Downloaded memchr v2.7.6
+[out]   Downloaded icu_collections v2.0.0
+[out]   Downloaded genco-macros v0.17.10
+[out]   Downloaded displaydoc v0.2.5
+[out]   Downloaded colored v2.2.0
+[out]   Downloaded cairo-lang-syntax-codegen v2.10.1
+[out]   Downloaded unicode-ident v1.0.20
+[out]   Downloaded triomphe v0.1.15
+[out]   Downloaded tracing-attributes v0.1.30
+[out]   Downloaded libc v0.2.177
+[out]   Downloaded thiserror v2.0.17
+[out]   Downloaded synstructure v0.13.2
+[out]   Downloaded quote v1.0.41
+[out]   Downloaded pin-project-lite v0.2.16
+[out]   Downloaded icu_provider v2.0.0
+[out]   Downloaded either v1.15.0
+[out]   Downloaded data-encoding v2.9.0
+[out]   Downloaded cairo-lang-utils v2.10.1
+[out]   Downloaded rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]   Downloaded relative-path v1.9.3
+[out]   Downloaded potential_utf v0.1.3
+[out]   Downloaded parking_lot v0.12.5
+[out]   Downloaded icu_normalizer_data v2.0.0
+[out]   Downloaded icu_locale_core v2.0.0
+[out]   Downloaded heck v0.4.1
+[out]   Downloaded cairo-lang-primitive-token v1.0.0
+[out]   Downloaded zerofrom v0.1.6
+[out]   Downloaded yoke v0.8.0
+[out]   Downloaded xshell v0.2.7
+[out]   Downloaded unescaper v0.1.6
+[out]   Downloaded toml_write v0.1.2
+[out]   Downloaded toml_datetime v0.6.11
+[out]   Downloaded tinystr v0.8.1
+[out]   Downloaded thiserror-impl v2.0.17
+[out]   Downloaded stable_deref_trait v1.2.1
+[out]   Downloaded smol_str v0.2.2
+[out]   Downloaded serde_spanned v0.6.9
+[out]   Downloaded scopeguard v1.2.0
+[out]   Downloaded scarb-stable-hash v1.0.0
+[out]   Downloaded oorandom v11.1.5
+[out]   Downloaded once_cell v1.21.3
+[out]   Downloaded form_urlencoded v1.2.2
+[out]   Downloaded rustc-hash v1.1.0
+[out]   Downloaded lock_api v0.4.14
+[out]   Downloaded version_check v0.9.5
+[out]   Downloaded utf8_iter v1.0.4
+[out]   Downloaded percent-encoding v2.3.2
+[out]   Downloaded litemap v0.8.0
+[out]   Downloaded lazy_static v1.5.0
+[out]   Downloaded equivalent v1.0.2
+[out]   Downloaded linkme-impl v0.3.35
+[out]    Compiling proc-macro2 v1.0.101
+[out]    Compiling quote v1.0.41
+[out]    Compiling unicode-ident v1.0.20
+[out]    Compiling serde_core v1.0.228
+[out]    Compiling stable_deref_trait v1.2.1
+[out]    Compiling serde v1.0.228
+[out]    Compiling smallvec v1.15.1
+[out]    Compiling cfg-if v1.0.4
+[out]    Compiling autocfg v1.5.0
+[out]    Compiling once_cell v1.21.3
+[out]    Compiling hashbrown v0.16.0
+[out]    Compiling num-traits v0.2.19
+[out]    Compiling syn v2.0.107
+[out]    Compiling zerocopy v0.8.27
+[out]    Compiling equivalent v1.0.2
+[out]    Compiling version_check v0.9.5
+[out]    Compiling ahash v0.8.12
+[out]    Compiling libc v0.2.177
+[out]    Compiling parking_lot_core v0.9.12
+[out]    Compiling indexmap v2.12.0
+[out]    Compiling num-integer v0.1.46
+[out]    Compiling writeable v0.6.1
+[out]    Compiling scopeguard v1.2.0
+[out]    Compiling either v1.15.0
+[out]    Compiling allocator-api2 v0.2.21
+[out]    Compiling litemap v0.8.0
+[out]    Compiling itertools v0.12.1
+[out]    Compiling lock_api v0.4.14
+[out]    Compiling synstructure v0.13.2
+[out]    Compiling tracing-core v0.1.34
+[out]    Compiling toml_write v0.1.2
+[out]    Compiling winnow v0.7.13
+[out]    Compiling pin-project-lite v0.2.16
+[out]    Compiling icu_properties_data v2.0.1
+[out]    Compiling icu_normalizer_data v2.0.0
+[out]    Compiling heck v0.4.1
+[out]    Compiling parking_lot v0.12.5
+[out]    Compiling rustc-hash v1.1.0
+[out]    Compiling oorandom v11.1.5
+[out]    Compiling genco-macros v0.17.10
+[out]    Compiling serde_derive v1.0.228
+[out]    Compiling zerofrom-derive v0.1.6
+[out]    Compiling yoke-derive v0.8.0
+[out]    Compiling zerovec-derive v0.11.1
+[out]    Compiling zerofrom v0.1.6
+[out]    Compiling displaydoc v0.2.5
+[out]    Compiling yoke v0.8.0
+[out]    Compiling tracing-attributes v0.1.30
+[out]    Compiling zerovec v0.11.4
+[out]    Compiling zerotrie v0.2.2
+[out]    Compiling rust-analyzer-salsa-macros v0.17.0-pre.6
+[out]    Compiling tinystr v0.8.1
+[out]    Compiling icu_locale_core v2.0.0
+[out]    Compiling potential_utf v0.1.3
+[out]    Compiling icu_collections v2.0.0
+[out]    Compiling serde_spanned v0.6.9
+[out]    Compiling hashbrown v0.14.5
+[out]    Compiling toml_datetime v0.6.11
+[out]    Compiling num-bigint v0.4.6
+[out]    Compiling toml_edit v0.22.27
+[out]    Compiling icu_provider v2.0.0
+[out]    Compiling triomphe v0.1.15
+[out]    Compiling tracing v0.1.41
+[out]    Compiling thiserror v2.0.17
+[out]    Compiling cairo-lang-utils v2.10.1
+[out]    Compiling cairo-lang-debug v2.10.1
+[out]    Compiling rust-analyzer-salsa v0.17.0-pre.6
+[out]    Compiling smol_str v0.2.2
+[out]    Compiling thiserror-impl v2.0.17
+[out]    Compiling toml v0.8.23
+[out]    Compiling semver v1.0.27
+[out]    Compiling path-clean v1.0.1
+[out]    Compiling linkme-impl v0.3.35
+[out]    Compiling cairo-lang-filesystem v2.10.1
+[out]    Compiling icu_normalizer v2.0.0
+[out]    Compiling icu_properties v2.0.1
+[out]    Compiling linkme v0.3.35
+[out]    Compiling data-encoding v2.9.0
+[out]    Compiling xxhash-rust v0.8.15
+[out]    Compiling relative-path v1.9.3
+[out]    Compiling xshell-macros v0.2.7
+[out]    Compiling genco v0.17.10
+[out]    Compiling xshell v0.2.7
+[out]    Compiling scarb-stable-hash v1.0.0
+[out]    Compiling idna_adapter v1.2.1
+[out]    Compiling unescaper v0.1.6
+[out]    Compiling lazy_static v1.5.0
+[out]    Compiling utf8_iter v1.0.4
+[out]    Compiling cairo-lang-primitive-token v1.0.0
+[out]    Compiling percent-encoding v2.3.2
+[out]    Compiling form_urlencoded v1.2.2
+[out]    Compiling cairo-lang-syntax v2.10.1
+[out]    Compiling idna v1.1.0
+[out]    Compiling colored v2.2.0
+[out]    Compiling cairo-lang-macro-attributes v0.1.0
+[out]    Compiling cairo-lang-syntax-codegen v2.10.1
+[out]    Compiling cairo-lang-diagnostics v2.10.1
+[out]    Compiling cairo-lang-macro-stable v1.0.0
+[out]    Compiling cairo-lang-macro v0.1.0
+[out]    Compiling url v2.5.4
+[out]    Compiling indoc v2.0.5
+[out]    Compiling cairo-lang-parser v2.10.1
+[out]    Compiling snforge_scarb_plugin_deprecated v0.51.0 (/mnt/maat-cache/scarb/registry/src/scarbs.xyz-9djtpev4jug5q/snforge_scarb_plugin_deprecated-0.51.0)
+[out]     Finished `release` profile [optimized] target(s) in 40.81s
+[out]    Compiling test(snforge_std_deprecated_unittest) snforge_std_deprecated v0.51.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/cheatcodes.cairo:1:44
+[out] use starknet::{ContractAddress, ClassHash, contract_address_const};
+[out]                                            ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/trace.cairo:1:11
+[out] use core::starknet::ContractAddress;
+[out]           ^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 44 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test snforge_std_deprecated (snforge test --fuzzer-seed 1)
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] [ERROR] Package snforge_std is not present in dependencies.
+Process finished with exit code 2
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

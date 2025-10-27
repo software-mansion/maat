@@ -1,0 +1,320 @@
+=== HerodotusDev/integrity-331bd29a4 ===
+
+>>> git clone --depth 1 --no-tags https://github.com/HerodotusDev/integrity .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index b5ca612..967c258 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -7,6 +7,7 @@ readme = "README.md"
+[out]  repository = "https://github.com/HerodotusDev/integrity"
+[out]  license = "Apache-2.0"
+[out]  keywords = ["STARK proof", "verifier", "cairo_verifier"]
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [dependencies]
+[out]  starknet = "2.8.4"
+[out] @@ -40,3 +41,20 @@ monolith = []
+[out]  split = []
+[out]  
+[out]  default = ["recursive", "keccak", "monolith"]
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+
+>>> scarb tree -q --workspace
+[out] integrity v2.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── starknet v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(integrity_unittest) integrity v2.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:8:1-13:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:15:1-19:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:21:1-25:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:57:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:152:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/proxy.cairo:84:9
+[out]         starknet::event::EventEmitter
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:94:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:304:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/lib_utils.cairo:9:33
+[out] use starknet::{ContractAddress, contract_address_const, get_execution_info};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 8 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out]      Running test integrity (scarb cairo-test)
+[out] warn: `edition` field not set in `[package]` section for package `integrity`
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(integrity_unittest) integrity v2.1.0 (/mnt/maat-workbench/Scarb.toml)
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:8:1-13:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:15:1-19:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Plugin diagnostic: Enum with `#[derive(starknet::Store)] has no default variant. Either add one, or add `#[allow(starknet::store_no_default_variant)]`
+[out]  --> /mnt/maat-workbench/src/settings.cairo:21:1-25:1
+[out]   #[derive(Drop, Copy, PartialEq, Serde, starknet::Store)]
+[out]  _^
+[out] | ...
+[out] | }
+[out] |_^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:57:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/mocked_fact_registry.cairo:152:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/proxy.cairo:84:9
+[out]         starknet::event::EventEmitter
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"corelib-internal-use"` with no `#[feature("corelib-internal-use")]` attribute. Note: "Use `starknet` directly"
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:94:9
+[out]         starknet::event::EventEmitter,
+[out]         ^^^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"starknet-storage-deprecation"` with no `#[feature("starknet-storage-deprecation")]` attribute. Note: "Use `starknet::storage::MutableVecTrait::push` or `starknet::storage::MutableVecTrait::allocate` instead."
+[out]  --> /mnt/maat-workbench/src/contracts/fact_registry.cairo:304:58
+[out]                 self.fact_verifications.entry(fact_hash).append().write(verification_hash);
+[out]                                                          ^^^^^^
+[out] 
+[out] warn: Usage of deprecated feature `"deprecated-starknet-consts"` with no `#[feature("deprecated-starknet-consts")]` attribute. Note: "Use `TryInto::try_into` in const context instead."
+[out]  --> /mnt/maat-workbench/src/lib_utils.cairo:9:33
+[out] use starknet::{ContractAddress, contract_address_const, get_execution_info};
+[out]                                 ^^^^^^^^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 8 seconds
+[out]      Testing integrity
+[out] running 97 tests
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_2 ... ok (gas usage est.: 11264)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_5 ... ok (gas usage est.: 108760)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_9_reversed ... ok (gas usage est.: 352940)
+[out] test integrity::air::public_input::tests::test_get_public_input_hash ... ok (gas usage est.: 717731)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_3 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_0 ... ok (gas usage est.: 64496)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_10_reversed ... ok (gas usage est.: 393080)
+[out] test integrity::channel::tests::test_random_felt_to_prover::test_random_felts_to_prover_0 ... ok (gas usage est.: 3491)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_4 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_1 ... ok (gas usage est.: 33048)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_10_random ... ok (gas usage est.: 419900)
+[out] test integrity::channel::tests::test_random_felt_to_prover::test_random_felts_to_prover_1 ... ok (gas usage est.: 3491)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_5 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_2 ... ok (gas usage est.: 33048)
+[out] test integrity::channel::tests::test_random_felts_to_prover::test_random_felts_to_prover ... ok (gas usage est.: 24133)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_27_random ... ok (gas usage est.: 1439860)
+[out] test integrity::channel::tests::test_read_felt_from_prover::test_read_felt_from_prover_0 ... ok (gas usage est.: 10192)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_6 ... ok (gas usage est.: 6332)
+[out] test integrity::common::tests::test_bit_reverse::test_bit_reverse_3 ... ok (gas usage est.: 64496)
+[out] test integrity::common::tests::test_powers_array::test_powers_array_0 ... ok (gas usage est.: 86840)
+[out] test integrity::channel::tests::test_read_felt_from_prover::test_read_felt_from_prover_1 ... ok (gas usage est.: 10192)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_7 ... ok (gas usage est.: 11264)
+[out] test integrity::common::tests::test_blake2s_u8::test_blake2s_v1 ... ok (gas usage est.: 4524670)
+[out] test integrity::domains::tests::test_domain_creation ... ok (gas usage est.: 6757720)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_256 ... ok (gas usage est.: 11664)
+[out] test integrity::channel::tests::test_read_felt_vector_from_prover::test_read_felt_vector_from_prover_0 ... ok (gas usage est.: 257403)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula2 ... ok (gas usage est.: 38460)
+[out] test integrity::common::tests::test_blake2s_u8::test_blake2s_v2 ... ok (gas usage est.: 4551006)
+[out] test integrity::channel::tests::test_read_uint64_from_prover::test_read_uint64_from_prover_0 ... ok (gas usage est.: 10192)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_0 ... ok (gas usage est.: 2870)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula4 ... ok (gas usage est.: 38860)
+[out] test integrity::common::tests::test_blake2s_u8::test_truncated_blake2s ... ok (gas usage est.: 2550374)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_1 ... ok (gas usage est.: 4840)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_1 ... ok (gas usage est.: 4270)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula8 ... ok (gas usage est.: 39660)
+[out] test integrity::common::tests::test_blake2s::test_blake2s_v1 ... ok (gas usage est.: 3886840)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_2 ... ok (gas usage est.: 4370)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_2 ... ok (gas usage est.: 12320)
+[out] test integrity::fri::tests::test_fri_formula::test_fri_formula16 ... ok (gas usage est.: 41260)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_3 ... ok (gas usage est.: 10650)
+[out] test integrity::common::tests::test_horner_eval::test_horner_eval_3 ... ok (gas usage est.: 29150)
+[out] test integrity::common::tests::test_blake2s::test_blake2s_v2 ... ok (gas usage est.: 3913176)
+[out] test integrity::fri::tests::test_last_layer::test_verify_last_layer1 ... ok (gas usage est.: 6980660)
+[out] test integrity::common::tests::test_array_append::test_array_append_le_4 ... ok (gas usage est.: 13390)
+[out] test integrity::common::tests::test_math::test_pow_1 ... ok (gas usage est.: 1088660)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_0 ... ok (gas usage est.: 6432)
+[out] test integrity::common::tests::test_flip_endianness::test_flip_endianness_1 ... ok (gas usage est.: 11264)
+[out] test integrity::fri::tests::test_last_layer::test_verify_last_layer2 ... ok (gas usage est.: 1356980)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer13 ... ok (gas usage est.: 473050)
+[out] test integrity::common::tests::test_math::test_pow_2 ... ok (gas usage est.: 2672070)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_3_reversed ... ok (gas usage est.: 90320)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer1 ... ok (gas usage est.: 131770)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer14 ... ok (gas usage est.: 457030)
+[out] test integrity::common::tests::test_math::test_div_rem_felt252 ... ok (gas usage est.: 15410)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer2 ... ok (gas usage est.: 163020)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_4_reversed ... ok (gas usage est.: 124440)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_0 ... ok (gas usage est.: 8680)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer15 ... ok (gas usage est.: 605310)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer3 ... ok (gas usage est.: 213700)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_5_reversed ... ok (gas usage est.: 174280)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_1 ... ok (gas usage est.: 12920)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer16 ... ok (gas usage est.: 583290)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_6_reversed ... ok (gas usage est.: 211410)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer4 ... ok (gas usage est.: 293840)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_2_sorted ... ok (gas usage est.: 48440)
+[out] test integrity::oods::tests::test_verify_oods ... ok (gas usage est.: 4747170)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer5 ... ok (gas usage est.: 245530)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_7_reversed ... ok (gas usage est.: 247940)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_2_unsorted ... ok (gas usage est.: 48910)
+[out] test integrity::proof_of_work::tests::test_proof_of_work::test_verify_proof_of_work_0 ... ok (gas usage est.: 638948)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer6 ... ok (gas usage est.: 309910)
+[out] test integrity::common::tests::test_merge_sort::test_merge_sort_8_reversed ... ok (gas usage est.: 288650)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer7 ... ok (gas usage est.: 408450)
+[out] test integrity::proof_of_work::tests::test_proof_of_work::test_verify_proof_of_work_1 ... ok (gas usage est.: 639848)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer8 ... ok (gas usage est.: 581420)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer10 ... ok (gas usage est.: 455390)
+[out] test integrity::queries::tests::test_usort::test_usort_3 ... ok (gas usage est.: 445650)
+[out] test integrity::queries::tests::test_generate_queries::test_generate_queries_0 ... ok (gas usage est.: 515410)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer9 ... ok (gas usage est.: 246700)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer11 ... ok (gas usage est.: 410560)
+[out] test integrity::queries::tests::test_usort::test_usort_4 ... ok (gas usage est.: 405680)
+[out] test integrity::queries::tests::test_queries_to_points::test_queries_to_points_0 ... ok (gas usage est.: 6245894)
+[out] test integrity::queries::tests::test_usort::test_usort_0 ... ok (gas usage est.: 15890)
+[out] test integrity::queries::tests::test_usort::test_usort_5 ... ok (gas usage est.: 55220)
+[out] test integrity::fri::tests::test_next_layer::test_next_layer12 ... ok (gas usage est.: 580710)
+[out] test integrity::queries::tests::test_usort::test_usort_1 ... ok (gas usage est.: 3370)
+[out] test integrity::table_commitment::tests::test_table_commitment_commit::test_table_commitment_commit ... ok (gas usage est.: 12192)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_decommit::test_vector_commitment_decommit ... ok (gas usage est.: 1983059)
+[out] test integrity::stark::tests::test_stark_commit::test_stark_commit ... ok (gas usage est.: 7978061)
+[out] test integrity::queries::tests::test_usort::test_usort_2 ... ok (gas usage est.: 451030)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_validate::test_validate_vector_commitment ... ok (gas usage est.: 1800)
+[out] test integrity::table_commitment::tests::test_table_commitment_decommit::test_table_commitment_decommit ... ok (gas usage est.: 6004379)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_validate::test_invalid_validate_vector_commitment_1 ... ok (gas usage est.: 1800)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_commit::test_vector_commit ... ok (gas usage est.: 11092)
+[out] test integrity::vector_commitment::tests::test_vector_commitment_validate::test_invalid_validate_vector_commitment_2 ... ok (gas usage est.: 1800)
+[out] test integrity::stark::tests::test_stark_verify::test_stark_verify ... ok (gas usage est.: 31720152)
+[out] test integrity::stark::tests::test_stark_proof_verify::test_stark_proof_fibonacci_verify ... ok (gas usage est.: 70562035)
+[out] test result: ok. 97 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

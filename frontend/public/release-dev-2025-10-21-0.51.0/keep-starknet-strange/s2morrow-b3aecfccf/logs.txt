@@ -1,0 +1,226 @@
+=== keep-starknet-strange/s2morrow-b3aecfccf ===
+
+>>> git clone --depth 1 --no-tags https://github.com/keep-starknet-strange/s2morrow .
+[err] Cloning into '.'...
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 8f00bc2..46816f7 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -3,3 +3,14 @@ members = ["packages/*"]
+[out]  
+[out]  [cairo]
+[out]  enable-gas = false
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] diff --git a/packages/falcon/Scarb.toml b/packages/falcon/Scarb.toml
+[out] index c0a0833..870ed1a 100644
+[out] --- a/packages/falcon/Scarb.toml
+[out] +++ b/packages/falcon/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "falcon"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [lib]
+[out]  
+[out] @@ -12,3 +13,9 @@ cairo_execute = "2.11.4"
+[out]  
+[out]  [dev-dependencies]
+[out]  cairo_test = "2.11.4"
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] diff --git a/packages/sphincs-plus/Scarb.toml b/packages/sphincs-plus/Scarb.toml
+[out] index 7fd03d7..0551437 100644
+[out] --- a/packages/sphincs-plus/Scarb.toml
+[out] +++ b/packages/sphincs-plus/Scarb.toml
+[out] @@ -2,6 +2,7 @@
+[out]  name = "sphincs_plus"
+[out]  version = "0.1.0"
+[out]  edition = "2024_07"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out]  
+[out]  [lib]
+[out]  
+[out] @@ -17,3 +18,9 @@ cairo_test = "2.11.4"
+[out]  default = []
+[out]  blake_hash = []
+[out]  sparse_addr = []
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+
+>>> scarb fetch
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] falcon v0.1.0 (/mnt/maat-workbench/packages/falcon/Scarb.toml)
+[out] ├── cairo_execute v2.12.3 (std)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std)
+[out] 
+[out] sphincs_plus v0.1.0 (/mnt/maat-workbench/packages/sphincs-plus/Scarb.toml)
+[out] ├── cairo_execute v2.12.3 (std) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(falcon_unittest) falcon v0.1.0 (/mnt/maat-workbench/packages/falcon/Scarb.toml)
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/packages/falcon/src/ntt_constants.cairo:121:9
+[out]         array![].span()
+[out]         ^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/packages/falcon/src/ntt_constants.cairo:245:9
+[out]         array![].span()
+[out]         ^^^^^^^^^^^^^^^
+[out] 
+[out]    Compiling test(sphincs_plus_unittest) sphincs_plus v0.1.0 (/mnt/maat-workbench/packages/sphincs-plus/Scarb.toml)
+[out] warn: Unused import: `sphincs_plus::sphincs::tests::WordArrayTrait`
+[out]  --> /mnt/maat-workbench/packages/sphincs-plus/src/sphincs.cairo:130:28
+[out]     use crate::word_array::WordArrayTrait;
+[out]                            ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/packages/sphincs-plus/src/word_array.cairo:190:13
+[out]             0
+[out]             ^
+[out] 
+[out]     Finished `dev` profile target(s) in 5 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test falcon (scarb cairo-test)
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(falcon_unittest) falcon v0.1.0 (/mnt/maat-workbench/packages/falcon/Scarb.toml)
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/packages/falcon/src/ntt_constants.cairo:121:9
+[out]         array![].span()
+[out]         ^^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/packages/falcon/src/ntt_constants.cairo:245:9
+[out]         array![].span()
+[out]         ^^^^^^^^^^^^^^^
+[out] 
+[out]     Finished `dev` profile target(s) in 2 seconds
+[out]      Testing falcon
+[out] running 10 tests
+[out] test falcon::ntt::tests::test_ntt_4 ... ok
+[out] test falcon::ntt::tests::test_ntt_8 ... ok
+[out] test falcon::ntt::tests::test_ntt_16 ... ok
+[out] test falcon::ntt::tests::test_ntt_64 ... ok
+[out] test falcon::ntt::tests::test_ntt_32 ... ok
+[out] test falcon::ntt::tests::test_ntt_128 ... ok
+[out] test falcon::ntt::tests::test_split_ntt ... ok
+[out] test falcon::ntt::tests::test_ntt_256 ... ok
+[out] test falcon::ntt::tests::test_ntt_512 ... ok
+[out] test falcon::falcon::tests::test_falcon1024_verify_uncompressed ... ok
+[out] test result: ok. 10 passed; 0 failed; 0 ignored; 0 filtered out;
+[out]      Running test sphincs_plus (scarb cairo-test)
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(sphincs_plus_unittest) sphincs_plus v0.1.0 (/mnt/maat-workbench/packages/sphincs-plus/Scarb.toml)
+[out] warn: Unused import: `sphincs_plus::sphincs::tests::WordArrayTrait`
+[out]  --> /mnt/maat-workbench/packages/sphincs-plus/src/sphincs.cairo:130:28
+[out]     use crate::word_array::WordArrayTrait;
+[out]                            ^^^^^^^^^^^^^^
+[out] 
+[out] warn: Unreachable code
+[out]  --> /mnt/maat-workbench/packages/sphincs-plus/src/word_array.cairo:190:13
+[out]             0
+[out]             ^
+[out] 
+[out]     Finished `dev` profile target(s) in 3 seconds
+[out]      Testing sphincs_plus
+[out] running 16 tests
+[out] test sphincs_plus::wots::tests::test_chain_hash_2 ... ok
+[out] test sphincs_plus::address::dense::tests::test_fors_tree_address ... ok
+[out] test sphincs_plus::sphincs::tests::test_split_xdigest_128s ... ok
+[out] test sphincs_plus::hasher::tests::test_thash_128s_2 ... ok
+[out] test sphincs_plus::fors::tests::test_message_to_indices_128s ... ok
+[out] test sphincs_plus::wots::tests::test_chain_hash_3 ... ok
+[out] test sphincs_plus::hasher::tests::test_hash_message_128s ... ok
+[out] test sphincs_plus::hasher::sha256::tests::test_sha256_finalize ... ok
+[out] test sphincs_plus::wots::tests::test_add_checksum ... ok
+[out] test sphincs_plus::hasher::tests::test_thash_128s ... ok
+[out] test sphincs_plus::hasher::tests::test_initialize_hash_function ... ok
+[out] test sphincs_plus::hasher::tests::test_compute_root ... ok
+[out] test sphincs_plus::wots::tests::test_base_w_128s ... ok
+[out] test sphincs_plus::wots::tests::test_chain_hash ... ok
+[out] test sphincs_plus::wots::tests::test_wots_pk_from_sig ... ok
+[out] test sphincs_plus::sphincs::tests::test_verify_128s ... ok
+[out] test result: ok. 16 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1

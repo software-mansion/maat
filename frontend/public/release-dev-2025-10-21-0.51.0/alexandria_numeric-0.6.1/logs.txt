@@ -1,0 +1,148 @@
+=== alexandria_numeric-0.6.1 ===
+
+>>> curl -sSLf https://scarbs.xyz/api/v1/dl/alexandria_numeric/0.6.1 -o archive-635806006451453952.tar.zstd
+
+>>> tar --zstd -xf archive-635806006451453952.tar.zstd --strip-components 1
+
+>>> maat-check-versions
+[out] Name             Version         Source                        Installed
+[out] nodejs           24.5.0          ASDF_NODEJS_VERSION           true
+[out] scarb            dev-2025-10-21  ASDF_SCARB_VERSION            true
+[out] starknet-foundry 0.51.0          ASDF_STARKNET-FOUNDRY_VERSION true
+
+>>> maat-patch
+[err] Installed 1 package in 2ms
+[out] diff --git a/Scarb.toml b/Scarb.toml
+[out] index 9174288..9830190 100644
+[out] --- a/Scarb.toml
+[out] +++ b/Scarb.toml
+[out] @@ -16,7 +16,7 @@ edition = "2023_11"
+[out]  description = "A set of numerical analysis libraries and algorithms"
+[out]  homepage = "https://github.com/keep-starknet-strange/alexandria/tree/main/packages/numeric"
+[out]  readme = "README.md"
+[out] -cairo-version = "^2.12.1"
+[out] +cairo-version = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: '^2.12.1'
+[out]  re-export-cairo-plugins = []
+[out]  
+[out]  [dependencies.alexandria_math]
+[out] @@ -31,3 +31,19 @@ version = "^2.12.1"
+[out]  [tool.fmt]
+[out]  sort-module-level-items = true
+[out]  
+[out] +[tool.scarb]
+[out] +allow-prebuilt-plugins = ["snforge_std"] # NOTE: maat-patch added 'snforge_std'
+[out] +
+[out] +[scripts]
+[out] +test = "scarb cairo-test" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch.scarbs-xyz]
+[out] +assert_macros = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +starknet = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +cairo_test = "2.12.3+dev-2025-10-21" # NOTE: added by maat-patch, was: None
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +
+[out] +[patch."https://github.com/foundry-rs/starknet-foundry.git"]
+[out] +snforge_std = "0.51.0" # NOTE: added by maat-patch, was: None
+[out] +snforge_scarb_plugin = "0.51.0" # NOTE: added by maat-patch, was: None
+
+>>> scarb fetch
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+
+>>> scarb tree -q --workspace
+[out] alexandria_numeric v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out] ├── alexandria_math v0.6.1
+[out] │   └── cairo_test v2.12.3 (std)
+[out] ├── alexandria_searching v0.6.1
+[out] │   ├── alexandria_data_structures v0.6.1
+[out] │   │   └── cairo_test v2.12.3 (std) (*)
+[out] │   └── cairo_test v2.12.3 (std) (*)
+[out] └── [dev-dependencies]
+[out]     └── cairo_test v2.12.3 (std) (*)
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb build --workspace --test
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(alexandria_numeric_unittest) alexandria_numeric v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 4 seconds
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true scarb lint --workspace --deny-warnings
+[out] error: scarb was not compiled with the `lint` command enabled
+[out] 
+[out] Stack backtrace:
+[out]    0: anyhow::error::<impl anyhow::Error>::msg
+[out]    1: scarb::commands::lint::do_lint
+[out]    2: scarb::commands::lint::run
+[out]    3: scarb::commands::run
+[out]    4: scarb::main
+[out]    5: std::sys::backtrace::__rust_begin_short_backtrace
+[out]    6: std::rt::lang_start::{{closure}}
+[out]    7: std::rt::lang_start_internal
+[out]    8: main
+[out]    9: __libc_start_call_main
+[out]   10: __libc_start_main_alias_2
+[out]   11: _start
+Process finished with exit code 1
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true SNFORGE_FUZZER_SEED=1 SNFORGE_IGNORE_FORK_TESTS=1 scarb test --workspace
+[out]      Running test alexandria_numeric (scarb cairo-test)
+[out] warn: patch `starknet` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_scarb_plugin` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://github.com/foundry-rs/starknet-foundry` has not been used
+[out] warn: patch `cairo_test` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `snforge_std` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out] warn: patch `assert_macros` (`registry+https://scarbs.xyz/`) for source `https://scarbs.xyz/` has not been used
+[out]    Compiling test(alexandria_numeric_unittest) alexandria_numeric v0.6.1 (/mnt/maat-workbench/Scarb.toml)
+[out]     Finished `dev` profile target(s) in 4 seconds
+[out]      Testing alexandria_numeric
+[out] running 31 tests
+[out] test alexandria_numeric::tests::cumprod_test::cumprod_test ... ok (gas usage est.: 14900)
+[out] test alexandria_numeric::tests::integers_test::test_u32_from_bytes ... ok (gas usage est.: 13610)
+[out] test alexandria_numeric::tests::cumsum_test::cumsum_test_revert_empty ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_constant_left_test ... ok (gas usage est.: 67840)
+[out] test alexandria_numeric::tests::integers_test::test_u32_from_bytes_too_big ... ok (gas usage est.: 300)
+[out] test alexandria_numeric::tests::cumprod_test::cumprod_test_revert_empty ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::diff_test::diff_test ... ok (gas usage est.: 26470)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_constant_left_diff ... ok (gas usage est.: 246560)
+[out] test alexandria_numeric::tests::cumsum_test::cumsum_test ... ok (gas usage est.: 15100)
+[out] test alexandria_numeric::tests::integers_test::test_u32_to_bytes_full ... ok (gas usage est.: 16252)
+[out] test alexandria_numeric::tests::diff_test::diff_test_revert_not_sorted ... ok (gas usage est.: 7280)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_constant_right_test ... ok (gas usage est.: 86420)
+[out] test alexandria_numeric::tests::integers_test::test_u32_to_bytes_leading_zeros ... ok (gas usage est.: 13912)
+[out] test alexandria_numeric::tests::integers_test::test_u32_to_bytes_partial ... ok (gas usage est.: 15082)
+[out] test alexandria_numeric::tests::diff_test::diff_test_revert_empty ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_revert_len_mismatch ... ok (gas usage est.: 8370)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_revert_len_too_short ... ok (gas usage est.: 12130)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_extrapolation_test ... ok (gas usage est.: 19870)
+[out] test alexandria_numeric::tests::interpolate_test::interp_constant_left_test ... ok (gas usage est.: 43790)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test ... ok (gas usage est.: 15720)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test_revert_len_mismatch ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_test::interp_extrapolation_test ... ok (gas usage est.: 20370)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_linear_test ... ok (gas usage est.: 72760)
+[out] test alexandria_numeric::tests::interpolate_test::interp_constant_right_test ... ok (gas usage est.: 51950)
+[out] test alexandria_numeric::tests::interpolate_test::interp_linear_test ... ok (gas usage est.: 44300)
+[out] test alexandria_numeric::tests::interpolate_test::interp_revert_len_mismatch ... ok (gas usage est.: 9470)
+[out] test alexandria_numeric::tests::interpolate_fast_test::interp_nearest_test ... ok (gas usage est.: 70860)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test_revert_len_too_short ... ok (gas usage est.: 1200)
+[out] test alexandria_numeric::tests::interpolate_test::interp_revert_len_too_short ... ok (gas usage est.: 13330)
+[out] test alexandria_numeric::tests::interpolate_test::interp_nearest_test ... ok (gas usage est.: 46410)
+[out] test alexandria_numeric::tests::trapezoidal_rule_test::trapezoidal_rule_test_revert_not_sorted ... ok (gas usage est.: 11300)
+[out] test result: ok. 31 passed; 0 failed; 0 ignored; 0 filtered out;
+
+>>> SCARB_IGNORE_CAIRO_VERSION=true maat-test-ls
+[out] 
+[out] ==============================
+[out] CairoLS process exited with code: 1
+Process finished with exit code 1
