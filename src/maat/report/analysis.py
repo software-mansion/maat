@@ -170,13 +170,13 @@ def _lint_label(lint: StepReport) -> Label:
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
 
-def _detect_test_runner(rep: StepReport) -> str:
+def _detect_test_runner(rep: StepReport) -> str | None:
     """
     Detect which test runner was used based on the log output.
-    Returns 'snforge', 'cairo-test', or 'unknown' if the runner cannot be determined.
+    Returns 'snforge', 'cairo-test', or None if the runner cannot be determined.
     """
     if rep.log_str is None:
-        return "unknown"
+        return None
     
     # Look for "Running test <package> (snforge test ...)" pattern
     if re.search(r"^\[out]\s+Running test\s+\S+\s+\(snforge test\b", rep.log_str, re.M):
@@ -186,7 +186,7 @@ def _detect_test_runner(rep: StepReport) -> str:
     if re.search(r"^\[out]\s+Running test\s+\S+\s+\(scarb cairo-test\)", rep.log_str, re.M):
         return "cairo-test"
     
-    return "unknown"
+    return None
 
 
 def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
@@ -204,12 +204,12 @@ def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
         else:
             return Label.new(LabelCategory.TEST_ERROR, "unknown test runner error")
     elif ts.failed > 0:
-        if runner == "unknown":
+        if runner is None:
             return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
         else:
             return Label.new(LabelCategory.TEST_FAIL, f"{runner} {ts.failed} failed")
     else:
-        if runner == "unknown":
+        if runner is None:
             return Label.new(LabelCategory.TEST_PASS, "tests passed")
         else:
             return Label.new(LabelCategory.TEST_PASS, f"{runner} passed")
