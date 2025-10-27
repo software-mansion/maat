@@ -170,7 +170,27 @@ def _lint_label(lint: StepReport) -> Label:
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
 
+def _detect_test_runner(rep: StepReport) -> str | None:
+    """
+    Detect which test runner was used based on the log output.
+    Returns 'snforge', 'cairo-test', or None if the runner cannot be determined.
+    """
+    if rep.log_str is None:
+        return None
+    
+    # Look for "Running test <package> (snforge test ...)" pattern
+    if re.search(r"^\[out]\s+Running test\s+\S+\s+\(snforge test\b", rep.log_str, re.M):
+        return "snforge"
+    
+    # Look for "Running test <package> (scarb cairo-test)" pattern
+    if re.search(r"^\[out]\s+Running test\s+\S+\s+\(scarb cairo-test\)", rep.log_str, re.M):
+        return "cairo-test"
+    
+    return None
+
+
 def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
+    runner = _detect_test_runner(rep)
     has_missing_summaries = _has_missing_test_summaries(rep)
     if ts is None or has_missing_summaries:
         if b"Not enough gas to call function." in rep.log:
@@ -184,9 +204,15 @@ def _test_label(rep: StepReport, ts: TestsSummary | None) -> Label:
         else:
             return Label.new(LabelCategory.TEST_ERROR, "unknown test runner error")
     elif ts.failed > 0:
-        return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
+        if runner is None:
+            return Label.new(LabelCategory.TEST_FAIL, f"{ts.failed} failed")
+        else:
+            return Label.new(LabelCategory.TEST_FAIL, f"{runner} {ts.failed} failed")
     else:
-        return Label.new(LabelCategory.TEST_PASS, "tests passed")
+        if runner is None:
+            return Label.new(LabelCategory.TEST_PASS, "tests passed")
+        else:
+            return Label.new(LabelCategory.TEST_PASS, f"{runner} passed")
 
 
 def _has_missing_test_summaries(step: StepReport) -> bool:

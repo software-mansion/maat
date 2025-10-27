@@ -76,7 +76,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -157,7 +157,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -313,7 +313,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -394,7 +394,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -482,7 +482,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -570,7 +570,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -658,7 +658,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -746,7 +746,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -834,7 +834,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -922,7 +922,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1010,7 +1010,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1098,7 +1098,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1186,7 +1186,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1362,7 +1362,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1450,7 +1450,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1538,7 +1538,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1626,7 +1626,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1714,7 +1714,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1802,7 +1802,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1890,7 +1890,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -1971,7 +1971,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ],
@@ -2060,7 +2060,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2148,7 +2148,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-fail(3 failed)",
+          "test-fail(snforge 3 failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2236,7 +2236,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2324,7 +2324,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2500,7 +2500,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2588,7 +2588,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2832,7 +2832,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -2920,7 +2920,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3149,7 +3149,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3230,7 +3230,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3311,7 +3311,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3480,7 +3480,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3568,7 +3568,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3744,7 +3744,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -3832,7 +3832,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4008,7 +4008,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4096,7 +4096,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-fail(6 failed)",
+          "test-fail(cairo-test 6 failed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4272,7 +4272,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4442,7 +4442,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4766,7 +4766,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4854,7 +4854,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(cairo-test passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -4942,7 +4942,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -5030,7 +5030,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)"
         ],
         "tests_summary": {
@@ -5118,7 +5118,7 @@
       ],
       "analyses": {
         "labels": [
-          "test-pass(tests passed)",
+          "test-pass(snforge passed)",
           "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ],
