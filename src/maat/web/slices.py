@@ -3,6 +3,7 @@ from typing import Callable, Iterable, Iterator
 
 from pydantic import BaseModel, Field
 
+from maat.model import Report
 from maat.web.report_info import ReportInfo
 
 
@@ -22,7 +23,11 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
 
     latest_nightly = [t for t in reports if t.meta.name == "nightly-latest"]
 
-    all_release = [t for t in reports if t.report.workspace == "release"]
+    all_release = [
+        t
+        for t in reports
+        if t.report.workspace == "release" and is_real_release(t.report)
+    ]
 
     latest_release_by_scarb = max(
         all_release,
@@ -113,3 +118,11 @@ def unique_by_at_most[T, K](
     for bucket in list(buckets.values())[-n:]:
         for item in bucket[-m:]:
             yield item
+
+
+def is_real_release(report: Report) -> bool:
+    for tool in (report.scarb, report.foundry):
+        for prefix in ("nightly-", "dev-"):
+            if tool.startswith(prefix):
+                return False
+    return True
