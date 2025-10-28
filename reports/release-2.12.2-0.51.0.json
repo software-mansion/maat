@@ -4179,9 +4179,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)"
+          "error(build errored)"
         ]
       }
     },

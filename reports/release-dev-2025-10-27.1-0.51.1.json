@@ -2751,8 +2751,6 @@
       "analyses": {
         "labels": [
           "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ]
       }
@@ -2834,9 +2832,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)"
+          "error(build errored)"
         ]
       }
     },
@@ -3161,8 +3157,6 @@
       "analyses": {
         "labels": [
           "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ]
       }
@@ -3921,8 +3915,6 @@
       "analyses": {
         "labels": [
           "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)",
           "ls-fail(ls: unknown panic)"
         ]
       }
@@ -4004,9 +3996,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)"
+          "error(build errored)"
         ]
       }
     },
@@ -4684,8 +4674,6 @@
       "analyses": {
         "labels": [
           "error(build errored)",
-          "test-error(unknown test runner error)",
-          "lint-fail(lint violations)",
           "ls-fail(ls has new errors)"
         ]
       }

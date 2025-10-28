@@ -81,7 +81,7 @@ def label(test: TestReport):
         if lbl := _build_label(build):
             labels.add(lbl)
 
-    if not any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels):
+    if not labels:
         # Don't add these labels if more critical failures have been identified.
 
         if (lint := test.step("lint")) and lint.was_executed:
@@ -92,16 +92,11 @@ def label(test: TestReport):
             if lbl := _test_label(rep, test.analyses.tests_summary):
                 labels.add(lbl)
 
-        # Check if CairoLS reports errors while building succeeded.
-        if (ls := test.step("ls")) and ls.was_executed:
-            if lbl := _ls_label(ls, build_failed=False):
-                labels.add(lbl)
-
-    else:
-        # Build failed, check if CairoLS reports no errors.
-        if (ls := test.step("ls")) and ls.was_executed:
-            if lbl := _ls_label(ls, build_failed=True):
-                labels.add(lbl)
+    # Check if CairoLS reports errors XOR building succeeded (i.e., there is a diagnostics mismatch).
+    if (ls := test.step("ls")) and ls.was_executed:
+        build_failed = any(lbl.category is LabelCategory.BUILD_FAIL for lbl in labels)
+        if lbl := _ls_label(ls, build_failed=build_failed):
+            labels.add(lbl)
 
     if not labels:
         lbl = Label.new(LabelCategory.ERROR, ":monkas:")
@@ -177,15 +172,17 @@ def _detect_test_runner(rep: StepReport) -> str | None:
     """
     if rep.log_str is None:
         return None
-    
+
     # Look for "Running test <package> (snforge test ...)" pattern
     if re.search(r"^\[out]\s+Running test\s+\S+\s+\(snforge test\b", rep.log_str, re.M):
         return "snforge"
-    
+
     # Look for "Running test <package> (scarb cairo-test)" pattern
-    if re.search(r"^\[out]\s+Running test\s+\S+\s+\(scarb cairo-test\)", rep.log_str, re.M):
+    if re.search(
+        r"^\[out]\s+Running test\s+\S+\s+\(scarb cairo-test\)", rep.log_str, re.M
+    ):
         return "cairo-test"
-    
+
     return None
 
 
