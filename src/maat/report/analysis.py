@@ -140,7 +140,7 @@ def _build_label(build: StepReport) -> Label | None:
         return lbl
 
     if re.search(
-        r"^\[out] error: could not compile `.*` due to previous error",
+        r"^\[out] error: could not compile `.*` due to",
         build.log_str,
         re.M,
     ):

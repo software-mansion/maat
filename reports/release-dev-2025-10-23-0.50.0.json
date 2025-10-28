@@ -2750,8 +2750,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
-          "ls-fail(ls has new errors)"
+          "build-fail(compilation error)"
         ]
       }
     },
@@ -2832,7 +2831,8 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)"
+          "build-fail(compilation error)",
+          "ls-fail(ls misses errors)"
         ]
       }
     },
@@ -3156,8 +3156,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
-          "ls-fail(ls has new errors)"
+          "build-fail(compilation error)"
         ]
       }
     },
@@ -3914,7 +3913,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
+          "build-fail(compilation error)",
           "ls-fail(ls: unknown panic)"
         ]
       }
@@ -3996,7 +3995,8 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)"
+          "build-fail(compilation error)",
+          "ls-fail(ls misses errors)"
         ]
       }
     },
@@ -4673,8 +4673,7 @@
       ],
       "analyses": {
         "labels": [
-          "error(build errored)",
-          "ls-fail(ls has new errors)"
+          "build-fail(compilation error)"
         ]
       }
     },
