@@ -6,6 +6,9 @@ from pydantic import BaseModel, Field
 from maat.model import Report
 from maat.web.report_info import ReportInfo
 
+# Maximum number of recent nightly reports to show in the "Last N Nightlies" slice
+MAX_RECENT_NIGHTLIES = 5
+
 
 class Slice(BaseModel):
     title: str
@@ -21,7 +24,12 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
             sl = Slice(title=title, reports=reps, default=default)
             slices.append(sl)
 
-    latest_nightly = [t for t in reports if t.meta.name == "nightly-latest"]
+    all_nightly = [t for t in reports if t.report.workspace == "nightly"]
+    
+    # Get the latest nightly report by creation time
+    latest_nightly = []
+    if all_nightly:
+        latest_nightly = [max(all_nightly, key=lambda t: t.report.created_at)]
 
     all_release = [
         t
@@ -58,6 +66,10 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
         push_slice(
             "Nightly vs Release", [*latest_nightly, *latest_release], default=True
         )
+
+    # Last N Nightlies
+    last_n_nightlies = sorted(all_nightly, key=lambda t: t.report.created_at)[-MAX_RECENT_NIGHTLIES:]
+    push_slice(f"Last {len(last_n_nightlies)} Nightlies", last_n_nightlies)
 
     # Last N(<=3) Scarbs
     last_n_scarbs = list(
