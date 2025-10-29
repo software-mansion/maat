@@ -15,6 +15,9 @@ class Slice(BaseModel):
 
 def make_slices(reports: list[ReportInfo]) -> list[Slice]:
     slices = []
+    
+    # Maximum number of recent nightly reports to show in the "Last N Nightlies" slice
+    MAX_RECENT_NIGHTLIES = 5
 
     def push_slice(title: str, reps: list[ReportInfo], default: bool = False):
         if reps:
@@ -24,7 +27,9 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
     all_nightly = [t for t in reports if t.report.workspace == "nightly"]
     
     # Get the latest nightly report by creation time
-    latest_nightly = [max(all_nightly, default=None, key=lambda t: t.report.created_at)] if all_nightly else []
+    latest_nightly = []
+    if all_nightly:
+        latest_nightly = [max(all_nightly, key=lambda t: t.report.created_at)]
 
     all_release = [
         t
@@ -62,9 +67,9 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
             "Nightly vs Release", [*latest_nightly, *latest_release], default=True
         )
 
-    # Last 5 Nightlies
-    last_5_nightlies = sorted(all_nightly, key=lambda t: t.report.created_at)[-5:]
-    push_slice(f"Last {len(last_5_nightlies)} Nightlies", last_5_nightlies)
+    # Last N Nightlies
+    last_n_nightlies = sorted(all_nightly, key=lambda t: t.report.created_at)[-MAX_RECENT_NIGHTLIES:]
+    push_slice(f"Last {len(last_n_nightlies)} Nightlies", last_n_nightlies)
 
     # Last N(<=3) Scarbs
     last_n_scarbs = list(
