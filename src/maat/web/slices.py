@@ -6,6 +6,9 @@ from pydantic import BaseModel, Field
 from maat.model import Report
 from maat.web.report_info import ReportInfo
 
+# Maximum number of recent nightly reports to show in the "Last N Nightlies" slice
+MAX_RECENT_NIGHTLIES = 5
+
 
 class Slice(BaseModel):
     title: str
@@ -15,9 +18,6 @@ class Slice(BaseModel):
 
 def make_slices(reports: list[ReportInfo]) -> list[Slice]:
     slices = []
-    
-    # Maximum number of recent nightly reports to show in the "Last N Nightlies" slice
-    MAX_RECENT_NIGHTLIES = 5
 
     def push_slice(title: str, reps: list[ReportInfo], default: bool = False):
         if reps:
