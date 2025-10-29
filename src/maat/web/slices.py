@@ -21,7 +21,10 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
             sl = Slice(title=title, reports=reps, default=default)
             slices.append(sl)
 
-    latest_nightly = [t for t in reports if t.meta.name == "nightly-latest"]
+    all_nightly = [t for t in reports if t.report.workspace == "nightly"]
+    
+    # Get the latest nightly report by creation time
+    latest_nightly = [max(all_nightly, default=None, key=lambda t: t.report.created_at)] if all_nightly else []
 
     all_release = [
         t
@@ -58,6 +61,10 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
         push_slice(
             "Nightly vs Release", [*latest_nightly, *latest_release], default=True
         )
+
+    # Last 5 Nightlies
+    last_5_nightlies = sorted(all_nightly, key=lambda t: t.report.created_at)[-5:]
+    push_slice(f"Last {len(last_5_nightlies)} Nightlies", last_5_nightlies)
 
     # Last N(<=3) Scarbs
     last_n_scarbs = list(
