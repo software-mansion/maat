@@ -21,6 +21,10 @@ on:
         required: false
         description: Starknet Foundry version
         type: string
+      report_name:
+        description: "Custom report name"
+        required: false
+        type: string
       notify_team:
         description: "Notify team (if you want the whole team to check the run)"
         type: boolean
@@ -30,7 +34,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}/${{ inputs.workspace }}/${{ inputs.scarb }}/${{ inputs.foundry }}
+  group: ${{ github.workflow }}/${{ inputs.workspace }}/${{ inputs.scarb }}/${{ inputs.foundry }}/${{ inputs.report_name }}
   cancel-in-progress: true
 
 run-name: >-
@@ -38,6 +42,7 @@ run-name: >-
   w=${{ inputs.workspace }}
   ${{ inputs.scarb && format('scarb={0}', inputs.scarb) }}
   ${{ inputs.foundry && format('foundry={0}', inputs.foundry) }}
+  ${{ inputs.report_name && format('name={0}', inputs.report_name) }}
 
 env:
   PARTITIONS_COUNT: 4
@@ -91,6 +96,7 @@ jobs:
           --pull "${{ env.SANDBOX_DIGEST }}"
           --output maat-plan.json
           --partitions ${{ env.PARTITIONS_COUNT }}
+          ${{ inputs.report_name && format('--report-name "{0}"', inputs.report_name) }}
 
       - name: Generate partition array
         id: generate-partitions
@@ -210,4 +216,3 @@ jobs:
         run: gh workflow run web.yml --ref "${{ github.ref }}" -f experiment_name="${{ env.REPORT_NAME }}" -f notify_team=${{ inputs.notify_team }}
         env:
           GH_TOKEN: ${{ github.token }}
-

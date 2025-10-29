@@ -202,6 +202,12 @@ def cli() -> None:
     type=int,
     default=None,
 )
+@click.option(
+    "--report-name",
+    type=str,
+    default=None,
+    help="Override report name.",
+)
 @load_workspace
 @tool_versions(optional_if_pull=True)
 @load_sandbox_image
@@ -211,6 +217,7 @@ def run_local(
     workspace: Workspace,
     sandbox_image: Image,
     jobs: int | None,
+    report_name: str | None,
 ) -> None:
     log(f"🧪 Running experiment within workspace: {workspace}")
 
@@ -219,6 +226,7 @@ def run_local(
         sandbox=sandbox_image,
         partitions=1,
         docker=docker,
+        report_name=report_name,
     )
 
     reporter = Reporter(plan)
@@ -491,6 +499,12 @@ def gc_reports() -> None:
     default=1,
     help="Number of partitions.",
 )
+@click.option(
+    "--report-name",
+    type=str,
+    default=None,
+    help="Override report name.",
+)
 @load_workspace
 @tool_versions
 @load_sandbox_image
@@ -501,12 +515,14 @@ def plan(
     sandbox_image: Image,
     output: Path,
     partitions: int,
+    report_name: str | None,
 ) -> None:
     plan = prepare_plan(
         workspace=workspace,
         sandbox=sandbox_image,
         partitions=partitions,
         docker=docker,
+        report_name=report_name,
     )
 
     json_data = plan.model_dump_json(indent=2) + "\n"

@@ -14,8 +14,8 @@ The experiment environment includes:
 - **Version Management**: ASDF
 - **Build Tools**: GCC/G++, Git, Make
 - **Cairo Toolchain**:
-    - Scarb (with cairo-lint and CairoLS bundled)
-    - Starknet Foundry
+  - Scarb (with cairo-lint and CairoLS bundled)
+  - Starknet Foundry
 
 This containerised approach ensures that all experiments run in controlled environments,
 eliminating "works on my machine" issues and providing reliable regression testing across
@@ -31,9 +31,9 @@ When Ma'at runs an experiment, it follows these key steps:
 3. **Project Checkout**: The target Cairo ecosystem projects are downloaded from
    [scarbs.xyz](https://scarbs.xyz) or checked out from their repos.
 4. **Test Execution**: For each project, Ma'at executes a series of steps:
-    - building the project with Scarb,
-    - running tests with appropriate test runners,
-    - checking code with linters and other tools.
+  - building the project with Scarb,
+  - running tests with appropriate test runners,
+  - checking code with linters and other tools.
 5. **Report Generation**: Results are collected and formatted into JSON reports.
    Significant reports are committed to this repository.
 6. **Analysis**: Reports are analysed to detect regressions or improvements between different Cairo
@@ -57,3 +57,5 @@ This is only available to authorised Cairo team members.
 
    You can skip Scarb and/or Foundry versions. Ma'at will pick the latest ones respectively to what
    is specified in the particular workspace config.
+   You can also set "Custom report name" to override the file name used for generated report files.
+   When not set, Ma'at generates the name automatically based on the workspace and tool versions.

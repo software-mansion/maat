@@ -66,6 +66,7 @@ def prepare_plan(
     sandbox: Image | str,
     partitions: int,
     docker: DockerClient,
+    report_name: str | None = None,
 ) -> Plan:
     scarb, foundry = tool_versions(sandbox, docker)
 
@@ -78,13 +79,17 @@ def prepare_plan(
 
         suite = TestSuite(tests=tests)
 
-    report_name = workspace.settings.generate_report_name(
-        _PlanningReportNameGenerationContext(
-            workspace=workspace.name,
-            scarb=scarb,
-            foundry=foundry,
+    # Explicitly provided report name takes precedence over workspace settings.
+    if report_name is not None and report_name.strip() != "":
+        report_name = report_name.strip()
+    else:
+        report_name = workspace.settings.generate_report_name(
+            _PlanningReportNameGenerationContext(
+                workspace=workspace.name,
+                scarb=scarb,
+                foundry=foundry,
+            )
         )
-    )
 
     partitioned_suite = suite.partition(partitions)
 
