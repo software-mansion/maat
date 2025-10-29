@@ -13,9 +13,9 @@ on:
         required: false
         type: string
       notify_team:
-        description: "Notify team"
+        description: "Notify team (if you want the whole team to check the run)"
         type: boolean
-        default: true
+        default: false
 
 permissions:
   contents: read
