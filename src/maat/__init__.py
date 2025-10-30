@@ -208,6 +208,12 @@ def cli() -> None:
     default=None,
     help="Override report name.",
 )
+@click.option(
+    "--extra-env",
+    type=str,
+    default=None,
+    help="Extra environment variables passed to all steps, e.g. 'SCARB_INCREMENTAL=0 CAIRO_LS_LOG=debug'.",
+)
 @load_workspace
 @tool_versions(optional_if_pull=True)
 @load_sandbox_image
@@ -218,6 +224,7 @@ def run_local(
     sandbox_image: Image,
     jobs: int | None,
     report_name: str | None,
+    extra_env: str | None,
 ) -> None:
     log(f"🧪 Running experiment within workspace: {workspace}")
 
@@ -227,6 +234,7 @@ def run_local(
         partitions=1,
         docker=docker,
         report_name=report_name,
+        extra_env=extra_env,
     )
 
     reporter = Reporter(plan)
@@ -505,6 +513,12 @@ def gc_reports() -> None:
     default=None,
     help="Override report name.",
 )
+@click.option(
+    "--extra-env",
+    type=str,
+    default=None,
+    help="Extra environment variables passed to all steps, e.g. 'SCARB_INCREMENTAL=0 CAIRO_LS_LOG=debug'.",
+)
 @load_workspace
 @tool_versions
 @load_sandbox_image
@@ -516,6 +530,7 @@ def plan(
     output: Path,
     partitions: int,
     report_name: str | None,
+    extra_env: str | None,
 ) -> None:
     plan = prepare_plan(
         workspace=workspace,
@@ -523,6 +538,7 @@ def plan(
         partitions=partitions,
         docker=docker,
         report_name=report_name,
+        extra_env=extra_env,
     )
 
     json_data = plan.model_dump_json(indent=2) + "\n"

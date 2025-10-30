@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+import shlex
 
 from maat.utils.log import track
 from python_on_whales import DockerClient, Image
@@ -67,6 +68,7 @@ def prepare_plan(
     partitions: int,
     docker: DockerClient,
     report_name: str | None = None,
+    extra_env: str | None = None,
 ) -> Plan:
     scarb, foundry = tool_versions(sandbox, docker)
 
@@ -76,6 +78,13 @@ def prepare_plan(
             steps = project.setup() + _workflow(project=project, scarb=scarb)
             test = Test(name=project.name, rev=project.fetch_rev(), steps=steps)
             tests.append(test)
+
+        # Parse and merge extra environment variables into every step
+        if extra_env_map := _parse_extra_env(extra_env):
+            for test in tests:
+                for step in test.steps:
+                    # Do not override per-step variables; treat extra vars as defaults
+                    step.env = {**extra_env_map, **(step.env or {})}
 
         suite = TestSuite(tests=tests)
 
@@ -108,3 +117,22 @@ class _PlanningReportNameGenerationContext(ReportNameGenerationContext):
     workspace: str
     scarb: str
     foundry: str
+
+
+def _parse_extra_env(extra_env: str | None) -> dict[str, str] | None:
+    """Parse space-separated KEY=VALUE pairs into a dict.
+
+    Uses shlex.split to properly handle quotes (e.g., KEY="value with spaces").
+    Returns None if no valid pairs are found.
+    """
+    if not extra_env:
+        return None
+
+    result: dict[str, str] = {}
+    for token in shlex.split(extra_env):
+        if "=" in token:
+            key, value = token.split("=", 1)
+            if key:
+                result[key] = value
+
+    return result or None

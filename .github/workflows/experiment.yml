@@ -25,6 +25,10 @@ on:
         description: "Custom report name"
         required: false
         type: string
+      extra_env:
+        description: "Extra env (space-separated KEY=VALUE pairs passed to all steps)"
+        required: false
+        type: string
       notify_team:
         description: "Notify team (if you want the whole team to check the run)"
         type: boolean
@@ -90,6 +94,8 @@ jobs:
           echo "sandbox-digest=$DIGEST" >> $GITHUB_OUTPUT
 
       - name: Create plan
+        env:
+          EXTRA_ENV: ${{ inputs.extra_env }}
         run:
           ./maat plan
           --workspace "${{ inputs.workspace }}"
@@ -97,6 +103,7 @@ jobs:
           --output maat-plan.json
           --partitions ${{ env.PARTITIONS_COUNT }}
           ${{ inputs.report_name && format('--report-name "{0}"', inputs.report_name) }}
+          ${{ inputs.extra_env && '--extra-env "$EXTRA_ENV"' }}
 
       - name: Generate partition array
         id: generate-partitions
