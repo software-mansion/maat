@@ -1,0 +1,41 @@
+name: Garbage Collect Reports
+
+on:
+  schedule:
+    - cron: '0 0 * * 0'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: gc-reports
+  cancel-in-progress: true
+
+env:
+  UV_FROZEN: 1
+
+jobs:
+  gc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+      - run: uv sync
+      - run: ./maat gc-reports
+
+      - name: Set up Git configuration
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - run: git pull --ff-only
+      - run: git add -A reports
+      - run: "git commit -m 'gc-reports: prune old reports'"
+      - run: git push
+
+      - name: Trigger Web workflow
+        if: github.ref == 'refs/heads/main'
+        run: gh workflow run web.yml --ref "${{ github.ref }}"
+        env:
+          GH_TOKEN: ${{ github.token }}
