@@ -7,7 +7,15 @@ import { maatPlugin } from "./vite-plugin-maat";
 // https://vite.dev/config/
 export default defineConfig({
   base: "/maat",
-  plugins: [react(), tailwindcss(), maatPlugin()],
+  plugins: [
+    react({
+      babel: {
+        plugins: ["babel-plugin-react-compiler"],
+      },
+    }),
+    tailwindcss(),
+    maatPlugin(),
+  ],
   build: {
     assetsDir: "_assets",
     sourcemap: true,
