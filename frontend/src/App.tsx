@@ -72,7 +72,7 @@ function ToolbarContainer() {
           toolbarPinned && "border-t-base-100 border-x-base-100 w-full rounded-none px-8",
         )}
       >
-        <Toolbar />
+        <Toolbar className="max-w-5xl" />
       </nav>
     </div>
   );

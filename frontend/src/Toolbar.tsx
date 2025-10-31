@@ -4,16 +4,16 @@ import type { ButtonHTMLAttributes, ReactNode } from "react";
 import { VscFold, VscPin, VscUnfold, VscWarning } from "react-icons/vsc";
 
 import {
-  type ReportTitle,
   openSectionsAtom,
   pivotAtom,
+  type ReportTitle,
   selectedReportsAtom,
   selectedSliceAtom,
   toolbarPinnedAtom,
-  vm,
+  vm
 } from "./atoms";
 
-export function Toolbar() {
+export function Toolbar({ className }: { className?: string }) {
   const [selectedSlice, setSelectedSlice] = useAtom(selectedSliceAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const [pivot, setPivot] = useAtom(pivotAtom);
@@ -24,7 +24,12 @@ export function Toolbar() {
     To get correct comparisons, add it to the slice or select a different pivot.`;
 
   return (
-    <form className="grid max-w-5xl auto-rows-auto grid-cols-1 gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]">
+    <form
+      className={clsx(
+        "grid auto-rows-auto grid-cols-1 gap-3 md:grid-cols-[auto_minmax(0,1fr)_auto]",
+        className,
+      )}
+    >
       <Fieldset title="Pivot" warning={isPivotNotInSliceWarning}>
         {selectedReports.map((report) => (
           <input
