@@ -33,11 +33,25 @@ jobs:
 
       - run: git pull --ff-only
       - run: git add -A reports
+
+      - name: Check for changes
+        id: check_changes
+        shell: bash
+        run: |
+          if git diff --cached --quiet; then
+            echo "has_changes=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_changes=true" >> "$GITHUB_OUTPUT"
+          fi
+
       - run: "git commit -m 'gc-reports: prune old reports'"
+        if: steps.check_changes.outputs.has_changes == 'true'
+
       - run: git push
+        if: steps.check_changes.outputs.has_changes == 'true'
 
       - name: Trigger Web workflow
-        if: github.ref == 'refs/heads/main'
+        if: github.ref == 'refs/heads/main' && steps.check_changes.outputs.has_changes == 'true'
         run: gh workflow run web.yml --ref "${{ github.ref }}"
         env:
           GH_TOKEN: ${{ github.token }}
