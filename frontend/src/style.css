@@ -9,22 +9,3 @@
 :root {
   @apply bg-base-200;
 }
-
-@utility scroll-state {
-  @supports (container-type: scroll-state) {
-    & {
-      container-type: scroll-state;
-    }
-  }
-}
-
-/* FIXME: Doesn't work on prod due to https://github.com/parcel-bundler/lightningcss/issues/887 */
-@custom-variant stuck-top {
-  @supports (container-type: scroll-state) {
-    @container scroll-state(stuck: top) {
-      &.flex {
-        @slot;
-      }
-    }
-  }
-}

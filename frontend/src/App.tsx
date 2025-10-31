@@ -14,9 +14,7 @@ import { toolbarPinnedAtom } from "./atoms.ts";
 export function App() {
   return (
     <main className="flex flex-col items-center">
-      <a href="#" className="font-fancy m-8 text-center text-5xl md:text-6xl">
-        <h1>Ma'at</h1>
-      </a>
+      <Header />
       <ErrorBoundary FallbackComponent={Fallback}>
         <Suspense fallback={<Loading />}>
           <ToolbarContainer />
@@ -47,19 +45,31 @@ function Fallback({ error }: FallbackProps) {
   );
 }
 
+function Header() {
+  const toolbarPinned = useAtomValue(toolbarPinnedAtom);
+  return (
+    <a
+      href="#"
+      className={clsx(
+        "font-fancy z-11 w-full p-8 text-center text-5xl md:text-6xl",
+        toolbarPinned && "bg-base-100",
+      )}
+    >
+      <h1>Ma'at</h1>
+    </a>
+  );
+}
+
 function ToolbarContainer() {
   const toolbarPinned = useAtomValue(toolbarPinnedAtom);
   return (
     <div
-      className={clsx(
-        "flex w-full flex-col items-center",
-        toolbarPinned && "scroll-state sticky top-0 z-10",
-      )}
+      className={clsx("flex w-full flex-col items-center", toolbarPinned && "sticky top-0 z-10")}
     >
       <nav
         className={clsx(
-          "border-base-300 bg-base-100 toolbar-card mx-4 flex flex-col items-center rounded-(--radius-box) border p-4 transition",
-          "stuck-top:border-t-base-100 stuck-top:border-x-base-100 stuck-top:w-full stuck-top:rounded-none stuck-top:px-8 stuck-top:shadow-lg",
+          "border-base-300 bg-base-100 toolbar-card mx-4 flex flex-col items-center rounded-(--radius-box) border p-4",
+          toolbarPinned && "border-t-base-100 border-x-base-100 w-full rounded-none px-8",
         )}
       >
         <Toolbar />
