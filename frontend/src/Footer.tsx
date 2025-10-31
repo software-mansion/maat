@@ -65,22 +65,6 @@ export function Footer({ className }: { className?: string }) {
         >
           Source code
         </a>
-        <a
-          href="https://github.com/software-mansion/maat/actions/workflows/experiment.yml"
-          className="link"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Queue
-        </a>
-        <a
-          href="https://github.com/software-mansion/maat/tree/main/docs"
-          className="link"
-          rel="noopener noreferrer"
-          target="_blank"
-        >
-          Docs
-        </a>
       </nav>
     </footer>
   );

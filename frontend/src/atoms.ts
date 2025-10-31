@@ -1,4 +1,4 @@
-import { atom } from "jotai";
+import { atom, useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
 import vmJson from "virtual:maat-view-model";
 
@@ -70,6 +70,39 @@ export const Steps = {
 } as const;
 
 export type StepName = keyof typeof Steps;
+
+export const Domains = {
+  all: {
+    name: "all",
+    humanName: "All",
+  },
+  compiler: {
+    name: "compiler",
+    humanName: "Compiler",
+  },
+  scarb: {
+    name: "scarb",
+    humanName: "Scarb",
+  },
+  forge: {
+    name: "forge",
+    humanName: "Forge",
+  },
+  lint: {
+    name: "lint",
+    humanName: "Lint",
+  },
+  ls: {
+    name: "ls",
+    humanName: "LS",
+  },
+} as const;
+
+export type DomainName = keyof typeof Domains;
+
+export function isDomainName(value: string): value is DomainName {
+  return value in Domains;
+}
 
 export interface StepReport {
   name: string;
@@ -213,3 +246,59 @@ export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-
 ]);
 
 export const toolbarPinnedAtom = atomWithStorage<boolean>("maat-toolbar-pinned", true);
+
+export const selectedDomainNameAtom = atomWithHashStorage<DomainName>({
+  key: "d",
+  getDefault: () => "all",
+  serialize: (value) => value,
+  deserialize(value) {
+    if (isDomainName(value)) {
+      return value;
+    } else {
+      throw new Error("domainAtom: invalid value");
+    }
+  },
+});
+
+export function showSectionInDomain(sectionId: SectionId, domainName: DomainName): boolean {
+  const when = (...domains: DomainName[]) => domainName === "all" || domains.includes(domainName);
+  switch (sectionId) {
+    case "metrics":
+      return true;
+    case "label-error":
+      return when("scarb");
+    case "label-build-fail":
+      return when("compiler", "scarb");
+    case "label-test-error":
+      return when("forge");
+    case "label-test-fail":
+      return when("forge");
+    case "label-test-pass":
+      return when();
+    case "label-lint-fail":
+      return when("lint");
+    case "label-ls-fail":
+      return when("ls");
+    case "label-broken":
+      return when("scarb");
+    case "label-lint-broken":
+      return when("lint");
+    case "label-ls-broken":
+      return when("ls");
+    case "timings-build":
+      return when("compiler", "scarb");
+    case "timings-lint":
+      return when("lint");
+    case "timings-test":
+      return when("forge");
+    case "timings-ls":
+      return when("ls");
+    case "downloads":
+      return true;
+  }
+}
+
+export function useShowSectionInSelectedDomain(sectionId: SectionId): boolean {
+  const selectedDomainName = useAtomValue(selectedDomainNameAtom);
+  return showSectionInDomain(sectionId, selectedDomainName);
+}

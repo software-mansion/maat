@@ -2,7 +2,7 @@ import clsx from "clsx";
 import { useAtom } from "jotai";
 import type { ReactNode } from "react";
 
-import { type SectionId, openSectionsAtom } from "./atoms.ts";
+import { type SectionId, openSectionsAtom, useShowSectionInSelectedDomain } from "./atoms.ts";
 
 export interface SectionProps {
   id: SectionId;
@@ -13,7 +13,12 @@ export interface SectionProps {
 const sectionClassName = "maat-section";
 
 export function Section({ id, children, className }: SectionProps) {
+  const showSectionInSelectedDomain = useShowSectionInSelectedDomain(id);
   const [opened, setOpened] = useAtom(openSectionsAtom);
+
+  if (!showSectionInSelectedDomain) {
+    return null;
+  }
 
   return (
     <div

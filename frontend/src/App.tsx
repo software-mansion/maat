@@ -7,6 +7,7 @@ import { DownloadsSection } from "./Downloads.tsx";
 import { Footer } from "./Footer.tsx";
 import { LabelsSection } from "./Labels.tsx";
 import { MetricsSection } from "./Metrics.tsx";
+import { Tabs } from "./Tabs.tsx";
 import { TimingSections } from "./Timings.tsx";
 import { Toolbar } from "./Toolbar.tsx";
 import { toolbarPinnedAtom } from "./atoms.ts";
@@ -68,11 +69,12 @@ function ToolbarContainer() {
     >
       <nav
         className={clsx(
-          "border-base-300 bg-base-100 toolbar-card mx-4 flex flex-col items-center rounded-(--radius-box) border p-4",
-          toolbarPinned && "border-t-base-100 border-x-base-100 w-full rounded-none px-8",
+          "border-base-300 bg-base-100 toolbar-card mx-4 flex flex-col items-center rounded-(--radius-box) border",
+          toolbarPinned && "border-t-base-100 border-x-base-100 w-full rounded-none px-4",
         )}
       >
-        <Toolbar className="max-w-5xl" />
+        <Toolbar className="m-4 max-w-5xl" />
+        <Tabs />
       </nav>
     </div>
   );
