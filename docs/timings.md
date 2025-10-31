@@ -21,11 +21,7 @@ Not included in any step’s time:
 - Work performed outside steps, e.g. the image “bake” that happens between setup and regular steps
 
 Skipped steps (for example, after a failing setup step) have no timing recorded.
-
-Additionally:
-
-- A test’s total time is the sum of the times of its executed steps.
-- The whole‑experiment time is measured once for the entire run.
+A test’s total time is the sum of the times of its executed steps.
 
 ## Setup vs regular steps (why it matters for timings)
 
@@ -33,9 +29,9 @@ Ma’at distinguishes setup steps from regular steps:
 
 - Setup steps are allowed to populate caches and prepare the workspace. They run first. If a setup
   step fails, the remaining steps are marked as skipped.
-- After setup succeeds, Ma’at “bakes” the cache and workbench into the image used for subsequent
-  steps to make those runs faster and more reproducible. This baking itself is not a step, so it is
-  not counted in any step timing.
+- After setup succeeds, Ma’at “bakes” the Scarb cache and patched project checkout directory into
+  the image used for subsequent steps to make those runs faster and more reproducible. This baking
+  itself is not a step, so it is not counted in any step timing.
 
 ## Step catalog (what each step does)
 
@@ -47,7 +43,6 @@ their timings include.
   - Command: `maat-check-versions`
   - Purpose: Verify that the Scarb and Starknet Foundry versions in the container match the versions
     selected for this run.
-  - Timing includes: running the check and printing versions.
 
 2) maat-patch (setup, checkout)
 
@@ -60,19 +55,16 @@ their timings include.
     - Ensures the appropriate test runner command is set (snforge, cairo-test, or cargo test).
     - Adds allowances required by some plugins where needed.
     - Optionally borrows safe dev‑dependency versions from a snapshot file, when present.
-  - Timing includes: reading and writing manifest files and any quick checks it performs.
 
 3) fetch (setup)
 
   - Command: `scarb fetch`
   - Purpose: Resolve and download dependencies for the whole workspace.
-  - Timing includes: registry requests and dependency resolution.
 
 4) tree (regular)
 
   - Command: `scarb tree -q --workspace`
   - Purpose: Print the resolved dependency tree to logs for debugging (no effect on later steps).
-  - Timing includes: the `scarb tree` run.
 
 5) build (regular)
 
