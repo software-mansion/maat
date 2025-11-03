@@ -16,6 +16,7 @@ from maat.utils.log import track
 def analyse_report(report: Report):
     analyzers: list[Analyser] = [
         tests_summary,
+        test_runner,
         label,  # NOTE: This analyser depends on all previous ones.
     ]
 
@@ -57,6 +58,19 @@ def tests_summary(test: TestReport):
             skipped=skipped,
             ignored=ignored,
         )
+
+
+def test_runner(test: TestReport):
+    """
+    Detect which test runner was used based on the log output.
+    """
+    step = test.step("test")
+    if step is None or not step.was_executed:
+        return
+
+    runner = _detect_test_runner(step)
+    if runner:
+        test.analyses.test_runner = runner
 
 
 def _extract_count(pattern: str, text: str, default: int | None = None) -> int:

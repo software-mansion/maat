@@ -23,7 +23,13 @@ import {
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
 import { durationTrend } from "./trends.ts";
-import { bigintSqrt, determineUniformRevForTest, mean, variance } from "./utils.ts";
+import {
+  bigintSqrt,
+  determineUniformRevForTest,
+  determineUniformTestRunnerForTest,
+  mean,
+  variance,
+} from "./utils.ts";
 
 type MostVariableSteps = {
   testName: TestName;
@@ -113,6 +119,15 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                 const uniformRev = determineUniformRevForTest(vm, selection, testName);
                 if (uniformRev) {
                   titleSecondRowParts.push(uniformRev);
+                }
+
+                const uniformTestRunner = determineUniformTestRunnerForTest(vm, selection, testName);
+                if (uniformTestRunner) {
+                  titleSecondRowParts.push(
+                    <Fragment key="test-runner">
+                      <span className="badge badge-sm badge-outline">{uniformTestRunner}</span>
+                    </Fragment>,
+                  );
                 }
 
                 if (!isSingleReport) {

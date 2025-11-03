@@ -1,4 +1,4 @@
-import type { ReportTitle, Test, TestName, ViewModel } from "./atoms.ts";
+import type { ReportTitle, Test, TestName, TestRunner, ViewModel } from "./atoms.ts";
 
 /** Calculate uniformRev if all selected runs of a test share the same revision. */
 export function determineUniformRevForTest(
@@ -20,6 +20,28 @@ export function determineUniformRevForTest(
   }
 
   return candidate;
+}
+
+/** Calculate uniform test runner if all selected runs of a test share the same test runner. */
+export function determineUniformTestRunnerForTest(
+  vm: ViewModel,
+  selection: ReportTitle[],
+  testName: TestName,
+): TestRunner | undefined {
+  let candidate: TestRunner | undefined | null = undefined;
+  for (const reportTitle of selection) {
+    const report = vm.reports[reportTitle];
+    const test = report?.tests?.find((t: Test) => t.name === testName);
+    if (test) {
+      if (candidate === undefined) {
+        candidate = test.testRunner;
+      } else if (candidate !== test.testRunner) {
+        return undefined;
+      }
+    }
+  }
+
+  return candidate ?? undefined;
 }
 
 export function variance(samples: bigint[], xbar: bigint): bigint {

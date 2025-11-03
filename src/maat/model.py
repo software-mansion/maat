@@ -217,6 +217,8 @@ class Labels(MutableSet[Label], RootModel):
 class Analyses(BaseModel):
     labels: Labels | None = None
     tests_summary: TestsSummary | None = None
+    test_runner: Literal["snforge", "cairo-test"] | None = None
+    """The test runner detected for the test step ('snforge' or 'cairo-test')."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):
