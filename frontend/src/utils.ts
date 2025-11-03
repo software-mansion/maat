@@ -28,7 +28,7 @@ export function determineUniformTestRunnerForTest(
   selection: ReportTitle[],
   testName: TestName,
 ): TestRunner | undefined {
-  let candidate: TestRunner | undefined | null = undefined;
+  let candidate: TestRunner | null | undefined = undefined;
   for (const reportTitle of selection) {
     const report = vm.reports[reportTitle];
     const test = report?.tests?.find((t: Test) => t.name === testName);
@@ -41,7 +41,8 @@ export function determineUniformTestRunnerForTest(
     }
   }
 
-  return candidate ?? undefined;
+  // Convert null to undefined for cleaner API
+  return candidate || undefined;
 }
 
 export function variance(samples: bigint[], xbar: bigint): bigint {
