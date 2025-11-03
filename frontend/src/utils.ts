@@ -42,7 +42,7 @@ export function determineUniformTestRunnerForTest(
   }
 
   // Convert null to undefined for cleaner API
-  return candidate || undefined;
+  return candidate === null ? undefined : candidate;
 }
 
 export function variance(samples: bigint[], xbar: bigint): bigint {

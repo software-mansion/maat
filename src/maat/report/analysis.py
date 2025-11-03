@@ -1,4 +1,5 @@
 import re
+from typing import Literal
 
 from maat.model import (
     Analyser,
@@ -179,7 +180,7 @@ def _lint_label(lint: StepReport) -> Label:
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
 
-def _detect_test_runner(rep: StepReport) -> str | None:
+def _detect_test_runner(rep: StepReport) -> Literal["snforge", "cairo-test"] | None:
     """
     Detect which test runner was used based on the log output.
     Returns 'snforge', 'cairo-test', or None if the runner cannot be determined.
