@@ -84,7 +84,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -165,7 +166,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -240,7 +242,8 @@
         "labels": [
           "test-error(snforge: rpc error)",
           "lint-broken(no linter)"
-        ]
+        ],
+        "test_runner": "snforge"
       }
     },
     {
@@ -321,7 +324,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -402,7 +406,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -483,7 +488,8 @@
           "failed": 5,
           "skipped": 0,
           "ignored": 1
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -571,7 +577,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -659,7 +666,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -747,7 +755,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -835,7 +844,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -923,7 +933,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1011,7 +1022,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1099,7 +1111,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1187,7 +1200,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1275,7 +1289,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1451,7 +1466,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1539,7 +1555,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1627,7 +1644,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1715,7 +1733,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1803,7 +1822,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1891,7 +1911,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -1979,7 +2000,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -2060,7 +2082,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -2148,7 +2171,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -2236,7 +2260,8 @@
           "failed": 3,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -2324,7 +2349,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -2412,7 +2438,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -2588,7 +2615,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -2676,7 +2704,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -2751,7 +2780,8 @@
         "labels": [
           "build-fail(compilation error)",
           "ls-fail(ls misses errors)"
-        ]
+        ],
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -2921,7 +2951,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3009,7 +3040,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3239,7 +3271,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3320,7 +3353,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 1
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3401,7 +3435,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -3570,7 +3605,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3658,7 +3694,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3834,7 +3871,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -3922,7 +3960,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -4098,7 +4137,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -4186,7 +4226,8 @@
           "failed": 6,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -4362,7 +4403,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -4444,7 +4486,8 @@
         "labels": [
           "test-error(unknown test runner error)",
           "lint-broken(no linter)"
-        ]
+        ],
+        "test_runner": "snforge"
       }
     },
     {
@@ -4532,7 +4575,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -4688,7 +4732,8 @@
         "labels": [
           "build-fail(compilation error)",
           "ls-fail(ls misses errors)"
-        ]
+        ],
+        "test_runner": "snforge"
       }
     },
     {
@@ -4857,7 +4902,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -4945,7 +4991,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "cairo-test"
       }
     },
     {
@@ -5033,7 +5080,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 1
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -5121,7 +5169,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     },
     {
@@ -5209,7 +5258,8 @@
           "failed": 0,
           "skipped": 0,
           "ignored": 0
-        }
+        },
+        "test_runner": "snforge"
       }
     }
   ]
