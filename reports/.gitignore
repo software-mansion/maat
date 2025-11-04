@@ -1,3 +1,4 @@
 *.json
 !release-*.json
 !nightly-*.json
+!mock-*.json

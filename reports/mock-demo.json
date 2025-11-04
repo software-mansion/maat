@@ -1,0 +1,81 @@
+{
+  "workspace": "mock",
+  "scarb": "2.13.1",
+  "foundry": "0.51.1",
+  "maat_commit": "abc123mock",
+  "created_at": "2025-11-04T15:36:30.011543+00:00",
+  "total_execution_time": "PT5M30S",
+  "tests": [
+    {
+      "name": "project-with-cairo-test",
+      "rev": "abc123",
+      "steps": [
+        {
+          "name": "test",
+          "run": "scarb test --workspace",
+          "exit_code": 0,
+          "execution_time": "PT30S"
+        }
+      ],
+      "analyses": {
+        "test_runner": "cairo-test",
+        "tests_summary": {
+          "passed": 10,
+          "failed": 0,
+          "skipped": 0,
+          "ignored": 0
+        },
+        "labels": [
+          "test-pass"
+        ]
+      }
+    },
+    {
+      "name": "project-with-snforge",
+      "rev": "def456",
+      "steps": [
+        {
+          "name": "test",
+          "run": "scarb test --workspace",
+          "exit_code": 0,
+          "execution_time": "PT45S"
+        }
+      ],
+      "analyses": {
+        "test_runner": "snforge",
+        "tests_summary": {
+          "passed": 25,
+          "failed": 0,
+          "skipped": 0,
+          "ignored": 0
+        },
+        "labels": [
+          "test-pass"
+        ]
+      }
+    },
+    {
+      "name": "project-without-runner",
+      "rev": "ghi789",
+      "steps": [
+        {
+          "name": "test",
+          "run": "scarb test --workspace",
+          "exit_code": 0,
+          "execution_time": "PT20S"
+        }
+      ],
+      "analyses": {
+        "tests_summary": {
+          "passed": 5,
+          "failed": 0,
+          "skipped": 0,
+          "ignored": 0
+        },
+        "labels": [
+          "test-pass"
+        ]
+      }
+    }
+  ]
+}

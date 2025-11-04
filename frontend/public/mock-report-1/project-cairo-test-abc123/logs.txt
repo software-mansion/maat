@@ -1,3 +1,0 @@
-=== project-cairo-test-abc123 ===
-
->>> scarb test --workspace
