@@ -1,0 +1,3 @@
+=== project-snforge-with-failures-mno346 ===
+
+>>> scarb test --workspace

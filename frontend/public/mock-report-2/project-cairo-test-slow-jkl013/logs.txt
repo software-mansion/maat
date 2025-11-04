@@ -1,0 +1,3 @@
+=== project-cairo-test-slow-jkl013 ===
+
+>>> scarb test --workspace

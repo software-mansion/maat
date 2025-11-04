@@ -1,0 +1,3 @@
+=== project-snforge-def456 ===
+
+>>> scarb test --workspace

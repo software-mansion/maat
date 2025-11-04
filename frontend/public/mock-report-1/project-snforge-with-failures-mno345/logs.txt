@@ -1,0 +1,4 @@
+=== project-snforge-with-failures-mno345 ===
+
+>>> scarb test --workspace
+Process finished with exit code 1

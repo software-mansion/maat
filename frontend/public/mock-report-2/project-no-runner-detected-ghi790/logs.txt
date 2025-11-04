@@ -1,0 +1,3 @@
+=== project-no-runner-detected-ghi790 ===
+
+>>> scarb test --workspace
