@@ -27,7 +27,7 @@ export function determineUniformTestRunnerForTest(
   vm: ViewModel,
   selection: ReportTitle[],
   testName: TestName,
-): TestRunner | undefined {
+): TestRunner | "mixed" | undefined {
   let candidate: TestRunner | null | undefined = undefined;
   for (const reportTitle of selection) {
     const report = vm.reports[reportTitle];
@@ -36,7 +36,7 @@ export function determineUniformTestRunnerForTest(
       if (candidate === undefined) {
         candidate = test.testRunner;
       } else if (candidate !== test.testRunner) {
-        return undefined;
+        return "mixed";
       }
     }
   }

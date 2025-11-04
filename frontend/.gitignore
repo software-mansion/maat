@@ -24,3 +24,9 @@ dist-ssr
 *.sw?
 
 .maat-generated/
+
+# Generated web assets
+src/vm.json
+public/archives/
+public/nightly-latest/
+public/release-*/
