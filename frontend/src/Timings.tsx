@@ -122,13 +122,11 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                 }
 
                 const uniformTestRunner = determineUniformTestRunnerForTest(vm, selection, testName);
-                if (uniformTestRunner) {
-                  titleSecondRowParts.push(
-                    <Fragment key="test-runner">
-                      <span className="badge badge-sm badge-outline">{uniformTestRunner}</span>
-                    </Fragment>,
-                  );
-                }
+                titleSecondRowParts.push(
+                  <Fragment key="test-runner">
+                    <span className="badge badge-sm badge-outline">{uniformTestRunner}</span>
+                  </Fragment>,
+                );
 
                 if (!isSingleReport) {
                   titleSecondRowParts.push(

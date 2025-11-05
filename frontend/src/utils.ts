@@ -27,7 +27,7 @@ export function determineUniformTestRunnerForTest(
   vm: ViewModel,
   selection: ReportTitle[],
   testName: TestName,
-): TestRunner | "mixed" | undefined {
+): TestRunner | "mixed" | "unknown" {
   let candidate: TestRunner | null | undefined = undefined;
   for (const reportTitle of selection) {
     const report = vm.reports[reportTitle];
@@ -41,8 +41,8 @@ export function determineUniformTestRunnerForTest(
     }
   }
 
-  // Convert null to undefined for cleaner API
-  return candidate === null ? undefined : candidate;
+  // Return "unknown" if no test runner detected, otherwise return the detected runner
+  return candidate === null || candidate === undefined ? "unknown" : candidate;
 }
 
 export function variance(samples: bigint[], xbar: bigint): bigint {
