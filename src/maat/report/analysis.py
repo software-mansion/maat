@@ -1,4 +1,5 @@
 import re
+from typing import Literal
 
 from maat.model import (
     Analyser,
@@ -16,6 +17,7 @@ from maat.utils.log import track
 def analyse_report(report: Report):
     analyzers: list[Analyser] = [
         tests_summary,
+        test_runner,
         label,  # NOTE: This analyser depends on all previous ones.
     ]
 
@@ -57,6 +59,19 @@ def tests_summary(test: TestReport):
             skipped=skipped,
             ignored=ignored,
         )
+
+
+def test_runner(test: TestReport):
+    """
+    Detect which test runner was used based on the log output.
+    """
+    step = test.step("test")
+    if step is None or not step.was_executed:
+        return
+
+    runner = _detect_test_runner(step)
+    if runner:
+        test.analyses.test_runner = runner
 
 
 def _extract_count(pattern: str, text: str, default: int | None = None) -> int:
@@ -165,7 +180,7 @@ def _lint_label(lint: StepReport) -> Label:
     return Label.new(LabelCategory.LINT_FAIL, "lint violations")
 
 
-def _detect_test_runner(rep: StepReport) -> str | None:
+def _detect_test_runner(rep: StepReport) -> Literal["snforge", "cairo-test"] | None:
     """
     Detect which test runner was used based on the log output.
     Returns 'snforge', 'cairo-test', or None if the runner cannot be determined.

@@ -110,11 +110,14 @@ export interface StepReport {
   exitCode: number | null;
 }
 
+export type TestRunner = "snforge" | "cairo-test";
+
 export interface Test {
   name: TestName;
   rev: string;
   labels: Label[];
   logsHref: string;
+  testRunner: TestRunner | null;
   build: StepReport | null;
   test: StepReport | null;
   lint: StepReport | null;

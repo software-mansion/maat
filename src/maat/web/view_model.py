@@ -1,6 +1,6 @@
 from datetime import timedelta
 from pathlib import Path
-from typing import Self
+from typing import Literal, Self
 
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
@@ -63,6 +63,7 @@ class TestViewModel(BaseModel):
     rev: str
     labels: list[LabelViewModel]
     logs_href: str
+    test_runner: Literal["snforge", "cairo-test"] | None
 
     build: StepViewModel | None
     test: StepViewModel | None
@@ -76,6 +77,7 @@ class TestViewModel(BaseModel):
             rev=test.rev,
             labels=[LabelViewModel.new(label) for label in test.analyses.labels],
             logs_href=str(logs_txt_path(report_meta, test)),
+            test_runner=test.analyses.test_runner,
             build=(step := test.step("build")) and StepViewModel.new(step),
             test=(step := test.step("test")) and StepViewModel.new(step),
             lint=(step := test.step("lint")) and StepViewModel.new(step),
