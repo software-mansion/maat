@@ -16,7 +16,7 @@ def uptime() -> timedelta:
 
 
 def log(*args):
-    print(f"[{str(uptime())}]", *args)
+    print(f"[{str(uptime())}]", flush=True, *args)
 
 
 @contextmanager
