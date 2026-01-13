@@ -1,7 +1,7 @@
 import clsx from "clsx";
 import { useAtom, useAtomValue } from "jotai";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { VscFold, VscPin, VscUnfold, VscWarning } from "react-icons/vsc";
+import { VscFold, VscPin, VscSymbolNumeric, VscUnfold, VscWarning } from "react-icons/vsc";
 
 import {
   type ReportTitle,
@@ -9,6 +9,7 @@ import {
   pivotAtom,
   selectedReportsAtom,
   selectedSliceAtom,
+  timingDisplayModeAtom,
   toolbarPinnedAtom,
   vm,
 } from "./atoms";
@@ -94,6 +95,7 @@ export function Toolbar({ className }: { className?: string }) {
       <div className="flex gap-3 md:col-start-3 md:row-start-1 md:row-end-4 md:flex-col">
         <PinToolbarButton />
         <ToggleSectionsButton />
+        <TimingDisplayModeButton />
       </div>
     </form>
   );
@@ -166,6 +168,23 @@ function PinToolbarButton() {
       }}
     >
       <VscPin className="size-[1.2em]" />
+    </ToolButton>
+  );
+}
+
+function TimingDisplayModeButton() {
+  const [timingDisplayMode, setTimingDisplayMode] = useAtom(timingDisplayModeAtom);
+  const isAbsolute = timingDisplayMode === "absolute";
+  return (
+    <ToolButton
+      label={isAbsolute ? "Show percentage change" : "Show absolute change"}
+      active={isAbsolute}
+      onClick={(e) => {
+        e.preventDefault();
+        setTimingDisplayMode(isAbsolute ? "percentage" : "absolute");
+      }}
+    >
+      <VscSymbolNumeric className="size-[1.2em]" />
     </ToolButton>
   );
 }
