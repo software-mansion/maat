@@ -250,6 +250,13 @@ export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-
 
 export const toolbarPinnedAtom = atomWithStorage<boolean>("maat-toolbar-pinned", true);
 
+export type TimingDisplayMode = "percentage" | "absolute";
+
+export const timingDisplayModeAtom = atomWithStorage<TimingDisplayMode>(
+  "maat-timing-display-mode",
+  "percentage",
+);
+
 export const selectedDomainNameAtom = atomWithHashStorage<DomainName>({
   key: "d",
   getDefault: () => "all",

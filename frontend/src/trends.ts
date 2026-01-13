@@ -1,10 +1,11 @@
-import { durationTotal } from "./time.ts";
+import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
 
 export interface Trend {
   ratio: number;
   isExtreme: boolean;
   symbol: string;
   percentage: string;
+  absoluteDiff: string | null;
   colorClass: string;
 }
 
@@ -17,24 +18,27 @@ export function durationTrend(
     return null;
   }
 
-  const durationTotalSeconds = (timeStr: string): number =>
-    Number(durationTotal(timeStr, "milliseconds")) / 1000;
+  const durationTotalMs = (timeStr: string): bigint => durationTotal(timeStr, "milliseconds");
+  const durationTotalSeconds = (timeStr: string): number => Number(durationTotalMs(timeStr)) / 1000;
 
+  const valueMs = durationTotalMs(value);
   const valueSeconds = durationTotalSeconds(value);
 
   let ratio: number;
+  let diffMs: bigint | null = null;
   if (!referenceValue) {
-    // If reference is null (failure), any value is an infinite improvement.
     ratio = -Infinity;
   } else {
+    const refMs = durationTotalMs(referenceValue);
     const refSeconds = durationTotalSeconds(referenceValue);
+    diffMs = valueMs - refMs;
     if (refSeconds === 0) {
       if (valueSeconds === 0) {
-        ratio = 0; // No change: 0 → 0.
+        ratio = 0;
       } else if (valueSeconds > 0) {
-        ratio = Infinity; // Infinite increase: 0 → positive.
+        ratio = Infinity;
       } else {
-        ratio = -Infinity; // Infinite decrease: 0 → negative.
+        ratio = -Infinity;
       }
     } else {
       ratio = (valueSeconds - refSeconds) / refSeconds;
@@ -42,12 +46,12 @@ export function durationTrend(
   }
 
   // Find extremes for isExtreme calculation.
-  const nonNullValues = allValues.filter((v) => v !== null).map((v) => durationTotalSeconds(v!));
-  const minValue = nonNullValues.length > 0 ? Math.min(...nonNullValues) : null;
-  const maxValue = nonNullValues.length > 0 ? Math.max(...nonNullValues) : null;
+  const nonNullValues = allValues.filter((v) => v !== null).map((v) => durationTotalMs(v!));
+  const minValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
+  const maxValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
   const isExtreme =
-    (minValue !== null && valueSeconds === minValue) ||
-    (maxValue !== null && valueSeconds === maxValue);
+    (minValue !== null && valueMs === minValue) ||
+    (maxValue !== null && valueMs === maxValue);
 
   // Generate symbol.
   let symbol: string;
@@ -69,6 +73,14 @@ export function durationTrend(
     percentage = `${Math.round(ratio * 100)}%`;
   }
 
+  // Generate absolute diff.
+  let absoluteDiff: string | null = null;
+  if (diffMs !== null) {
+    const absDiffMs = diffMs < 0n ? -diffMs : diffMs;
+    const sign = diffMs < 0n ? "-" : "+";
+    absoluteDiff = `${sign}${serializeDuration(durationFromTotal(absDiffMs, "milliseconds"))}`;
+  }
+
   // Generate colour class.
   let colorClass: string;
   if (ratio < 0) {
@@ -84,6 +96,7 @@ export function durationTrend(
     isExtreme,
     symbol,
     percentage,
+    absoluteDiff,
     colorClass,
   };
 }
