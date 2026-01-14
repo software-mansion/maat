@@ -80,7 +80,7 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
     if (package := manifest.get("package")) is not None:
         # Override "cairo-version" just in case project specifies version requirement that
         # is not satisfactory by Ma'at environment.
-        patch_field(package, "cairo-version", scarb_version)
+        patch_field(package, "cairo-version", cairo_version)
 
         test_runner = detect_test_runner(member_root)
 
@@ -173,6 +173,17 @@ def get_tool_version(tool: str) -> str:
     return subprocess.check_output([tool, "-V"]).decode("utf-8").split()[1]
 
 
+def get_scarb_cairo_version() -> str:
+    # Extracts cairo version from scarb -V output, e.g. "scarb 2.8.0 (cairo: 2.8.0, ...)".
+    import re
+
+    output = subprocess.check_output(["scarb", "-V"]).decode("utf-8")
+    match = re.search(r"cairo:\s*([^\s,\)]+)", output)
+    if match:
+        return match.group(1)
+    raise ValueError(f"Could not parse cairo version from scarb output: {output}")
+
+
 def ensure_clean_git_repo():
     if Path(".git").exists():
         subprocess.check_output(["rm", "-rf", ".git"])
@@ -192,6 +203,7 @@ def diff_and_commit_patched_files():
 
 if __name__ == "__main__":
     scarb_version = get_tool_version("scarb")
+    cairo_version = get_scarb_cairo_version()
     foundry_version = get_tool_version("snforge")
 
     is_snforge_std = '[package]\nname = "snforge_std' in Path("Scarb.toml").read_text()
