@@ -178,7 +178,7 @@ def get_scarb_cairo_version() -> str:
     import re
 
     output = subprocess.check_output(["scarb", "--version"]).decode("utf-8")
-    match = re.search(r"cairo:\s*([^\s,\)]+)", output)
+    match = re.search(r"cairo:\s+([^\s]+)", output)
     if match:
         return match.group(1)
     raise ValueError(f"Could not parse cairo version from scarb output: {output}")
