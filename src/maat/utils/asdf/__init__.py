@@ -35,7 +35,9 @@ def asdf_latest(
     version: str | None = None,
 ) -> str:
     with importlib.resources.path("maat.utils.asdf") as path:
-        image = docker.buildx.build(context_path=str(path), pull=True)
+        image = docker.buildx.build(
+            context_path=str(path), pull=True, load=True, tags=["latest"]
+        )
         assert isinstance(image, Image)
 
     command = ["latest", name]
