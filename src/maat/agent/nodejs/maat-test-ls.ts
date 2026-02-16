@@ -234,24 +234,26 @@ async function terminate(connection: MessageConnection): Promise<void> {
  */
 function startAnalysisAwaiter(connection: MessageConnection): Promise<void> {
     const defer = Promise.withResolvers<void>();
-    let idleTimer: NodeJS.Timeout | null = null;
+    let analysisTimer: NodeJS.Timeout | null = null;
 
-    connection.onNotification(ServerStatus, ({ idle }) => {
-        // CairoLS notifies about its idle state:
-        // - During analysis: idle = false
-        // - After analysis: idle = true
+    connection.onNotification(ServerStatus, ({ event }) => {
+        // CairoLS notifies about analysis events:
+        // - Starting analysis: event = 'AnalysisStarted'
+        // - Finishing analysis: event = 'AnalysisFinished'
         //
         // LS tends to spuriously go from busy to idle to busy state again in,
-        // so we debounce the idle = true state for some small chunk of time
+        // so we debounce the event = 'AnalysisFinished' state for some small chunk of time
         // before considering the analysis truly complete.
 
-        if (idleTimer) {
-            clearTimeout(idleTimer);
-            idleTimer = null;
+        let finished = event == 'AnalysisFinished';
+
+        if (analysisTimer) {
+            clearTimeout(analysisTimer);
+            analysisTimer = null;
         }
 
-        if (idle) {
-            idleTimer = setTimeout(() => {
+        if (finished) {
+            analysisTimer = setTimeout(() => {
                 console.log("Analysis completed, server is idle.");
                 defer.resolve();
             }, ms("3 seconds")).unref();
