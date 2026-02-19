@@ -99,6 +99,16 @@ snforge --version
 sncast --version
 EOF
 
+# Install the latest universal-sierra-compiler (including rc/pre-release versions).
+RUN <<EOF
+set -eux
+USC_TAG=$(curl -sSf "https://api.github.com/repos/software-mansion/universal-sierra-compiler/releases" \
+  | node -e 'const fs=require("fs"); const releases=JSON.parse(fs.readFileSync(0,"utf8")); const latest=releases.reduce((a,b)=>new Date(a.created_at)>new Date(b.created_at)?a:b); process.stdout.write(latest.tag_name);')
+echo "Installing universal-sierra-compiler ${USC_TAG}"
+curl -L "https://raw.githubusercontent.com/software-mansion/universal-sierra-compiler/master/scripts/install.sh" | sh -s -- "$USC_TAG"
+universal-sierra-compiler --version
+EOF
+
 # Add all agent binaries to /root/.local/bin.
 ADD --chmod=0755 bin/* /root/.local/bin
 COPY --from=nodejs-builder /nodejs/out/maat-test-ls.js /root/.local/bin/maat-test-ls
