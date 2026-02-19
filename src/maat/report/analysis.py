@@ -1,4 +1,5 @@
 import re
+from datetime import timedelta
 from typing import Literal
 
 from maat.model import (
@@ -18,6 +19,7 @@ def analyse_report(report: Report):
     analyzers: list[Analyser] = [
         tests_summary,
         test_runner,
+        incremental_build,
         label,  # NOTE: This analyser depends on all previous ones.
     ]
 
@@ -72,6 +74,43 @@ def test_runner(test: TestReport):
     runner = _detect_test_runner(step)
     if runner:
         test.analyses.test_runner = runner
+
+
+def incremental_build(test: TestReport):
+    """
+    Parse cold and incremental build timings from incremental-build step logs.
+    """
+    for step_name, incr_attr, cold_attr in [
+        ("incremental-build", "incremental_build_time", "cold_build_time"),
+        (
+            "incremental-build-no-test",
+            "incremental_build_no_test_time",
+            "cold_build_no_test_time",
+        ),
+    ]:
+        step = test.step(step_name)
+        if step is None or not step.was_executed:
+            continue
+
+        log = step.log_str
+        if log is None:
+            continue
+
+        cold_ns = re.search(r"MAAT_COLD_BUILD_NS=(\d+)", log)
+        if cold_ns:
+            setattr(
+                test.analyses,
+                cold_attr,
+                timedelta(microseconds=int(cold_ns.group(1)) / 1_000),
+            )
+
+        incr_ns = re.search(r"MAAT_INCR_BUILD_NS=(\d+)", log)
+        if incr_ns:
+            setattr(
+                test.analyses,
+                incr_attr,
+                timedelta(microseconds=int(incr_ns.group(1)) / 1_000),
+            )
 
 
 def _extract_count(pattern: str, text: str, default: int | None = None) -> int:

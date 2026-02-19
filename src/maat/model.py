@@ -218,6 +218,14 @@ class Analyses(BaseModel):
     labels: Labels | None = None
     tests_summary: TestsSummary | None = None
     test_runner: Literal["snforge", "cairo-test"] | None = None
+    cold_build_time: timedelta | None = None
+    """Time of cold ``scarb build --workspace --test`` measured inside incremental-build step."""
+    cold_build_no_test_time: timedelta | None = None
+    """Time of cold ``scarb build --workspace`` measured inside incremental-build-no-test step."""
+    incremental_build_time: timedelta | None = None
+    """Time of ``scarb build --workspace --test`` with a warm target directory."""
+    incremental_build_no_test_time: timedelta | None = None
+    """Time of ``scarb build --workspace`` with a warm target directory."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):

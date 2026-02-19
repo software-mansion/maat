@@ -23,6 +23,8 @@ def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
         # NOTE: Scarb doesn't accept `1` here, weird.
         env["SCARB_IGNORE_CAIRO_VERSION"] = "true"
 
+    incremental_build_env = {**env, "SCARB_ARTIFACTS_FINGERPRINT": "false"}
+
     return [
         Step(run="maat-check-versions", setup=True, workdir=project.workdir),
         Step(run="maat-patch", setup=True, workdir=project.workdir),
@@ -41,6 +43,18 @@ def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
             run="scarb build --workspace --test",
             workdir=project.workdir,
             env=env,
+        ),
+        Step(
+            name="incremental-build",
+            run=_incremental_build_command("scarb build --workspace --test"),
+            workdir=project.workdir,
+            env=incremental_build_env,
+        ),
+        Step(
+            name="incremental-build-no-test",
+            run=_incremental_build_command("scarb build --workspace"),
+            workdir=project.workdir,
+            env=incremental_build_env,
         ),
         Step(
             name="lint",
@@ -117,6 +131,26 @@ class _PlanningReportNameGenerationContext(ReportNameGenerationContext):
     workspace: str
     scarb: str
     foundry: str
+
+
+def _incremental_build_command(build_cmd: str) -> str:
+    """Build a bash one-liner that runs *build_cmd* twice.
+
+    The first run is treated as cold and its duration is emitted as
+    ``MAAT_COLD_BUILD_NS``. The second run reuses the target directory
+    (incremental compilation) and its duration is emitted as
+    ``MAAT_INCR_BUILD_NS`` so the analysis phase can parse both values.
+    """
+    return (
+        "bash -c '"
+        f"START_COLD=$(date +%s%N); {build_cmd}; COLD_CODE=$?; END_COLD=$(date +%s%N); "
+        'echo "MAAT_COLD_BUILD_NS=$((END_COLD-START_COLD))"; '
+        "if [ $COLD_CODE -ne 0 ]; then exit $COLD_CODE; fi; "
+        f"START_INCR=$(date +%s%N); {build_cmd}; INCR_CODE=$?; END_INCR=$(date +%s%N); "
+        'echo "MAAT_INCR_BUILD_NS=$((END_INCR-START_INCR))"; '
+        "exit $INCR_CODE"
+        "'"
+    )
 
 
 def _parse_extra_env(extra_env: str | None) -> dict[str, str] | None:

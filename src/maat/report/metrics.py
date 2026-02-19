@@ -23,11 +23,15 @@ class Metrics(BaseModel):
     mean_lint_time: timedelta | None
     mean_test_time: timedelta | None
     mean_ls_time: timedelta | None
+    mean_incremental_build_time: timedelta | None
+    mean_incremental_build_no_test_time: timedelta | None
 
     median_build_time: timedelta | None
     median_lint_time: timedelta | None
     median_test_time: timedelta | None
     median_ls_time: timedelta | None
+    median_incremental_build_time: timedelta | None
+    median_incremental_build_no_test_time: timedelta | None
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
@@ -36,11 +40,19 @@ class Metrics(BaseModel):
         total_tests = 0
         failed_tests = 0
 
+        incr_times: list[timedelta] = []
+        incr_no_test_times: list[timedelta] = []
+
         for test in report.tests:
             for step_name in ["build", "lint", "test", "ls"]:
                 if step := test.step(step_name):
                     if step.exit_code == 0 and step.execution_time:
                         times[step_name].append(step.execution_time)
+
+            if t := test.analyses.incremental_build_time:
+                incr_times.append(t)
+            if t := test.analyses.incremental_build_no_test_time:
+                incr_no_test_times.append(t)
 
             if summary := test.analyses.tests_summary:
                 total_tests += summary.total
@@ -50,11 +62,15 @@ class Metrics(BaseModel):
         mean_lint_time = _timedelta_mean(times["lint"])
         mean_test_time = _timedelta_mean(times["test"])
         mean_ls_time = _timedelta_mean(times["ls"])
+        mean_incremental_build_time = _timedelta_mean(incr_times)
+        mean_incremental_build_no_test_time = _timedelta_mean(incr_no_test_times)
 
         median_build_time = _timedelta_median(times["build"])
         median_lint_time = _timedelta_median(times["lint"])
         median_test_time = _timedelta_median(times["test"])
         median_ls_time = _timedelta_median(times["ls"])
+        median_incremental_build_time = _timedelta_median(incr_times)
+        median_incremental_build_no_test_time = _timedelta_median(incr_no_test_times)
 
         return cls(
             meta=meta,
@@ -69,10 +85,14 @@ class Metrics(BaseModel):
             mean_lint_time=mean_lint_time,
             mean_test_time=mean_test_time,
             mean_ls_time=mean_ls_time,
+            mean_incremental_build_time=mean_incremental_build_time,
+            mean_incremental_build_no_test_time=mean_incremental_build_no_test_time,
             median_build_time=median_build_time,
             median_lint_time=median_lint_time,
             median_test_time=median_test_time,
             median_ls_time=median_ls_time,
+            median_incremental_build_time=median_incremental_build_time,
+            median_incremental_build_no_test_time=median_incremental_build_no_test_time,
         )
 
 
