@@ -58,6 +58,7 @@ def build(
                 cache_to=cache_to,
                 cache=cache,
                 output=output_dict,
+                load=True,
             )
             assert isinstance(image, Image)
 
