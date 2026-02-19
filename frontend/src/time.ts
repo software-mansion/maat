@@ -134,5 +134,6 @@ export function durationRoundToSeconds(duration: Intl.DurationType): Intl.Durati
     result.seconds = (result.seconds ?? 0) + Math.round(additionalSeconds);
   }
 
-  return result;
+  // Normalize to handle carry-over (e.g., 60 seconds -> 1 minute).
+  return durationFromTotal(durationTotal(result, "seconds"), "seconds");
 }
