@@ -23,10 +23,14 @@ export interface Metrics {
   meanLintTime: string | null;
   meanTestTime: string | null;
   meanLsTime: string | null;
+  meanIncrementalBuildTime: string | null;
+  meanIncrementalBuildNoTestTime: string | null;
   medianBuildTime: string | null;
   medianLintTime: string | null;
   medianTestTime: string | null;
   medianLsTime: string | null;
+  medianIncrementalBuildTime: string | null;
+  medianIncrementalBuildNoTestTime: string | null;
 }
 
 export type LabelCategory =
@@ -68,6 +72,23 @@ export const Steps = {
     medianKey: "medianLsTime",
   },
 } as const;
+
+export const IncrementalBuildSteps = {
+  incrementalBuild: {
+    humanName: "Incremental Build (--test)",
+    timeKey: "incrementalBuildTime",
+    meanKey: "meanIncrementalBuildTime",
+    medianKey: "medianIncrementalBuildTime",
+  },
+  incrementalBuildNoTest: {
+    humanName: "Incremental Build",
+    timeKey: "incrementalBuildNoTestTime",
+    meanKey: "meanIncrementalBuildNoTestTime",
+    medianKey: "medianIncrementalBuildNoTestTime",
+  },
+} as const;
+
+export type IncrementalBuildStepName = keyof typeof IncrementalBuildSteps;
 
 export type StepName = keyof typeof Steps;
 
@@ -119,9 +140,15 @@ export interface Test {
   logsHref: string;
   testRunner: TestRunner | null;
   build: StepReport | null;
+  incrementalBuild: StepReport | null;
+  incrementalBuildNoTest: StepReport | null;
   test: StepReport | null;
   lint: StepReport | null;
   ls: StepReport | null;
+  coldBuildTime: string | null;
+  coldBuildNoTestTime: string | null;
+  incrementalBuildTime: string | null;
+  incrementalBuildNoTestTime: string | null;
 }
 
 export interface Report {
@@ -241,7 +268,7 @@ export const pivotReportAtom = atom<Report | undefined>((get) => {
   }
 });
 
-export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "downloads";
+export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "timings-incremental-build" | "downloads";
 
 export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
   "metrics",
@@ -303,6 +330,8 @@ export function showSectionInDomain(sectionId: SectionId, domainName: DomainName
       return when("forge");
     case "timings-ls":
       return when("ls");
+    case "timings-incremental-build":
+      return when("compiler", "scarb");
     case "downloads":
       return true;
   }

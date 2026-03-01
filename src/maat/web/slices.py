@@ -25,7 +25,7 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
             slices.append(sl)
 
     all_nightly = [t for t in reports if t.report.workspace == "nightly"]
-    
+
     # Get the latest nightly report by creation time
     latest_nightly = []
     if all_nightly:
@@ -68,7 +68,9 @@ def make_slices(reports: list[ReportInfo]) -> list[Slice]:
         )
 
     # Last N Nightlies
-    last_n_nightlies = sorted(all_nightly, key=lambda t: t.report.created_at)[-MAX_RECENT_NIGHTLIES:]
+    last_n_nightlies = sorted(all_nightly, key=lambda t: t.report.created_at)[
+        -MAX_RECENT_NIGHTLIES:
+    ]
     push_slice(f"Last {len(last_n_nightlies)} Nightlies", last_n_nightlies)
 
     # Last N(<=3) Scarbs

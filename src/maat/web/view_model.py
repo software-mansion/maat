@@ -66,9 +66,15 @@ class TestViewModel(BaseModel):
     test_runner: Literal["snforge", "cairo-test"] | None
 
     build: StepViewModel | None
+    incremental_build: StepViewModel | None
+    incremental_build_no_test: StepViewModel | None
     test: StepViewModel | None
     lint: StepViewModel | None
     ls: StepViewModel | None
+    cold_build_time: timedelta | None
+    cold_build_no_test_time: timedelta | None
+    incremental_build_time: timedelta | None
+    incremental_build_no_test_time: timedelta | None
 
     @classmethod
     def new(cls, test: TestReport, report_meta: ReportMeta) -> Self:
@@ -79,9 +85,17 @@ class TestViewModel(BaseModel):
             logs_href=str(logs_txt_path(report_meta, test)),
             test_runner=test.analyses.test_runner,
             build=(step := test.step("build")) and StepViewModel.new(step),
+            incremental_build=(step := test.step("incremental-build"))
+            and StepViewModel.new(step),
+            incremental_build_no_test=(step := test.step("incremental-build-no-test"))
+            and StepViewModel.new(step),
             test=(step := test.step("test")) and StepViewModel.new(step),
             lint=(step := test.step("lint")) and StepViewModel.new(step),
             ls=(step := test.step("ls")) and StepViewModel.new(step),
+            cold_build_time=test.analyses.cold_build_time,
+            cold_build_no_test_time=test.analyses.cold_build_no_test_time,
+            incremental_build_time=test.analyses.incremental_build_time,
+            incremental_build_no_test_time=test.analyses.incremental_build_no_test_time,
         )
 
 
