@@ -1,4 +1,5 @@
 import enum
+import random
 from collections.abc import MutableSet
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
@@ -94,8 +95,11 @@ class TestSuite(BaseModel):
         if n == 1:
             return [self]
 
+        tests = list(self.tests)
+        random.shuffle(tests)
+
         buckets: list[list[Test]] = [[] for _ in range(n)]
-        for idx, test in enumerate(self.tests):
+        for idx, test in enumerate(tests):
             buckets[idx % n].append(test)
         return [self.__class__(tests=bucket) for bucket in buckets]
 
