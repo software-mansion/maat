@@ -7,6 +7,8 @@ import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import {
+  type IncrementalBuildStepName,
+  IncrementalBuildSteps,
   type Report,
   type ReportTitle,
   type StepName,
@@ -43,6 +45,7 @@ export function TimingSections() {
       {Object.keys(Steps).map((stepName) => (
         <TimingSection key={stepName} stepName={stepName as StepName} />
       ))}
+      <IncrementalBuildTimingSection />
     </>
   );
 }
@@ -179,6 +182,164 @@ function TimingSection({ stepName }: { stepName: StepName }) {
       </SectionTable>
     </Section>
   );
+}
+
+type IncrementalBuildRow = {
+  testName: TestName;
+  coldBuild: Record<ReportTitle, string>;
+  values: Record<ReportTitle, string>;
+  speedup: Record<ReportTitle, number>;
+  meanSpeedup: number;
+};
+
+function IncrementalBuildTimingSection() {
+  const selectedReports = useAtomValue(selectedReportsAtom);
+  const pivotReport = useAtomValue(pivotReportAtom);
+  const isSingleReport = selectedReports.length === 1;
+
+  return (
+    <Section id="timings-incremental-build">
+      <SectionTitle>Incremental Build Timings</SectionTitle>
+      <SectionTable>
+        <ReportTableHead />
+        <ReportTableSection title="Summary" />
+        <tbody>
+          {(Object.keys(IncrementalBuildSteps) as IncrementalBuildStepName[]).map((stepName) => {
+            const meta = IncrementalBuildSteps[stepName];
+            return (
+              <Fragment key={stepName}>
+                <ReportTableRow
+                  title={`${meta.humanName} Mean`}
+                  cell={(report) => {
+                    const value = report.metrics[meta.meanKey];
+                    const pivotValue = pivotReport?.metrics[meta.meanKey] ?? null;
+                    const allValues = selectedReports.map((r) => r.metrics[meta.meanKey]);
+                    const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
+                    return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+                  }}
+                />
+                <ReportTableRow
+                  title={`${meta.humanName} Median`}
+                  cell={(report) => {
+                    const value = report.metrics[meta.medianKey];
+                    const pivotValue = pivotReport?.metrics[meta.medianKey] ?? null;
+                    const allValues = selectedReports.map((r) => r.metrics[meta.medianKey]);
+                    const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
+                    return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+                  }}
+                />
+              </Fragment>
+            );
+          })}
+        </tbody>
+        {(Object.keys(IncrementalBuildSteps) as IncrementalBuildStepName[]).map((stepName) => {
+          const meta = IncrementalBuildSteps[stepName];
+          const rows = findIncrementalBuildRows(selectedReports, meta.timeKey);
+          if (rows.length === 0) return null;
+          return (
+            <Fragment key={stepName}>
+              <ReportTableSection
+                title={
+                  <>
+                    {`Top ${rows.length} projects – ${meta.humanName} speedup `}
+                    <Q>
+                      Shows projects sorted by speedup ratio (cold build time / incremental build
+                      time). Higher values indicate bigger gains from incremental compilation. Cold
+                      and incremental timings are measured from the same incremental-step command.
+                      For older reports, cold timing falls back to the regular build step time.
+                    </Q>
+                  </>
+                }
+              />
+              <tbody>
+                {rows.map(({ testName, coldBuild, values, speedup }) => (
+                  <ReportTableRow
+                    key={testName}
+                    title={
+                      <>
+                        {testName}
+                        <br />
+                        <span className="text-base-content/60 text-xs font-normal">
+                          speedup:{" "}
+                          {selectedReports
+                            .map((r) => {
+                              const value = speedup[r.title];
+                              return value != null ? `${value.toFixed(1)}×` : "—";
+                            })
+                            .join(", ")}
+                        </span>
+                      </>
+                    }
+                    cell={(report) => {
+                      const coldVal = coldBuild[report.title] ?? null;
+                      const incrVal = values[report.title] ?? null;
+                      if (!coldVal || !incrVal) return "—";
+                      return (
+                        <>
+                          <Duration value={coldVal} /> → <Duration value={incrVal} />
+                        </>
+                      );
+                    }}
+                  />
+                ))}
+              </tbody>
+            </Fragment>
+          );
+        })}
+      </SectionTable>
+    </Section>
+  );
+}
+
+function findIncrementalBuildRows(
+  selectedReports: Report[],
+  timeKey: "incrementalBuildTime" | "incrementalBuildNoTestTime",
+): IncrementalBuildRow[] {
+  const testNames = new Set<TestName>();
+  for (const report of selectedReports) {
+    for (const test of report.tests) {
+      if (test[timeKey]) {
+        testNames.add(test.name);
+      }
+    }
+  }
+
+  const rows: IncrementalBuildRow[] = [];
+  for (const testName of testNames) {
+    const coldBuild: Record<ReportTitle, string> = {} as Record<ReportTitle, string>;
+    const values: Record<ReportTitle, string> = {} as Record<ReportTitle, string>;
+    const speedup: Record<ReportTitle, number> = {} as Record<ReportTitle, number>;
+    const speedups: number[] = [];
+
+    for (const report of selectedReports) {
+      const test = report.tests.find((t) => t.name === testName);
+      const incrTime = test?.[timeKey];
+      const coldTime =
+        timeKey === "incrementalBuildNoTestTime"
+          ? (test?.coldBuildNoTestTime ?? test?.build?.executionTime)
+          : (test?.coldBuildTime ?? test?.build?.executionTime);
+      if (incrTime) {
+        values[report.title] = incrTime;
+        if (coldTime) {
+          coldBuild[report.title] = coldTime;
+          const coldTotal = durationTotal(coldTime);
+          const incrTotal = durationTotal(incrTime);
+          if (incrTotal > 0n) {
+            const s = Number(coldTotal) / Number(incrTotal);
+            speedup[report.title] = s;
+            speedups.push(s);
+          }
+        }
+      }
+    }
+
+    if (speedups.length > 0) {
+      const meanSpeedup = speedups.reduce((a, b) => a + b, 0) / speedups.length;
+      rows.push({ testName, coldBuild, values, speedup, meanSpeedup });
+    }
+  }
+
+  return rows.sort((a, b) => a.meanSpeedup - b.meanSpeedup).slice(0, 10);
 }
 
 function findMostVariableSteps(
