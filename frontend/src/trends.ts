@@ -1,5 +1,59 @@
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
 
+export function formatMemoryKB(kb: number): string {
+  const abs = Math.abs(kb);
+  if (abs >= 1024 * 1024) return `${(kb / 1024 / 1024).toFixed(1)} GB`;
+  if (abs >= 1024) return `${(kb / 1024).toFixed(0)} MB`;
+  return `${kb} KB`;
+}
+
+export function numberTrend(
+  value: number | null,
+  referenceValue: number | null,
+  allValues: (number | null)[],
+): Trend | null {
+  if (value == null) return null;
+
+  let ratio: number;
+  let diff: number | null = null;
+
+  if (referenceValue == null) {
+    ratio = -Infinity;
+  } else {
+    diff = value - referenceValue;
+    if (referenceValue === 0) {
+      ratio = value === 0 ? 0 : value > 0 ? Infinity : -Infinity;
+    } else {
+      ratio = (value - referenceValue) / referenceValue;
+    }
+  }
+
+  const nonNullValues = allValues.filter((v) => v != null) as number[];
+  const minValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
+  const maxValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
+  const isExtreme = (minValue !== null && value === minValue) || (maxValue !== null && value === maxValue);
+
+  let symbol: string;
+  if (ratio < 0) symbol = isExtreme ? "⤓" : "↓";
+  else if (ratio > 0) symbol = isExtreme ? "⤒" : "↑";
+  else symbol = "=";
+
+  let percentage: string;
+  if (ratio === Infinity) percentage = "∞";
+  else if (ratio === -Infinity) percentage = "-∞";
+  else percentage = `${Math.round(ratio * 100)}%`;
+
+  let absoluteDiff: string | null = null;
+  if (diff !== null) {
+    const sign = diff < 0 ? "-" : "+";
+    absoluteDiff = `${sign}${formatMemoryKB(Math.abs(diff))}`;
+  }
+
+  const colorClass = ratio < 0 ? "text-success" : ratio > 0 ? "text-error" : "text-base-content/60";
+
+  return { ratio, isExtreme, symbol, percentage, absoluteDiff, colorClass };
+}
+
 export interface Trend {
   ratio: number;
   isExtreme: boolean;

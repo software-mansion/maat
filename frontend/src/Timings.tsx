@@ -24,7 +24,7 @@ import {
 } from "./atoms.ts";
 import { DefaultMap } from "./defaultmap.ts";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
-import { durationTrend } from "./trends.ts";
+import { durationTrend, formatMemoryKB, numberTrend } from "./trends.ts";
 import {
   bigintSqrt,
   determineUniformRevForTest,
@@ -46,6 +46,7 @@ export function TimingSections() {
         <TimingSection key={stepName} stepName={stepName as StepName} />
       ))}
       <IncrementalBuildTimingSection />
+      <LsMemorySection />
     </>
   );
 }
@@ -446,4 +447,164 @@ function intersperse<T, S>(items: readonly T[], sep: S): (T | S)[] {
     first = false;
   }
   return out;
+}
+
+function MemoryKB({ value }: { value: number }) {
+  return <>{formatMemoryKB(value)}</>;
+}
+
+type MostVariableMemory = {
+  testName: TestName;
+  postValues: Record<ReportTitle, number>;
+  postEditValues: Record<ReportTitle, number>;
+}[];
+
+function findMostVariableMemory(
+  selectedReports: Report[],
+  pivotReport: Report | undefined,
+): MostVariableMemory {
+  if (!pivotReport || selectedReports.length === 0) return [];
+
+  // Single-report mode: top 10 by post-analysis memory descending.
+  if (selectedReports.length === 1) {
+    const report = selectedReports[0]!;
+    return report.tests
+      .filter((t) => t.lsMemPostAnalysisKb != null)
+      .sort((a, b) => b.lsMemPostAnalysisKb! - a.lsMemPostAnalysisKb!)
+      .slice(0, 10)
+      .map((t) => ({
+        testName: t.name,
+        postValues: { [report.title]: t.lsMemPostAnalysisKb! } as Record<ReportTitle, number>,
+        postEditValues:
+          t.lsMemPostEditKb != null
+            ? ({ [report.title]: t.lsMemPostEditKb } as Record<ReportTitle, number>)
+            : ({} as Record<ReportTitle, number>),
+      }));
+  }
+
+  // Multi-report mode: top 10 by variance of post-analysis memory.
+  const pivotSuccessful = new Set(
+    pivotReport.tests.filter((t) => t.lsMemPostAnalysisKb != null).map((t) => t.name),
+  );
+
+  const candidatesMap = new DefaultMap<TestName, Map<ReportTitle, number>>(() => new Map());
+  const postEditMap = new DefaultMap<TestName, Map<ReportTitle, number>>(() => new Map());
+
+  for (const report of selectedReports) {
+    for (const test of report.tests) {
+      if (pivotSuccessful.has(test.name) && test.lsMemPostAnalysisKb != null) {
+        candidatesMap.get(test.name).set(report.title, test.lsMemPostAnalysisKb);
+      }
+      if (pivotSuccessful.has(test.name) && test.lsMemPostEditKb != null) {
+        postEditMap.get(test.name).set(report.title, test.lsMemPostEditKb);
+      }
+    }
+  }
+
+  return Array.from(candidatesMap.entries())
+    .filter(([, m]) => m.size >= 2)
+    .map(([testName, postMap]) => {
+      const samples = Array.from(postMap.values());
+      const m = samples.reduce((a, b) => a + b, 0) / samples.length;
+      const v = samples.reduce((a, b) => a + (b - m) ** 2, 0) / (samples.length - 1);
+      return {
+        testName,
+        postValues: Object.fromEntries(postMap) as Record<ReportTitle, number>,
+        postEditValues: Object.fromEntries(postEditMap.get(testName)) as Record<ReportTitle, number>,
+        variance: v,
+      };
+    })
+    .sort((a, b) => b.variance - a.variance)
+    .slice(0, 10)
+    .map(({ variance: _v, ...rest }) => rest);
+}
+
+function LsMemorySection() {
+  const selectedReports = useAtomValue(selectedReportsAtom);
+  const pivotReport = useAtomValue(pivotReportAtom);
+  const isSingleReport = selectedReports.length === 1;
+  const rows = findMostVariableMemory(selectedReports, pivotReport);
+
+  const projectsTitle = isSingleReport
+    ? `Top ${rows.length} projects by memory usage `
+    : `Top ${rows.length} most variable projects by memory `;
+
+  return (
+    <Section id="timings-ls-memory">
+      <SectionTitle>LS Memory</SectionTitle>
+      <SectionTable>
+        <ReportTableHead />
+        <ReportTableSection title="Summary" />
+        <tbody>
+          {(
+            [
+              { title: "Post-Analysis Mean", key: "meanLsMemPostAnalysisKb" },
+              { title: "Post-Analysis Median", key: "medianLsMemPostAnalysisKb" },
+              { title: "Post-Edit Mean", key: "meanLsMemPostEditKb" },
+              { title: "Post-Edit Median", key: "medianLsMemPostEditKb" },
+            ] as const
+          ).map(({ title, key }) => (
+            <ReportTableRow
+              key={key}
+              title={title}
+              cell={(report) => {
+                const value = report.metrics[key];
+                const pivotValue = pivotReport?.metrics[key] ?? null;
+                const allValues = selectedReports.map((r) => r.metrics[key]);
+                const trend = !isSingleReport && numberTrend(value, pivotValue, allValues);
+                return <RichCell value={value != null ? <MemoryKB value={value} /> : null} trend={trend} />;
+              }}
+            />
+          ))}
+        </tbody>
+        {rows.length > 0 && (
+          <>
+            <ReportTableSection
+              title={
+                <>
+                  {projectsTitle}
+                  <Q>
+                    {isSingleReport
+                      ? "Projects sorted by post-analysis resident set size (heaviest first). Shows memory after initial analysis and after re-analysis triggered by a trivial whitespace edit."
+                      : "Projects with the most variable post-analysis memory across selected reports. Shows memory after initial analysis and after re-analysis triggered by a trivial whitespace edit."}
+                  </Q>
+                </>
+              }
+            />
+            <tbody>
+              {rows.map(({ testName, postValues, postEditValues }) => (
+                <ReportTableRow
+                  key={testName}
+                  title={testName}
+                  cell={(report) => {
+                    const post = postValues[report.title] ?? null;
+                    const postEdit = postEditValues[report.title] ?? null;
+                    if (post == null) return <RichCell value={null} />;
+                    return (
+                      <RichCell
+                        value={
+                          <span className="text-xs leading-snug">
+                            <span className="font-medium"><MemoryKB value={post} /></span>
+                            {postEdit != null && (
+                              <span className="text-base-content/60">
+                                {" → "}
+                                <MemoryKB value={postEdit} />
+                                <span className={postEdit - post > 0 ? "text-error" : "text-success"}>
+                                  {" "}({postEdit - post >= 0 ? "+" : ""}{formatMemoryKB(postEdit - post)})
+                                </span>
+                              </span>
+                            )}
+                          </span>
+                        }
+                      />
+                    );
+                  }}
+                />
+              ))}
+            </tbody>
+          </>
+        )}
+      </SectionTable>
+    </Section>
+  );
 }
