@@ -449,10 +449,6 @@ function intersperse<T, S>(items: readonly T[], sep: S): (T | S)[] {
   return out;
 }
 
-function MemoryKB({ value }: { value: number }) {
-  return <>{formatMemoryKB(value)}</>;
-}
-
 type MostVariableMemory = {
   testName: TestName;
   postValues: Record<ReportTitle, number>;
@@ -488,15 +484,17 @@ function findMostVariableMemory(
   );
 
   const candidatesMap = new DefaultMap<TestName, Map<ReportTitle, number>>(() => new Map());
-  const postEditMap = new DefaultMap<TestName, Map<ReportTitle, number>>(() => new Map());
+  const postEditMap = new Map<TestName, Map<ReportTitle, number>>();
 
   for (const report of selectedReports) {
     for (const test of report.tests) {
-      if (pivotSuccessful.has(test.name) && test.lsMemPostAnalysisKb != null) {
+      if (!pivotSuccessful.has(test.name)) continue;
+      if (test.lsMemPostAnalysisKb != null) {
         candidatesMap.get(test.name).set(report.title, test.lsMemPostAnalysisKb);
       }
-      if (pivotSuccessful.has(test.name) && test.lsMemPostEditKb != null) {
-        postEditMap.get(test.name).set(report.title, test.lsMemPostEditKb);
+      if (test.lsMemPostEditKb != null) {
+        if (!postEditMap.has(test.name)) postEditMap.set(test.name, new Map());
+        postEditMap.get(test.name)!.set(report.title, test.lsMemPostEditKb);
       }
     }
   }
@@ -510,7 +508,7 @@ function findMostVariableMemory(
       return {
         testName,
         postValues: Object.fromEntries(postMap) as Record<ReportTitle, number>,
-        postEditValues: Object.fromEntries(postEditMap.get(testName)) as Record<ReportTitle, number>,
+        postEditValues: Object.fromEntries(postEditMap.get(testName) ?? []) as Record<ReportTitle, number>,
         variance: v,
       };
     })
@@ -552,7 +550,7 @@ function LsMemorySection() {
                 const pivotValue = pivotReport?.metrics[key] ?? null;
                 const allValues = selectedReports.map((r) => r.metrics[key]);
                 const trend = !isSingleReport && numberTrend(value, pivotValue, allValues);
-                return <RichCell value={value != null ? <MemoryKB value={value} /> : null} trend={trend} />;
+                return <RichCell value={value != null ? formatMemoryKB(value) : null} trend={trend} />;
               }}
             />
           ))}
@@ -584,11 +582,11 @@ function LsMemorySection() {
                       <RichCell
                         value={
                           <span className="text-xs leading-snug">
-                            <span className="font-medium"><MemoryKB value={post} /></span>
+                            <span className="font-medium">{formatMemoryKB(post)}</span>
                             {postEdit != null && (
                               <span className="text-base-content/60">
                                 {" → "}
-                                <MemoryKB value={postEdit} />
+                                {formatMemoryKB(postEdit)}
                                 <span className={postEdit - post > 0 ? "text-error" : "text-success"}>
                                   {" "}({postEdit - post >= 0 ? "+" : ""}{formatMemoryKB(postEdit - post)})
                                 </span>

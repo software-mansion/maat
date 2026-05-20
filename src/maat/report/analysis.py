@@ -115,9 +115,6 @@ def incremental_build(test: TestReport):
 
 
 def ls_memory(test: TestReport):
-    """
-    Parse CairoLS resident set size snapshots from ls step logs.
-    """
     step = test.step("ls")
     if step is None or not step.was_executed:
         return

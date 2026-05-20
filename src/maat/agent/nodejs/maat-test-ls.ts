@@ -58,8 +58,11 @@ withCairoLS(async (connection, pid) => {
         // Wait for project analysis to finish.
         // Assume some healthy timeout in case LS hangs.
         console.log(SEPARATOR);
-        await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
-        disposeAwaiter();
+        try {
+            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+        } finally {
+            disposeAwaiter();
+        }
         const diags = diagnosticsCollector.stop();
 
         await checkMemoryGrowth(pid);
@@ -174,24 +177,24 @@ async function readProcessRssKB(pid: number): Promise<number | null> {
     try {
         const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
         const m = status.match(/VmRSS:\s+(\d+)\s+kB/);
-        return m ? parseInt(m[1]) : null;
+        return m ? parseInt(m[1], 10) : null;
     } catch {
         return null;
     }
 }
 
 /**
- * Sends a trivial whitespace edit to the first lib.cairo file, waits for
- * re-analysis to complete, then logs a memory snapshot so the analysis
+ * Sends a trivial whitespace edit to the first entry file (lib.cairo or main.cairo),
+ * waits for re-analysis to complete, then logs a memory snapshot so the analysis
  * pipeline can detect post-edit memory growth.
  */
 async function checkMemoryAfterEdit(
     pid: number,
-    libCairoFile: string,
+    entryFile: string,
     connection: MessageConnection,
 ): Promise<void> {
-    const fileUrl = path2url(libCairoFile);
-    const content = await fs.readFile(libCairoFile, "utf-8");
+    const fileUrl = path2url(entryFile);
+    const content = await fs.readFile(entryFile, "utf-8");
 
     console.log(SEPARATOR);
     console.log(`Simulating edit: appending whitespace to ${fileUrl}`);
@@ -203,14 +206,16 @@ async function checkMemoryAfterEdit(
         contentChanges: [{ text: content + "\n" }],
     });
 
-    await Promise.race([editAwaiter, timeout(ms("5 minutes"), "post-edit analysis")]);
-    disposeEditAwaiter();
+    try {
+        await Promise.race([editAwaiter, timeout(ms("5 minutes"), "post-edit analysis")]);
+    } finally {
+        disposeEditAwaiter();
+    }
 
     const memPostEdit = await readProcessRssKB(pid);
-    if (memPostEdit !== null) {
-        console.log(`Memory after edit+re-analysis: ${memPostEdit} KB`);
-        console.log(`MAAT_LS_MEM_POST_EDIT_KB=${memPostEdit}`);
-    }
+    if (memPostEdit === null) return;
+    console.log(`Memory after edit+re-analysis: ${memPostEdit} KB`);
+    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${memPostEdit}`);
 }
 
 /**

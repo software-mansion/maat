@@ -60,9 +60,9 @@ class Metrics(BaseModel):
                 incr_times.append(t)
             if t := test.analyses.incremental_build_no_test_time:
                 incr_no_test_times.append(t)
-            if v := test.analyses.ls_mem_post_analysis_kb:
+            if (v := test.analyses.ls_mem_post_analysis_kb) is not None:
                 ls_mem_post.append(v)
-            if v := test.analyses.ls_mem_post_edit_kb:
+            if (v := test.analyses.ls_mem_post_edit_kb) is not None:
                 ls_mem_post_edit.append(v)
 
             if summary := test.analyses.tests_summary:
