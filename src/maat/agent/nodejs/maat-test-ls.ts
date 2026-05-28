@@ -46,7 +46,7 @@ withCairoLS(async (connection, pid) => {
         const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(connection);
         const diagnosticsCollector = DiagnosticsCollector.start(connection);
 
-        // Open any lib.cairo or main.cairo file we can find to ensure
+        // Open any lib.cairo file we can find to ensure
         // all packages in the project will be opened and analysed.
         let libCairoFiles = await findAllEntryFiles();
         for (const libCairoFile of libCairoFiles) {
@@ -67,8 +67,15 @@ withCairoLS(async (connection, pid) => {
 
         await checkMemoryGrowth(pid);
 
+        let editTargets: string[];
         if (libCairoFiles.length > 0) {
-            await checkMemoryAfterEdit(pid, libCairoFiles[0]!, connection);
+            editTargets = libCairoFiles.slice(0, 3);
+        } else {
+            const fallback = await findAnyCairoFile();
+            editTargets = fallback ? [fallback] : [];
+        }
+        if (editTargets.length > 0) {
+            await checkMemoryAfterEdit(pid, editTargets, connection);
         }
 
         await viewAnalysedCrates(connection);
@@ -82,7 +89,7 @@ withCairoLS(async (connection, pid) => {
 });
 
 /**
- * Finds any `lib.cairo` or `main.cairo` files in PWD recursively.
+ * Finds any `lib.cairo` files in PWD recursively.
  */
 async function findAllEntryFiles(): Promise<string[]> {
     async function visit(dir: string): Promise<string[]> {
@@ -93,12 +100,36 @@ async function findAllEntryFiles(): Promise<string[]> {
             const fullPath = path.join(dir, entry.name);
             if (entry.isDirectory()) {
                 results.push(...(await visit(fullPath)));
-            } else if (entry.name === "lib.cairo" || entry.name === "main.cairo") {
+            } else if (entry.name === "lib.cairo") {
                 results.push(fullPath);
             }
         }
 
         return results;
+    }
+
+    return visit(".");
+}
+
+/**
+ * Finds the first `.cairo` file in PWD recursively.
+ * Used as a fallback edit target when no lib.cairo exists.
+ */
+async function findAnyCairoFile(): Promise<string | null> {
+    async function visit(dir: string): Promise<string | null> {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                const found = await visit(fullPath);
+                if (found) return found;
+            } else if (entry.name.endsWith(".cairo")) {
+                return fullPath;
+            }
+        }
+
+        return null;
     }
 
     return visit(".");
@@ -184,32 +215,31 @@ async function readProcessRssKB(pid: number): Promise<number | null> {
 }
 
 /**
- * Sends a trivial whitespace edit to the first entry file (lib.cairo or main.cairo),
- * waits for re-analysis to complete, then logs a memory snapshot so the analysis
- * pipeline can detect post-edit memory growth.
+ * Prepends a probe function to all entry files to trigger a non-trivial re-analysis,
+ * then logs a memory snapshot so the analysis pipeline can detect post-edit memory growth.
  */
 async function checkMemoryAfterEdit(
     pid: number,
-    entryFile: string,
+    entryFiles: string[],
     connection: MessageConnection,
 ): Promise<void> {
-    const fileUrl = path2url(entryFile);
-    const content = await fs.readFile(entryFile, "utf-8");
-
     console.log(SEPARATOR);
-    console.log(`Simulating edit: appending whitespace to ${fileUrl}`);
+    console.log(`Simulating edit: prepending probe function to ${entryFiles.length} file(s)`);
 
-    const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
+    for (const [i, entryFile] of entryFiles.entries()) {
+        const content = await fs.readFile(entryFile, "utf-8");
+        console.log(`Edit ${i + 1}/${entryFiles.length}: ${path2url(entryFile)}`);
 
-    await connection.sendNotification("textDocument/didChange", {
-        textDocument: { uri: fileUrl, version: 1 },
-        contentChanges: [{ text: content + "\n" }],
-    });
-
-    try {
-        await Promise.race([editAwaiter, timeout(ms("5 minutes"), "post-edit analysis")]);
-    } finally {
-        disposeEditAwaiter();
+        const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
+        await connection.sendNotification("textDocument/didChange", {
+            textDocument: { uri: path2url(entryFile), version: 1 },
+            contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
+        });
+        try {
+            await Promise.race([editAwaiter, timeout(ms("5 minutes"), `post-edit analysis (file ${i + 1})`)]);
+        } finally {
+            disposeEditAwaiter();
+        }
     }
 
     const memPostEdit = await readProcessRssKB(pid);
