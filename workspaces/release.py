@@ -16,9 +16,6 @@ ecosystem: Ecosystem = [
             "snforge_scarb_plugin_deprecated",
             "snforge_std",
             "starknet",
-            # Tested from GitHub main instead (registry tag has 0 tests).
-            "starkware_utils",
-            "starkware_utils_testing",
             "test_plugin",
             # dojo_plugin is still deployed as a sozo-builtin plugin.
             "dojo",
