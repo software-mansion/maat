@@ -13,6 +13,8 @@ ecosystem: Ecosystem = [
             "cairo_test",
             "sncast_std",
             "snforge_scarb_plugin",
+            "snforge_scarb_plugin_deprecated",
+            "snforge_std",
             "starknet",
             "test_plugin",
             # dojo_plugin is still deployed as a sozo-builtin plugin.
@@ -58,6 +60,7 @@ ecosystem: Ecosystem = [
     # github("keep-starknet-strange/unruggable.meme", workdir="packages/contracts"), # Depends on ancient OZ
     github("starkware-libs/starknet-staking"),
     github("starkware-libs/starknet-perpetual"),
+    github("starkware-libs/starkware-starknet-utils"),
 ]
 
 default_scarb = "latest"
