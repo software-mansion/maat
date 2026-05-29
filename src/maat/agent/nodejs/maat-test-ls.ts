@@ -69,7 +69,7 @@ withCairoLS(async (connection, pid) => {
 
         let editTargets: string[];
         if (libCairoFiles.length > 0) {
-            editTargets = libCairoFiles.slice(0, 3);
+            editTargets = [...libCairoFiles].sort().slice(0, 3);
         } else {
             const fallback = await findAnyCairoFile();
             if (fallback) {
