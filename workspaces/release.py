@@ -1,6 +1,6 @@
 import re
 
-from maat.ecosystem.spec import Ecosystem, entire_scarbs, github
+from maat.ecosystem.spec import Ecosystem, entire_scarbs, github, scarbs
 
 ecosystem: Ecosystem = [
     entire_scarbs(
@@ -34,8 +34,16 @@ ecosystem: Ecosystem = [
             "dl_alexandria_utils",
             # Garaga makes sth (prob LS) resolve indefinitely.
             "garaga",
-        ]
+            # Heavy packages (extracted to separate entries below).
+            "dojo_snf_test",
+            "dojo_cairo_test",
+            "dojo_cairo_macros",
+        ],
     ),
+    # Heavy registry packages.
+    scarbs("dojo_snf_test", heavy=True),
+    scarbs("dojo_cairo_test", heavy=True),
+    scarbs("dojo_cairo_macros", heavy=True),
     # github("CarmineOptions/konoha"), # Depends on ancient OZ
     # github("DLC-link/ibtc-cairo", workdir="contracts"), # Depends on ancient OZ
     github("EkuboProtocol/abis"),
@@ -43,7 +51,7 @@ ecosystem: Ecosystem = [
     github("EkuboProtocol/revenue-buybacks"),
     github("EkuboProtocol/starknet-contracts"),
     github("HerodotusDev/integrity"),
-    github("OpenZeppelin/cairo-contracts"),
+    github("OpenZeppelin/cairo-contracts", heavy=True),
     # github("argentlabs/argent-contracts-starknet"), # Depends on ancient OZ
     github("avnu-labs/avnu-contracts-v2"),
     github("dojoengine/origami"),
