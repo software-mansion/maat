@@ -90,7 +90,12 @@ def prepare_plan(
         tests = []
         for project in flatten_ecosystem(workspace.settings.ecosystem):
             steps = project.setup() + _workflow(project=project, scarb=scarb)
-            test = Test(name=project.name, rev=project.fetch_rev(), steps=steps)
+            test = Test(
+                name=project.name,
+                rev=project.fetch_rev(),
+                steps=steps,
+                heavy=project.heavy,
+            )
             tests.append(test)
 
         # Parse and merge extra environment variables into every step
