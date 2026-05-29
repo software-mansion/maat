@@ -72,7 +72,12 @@ withCairoLS(async (connection, pid) => {
             editTargets = libCairoFiles.slice(0, 3);
         } else {
             const fallback = await findAnyCairoFile();
-            editTargets = fallback ? [fallback] : [];
+            if (fallback) {
+                await openFile(path2url(fallback), connection);
+                editTargets = [fallback];
+            } else {
+                editTargets = [];
+            }
         }
         if (editTargets.length > 0) {
             await checkMemoryAfterEdit(pid, editTargets, connection);
@@ -236,7 +241,9 @@ async function checkMemoryAfterEdit(
             contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
         });
         try {
-            await Promise.race([editAwaiter, timeout(ms("5 minutes"), `post-edit analysis (file ${i + 1})`)]);
+            await Promise.race([editAwaiter, timeout(ms("10 minutes"), `post-edit analysis (file ${i + 1})`)]);
+        } catch (err) {
+            console.log(`Warning: ${err}`);
         } finally {
             disposeEditAwaiter();
         }
