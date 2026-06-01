@@ -31,6 +31,10 @@ export interface Metrics {
   medianLsTime: string | null;
   medianIncrementalBuildTime: string | null;
   medianIncrementalBuildNoTestTime: string | null;
+  meanLsMemPostAnalysisKb: number | null;
+  medianLsMemPostAnalysisKb: number | null;
+  meanLsMemPostEditKb: number | null;
+  medianLsMemPostEditKb: number | null;
 }
 
 export type LabelCategory =
@@ -149,6 +153,8 @@ export interface Test {
   coldBuildNoTestTime: string | null;
   incrementalBuildTime: string | null;
   incrementalBuildNoTestTime: string | null;
+  lsMemPostAnalysisKb: number | null;
+  lsMemPostEditKb: number | null;
 }
 
 export interface Report {
@@ -268,7 +274,7 @@ export const pivotReportAtom = atom<Report | undefined>((get) => {
   }
 });
 
-export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "timings-incremental-build" | "downloads";
+export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "timings-incremental-build" | "timings-ls-memory" | "downloads";
 
 export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
   "metrics",
@@ -332,6 +338,8 @@ export function showSectionInDomain(sectionId: SectionId, domainName: DomainName
       return when("ls");
     case "timings-incremental-build":
       return when("compiler", "scarb");
+    case "timings-ls-memory":
+      return when("ls");
     case "downloads":
       return true;
   }

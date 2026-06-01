@@ -20,6 +20,7 @@ def analyse_report(report: Report):
         tests_summary,
         test_runner,
         incremental_build,
+        ls_memory,
         label,  # NOTE: This analyser depends on all previous ones.
     ]
 
@@ -111,6 +112,19 @@ def incremental_build(test: TestReport):
                 incr_attr,
                 timedelta(microseconds=int(incr_ns.group(1)) / 1_000),
             )
+
+
+def ls_memory(test: TestReport):
+    step = test.step("ls")
+    if step is None or not step.was_executed:
+        return
+    log = step.log_str
+    if not log:
+        return
+    if m := re.search(r"MAAT_LS_MEM_POST_ANALYSIS_KB=(\d+)", log):
+        test.analyses.ls_mem_post_analysis_kb = int(m.group(1))
+    if m := re.search(r"MAAT_LS_MEM_POST_EDIT_KB=(\d+)", log):
+        test.analyses.ls_mem_post_edit_kb = int(m.group(1))
 
 
 def _extract_count(pattern: str, text: str, default: int | None = None) -> int:

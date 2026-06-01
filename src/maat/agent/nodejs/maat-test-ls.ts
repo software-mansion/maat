@@ -37,18 +37,18 @@ interface ServerStatusParams {
 
 const ServerStatus = new NotificationType<ServerStatusParams>("cairo/serverStatus");
 
-withCairoLS(async (connection) => {
+withCairoLS(async (connection, pid) => {
     const rootUri = `file://${process.env.PWD}`;
     await initialize(connection, rootUri, baseCapabilities());
 
     try {
         // Install various probes.
-        const analysisAwaiter = startAnalysisAwaiter(connection);
+        const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(connection);
         const diagnosticsCollector = DiagnosticsCollector.start(connection);
 
         // Open any lib.cairo file we can find to ensure
         // all packages in the project will be opened and analysed.
-        let libCairoFiles = await findAllLibCairoFiles();
+        let libCairoFiles = await findAllEntryFiles();
         for (const libCairoFile of libCairoFiles) {
             let fileUrl = path2url(libCairoFile);
             console.log(`Opening ${fileUrl}`);
@@ -58,8 +58,30 @@ withCairoLS(async (connection) => {
         // Wait for project analysis to finish.
         // Assume some healthy timeout in case LS hangs.
         console.log(SEPARATOR);
-        await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+        try {
+            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+        } finally {
+            disposeAwaiter();
+        }
         const diags = diagnosticsCollector.stop();
+
+        await checkMemoryGrowth(pid);
+
+        let editTargets: string[];
+        if (libCairoFiles.length > 0) {
+            editTargets = [...libCairoFiles].sort().slice(0, 3);
+        } else {
+            const fallback = await findAnyCairoFile();
+            if (fallback) {
+                await openFile(path2url(fallback), connection);
+                editTargets = [fallback];
+            } else {
+                editTargets = [];
+            }
+        }
+        if (editTargets.length > 0) {
+            await checkMemoryAfterEdit(pid, editTargets, connection);
+        }
 
         await viewAnalysedCrates(connection);
         showDiagnostics(diags);
@@ -74,7 +96,7 @@ withCairoLS(async (connection) => {
 /**
  * Finds any `lib.cairo` files in PWD recursively.
  */
-async function findAllLibCairoFiles(): Promise<string[]> {
+async function findAllEntryFiles(): Promise<string[]> {
     async function visit(dir: string): Promise<string[]> {
         const results: string[] = [];
         const entries = await fs.readdir(dir, { withFileTypes: true });
@@ -89,6 +111,30 @@ async function findAllLibCairoFiles(): Promise<string[]> {
         }
 
         return results;
+    }
+
+    return visit(".");
+}
+
+/**
+ * Finds the first `.cairo` file in PWD recursively.
+ * Used as a fallback edit target when no lib.cairo exists.
+ */
+async function findAnyCairoFile(): Promise<string | null> {
+    async function visit(dir: string): Promise<string | null> {
+        const entries = await fs.readdir(dir, { withFileTypes: true });
+
+        for (const entry of entries) {
+            const fullPath = path.join(dir, entry.name);
+            if (entry.isDirectory()) {
+                const found = await visit(fullPath);
+                if (found) return found;
+            } else if (entry.name.endsWith(".cairo")) {
+                return fullPath;
+            }
+        }
+
+        return null;
     }
 
     return visit(".");
@@ -119,7 +165,7 @@ async function viewAnalysedCrates(connection: MessageConnection) {
 }
 
 async function withCairoLS(
-    callback: (connection: MessageConnection) => Promise<void>,
+    callback: (connection: MessageConnection, pid: number) => Promise<void>,
 ): Promise<void> {
     const exitPromise = Promise.withResolvers<void>();
 
@@ -144,7 +190,7 @@ async function withCairoLS(
 
         try {
             connection.listen();
-            await callback(connection);
+            await callback(connection, serverProcess.pid!);
         } finally {
             connection.dispose();
         }
@@ -157,6 +203,71 @@ async function withCairoLS(
     }
 
     return await exitPromise.promise;
+}
+
+/**
+ * Reads the resident set size of a process from /proc/<pid>/status (Linux only).
+ * Returns null if the file is unavailable (non-Linux host or pid already gone).
+ */
+async function readProcessRssKB(pid: number): Promise<number | null> {
+    try {
+        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
+        const m = status.match(/VmRSS:\s+(\d+)\s+kB/);
+        return m ? parseInt(m[1], 10) : null;
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Prepends a probe function to all entry files to trigger a non-trivial re-analysis,
+ * then logs a memory snapshot so the analysis pipeline can detect post-edit memory growth.
+ */
+async function checkMemoryAfterEdit(
+    pid: number,
+    entryFiles: string[],
+    connection: MessageConnection,
+): Promise<void> {
+    console.log(SEPARATOR);
+    console.log(`Simulating edit: prepending probe function to ${entryFiles.length} file(s)`);
+
+    for (const [i, entryFile] of entryFiles.entries()) {
+        const content = await fs.readFile(entryFile, "utf-8");
+        console.log(`Edit ${i + 1}/${entryFiles.length}: ${path2url(entryFile)}`);
+
+        const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
+        await connection.sendNotification("textDocument/didChange", {
+            textDocument: { uri: path2url(entryFile), version: 1 },
+            contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
+        });
+        try {
+            await Promise.race([editAwaiter, timeout(ms("10 minutes"), `post-edit analysis (file ${i + 1})`)]);
+        } catch (err) {
+            console.log(`Warning: ${err}`);
+        } finally {
+            disposeEditAwaiter();
+        }
+    }
+
+    const memPostEdit = await readProcessRssKB(pid);
+    if (memPostEdit === null) return;
+    console.log(`Memory after edit+re-analysis: ${memPostEdit} KB`);
+    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${memPostEdit}`);
+}
+
+/**
+ * Takes a memory snapshot right after analysis completes and logs it
+ * in the MAAT_* format so the analysis pipeline can extract it.
+ */
+async function checkMemoryGrowth(pid: number): Promise<void> {
+    const memPost = await readProcessRssKB(pid);
+    if (memPost === null) {
+        return;
+    }
+
+    console.log(SEPARATOR);
+    console.log(`Memory after analysis: ${memPost} KB`);
+    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${memPost}`);
 }
 
 /**
@@ -230,13 +341,14 @@ async function terminate(connection: MessageConnection): Promise<void> {
 
 /**
  * Starts listening for `cairo/serverStatus` notifications
- * and returns a promise that resolves when CairoLS becomes truly idle.
+ * and returns a promise that resolves when CairoLS becomes truly idle,
+ * along with a dispose function to clean up the notification listener.
  */
-function startAnalysisAwaiter(connection: MessageConnection): Promise<void> {
+function startAnalysisAwaiter(connection: MessageConnection): { promise: Promise<void>; dispose: () => void } {
     const defer = Promise.withResolvers<void>();
     let analysisTimer: NodeJS.Timeout | null = null;
 
-    connection.onNotification(ServerStatus, ({ event }) => {
+    const listener = connection.onNotification(ServerStatus, ({ event }) => {
         // CairoLS notifies about analysis events:
         // - Starting analysis: event = 'AnalysisStarted'
         // - Finishing analysis: event = 'AnalysisFinished'
@@ -259,7 +371,16 @@ function startAnalysisAwaiter(connection: MessageConnection): Promise<void> {
             }, ms("3 seconds")).unref();
         }
     });
-    return defer.promise;
+
+    const dispose = () => {
+        if (analysisTimer) {
+            clearTimeout(analysisTimer);
+            analysisTimer = null;
+        }
+        listener.dispose();
+    };
+
+    return { promise: defer.promise, dispose };
 }
 
 /**

@@ -230,6 +230,10 @@ class Analyses(BaseModel):
     """Time of ``scarb build --workspace --test`` with a warm target directory."""
     incremental_build_no_test_time: timedelta | None = None
     """Time of ``scarb build --workspace`` with a warm target directory."""
+    ls_mem_post_analysis_kb: int | None = None
+    """CairoLS resident set size (KB) measured immediately after initial analysis completes."""
+    ls_mem_post_edit_kb: int | None = None
+    """CairoLS resident set size (KB) measured after re-analysis triggered by a trivial whitespace edit."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):

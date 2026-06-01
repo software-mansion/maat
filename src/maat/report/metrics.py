@@ -33,6 +33,11 @@ class Metrics(BaseModel):
     median_incremental_build_time: timedelta | None
     median_incremental_build_no_test_time: timedelta | None
 
+    mean_ls_mem_post_analysis_kb: int | None
+    median_ls_mem_post_analysis_kb: int | None
+    mean_ls_mem_post_edit_kb: int | None
+    median_ls_mem_post_edit_kb: int | None
+
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
         times: dict[str, list[timedelta]] = defaultdict(list)
@@ -42,6 +47,8 @@ class Metrics(BaseModel):
 
         incr_times: list[timedelta] = []
         incr_no_test_times: list[timedelta] = []
+        ls_mem_post: list[int] = []
+        ls_mem_post_edit: list[int] = []
 
         for test in report.tests:
             for step_name in ["build", "lint", "test", "ls"]:
@@ -53,6 +60,10 @@ class Metrics(BaseModel):
                 incr_times.append(t)
             if t := test.analyses.incremental_build_no_test_time:
                 incr_no_test_times.append(t)
+            if (v := test.analyses.ls_mem_post_analysis_kb) is not None:
+                ls_mem_post.append(v)
+            if (v := test.analyses.ls_mem_post_edit_kb) is not None:
+                ls_mem_post_edit.append(v)
 
             if summary := test.analyses.tests_summary:
                 total_tests += summary.total
@@ -93,6 +104,10 @@ class Metrics(BaseModel):
             median_ls_time=median_ls_time,
             median_incremental_build_time=median_incremental_build_time,
             median_incremental_build_no_test_time=median_incremental_build_no_test_time,
+            mean_ls_mem_post_analysis_kb=_int_mean(ls_mem_post),
+            median_ls_mem_post_analysis_kb=_int_median(ls_mem_post),
+            mean_ls_mem_post_edit_kb=_int_mean(ls_mem_post_edit),
+            median_ls_mem_post_edit_kb=_int_median(ls_mem_post_edit),
         )
 
 
@@ -108,3 +123,15 @@ def _timedelta_median(tds: list[timedelta], /) -> timedelta | None:
         return None
     seconds = [td.total_seconds() for td in tds]
     return timedelta(seconds=statistics.median(seconds))
+
+
+def _int_mean(values: list[int], /) -> int | None:
+    if not values:
+        return None
+    return round(statistics.mean(values))
+
+
+def _int_median(values: list[int], /) -> int | None:
+    if not values:
+        return None
+    return round(statistics.median(values))
