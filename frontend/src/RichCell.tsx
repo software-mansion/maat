@@ -21,7 +21,12 @@ function formatTrendChange(trend: Trend, displayMode: TimingDisplayMode): ReactN
   if (displayMode === "absolute" && trend.absoluteDiff) {
     return (
       <>
-        {trend.symbol} <Duration value={trend.absoluteDiff} />
+        {trend.symbol}{" "}
+        {trend.absoluteDiffIsDuration ? (
+          <Duration value={trend.absoluteDiff} />
+        ) : (
+          trend.absoluteDiff
+        )}
       </>
     );
   }

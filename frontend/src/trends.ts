@@ -51,7 +51,7 @@ export function numberTrend(
 
   const colorClass = ratio < 0 ? "text-success" : ratio > 0 ? "text-error" : "text-base-content/60";
 
-  return { ratio, isExtreme, symbol, percentage, absoluteDiff, colorClass };
+  return { ratio, isExtreme, symbol, percentage, absoluteDiff, absoluteDiffIsDuration: false, colorClass };
 }
 
 export interface Trend {
@@ -60,6 +60,9 @@ export interface Trend {
   symbol: string;
   percentage: string;
   absoluteDiff: string | null;
+  // Whether `absoluteDiff` is an ISO-8601 duration string (and so must be rendered via
+  // `<Duration>`) rather than an already-formatted value such as "+775 MB".
+  absoluteDiffIsDuration: boolean;
   colorClass: string;
 }
 
@@ -151,6 +154,7 @@ export function durationTrend(
     symbol,
     percentage,
     absoluteDiff,
+    absoluteDiffIsDuration: true,
     colorClass,
   };
 }
