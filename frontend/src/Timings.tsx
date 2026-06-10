@@ -125,7 +125,11 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                   titleSecondRowParts.push(uniformRev);
                 }
 
-                const uniformTestRunner = determineUniformTestRunnerForTest(vm, selection, testName);
+                const uniformTestRunner = determineUniformTestRunnerForTest(
+                  vm,
+                  selection,
+                  testName,
+                );
                 titleSecondRowParts.push(
                   <Fragment key="test-runner">
                     <span className="badge badge-sm badge-outline">{uniformTestRunner}</span>
@@ -508,7 +512,10 @@ function findMostVariableMemory(
       return {
         testName,
         postValues: Object.fromEntries(postMap) as Record<ReportTitle, number>,
-        postEditValues: Object.fromEntries(postEditMap.get(testName) ?? []) as Record<ReportTitle, number>,
+        postEditValues: Object.fromEntries(postEditMap.get(testName) ?? []) as Record<
+          ReportTitle,
+          number
+        >,
         variance: v,
       };
     })
@@ -550,7 +557,9 @@ function LsMemorySection() {
                 const pivotValue = pivotReport?.metrics[key] ?? null;
                 const allValues = selectedReports.map((r) => r.metrics[key]);
                 const trend = !isSingleReport && numberTrend(value, pivotValue, allValues);
-                return <RichCell value={value != null ? formatMemoryKB(value) : null} trend={trend} />;
+                return (
+                  <RichCell value={value != null ? formatMemoryKB(value) : null} trend={trend} />
+                );
               }}
             />
           ))}
@@ -587,8 +596,12 @@ function LsMemorySection() {
                               <span className="text-base-content/60">
                                 {" → "}
                                 {formatMemoryKB(postEdit)}
-                                <span className={postEdit - post > 0 ? "text-error" : "text-success"}>
-                                  {" "}({postEdit - post >= 0 ? "+" : ""}{formatMemoryKB(postEdit - post)})
+                                <span
+                                  className={postEdit - post > 0 ? "text-error" : "text-success"}
+                                >
+                                  {" "}
+                                  ({postEdit - post >= 0 ? "+" : ""}
+                                  {formatMemoryKB(postEdit - post)})
                                 </span>
                               </span>
                             )}

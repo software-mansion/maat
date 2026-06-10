@@ -274,7 +274,13 @@ export const pivotReportAtom = atom<Report | undefined>((get) => {
   }
 });
 
-export type SectionId = "metrics" | `label-${LabelCategory}` | `timings-${StepName}` | "timings-incremental-build" | "timings-ls-memory" | "downloads";
+export type SectionId =
+  | "metrics"
+  | `label-${LabelCategory}`
+  | `timings-${StepName}`
+  | "timings-incremental-build"
+  | "timings-ls-memory"
+  | "downloads";
 
 export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
   "metrics",

@@ -29,9 +29,12 @@ export function numberTrend(
   }
 
   const nonNullValues = allValues.filter((v) => v != null) as number[];
-  const minValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
-  const maxValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
-  const isExtreme = (minValue !== null && value === minValue) || (maxValue !== null && value === maxValue);
+  const minValue =
+    nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
+  const maxValue =
+    nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
+  const isExtreme =
+    (minValue !== null && value === minValue) || (maxValue !== null && value === maxValue);
 
   let symbol: string;
   if (ratio < 0) symbol = isExtreme ? "⤓" : "↓";
@@ -51,7 +54,15 @@ export function numberTrend(
 
   const colorClass = ratio < 0 ? "text-success" : ratio > 0 ? "text-error" : "text-base-content/60";
 
-  return { ratio, isExtreme, symbol, percentage, absoluteDiff, absoluteDiffIsDuration: false, colorClass };
+  return {
+    ratio,
+    isExtreme,
+    symbol,
+    percentage,
+    absoluteDiff,
+    absoluteDiffIsDuration: false,
+    colorClass,
+  };
 }
 
 export interface Trend {
@@ -104,11 +115,12 @@ export function durationTrend(
 
   // Find extremes for isExtreme calculation.
   const nonNullValues = allValues.filter((v) => v !== null).map((v) => durationTotalMs(v!));
-  const minValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
-  const maxValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
+  const minValue =
+    nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
+  const maxValue =
+    nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
   const isExtreme =
-    (minValue !== null && valueMs === minValue) ||
-    (maxValue !== null && valueMs === maxValue);
+    (minValue !== null && valueMs === minValue) || (maxValue !== null && valueMs === maxValue);
 
   // Generate symbol.
   let symbol: string;
