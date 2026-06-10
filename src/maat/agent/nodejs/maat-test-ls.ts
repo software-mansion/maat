@@ -56,10 +56,13 @@ withCairoLS(async (connection, pid) => {
         }
 
         // Wait for project analysis to finish.
-        // Assume some healthy timeout in case LS hangs.
+        // This is only a safety net against a genuinely hung LS. The cap has to comfortably
+        // exceed the time the heaviest projects need (e.g. OpenZeppelin/cairo-contracts, whose
+        // proc-macro build + analysis alone runs well past 5 minutes), otherwise we'd kill the
+        // server mid-analysis and report a bogus LS failure.
         console.log(SEPARATOR);
         try {
-            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+            await Promise.race([analysisAwaiter, timeout(ms("12 minutes"), "analysis")]);
         } finally {
             disposeAwaiter();
         }
