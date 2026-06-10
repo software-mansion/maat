@@ -455,6 +455,13 @@ function showDiagnostics(diags: PublishDiagnosticsParams[]): void {
     console.log(SEPARATOR);
 
     for (const { uri, diagnostics } of diags) {
+        // Only diagnostics emitted for Cairo source files reflect the state of the code.
+        // Diagnostics on other files (notably `Scarb.toml` manifest diagnostics such as
+        // SE0002 `unknown manifest field`) are surfaced by Scarb, are non-fatal and do not
+        // fail `scarb build`, so they must not be counted as errors - otherwise we'd report
+        // a bogus LS-vs-build mismatch. They are still printed below for visibility.
+        const isCairoSource = uri.endsWith(".cairo");
+
         console.log(`${uri} (${diagnostics.length})`);
         for (const diag of diagnostics) {
             const severityIcon = {
@@ -465,7 +472,7 @@ function showDiagnostics(diags: PublishDiagnosticsParams[]): void {
                 null: "( )",
             }[diag.severity ?? "null"];
 
-            if (diag.severity != null) {
+            if (diag.severity != null && isCairoSource) {
                 totals[diag.severity]++;
             }
 
