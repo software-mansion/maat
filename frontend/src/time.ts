@@ -17,7 +17,8 @@ export function parseDuration(value: string): Intl.DurationType {
     const fractionalPart = Math.abs(duration.seconds) - integerSeconds;
 
     // Set integer seconds (preserving sign).
-    normalized.seconds = duration.seconds >= 0 ? integerSeconds : -integerSeconds;
+    normalized.seconds =
+      duration.seconds >= 0 ? integerSeconds : -integerSeconds;
 
     // Convert fractional seconds to milliseconds.
     if (fractionalPart > 0) {
@@ -25,7 +26,9 @@ export function parseDuration(value: string): Intl.DurationType {
       const existingMilliseconds = normalized.milliseconds || 0;
       normalized.milliseconds = Math.floor(
         existingMilliseconds +
-          (duration.seconds >= 0 ? additionalMilliseconds : -additionalMilliseconds),
+          (duration.seconds >= 0
+            ? additionalMilliseconds
+            : -additionalMilliseconds),
       );
     }
   }
@@ -108,7 +111,9 @@ export function durationFromTotal(
   return result;
 }
 
-export function durationRoundToSeconds(duration: Intl.DurationType): Intl.DurationType {
+export function durationRoundToSeconds(
+  duration: Intl.DurationType,
+): Intl.DurationType {
   const result: Intl.DurationType = {
     years: duration.years,
     months: duration.months,

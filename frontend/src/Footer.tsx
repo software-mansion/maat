@@ -4,12 +4,16 @@ export function Footer({ className }: { className?: string }) {
   return (
     <footer
       className={clsx(
-        "footer md:footer-horizontal text-base-content/50 items-center justify-center text-xs",
+        "footer md:footer-horizontal items-center justify-center text-base-content/50 text-xs",
         className,
       )}
     >
       <aside className="grid-flow-col items-center">
-        <a href="https://swmansion.com/" rel="noopener noreferrer" target="_blank">
+        <a
+          href="https://swmansion.com/"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
           <svg
             fill="none"
             height="20"

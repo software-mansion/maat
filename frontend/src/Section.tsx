@@ -2,7 +2,11 @@ import clsx from "clsx";
 import { useAtom } from "jotai";
 import type { ReactNode } from "react";
 
-import { type SectionId, openSectionsAtom, useShowSectionInSelectedDomain } from "./atoms.ts";
+import {
+  openSectionsAtom,
+  type SectionId,
+  useShowSectionInSelectedDomain,
+} from "./atoms.ts";
 
 export interface SectionProps {
   id: SectionId;
@@ -24,18 +28,19 @@ export function Section({ id, children, className }: SectionProps) {
     <div
       id={id}
       className={clsx(
-        "collapse-arrow border-base-300 bg-base-100 collapse m-4 w-fit border",
+        "collapse-arrow collapse m-4 w-fit border border-base-300 bg-base-100",
         sectionClassName,
         className,
       )}
     >
       <input
         type="checkbox"
-        checked={opened == "all" || opened.includes(id)}
+        checked={opened === "all" || opened.includes(id)}
         onChange={() =>
           setOpened((v) => {
-            if (v == "all") {
-              const sections = document.getElementsByClassName(sectionClassName);
+            if (v === "all") {
+              const sections =
+                document.getElementsByClassName(sectionClassName);
               return Array.from(sections)
                 .map((el) => el.id)
                 .filter((sectionId) => sectionId !== id)
@@ -54,7 +59,7 @@ export function Section({ id, children, className }: SectionProps) {
 }
 
 export function SectionTitle({ children }: { children: ReactNode }) {
-  return <div className="collapse-title font-bold select-none">{children}</div>;
+  return <div className="collapse-title select-none font-bold">{children}</div>;
 }
 
 export function SectionContent({ children }: { children: ReactNode }) {

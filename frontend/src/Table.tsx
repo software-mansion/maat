@@ -2,7 +2,12 @@ import clsx from "clsx";
 import { useAtom, useAtomValue } from "jotai";
 import type { ReactNode } from "react";
 
-import { type Report, pivotAtom, selectedReportsAtom, selectionAtom } from "./atoms.ts";
+import {
+  pivotAtom,
+  type Report,
+  selectedReportsAtom,
+  selectionAtom,
+} from "./atoms.ts";
 
 export interface ReportTableHead {
   title?: ReactNode;
@@ -20,11 +25,18 @@ export function ReportTableHead({ title }: ReportTableHead) {
           return (
             <td
               key={report.title}
-              className={clsx("text-center", isPivot && "text-primary border-primary border-b")}
+              className={clsx(
+                "text-center",
+                isPivot && "border-primary border-b text-primary",
+              )}
             >
-              <a className="link link-hover" onClick={() => setPivot(report.title)}>
+              <button
+                type="button"
+                className="link link-hover"
+                onClick={() => setPivot(report.title)}
+              >
                 {report.title}
-              </a>
+              </button>
             </td>
           );
         })}
@@ -55,7 +67,11 @@ export interface ReportTableRowProps {
   textAlign?: "left" | "right" | "center";
 }
 
-export function ReportTableRow({ title, cell, textAlign }: ReportTableRowProps) {
+export function ReportTableRow({
+  title,
+  cell,
+  textAlign,
+}: ReportTableRowProps) {
   const selectedReports = useAtomValue(selectedReportsAtom);
 
   const textAlignClass = {
