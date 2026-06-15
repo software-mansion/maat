@@ -56,10 +56,13 @@ withCairoLS(async (connection, pid) => {
         }
 
         // Wait for project analysis to finish.
-        // Assume some healthy timeout in case LS hangs.
+        // This is only a safety net against a genuinely hung LS. The cap has to comfortably
+        // exceed the time the heaviest projects need (e.g. OpenZeppelin/cairo-contracts, whose
+        // proc-macro build + analysis alone runs well past 5 minutes), otherwise we'd kill the
+        // server mid-analysis and report a bogus LS failure.
         console.log(SEPARATOR);
         try {
-            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+            await Promise.race([analysisAwaiter, timeout(ms("12 minutes"), "analysis")]);
         } finally {
             disposeAwaiter();
         }
@@ -455,6 +458,13 @@ function showDiagnostics(diags: PublishDiagnosticsParams[]): void {
     console.log(SEPARATOR);
 
     for (const { uri, diagnostics } of diags) {
+        // Only diagnostics emitted for Cairo source files reflect the state of the code.
+        // Diagnostics on other files (notably `Scarb.toml` manifest diagnostics such as
+        // SE0002 `unknown manifest field`) are surfaced by Scarb, are non-fatal and do not
+        // fail `scarb build`, so they must not be counted as errors - otherwise we'd report
+        // a bogus LS-vs-build mismatch. They are still printed below for visibility.
+        const isCairoSource = uri.endsWith(".cairo");
+
         console.log(`${uri} (${diagnostics.length})`);
         for (const diag of diagnostics) {
             const severityIcon = {
@@ -465,7 +475,7 @@ function showDiagnostics(diags: PublishDiagnosticsParams[]): void {
                 null: "( )",
             }[diag.severity ?? "null"];
 
-            if (diag.severity != null) {
+            if (diag.severity != null && isCairoSource) {
                 totals[diag.severity]++;
             }
 
