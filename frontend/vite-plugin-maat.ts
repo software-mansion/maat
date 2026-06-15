@@ -1,7 +1,7 @@
-import { execSync } from "child_process";
-import { createReadStream } from "fs";
-import { cp, mkdir, readFile, rm, stat } from "fs/promises";
-import path from "path";
+import { execSync } from "node:child_process";
+import { createReadStream } from "node:fs";
+import { cp, mkdir, readFile, rm, stat } from "node:fs/promises";
+import path from "node:path";
 import type { Plugin } from "vite";
 
 const generatedDir = ".maat-generated";

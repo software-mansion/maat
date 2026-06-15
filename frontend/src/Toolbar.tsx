@@ -1,12 +1,18 @@
 import clsx from "clsx";
 import { useAtom, useAtomValue } from "jotai";
 import type { ButtonHTMLAttributes, ReactNode } from "react";
-import { VscFold, VscPin, VscSymbolNumeric, VscUnfold, VscWarning } from "react-icons/vsc";
+import {
+  VscFold,
+  VscPin,
+  VscSymbolNumeric,
+  VscUnfold,
+  VscWarning,
+} from "react-icons/vsc";
 
 import {
-  type ReportTitle,
   openSectionsAtom,
   pivotAtom,
+  type ReportTitle,
   selectedReportsAtom,
   selectedSliceAtom,
   timingDisplayModeAtom,
@@ -48,7 +54,8 @@ export function Toolbar({ className }: { className?: string }) {
       <Fieldset title="Use a predefined slice">
         {Object.values(vm.slices).map((slice) => {
           const isActive =
-            "predefined" in selectedSlice && selectedSlice.predefined === slice.title;
+            "predefined" in selectedSlice &&
+            selectedSlice.predefined === slice.title;
           return (
             <input
               key={slice.title}
@@ -65,7 +72,9 @@ export function Toolbar({ className }: { className?: string }) {
 
       <Fieldset title="Or compose your own">
         {Object.values(vm.reports).map((report) => {
-          const isActive = "custom" in selectedSlice && selectedSlice.custom.includes(report.title);
+          const isActive =
+            "custom" in selectedSlice &&
+            selectedSlice.custom.includes(report.title);
           return (
             <input
               key={report.title}
@@ -112,22 +121,22 @@ function Fieldset({
 }) {
   return (
     <fieldset className="contents">
-      <legend className="self-baseline text-sm text-nowrap">
+      <legend className="self-baseline text-nowrap text-sm">
         {title}
         {warning && typeof warning === "string" && (
           <>
             {" "}
             <span className="tooltip tooltip-right cursor-help">
               <span className="tooltip-content">{warning}</span>
-              <VscWarning className="text-warning inline" />
+              <VscWarning className="inline text-warning" />
             </span>
           </>
         )}
       </legend>
       <div
         className={clsx(
-          "rounded-field flex flex-wrap gap-1 self-baseline",
-          warning && "outline-warning outline-offset-4 outline-solid",
+          "flex flex-wrap gap-1 self-baseline rounded-field",
+          warning && "outline-solid outline-warning outline-offset-4",
         )}
       >
         {children}
@@ -138,7 +147,8 @@ function Fieldset({
 
 function ToggleSectionsButton() {
   const [openSections, setOpenSections] = useAtom(openSectionsAtom);
-  const areSectionsClosed = openSections instanceof Array && openSections.length == 0;
+  const areSectionsClosed =
+    Array.isArray(openSections) && openSections.length === 0;
   return (
     <ToolButton
       label={areSectionsClosed ? "Open all sections" : "Close all sections"}
@@ -173,7 +183,9 @@ function PinToolbarButton() {
 }
 
 function TimingDisplayModeButton() {
-  const [timingDisplayMode, setTimingDisplayMode] = useAtom(timingDisplayModeAtom);
+  const [timingDisplayMode, setTimingDisplayMode] = useAtom(
+    timingDisplayModeAtom,
+  );
   const isAbsolute = timingDisplayMode === "absolute";
   return (
     <ToolButton
@@ -199,7 +211,10 @@ function ToolButton({ label, active, children, ...props }: ToolButtonProps) {
   return (
     <button
       {...props}
-      className={clsx("btn btn-sm md:tooltip md:tooltip-left", active === true && "btn-active")}
+      className={clsx(
+        "btn btn-sm md:tooltip md:tooltip-left",
+        active === true && "btn-active",
+      )}
       data-tip={label}
     >
       {children}

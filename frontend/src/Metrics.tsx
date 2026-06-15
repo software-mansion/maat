@@ -1,11 +1,14 @@
 import { useAtomValue } from "jotai";
-
+import { pivotReportAtom, selectedReportsAtom } from "./atoms.ts";
 import { DateTime } from "./DateTime.tsx";
 import { Duration } from "./Duration.tsx";
 import { RichCell } from "./RichCell.tsx";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
-import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
-import { pivotReportAtom, selectedReportsAtom } from "./atoms.ts";
+import {
+  ReportTableHead,
+  ReportTableRow,
+  ReportTableSection,
+} from "./Table.tsx";
 import { durationTrend } from "./trends.ts";
 
 export function MetricsSection() {
@@ -19,7 +22,10 @@ export function MetricsSection() {
         <ReportTableHead />
         <ReportTableSection title="Metadata" />
         <tbody>
-          <ReportTableRow title="Workspace" cell={(report) => report.metrics.workspace} />
+          <ReportTableRow
+            title="Workspace"
+            cell={(report) => report.metrics.workspace}
+          />
           <ReportTableRow
             title="Scarb Version"
             cell={(report) => <code>{report.metrics.scarbVersion}</code>}

@@ -1,8 +1,7 @@
 import { useAtomValue } from "jotai";
 import type { ReactNode } from "react";
-
-import { Duration } from "./Duration.tsx";
 import { type TimingDisplayMode, timingDisplayModeAtom } from "./atoms.ts";
+import { Duration } from "./Duration.tsx";
 import type { Trend } from "./trends.ts";
 
 export interface RichCellProps {
@@ -13,7 +12,10 @@ export interface RichCellProps {
   rev?: string | null | false;
 }
 
-function formatTrendChange(trend: Trend, displayMode: TimingDisplayMode): ReactNode {
+function formatTrendChange(
+  trend: Trend,
+  displayMode: TimingDisplayMode,
+): ReactNode {
   if (trend.ratio === 0.0) {
     return trend.symbol;
   }
@@ -61,7 +63,9 @@ export function RichCell({ value, href, bullet, trend, rev }: RichCellProps) {
       <span className="text-base-content/60 text-xs">
         <br />
         {trend && (
-          <span className={trend.colorClass}>{formatTrendChange(trend, timingDisplayMode)}</span>
+          <span className={trend.colorClass}>
+            {formatTrendChange(trend, timingDisplayMode)}
+          </span>
         )}
         {trend && rev && " "}
         {rev && `(${rev})`}

@@ -1,13 +1,15 @@
+import vmJson from "virtual:maat-view-model";
 import { atom, useAtomValue } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import vmJson from "virtual:maat-view-model";
 
 import { atomWithHashStorage } from "./atomWithHashStorage.ts";
 
 // NOTE: These types in reality are just strings that come from JSON.parse call,
 //   but for extra type safety a fake unique symbol tag is used to prevent TypeScript
 //   from structural type matching.
-export type ReportTitle = string & { readonly __nonexistent_tag: unique symbol };
+export type ReportTitle = string & {
+  readonly __nonexistent_tag: unique symbol;
+};
 export type SliceTitle = string & { readonly __nonexistent_tag: unique symbol };
 export type TestName = string & { readonly __nonexistent_tag: unique symbol };
 
@@ -203,12 +205,16 @@ export function urlOf(viewModelUrl: string): string {
   return `${import.meta.env.BASE_URL}/${viewModelUrl}`;
 }
 
-export type SelectedSlice = { predefined: SliceTitle } | { custom: ReportTitle[] };
+export type SelectedSlice =
+  | { predefined: SliceTitle }
+  | { custom: ReportTitle[] };
 
 export const selectedSliceAtom = atomWithHashStorage<SelectedSlice>({
   key: "s",
   getDefault() {
-    const defaultSlice = Object.values(vm.slices).find((slice) => slice.default);
+    const defaultSlice = Object.values(vm.slices).find(
+      (slice) => slice.default,
+    );
     if (defaultSlice) {
       return { predefined: defaultSlice.title };
     } else {
@@ -282,12 +288,15 @@ export type SectionId =
   | "timings-ls-memory"
   | "downloads";
 
-export const openSectionsAtom = atomWithStorage<SectionId[] | "all">("maat-open-sections", [
-  "metrics",
-  "downloads",
-]);
+export const openSectionsAtom = atomWithStorage<SectionId[] | "all">(
+  "maat-open-sections",
+  ["metrics", "downloads"],
+);
 
-export const toolbarPinnedAtom = atomWithStorage<boolean>("maat-toolbar-pinned", true);
+export const toolbarPinnedAtom = atomWithStorage<boolean>(
+  "maat-toolbar-pinned",
+  true,
+);
 
 export type TimingDisplayMode = "percentage" | "absolute";
 
@@ -309,8 +318,12 @@ export const selectedDomainNameAtom = atomWithHashStorage<DomainName>({
   },
 });
 
-export function showSectionInDomain(sectionId: SectionId, domainName: DomainName): boolean {
-  const when = (...domains: DomainName[]) => domainName === "all" || domains.includes(domainName);
+export function showSectionInDomain(
+  sectionId: SectionId,
+  domainName: DomainName,
+): boolean {
+  const when = (...domains: DomainName[]) =>
+    domainName === "all" || domains.includes(domainName);
   switch (sectionId) {
     case "metrics":
       return true;
