@@ -5,18 +5,24 @@ import { VscLinkExternal } from "react-icons/vsc";
 import { Domains, selectedDomainNameAtom } from "./atoms.ts";
 
 export function Tabs({ className }: { className?: string }) {
-  const [selectedDomainName, setSelectedDomainName] = useAtom(selectedDomainNameAtom);
+  const [selectedDomainName, setSelectedDomainName] = useAtom(
+    selectedDomainNameAtom,
+  );
   return (
     <div role="tablist" className={clsx("tabs tabs-border", className)}>
       {Object.values(Domains).map((domain) => (
-        <a
+        <button
           key={domain.name}
+          type="button"
           role="tab"
-          className={clsx("tab", domain.name === selectedDomainName && "tab-active")}
+          className={clsx(
+            "tab",
+            domain.name === selectedDomainName && "tab-active",
+          )}
           onClick={() => setSelectedDomainName(domain.name)}
         >
           {domain.humanName}
-        </a>
+        </button>
       ))}
       <a
         role="tab"

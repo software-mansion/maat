@@ -5,7 +5,7 @@ export function Q({ children }: { children: ReactNode }) {
   return (
     <span className="tooltip cursor-help">
       <span className="tooltip-content">{children}</span>
-      <VscInfo className="text-info inline" />
+      <VscInfo className="inline text-info" />
     </span>
   );
 }

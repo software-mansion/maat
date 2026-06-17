@@ -29,9 +29,17 @@ export function numberTrend(
   }
 
   const nonNullValues = allValues.filter((v) => v != null) as number[];
-  const minValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
-  const maxValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
-  const isExtreme = (minValue !== null && value === minValue) || (maxValue !== null && value === maxValue);
+  const minValue =
+    nonNullValues.length > 0
+      ? nonNullValues.reduce((a, b) => (a < b ? a : b))
+      : null;
+  const maxValue =
+    nonNullValues.length > 0
+      ? nonNullValues.reduce((a, b) => (a > b ? a : b))
+      : null;
+  const isExtreme =
+    (minValue !== null && value === minValue) ||
+    (maxValue !== null && value === maxValue);
 
   let symbol: string;
   if (ratio < 0) symbol = isExtreme ? "⤓" : "↓";
@@ -49,9 +57,22 @@ export function numberTrend(
     absoluteDiff = `${sign}${formatMemoryKB(Math.abs(diff))}`;
   }
 
-  const colorClass = ratio < 0 ? "text-success" : ratio > 0 ? "text-error" : "text-base-content/60";
+  const colorClass =
+    ratio < 0
+      ? "text-success"
+      : ratio > 0
+        ? "text-error"
+        : "text-base-content/60";
 
-  return { ratio, isExtreme, symbol, percentage, absoluteDiff, colorClass };
+  return {
+    ratio,
+    isExtreme,
+    symbol,
+    percentage,
+    absoluteDiff,
+    absoluteDiffIsDuration: false,
+    colorClass,
+  };
 }
 
 export interface Trend {
@@ -60,6 +81,9 @@ export interface Trend {
   symbol: string;
   percentage: string;
   absoluteDiff: string | null;
+  // Whether `absoluteDiff` is an ISO-8601 duration string (and so must be rendered via
+  // `<Duration>`) rather than an already-formatted value such as "+775 MB".
+  absoluteDiffIsDuration: boolean;
   colorClass: string;
 }
 
@@ -72,8 +96,10 @@ export function durationTrend(
     return null;
   }
 
-  const durationTotalMs = (timeStr: string): bigint => durationTotal(timeStr, "milliseconds");
-  const durationTotalSeconds = (timeStr: string): number => Number(durationTotalMs(timeStr)) / 1000;
+  const durationTotalMs = (timeStr: string): bigint =>
+    durationTotal(timeStr, "milliseconds");
+  const durationTotalSeconds = (timeStr: string): number =>
+    Number(durationTotalMs(timeStr)) / 1000;
 
   const valueMs = durationTotalMs(value);
   const valueSeconds = durationTotalSeconds(value);
@@ -100,9 +126,17 @@ export function durationTrend(
   }
 
   // Find extremes for isExtreme calculation.
-  const nonNullValues = allValues.filter((v) => v !== null).map((v) => durationTotalMs(v!));
-  const minValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a < b ? a : b)) : null;
-  const maxValue = nonNullValues.length > 0 ? nonNullValues.reduce((a, b) => (a > b ? a : b)) : null;
+  const nonNullValues = allValues
+    .filter((v) => v !== null)
+    .map((v) => durationTotalMs(v!));
+  const minValue =
+    nonNullValues.length > 0
+      ? nonNullValues.reduce((a, b) => (a < b ? a : b))
+      : null;
+  const maxValue =
+    nonNullValues.length > 0
+      ? nonNullValues.reduce((a, b) => (a > b ? a : b))
+      : null;
   const isExtreme =
     (minValue !== null && valueMs === minValue) ||
     (maxValue !== null && valueMs === maxValue);
@@ -151,6 +185,7 @@ export function durationTrend(
     symbol,
     percentage,
     absoluteDiff,
+    absoluteDiffIsDuration: true,
     colorClass,
   };
 }

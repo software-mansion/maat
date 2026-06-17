@@ -1,4 +1,10 @@
-import type { ReportTitle, Test, TestName, TestRunner, ViewModel } from "./atoms.ts";
+import type {
+  ReportTitle,
+  Test,
+  TestName,
+  TestRunner,
+  ViewModel,
+} from "./atoms.ts";
 
 /** Calculate uniformRev if all selected runs of a test share the same revision. */
 export function determineUniformRevForTest(
@@ -6,7 +12,7 @@ export function determineUniformRevForTest(
   selection: ReportTitle[],
   testName: TestName,
 ) {
-  let candidate: string | undefined = undefined;
+  let candidate: string | undefined;
   for (const reportTitle of selection) {
     const report = vm.reports[reportTitle];
     const test = report?.tests?.find((t: Test) => t.name === testName);
@@ -28,7 +34,7 @@ export function determineUniformTestRunnerForTest(
   selection: ReportTitle[],
   testName: TestName,
 ): TestRunner | "mixed" | "unknown" {
-  let candidate: TestRunner | null | undefined = undefined;
+  let candidate: TestRunner | null | undefined;
   for (const reportTitle of selection) {
     const report = vm.reports[reportTitle];
     const test = report?.tests?.find((t: Test) => t.name === testName);
@@ -70,10 +76,13 @@ export function bigintSqrt(n: bigint): bigint {
   let next = (x + n / x) >> 1n;
   do {
     x = next;
-  } while ((next = (x + n / x) >> 1n) < x);
+    next = (x + n / x) >> 1n;
+  } while (next < x);
   return x;
 }
 
 export function mean(samples: bigint[]): bigint {
-  return samples.reduce((sum, sample) => sum + sample, 0n) / BigInt(samples.length);
+  return (
+    samples.reduce((sum, sample) => sum + sample, 0n) / BigInt(samples.length)
+  );
 }

@@ -1,28 +1,31 @@
 import { useAtomValue } from "jotai";
 import { Fragment, type ReactNode } from "react";
-
-import { Duration } from "./Duration.tsx";
-import { Q } from "./Q.tsx";
-import { RichCell } from "./RichCell.tsx";
-import { Section, SectionTable, SectionTitle } from "./Section.tsx";
-import { ReportTableHead, ReportTableRow, ReportTableSection } from "./Table.tsx";
 import {
   type IncrementalBuildStepName,
   IncrementalBuildSteps,
+  pivotReportAtom,
   type Report,
   type ReportTitle,
   type StepName,
   type StepReport,
   Steps,
-  type Test,
-  type TestName,
-  pivotReportAtom,
   selectedReportsAtom,
   selectionAtom,
+  type Test,
+  type TestName,
   urlOf,
   vm,
 } from "./atoms.ts";
+import { Duration } from "./Duration.tsx";
 import { DefaultMap } from "./defaultmap.ts";
+import { Q } from "./Q.tsx";
+import { RichCell } from "./RichCell.tsx";
+import { Section, SectionTable, SectionTitle } from "./Section.tsx";
+import {
+  ReportTableHead,
+  ReportTableRow,
+  ReportTableSection,
+} from "./Table.tsx";
 import { durationFromTotal, durationTotal, serializeDuration } from "./time.ts";
 import { durationTrend, formatMemoryKB, numberTrend } from "./trends.ts";
 import {
@@ -55,18 +58,23 @@ function TimingSection({ stepName }: { stepName: StepName }) {
   const selection = useAtomValue(selectionAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const pivotReport = useAtomValue(pivotReportAtom);
-  const mostVariableSteps = findMostVariableSteps(selectedReports, pivotReport, stepName);
+  const mostVariableSteps = findMostVariableSteps(
+    selectedReports,
+    pivotReport,
+    stepName,
+  );
   const isSingleReport = selectedReports.length === 1;
 
-  let title;
+  let title: ReactNode;
   if (isSingleReport) {
     title = (
       <>
         {`Top ${mostVariableSteps.length} slowest projects `}
         <Q>
-          Ma'at shows the top 10 projects with the slowest timing performance. Projects are sorted
-          by execution time (slowest first), then alphabetically. Only projects with successful
-          timing measurements are included.
+          Ma'at shows the top 10 projects with the slowest timing performance.
+          Projects are sorted by execution time (slowest first), then
+          alphabetically. Only projects with successful timing measurements are
+          included.
         </Q>
       </>
     );
@@ -75,11 +83,12 @@ function TimingSection({ stepName }: { stepName: StepName }) {
       <>
         {`Top ${mostVariableSteps.length} most variable projects `}
         <Q>
-          Ma'at shows the top 10 projects with the most variable timing performance compared to a
-          reference report. Projects are sorted by variance (highest first), then alphabetically.
-          Only projects with at least 2 valid timing measurements are included. Variance is
-          calculated using the reference report's timing as the expected value, measuring how much
-          other timings deviate from this baseline.
+          Ma'at shows the top 10 projects with the most variable timing
+          performance compared to a reference report. Projects are sorted by
+          variance (highest first), then alphabetically. Only projects with at
+          least 2 valid timing measurements are included. Variance is calculated
+          using the reference report's timing as the expected value, measuring
+          how much other timings deviate from this baseline.
         </Q>
       </>
     );
@@ -96,20 +105,38 @@ function TimingSection({ stepName }: { stepName: StepName }) {
             title="Successful Runs Mean"
             cell={(report) => {
               const value = report.metrics[Steps[stepName].meanKey];
-              const pivotValue = pivotReport?.metrics[Steps[stepName].meanKey] ?? null;
-              const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].meanKey]);
-              const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
-              return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+              const pivotValue =
+                pivotReport?.metrics[Steps[stepName].meanKey] ?? null;
+              const allValues = selectedReports.map(
+                (r) => r.metrics[Steps[stepName].meanKey],
+              );
+              const trend =
+                !isSingleReport && durationTrend(value, pivotValue, allValues);
+              return (
+                <RichCell
+                  value={value && <Duration value={value} />}
+                  trend={trend}
+                />
+              );
             }}
           />
           <ReportTableRow
             title="Successful Runs Median"
             cell={(report) => {
               const value = report.metrics[Steps[stepName].medianKey];
-              const pivotValue = pivotReport?.metrics[Steps[stepName].medianKey] ?? null;
-              const allValues = selectedReports.map((r) => r.metrics[Steps[stepName].medianKey]);
-              const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
-              return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+              const pivotValue =
+                pivotReport?.metrics[Steps[stepName].medianKey] ?? null;
+              const allValues = selectedReports.map(
+                (r) => r.metrics[Steps[stepName].medianKey],
+              );
+              const trend =
+                !isSingleReport && durationTrend(value, pivotValue, allValues);
+              return (
+                <RichCell
+                  value={value && <Duration value={value} />}
+                  trend={trend}
+                />
+              );
             }}
           />
         </tbody>
@@ -120,15 +147,25 @@ function TimingSection({ stepName }: { stepName: StepName }) {
               {mostVariableSteps.map(({ testName, values, stddev }) => {
                 let titleSecondRowParts: ReactNode[] = [];
 
-                const uniformRev = determineUniformRevForTest(vm, selection, testName);
+                const uniformRev = determineUniformRevForTest(
+                  vm,
+                  selection,
+                  testName,
+                );
                 if (uniformRev) {
                   titleSecondRowParts.push(uniformRev);
                 }
 
-                const uniformTestRunner = determineUniformTestRunnerForTest(vm, selection, testName);
+                const uniformTestRunner = determineUniformTestRunnerForTest(
+                  vm,
+                  selection,
+                  testName,
+                );
                 titleSecondRowParts.push(
                   <Fragment key="test-runner">
-                    <span className="badge badge-sm badge-outline">{uniformTestRunner}</span>
+                    <span className="badge badge-sm badge-outline">
+                      {uniformTestRunner}
+                    </span>
                   </Fragment>,
                 );
 
@@ -150,18 +187,25 @@ function TimingSection({ stepName }: { stepName: StepName }) {
                       <>
                         {testName}
                         <br />
-                        <span className="text-base-content/60 text-xs font-normal">
+                        <span className="font-normal text-base-content/60 text-xs">
                           {titleSecondRowParts}
                         </span>
                       </>
                     }
                     cell={(report) => {
                       const value = values[report.title] ?? null;
-                      const pivotValue = (pivotReport && values[pivotReport.title]) ?? null;
-                      const allValues = selectedReports.map((r) => values[r.title] ?? null);
-                      const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
+                      const pivotValue =
+                        (pivotReport && values[pivotReport.title]) ?? null;
+                      const allValues = selectedReports.map(
+                        (r) => values[r.title] ?? null,
+                      );
+                      const trend =
+                        !isSingleReport &&
+                        durationTrend(value, pivotValue, allValues);
 
-                      const test = report.tests.find((t) => t.name === testName);
+                      const test = report.tests.find(
+                        (t) => t.name === testName,
+                      );
                       const logsHref = test && urlOf(test.logsHref);
                       const rev = uniformRev ? undefined : test?.rev;
 
@@ -205,7 +249,9 @@ function IncrementalBuildTimingSection() {
         <ReportTableHead />
         <ReportTableSection title="Summary" />
         <tbody>
-          {(Object.keys(IncrementalBuildSteps) as IncrementalBuildStepName[]).map((stepName) => {
+          {(
+            Object.keys(IncrementalBuildSteps) as IncrementalBuildStepName[]
+          ).map((stepName) => {
             const meta = IncrementalBuildSteps[stepName];
             return (
               <Fragment key={stepName}>
@@ -213,80 +259,110 @@ function IncrementalBuildTimingSection() {
                   title={`${meta.humanName} Mean`}
                   cell={(report) => {
                     const value = report.metrics[meta.meanKey];
-                    const pivotValue = pivotReport?.metrics[meta.meanKey] ?? null;
-                    const allValues = selectedReports.map((r) => r.metrics[meta.meanKey]);
-                    const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
-                    return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+                    const pivotValue =
+                      pivotReport?.metrics[meta.meanKey] ?? null;
+                    const allValues = selectedReports.map(
+                      (r) => r.metrics[meta.meanKey],
+                    );
+                    const trend =
+                      !isSingleReport &&
+                      durationTrend(value, pivotValue, allValues);
+                    return (
+                      <RichCell
+                        value={value && <Duration value={value} />}
+                        trend={trend}
+                      />
+                    );
                   }}
                 />
                 <ReportTableRow
                   title={`${meta.humanName} Median`}
                   cell={(report) => {
                     const value = report.metrics[meta.medianKey];
-                    const pivotValue = pivotReport?.metrics[meta.medianKey] ?? null;
-                    const allValues = selectedReports.map((r) => r.metrics[meta.medianKey]);
-                    const trend = !isSingleReport && durationTrend(value, pivotValue, allValues);
-                    return <RichCell value={value && <Duration value={value} />} trend={trend} />;
+                    const pivotValue =
+                      pivotReport?.metrics[meta.medianKey] ?? null;
+                    const allValues = selectedReports.map(
+                      (r) => r.metrics[meta.medianKey],
+                    );
+                    const trend =
+                      !isSingleReport &&
+                      durationTrend(value, pivotValue, allValues);
+                    return (
+                      <RichCell
+                        value={value && <Duration value={value} />}
+                        trend={trend}
+                      />
+                    );
                   }}
                 />
               </Fragment>
             );
           })}
         </tbody>
-        {(Object.keys(IncrementalBuildSteps) as IncrementalBuildStepName[]).map((stepName) => {
-          const meta = IncrementalBuildSteps[stepName];
-          const rows = findIncrementalBuildRows(selectedReports, meta.timeKey);
-          if (rows.length === 0) return null;
-          return (
-            <Fragment key={stepName}>
-              <ReportTableSection
-                title={
-                  <>
-                    {`Top ${rows.length} projects – ${meta.humanName} speedup `}
-                    <Q>
-                      Shows projects sorted by speedup ratio (cold build time / incremental build
-                      time). Higher values indicate bigger gains from incremental compilation. Cold
-                      and incremental timings are measured from the same incremental-step command.
-                      For older reports, cold timing falls back to the regular build step time.
-                    </Q>
-                  </>
-                }
-              />
-              <tbody>
-                {rows.map(({ testName, coldBuild, values, speedup }) => (
-                  <ReportTableRow
-                    key={testName}
-                    title={
-                      <>
-                        {testName}
-                        <br />
-                        <span className="text-base-content/60 text-xs font-normal">
-                          speedup:{" "}
-                          {selectedReports
-                            .map((r) => {
-                              const value = speedup[r.title];
-                              return value != null ? `${value.toFixed(1)}×` : "—";
-                            })
-                            .join(", ")}
-                        </span>
-                      </>
-                    }
-                    cell={(report) => {
-                      const coldVal = coldBuild[report.title] ?? null;
-                      const incrVal = values[report.title] ?? null;
-                      if (!coldVal || !incrVal) return "—";
-                      return (
+        {(Object.keys(IncrementalBuildSteps) as IncrementalBuildStepName[]).map(
+          (stepName) => {
+            const meta = IncrementalBuildSteps[stepName];
+            const rows = findIncrementalBuildRows(
+              selectedReports,
+              meta.timeKey,
+            );
+            if (rows.length === 0) return null;
+            return (
+              <Fragment key={stepName}>
+                <ReportTableSection
+                  title={
+                    <>
+                      {`Top ${rows.length} projects – ${meta.humanName} speedup `}
+                      <Q>
+                        Shows projects sorted by speedup ratio (cold build time
+                        / incremental build time). Higher values indicate bigger
+                        gains from incremental compilation. Cold and incremental
+                        timings are measured from the same incremental-step
+                        command. For older reports, cold timing falls back to
+                        the regular build step time.
+                      </Q>
+                    </>
+                  }
+                />
+                <tbody>
+                  {rows.map(({ testName, coldBuild, values, speedup }) => (
+                    <ReportTableRow
+                      key={testName}
+                      title={
                         <>
-                          <Duration value={coldVal} /> → <Duration value={incrVal} />
+                          {testName}
+                          <br />
+                          <span className="font-normal text-base-content/60 text-xs">
+                            speedup:{" "}
+                            {selectedReports
+                              .map((r) => {
+                                const value = speedup[r.title];
+                                return value != null
+                                  ? `${value.toFixed(1)}×`
+                                  : "—";
+                              })
+                              .join(", ")}
+                          </span>
                         </>
-                      );
-                    }}
-                  />
-                ))}
-              </tbody>
-            </Fragment>
-          );
-        })}
+                      }
+                      cell={(report) => {
+                        const coldVal = coldBuild[report.title] ?? null;
+                        const incrVal = values[report.title] ?? null;
+                        if (!coldVal || !incrVal) return "—";
+                        return (
+                          <>
+                            <Duration value={coldVal} /> →{" "}
+                            <Duration value={incrVal} />
+                          </>
+                        );
+                      }}
+                    />
+                  ))}
+                </tbody>
+              </Fragment>
+            );
+          },
+        )}
       </SectionTable>
     </Section>
   );
@@ -307,9 +383,18 @@ function findIncrementalBuildRows(
 
   const rows: IncrementalBuildRow[] = [];
   for (const testName of testNames) {
-    const coldBuild: Record<ReportTitle, string> = {} as Record<ReportTitle, string>;
-    const values: Record<ReportTitle, string> = {} as Record<ReportTitle, string>;
-    const speedup: Record<ReportTitle, number> = {} as Record<ReportTitle, number>;
+    const coldBuild: Record<ReportTitle, string> = {} as Record<
+      ReportTitle,
+      string
+    >;
+    const values: Record<ReportTitle, string> = {} as Record<
+      ReportTitle,
+      string
+    >;
+    const speedup: Record<ReportTitle, number> = {} as Record<
+      ReportTitle,
+      number
+    >;
     const speedups: number[] = [];
 
     for (const report of selectedReports) {
@@ -352,11 +437,17 @@ function findMostVariableSteps(
     return [];
   }
 
-  function isSuccessfulStep(stepReport: StepReport | null): stepReport is StepReport & {
+  function isSuccessfulStep(
+    stepReport: StepReport | null,
+  ): stepReport is StepReport & {
     executionTime: string;
     exitCode: 0;
   } {
-    return stepReport != null && stepReport.executionTime != null && stepReport.exitCode === 0;
+    return (
+      stepReport != null &&
+      stepReport.executionTime != null &&
+      stepReport.exitCode === 0
+    );
   }
 
   // Single-report mode: show top N slowest timings.
@@ -370,7 +461,9 @@ function findMostVariableSteps(
         executionTime: durationTotal(test[stepName]!.executionTime!),
       }))
       .sort(
-        (a, b) => Number(b.executionTime - a.executionTime) || a.testName.localeCompare(b.testName),
+        (a, b) =>
+          Number(b.executionTime - a.executionTime) ||
+          a.testName.localeCompare(b.testName),
       )
       .slice(0, 10)
       .map(({ executionTime, ...props }) => ({
@@ -383,13 +476,16 @@ function findMostVariableSteps(
 
   // List of tests from the pivot report which passed the step successfully.
   const pivotSuccessfulTests = new Set(
-    pivotReport.tests.filter((t) => isSuccessfulStep(t[stepName])).map((t: Test) => t.name),
+    pivotReport.tests
+      .filter((t) => isSuccessfulStep(t[stepName]))
+      .map((t: Test) => t.name),
   );
 
   // Test -> Selected report -> Execution time
-  const candidatesMap: DefaultMap<TestName, Map<ReportTitle, string>> = new DefaultMap(
-    () => new Map(),
-  );
+  const candidatesMap: DefaultMap<
+    TestName,
+    Map<ReportTitle, string>
+  > = new DefaultMap(() => new Map());
   for (const report of selectedReports) {
     for (const test of report.tests) {
       if (pivotSuccessfulTests.has(test.name)) {
@@ -404,7 +500,9 @@ function findMostVariableSteps(
   // Remove tests that have less than 2 successful step runs among selected reports (of which 1 will be from the pivot
   // report because of filtering while collecting pivotSuccessfulTests).
   for (const [testName, timings] of candidatesMap.entries()) {
-    const successfulCount = Array.from(timings.values()).filter((v) => v != null).length;
+    const successfulCount = Array.from(timings.values()).filter(
+      (v) => v != null,
+    ).length;
     if (successfulCount < 2) {
       candidatesMap.delete(testName);
     }
@@ -412,7 +510,8 @@ function findMostVariableSteps(
 
   // Transform candidatesMap into the desired form.
   const candidates = Array.from(candidatesMap.entries()).map(
-    ([testName, timings]) => ({ testName, values: Object.fromEntries(timings) }) as const,
+    ([testName, timings]) =>
+      ({ testName, values: Object.fromEntries(timings) }) as const,
   );
 
   // Sort by variance (highest first) and limit to at most 10.
@@ -427,7 +526,10 @@ function findMostVariableSteps(
         variance: variance(samples, xbar),
       } as const;
     })
-    .sort((a, b) => Number(b.variance - a.variance) || a.testName.localeCompare(b.testName))
+    .sort(
+      (a, b) =>
+        Number(b.variance - a.variance) || a.testName.localeCompare(b.testName),
+    )
     .map(
       ({ variance, ...props }) =>
         ({
@@ -470,27 +572,39 @@ function findMostVariableMemory(
       .slice(0, 10)
       .map((t) => ({
         testName: t.name,
-        postValues: { [report.title]: t.lsMemPostAnalysisKb! } as Record<ReportTitle, number>,
+        postValues: { [report.title]: t.lsMemPostAnalysisKb! } as Record<
+          ReportTitle,
+          number
+        >,
         postEditValues:
           t.lsMemPostEditKb != null
-            ? ({ [report.title]: t.lsMemPostEditKb } as Record<ReportTitle, number>)
+            ? ({ [report.title]: t.lsMemPostEditKb } as Record<
+                ReportTitle,
+                number
+              >)
             : ({} as Record<ReportTitle, number>),
       }));
   }
 
   // Multi-report mode: top 10 by variance of post-analysis memory.
   const pivotSuccessful = new Set(
-    pivotReport.tests.filter((t) => t.lsMemPostAnalysisKb != null).map((t) => t.name),
+    pivotReport.tests
+      .filter((t) => t.lsMemPostAnalysisKb != null)
+      .map((t) => t.name),
   );
 
-  const candidatesMap = new DefaultMap<TestName, Map<ReportTitle, number>>(() => new Map());
+  const candidatesMap = new DefaultMap<TestName, Map<ReportTitle, number>>(
+    () => new Map(),
+  );
   const postEditMap = new Map<TestName, Map<ReportTitle, number>>();
 
   for (const report of selectedReports) {
     for (const test of report.tests) {
       if (!pivotSuccessful.has(test.name)) continue;
       if (test.lsMemPostAnalysisKb != null) {
-        candidatesMap.get(test.name).set(report.title, test.lsMemPostAnalysisKb);
+        candidatesMap
+          .get(test.name)
+          .set(report.title, test.lsMemPostAnalysisKb);
       }
       if (test.lsMemPostEditKb != null) {
         if (!postEditMap.has(test.name)) postEditMap.set(test.name, new Map());
@@ -504,11 +618,14 @@ function findMostVariableMemory(
     .map(([testName, postMap]) => {
       const samples = Array.from(postMap.values());
       const m = samples.reduce((a, b) => a + b, 0) / samples.length;
-      const v = samples.reduce((a, b) => a + (b - m) ** 2, 0) / (samples.length - 1);
+      const v =
+        samples.reduce((a, b) => a + (b - m) ** 2, 0) / (samples.length - 1);
       return {
         testName,
         postValues: Object.fromEntries(postMap) as Record<ReportTitle, number>,
-        postEditValues: Object.fromEntries(postEditMap.get(testName) ?? []) as Record<ReportTitle, number>,
+        postEditValues: Object.fromEntries(
+          postEditMap.get(testName) ?? [],
+        ) as Record<ReportTitle, number>,
         variance: v,
       };
     })
@@ -537,7 +654,10 @@ function LsMemorySection() {
           {(
             [
               { title: "Post-Analysis Mean", key: "meanLsMemPostAnalysisKb" },
-              { title: "Post-Analysis Median", key: "medianLsMemPostAnalysisKb" },
+              {
+                title: "Post-Analysis Median",
+                key: "medianLsMemPostAnalysisKb",
+              },
               { title: "Post-Edit Mean", key: "meanLsMemPostEditKb" },
               { title: "Post-Edit Median", key: "medianLsMemPostEditKb" },
             ] as const
@@ -549,8 +669,14 @@ function LsMemorySection() {
                 const value = report.metrics[key];
                 const pivotValue = pivotReport?.metrics[key] ?? null;
                 const allValues = selectedReports.map((r) => r.metrics[key]);
-                const trend = !isSingleReport && numberTrend(value, pivotValue, allValues);
-                return <RichCell value={value != null ? formatMemoryKB(value) : null} trend={trend} />;
+                const trend =
+                  !isSingleReport && numberTrend(value, pivotValue, allValues);
+                return (
+                  <RichCell
+                    value={value != null ? formatMemoryKB(value) : null}
+                    trend={trend}
+                  />
+                );
               }}
             />
           ))}
@@ -582,13 +708,23 @@ function LsMemorySection() {
                       <RichCell
                         value={
                           <span className="text-xs leading-snug">
-                            <span className="font-medium">{formatMemoryKB(post)}</span>
+                            <span className="font-medium">
+                              {formatMemoryKB(post)}
+                            </span>
                             {postEdit != null && (
                               <span className="text-base-content/60">
                                 {" → "}
                                 {formatMemoryKB(postEdit)}
-                                <span className={postEdit - post > 0 ? "text-error" : "text-success"}>
-                                  {" "}({postEdit - post >= 0 ? "+" : ""}{formatMemoryKB(postEdit - post)})
+                                <span
+                                  className={
+                                    postEdit - post > 0
+                                      ? "text-error"
+                                      : "text-success"
+                                  }
+                                >
+                                  {" "}
+                                  ({postEdit - post >= 0 ? "+" : ""}
+                                  {formatMemoryKB(postEdit - post)})
                                 </span>
                               </span>
                             )}

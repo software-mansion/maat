@@ -1,6 +1,6 @@
+import { type Report, urlOf } from "./atoms.ts";
 import { Section, SectionTable, SectionTitle } from "./Section.tsx";
 import { ReportTableHead, ReportTableRow } from "./Table.tsx";
-import { type Report, urlOf } from "./atoms.ts";
 
 export function DownloadsSection() {
   return (
@@ -11,12 +11,16 @@ export function DownloadsSection() {
         <tbody>
           <ReportTableRow
             title="Ecosystem (CSV)"
-            cell={(report) => <DownloadLink field="ecosystemCsvHref" report={report} />}
+            cell={(report) => (
+              <DownloadLink field="ecosystemCsvHref" report={report} />
+            )}
             textAlign="center"
           />
           <ReportTableRow
             title="Ecosystem (JSON)"
-            cell={(report) => <DownloadLink field="ecosystemJsonHref" report={report} />}
+            cell={(report) => (
+              <DownloadLink field="ecosystemJsonHref" report={report} />
+            )}
             textAlign="center"
           />
         </tbody>

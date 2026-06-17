@@ -10,23 +10,22 @@ import {
   VscTrash,
   VscVscode,
 } from "react-icons/vsc";
-
-import { RichCell } from "./RichCell.tsx";
-import { Section, SectionTable, SectionTitle } from "./Section.tsx";
-import { ReportTableHead, ReportTableRow } from "./Table.tsx";
 import {
   type Label,
   type LabelCategory,
+  pivotReportAtom,
   type Report,
   type ReportTitle,
+  selectionAtom,
   type Test,
   type TestName,
-  type ViewModel,
-  pivotReportAtom,
-  selectionAtom,
   urlOf,
+  type ViewModel,
   vm,
 } from "./atoms.ts";
+import { RichCell } from "./RichCell.tsx";
+import { Section, SectionTable, SectionTitle } from "./Section.tsx";
+import { ReportTableHead, ReportTableRow } from "./Table.tsx";
 import { determineUniformRevForTest } from "./utils.ts";
 
 const colors = {
@@ -108,11 +107,14 @@ export function LabelsSection() {
 
 function LabelGroupSection({ group }: { group: Group }) {
   return (
-    <Section id={`label-${group.category}`} className={clsx(colors.border[group.category])}>
+    <Section
+      id={`label-${group.category}`}
+      className={clsx(colors.border[group.category])}
+    >
       <SectionTitle>
         <LabelCategoryBullet category={group.category} />
         {` ${group.category} `}
-        <span className="text-base-content/60 font-normal">
+        <span className="font-normal text-base-content/60">
           ({group.count}, {(group.ratio * 100).toFixed(2)}%)
         </span>
       </SectionTitle>
@@ -126,7 +128,7 @@ function LabelGroupSection({ group }: { group: Group }) {
                 <>
                   {project.testName}
                   {project.uniformRev && (
-                    <span className="text-base-content/60 text-xs font-normal">{` (${project.uniformRev})`}</span>
+                    <span className="font-normal text-base-content/60 text-xs">{` (${project.uniformRev})`}</span>
                   )}
                 </>
               }
@@ -134,7 +136,7 @@ function LabelGroupSection({ group }: { group: Group }) {
               cell={(report) => {
                 const cell = project.cells[report.title];
                 console.assert(
-                  cell != undefined,
+                  cell != null,
                   `missing cell for ${report.title} in ${project.testName}`,
                 );
                 return <LabelCell cell={cell ?? Missing} />;
@@ -148,7 +150,7 @@ function LabelGroupSection({ group }: { group: Group }) {
 }
 
 function LabelCell({ cell }: { cell: Cell }) {
-  if (cell == Missing) {
+  if (cell === Missing) {
     return <RichCell value={null} />;
   }
 
@@ -166,8 +168,18 @@ function LabelCell({ cell }: { cell: Cell }) {
 function LabelCategoryBullet({ category }: { category: LabelCategory }) {
   const Icon = colors.icon[category];
   return (
-    <span aria-label={category} data-tip={category} className="tooltip">
-      <Icon className={clsx("inline cursor-help align-text-bottom", colors.text[category])} />
+    <span
+      role="img"
+      aria-label={category}
+      data-tip={category}
+      className="tooltip"
+    >
+      <Icon
+        className={clsx(
+          "inline cursor-help align-text-bottom",
+          colors.text[category],
+        )}
+      />
     </span>
   );
 }
@@ -177,7 +189,7 @@ function* buildLabelGroups(
   selection: ReportTitle[],
   pivot: Report | undefined,
 ): Generator<Group> {
-  if (pivot == undefined) {
+  if (pivot == null) {
     return;
   }
 
@@ -209,8 +221,13 @@ function* buildLabelGroups(
           (function* () {
             for (const reportTitle of selection) {
               const report = vm.reports[reportTitle];
-              const test = report?.tests?.find((t: Test) => t.name === testName);
-              const label: Label | undefined = prioritize(test?.labels ?? [], category)[0];
+              const test = report?.tests?.find(
+                (t: Test) => t.name === testName,
+              );
+              const label: Label | undefined = prioritize(
+                test?.labels ?? [],
+                category,
+              )[0];
               if (test && label) {
                 yield [
                   reportTitle,

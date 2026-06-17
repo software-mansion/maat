@@ -1,6 +1,5 @@
 import { useAtomValue } from "jotai";
 import type { ReactNode } from "react";
-
 import { type TimingDisplayMode, timingDisplayModeAtom } from "./atoms.ts";
 import { Duration } from "./Duration.tsx";
 import type { Trend } from "./trends.ts";
@@ -13,7 +12,10 @@ export interface RichCellProps {
   rev?: string | null | false;
 }
 
-function formatTrendChange(trend: Trend, displayMode: TimingDisplayMode): ReactNode {
+function formatTrendChange(
+  trend: Trend,
+  displayMode: TimingDisplayMode,
+): ReactNode {
   if (trend.ratio === 0.0) {
     return trend.symbol;
   }
@@ -21,7 +23,12 @@ function formatTrendChange(trend: Trend, displayMode: TimingDisplayMode): ReactN
   if (displayMode === "absolute" && trend.absoluteDiff) {
     return (
       <>
-        {trend.symbol} <Duration value={trend.absoluteDiff} />
+        {trend.symbol}{" "}
+        {trend.absoluteDiffIsDuration ? (
+          <Duration value={trend.absoluteDiff} />
+        ) : (
+          trend.absoluteDiff
+        )}
       </>
     );
   }
