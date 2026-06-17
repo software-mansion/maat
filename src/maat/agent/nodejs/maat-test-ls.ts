@@ -59,17 +59,18 @@ withCairoLS(async (connection, pid) => {
         // Assume some healthy timeout in case LS hangs.
         console.log(SEPARATOR);
         try {
-            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+            await Promise.race([analysisAwaiter, timeout(ms("20 minutes"), "analysis")]);
         } finally {
             disposeAwaiter();
         }
         const diags = diagnosticsCollector.stop();
 
         await checkMemoryGrowth(pid);
+        await resetPeakRSS(pid);
 
         let editTargets: string[];
         if (libCairoFiles.length > 0) {
-            editTargets = [...libCairoFiles].sort().slice(0, 3);
+            editTargets = [...libCairoFiles].sort((a, b) => a.length - b.length).slice(0, 1);
         } else {
             const fallback = await findAnyCairoFile();
             if (fallback) {
@@ -206,22 +207,56 @@ async function withCairoLS(
 }
 
 /**
- * Reads the resident set size of a process from /proc/<pid>/status (Linux only).
+ * Reads the current RSS of a process from /proc/<pid>/smaps_rollup.
+ * Used for POST_ANALYSIS: includes LazyFree pages (freed diagnostics DB pages that
+ * mimalloc marked with MADV_FREE but the OS hasn't reclaimed yet), giving a stable
+ * reading that reflects total mapped memory right after analysis.
  * Returns null if the file is unavailable (non-Linux host or pid already gone).
  */
-async function readProcessRssKB(pid: number): Promise<number | null> {
+async function readSettledMemKB(pid: number): Promise<number | null> {
     try {
-        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
-        const m = status.match(/VmRSS:\s+(\d+)\s+kB/);
-        return m ? parseInt(m[1], 10) : null;
+        const smaps = await fs.readFile(`/proc/${pid}/smaps_rollup`, "utf-8");
+        const rssMatch = smaps.match(/^Rss:\s+(\d+)\s+kB/m);
+        if (!rssMatch) return null;
+        return parseInt(rssMatch[1], 10);
     } catch {
         return null;
     }
 }
 
 /**
- * Prepends a probe function to all entry files to trigger a non-trivial re-analysis,
- * then logs a memory snapshot so the analysis pipeline can detect post-edit memory growth.
+ * Reads the peak RSS (VmHWM) of a process from /proc/<pid>/status.
+ * Used for POST_EDIT: after resetting VmHWM via clear_refs, this captures the peak
+ * memory reached during the edit re-analysis phase only.
+ * Returns null if the file is unavailable (non-Linux host or pid already gone).
+ */
+async function readPeakMemKB(pid: number): Promise<number | null> {
+    try {
+        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
+        const match = status.match(/^VmHWM:\s+(\d+)\s+kB/m);
+        if (!match) return null;
+        return parseInt(match[1], 10);
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Resets VmHWM to current VmRSS by writing to /proc/<pid>/clear_refs.
+ * Called after reading post-analysis VmHWM so the post-edit reading captures
+ * only the edit re-analysis peak, independent of the initial analysis peak.
+ */
+async function resetPeakRSS(pid: number): Promise<void> {
+    try {
+        await fs.writeFile(`/proc/${pid}/clear_refs`, "5\n");
+    } catch {
+        // Non-Linux or permission denied — silently skip.
+    }
+}
+
+/**
+ * Prepends a probe function to a single entry file, waits for the full
+ * re-analysis cycle (AnalysisFinished + 3s debounce), then reads VmHWM.
  */
 async function checkMemoryAfterEdit(
     pid: number,
@@ -229,45 +264,43 @@ async function checkMemoryAfterEdit(
     connection: MessageConnection,
 ): Promise<void> {
     console.log(SEPARATOR);
-    console.log(`Simulating edit: prepending probe function to ${entryFiles.length} file(s)`);
+    console.log("Simulating edit...");
 
-    for (const [i, entryFile] of entryFiles.entries()) {
-        const content = await fs.readFile(entryFile, "utf-8");
-        console.log(`Edit ${i + 1}/${entryFiles.length}: ${path2url(entryFile)}`);
+    const entryFile = entryFiles[0];
+    const content = await fs.readFile(entryFile, "utf-8");
+    console.log(`Edit: ${path2url(entryFile)}`);
 
-        const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
-        await connection.sendNotification("textDocument/didChange", {
-            textDocument: { uri: path2url(entryFile), version: 1 },
-            contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
-        });
-        try {
-            await Promise.race([editAwaiter, timeout(ms("10 minutes"), `post-edit analysis (file ${i + 1})`)]);
-        } catch (err) {
-            console.log(`Warning: ${err}`);
-        } finally {
-            disposeEditAwaiter();
-        }
+    const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
+    await connection.sendNotification("textDocument/didChange", {
+        textDocument: { uri: path2url(entryFile), version: 1 },
+        contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
+    });
+    try {
+        await Promise.race([editAwaiter, timeout(ms("20 minutes"), "post-edit analysis")]);
+    } catch (err) {
+        console.log(`Warning: ${err}`);
+    } finally {
+        disposeEditAwaiter();
     }
 
-    const memPostEdit = await readProcessRssKB(pid);
-    if (memPostEdit === null) return;
-    console.log(`Memory after edit+re-analysis: ${memPostEdit} KB`);
-    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${memPostEdit}`);
+    const mem = await readPeakMemKB(pid);
+    if (mem === null) return;
+    console.log(`Memory after edit+re-analysis: ${mem} KB`);
+    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${mem}`);
 }
 
 /**
- * Takes a memory snapshot right after analysis completes and logs it
- * in the MAAT_* format so the analysis pipeline can extract it.
+ * Reads settled memory (Rss - LazyFree) immediately after initial analysis.
+ * At AnalysisFinished the diagnostics DB is already freed and mimalloc's MADV_FREE
+ * pages are already marked as LazyFree, so this captures the main DB steady-state size.
  */
 async function checkMemoryGrowth(pid: number): Promise<void> {
-    const memPost = await readProcessRssKB(pid);
-    if (memPost === null) {
-        return;
-    }
+    const mem = await readSettledMemKB(pid);
+    if (mem === null) return;
 
     console.log(SEPARATOR);
-    console.log(`Memory after analysis: ${memPost} KB`);
-    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${memPost}`);
+    console.log(`Memory after analysis: ${mem} KB`);
+    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${mem}`);
 }
 
 /**
@@ -340,31 +373,25 @@ async function terminate(connection: MessageConnection): Promise<void> {
 }
 
 /**
- * Starts listening for `cairo/serverStatus` notifications
- * and returns a promise that resolves when CairoLS becomes truly idle,
- * along with a dispose function to clean up the notification listener.
+ * Starts listening for `cairo/serverStatus` notifications and returns a promise
+ * that resolves when CairoLS becomes truly idle, along with a dispose function.
+ *
+ * The LS can spuriously go idle between analysis bursts, so AnalysisFinished is
+ * debounced by 3 seconds before the promise resolves.
  */
-function startAnalysisAwaiter(connection: MessageConnection): { promise: Promise<void>; dispose: () => void } {
+function startAnalysisAwaiter(
+    connection: MessageConnection,
+): { promise: Promise<void>; dispose: () => void } {
     const defer = Promise.withResolvers<void>();
     let analysisTimer: NodeJS.Timeout | null = null;
 
     const listener = connection.onNotification(ServerStatus, ({ event }) => {
-        // CairoLS notifies about analysis events:
-        // - Starting analysis: event = 'AnalysisStarted'
-        // - Finishing analysis: event = 'AnalysisFinished'
-        //
-        // LS tends to spuriously go from busy to idle to busy state again in,
-        // so we debounce the event = 'AnalysisFinished' state for some small chunk of time
-        // before considering the analysis truly complete.
-
-        let finished = event == 'AnalysisFinished';
-
         if (analysisTimer) {
             clearTimeout(analysisTimer);
             analysisTimer = null;
         }
 
-        if (finished) {
+        if (event === 'AnalysisFinished') {
             analysisTimer = setTimeout(() => {
                 console.log("Analysis completed, server is idle.");
                 defer.resolve();

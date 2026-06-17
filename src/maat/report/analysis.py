@@ -124,13 +124,7 @@ def ls_memory(test: TestReport):
     if m := re.search(r"MAAT_LS_MEM_POST_ANALYSIS_KB=(\d+)", log):
         test.analyses.ls_mem_post_analysis_kb = int(m.group(1))
     if m := re.search(r"MAAT_LS_MEM_POST_EDIT_KB=(\d+)", log):
-        post_edit_kb = int(m.group(1))
-        # The LS may free cached analysis data after an edit, making VmRSS temporarily drop.
-        # Clamp to post-analysis memory as a lower bound — if the LS managed the full project
-        # analysis at that level, post-edit memory can't meaningfully be less.
-        if test.analyses.ls_mem_post_analysis_kb is not None:
-            post_edit_kb = max(post_edit_kb, test.analyses.ls_mem_post_analysis_kb)
-        test.analyses.ls_mem_post_edit_kb = post_edit_kb
+        test.analyses.ls_mem_post_edit_kb = int(m.group(1))
 
 
 def _extract_count(pattern: str, text: str, default: int | None = None) -> int:
