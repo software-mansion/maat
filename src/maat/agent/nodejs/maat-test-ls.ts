@@ -42,12 +42,12 @@ withCairoLS(async (connection, pid) => {
     await initialize(connection, rootUri, baseCapabilities());
 
     try {
-        // Install various probes.
-        const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(connection);
+        // 1-minute debounce: large projects have a lightweight first pass followed by a >10s
+        // gap before the heavy pass; a short debounce fires prematurely on the first pass.
+        const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(connection, ms("1 minute"));
         const diagnosticsCollector = DiagnosticsCollector.start(connection);
 
-        // Open any lib.cairo file we can find to ensure
-        // all packages in the project will be opened and analysed.
+        // Open all lib.cairo files so every package gets analysed.
         let libCairoFiles = await findAllEntryFiles();
         for (const libCairoFile of libCairoFiles) {
             let fileUrl = path2url(libCairoFile);
@@ -55,21 +55,22 @@ withCairoLS(async (connection, pid) => {
             await openFile(fileUrl, connection);
         }
 
-        // Wait for project analysis to finish.
-        // Assume some healthy timeout in case LS hangs.
         console.log(SEPARATOR);
         try {
-            await Promise.race([analysisAwaiter, timeout(ms("5 minutes"), "analysis")]);
+            await Promise.race([analysisAwaiter, timeout(ms("20 minutes"), "analysis")]);
         } finally {
             disposeAwaiter();
         }
         const diags = diagnosticsCollector.stop();
 
         await checkMemoryGrowth(pid);
+        // Isolate POST_EDIT: reset VmHWM to current VmRSS so the edit peak is measured independently.
+        await resetPeakRSS(pid);
 
         let editTargets: string[];
         if (libCairoFiles.length > 0) {
-            editTargets = [...libCairoFiles].sort().slice(0, 3);
+            // Shortest path ≈ root package; its changes cascade into dependents, maximising the re-analysis spike.
+            editTargets = [...libCairoFiles].sort((a, b) => a.length - b.length).slice(0, 1);
         } else {
             const fallback = await findAnyCairoFile();
             if (fallback) {
@@ -195,6 +196,7 @@ async function withCairoLS(
             connection.dispose();
         }
     } finally {
+        // Give the LS a moment to exit cleanly after shutdown/exit before force-killing.
         setTimeout(() => {
             if (!serverProcess.killed) {
                 serverProcess.kill();
@@ -206,68 +208,88 @@ async function withCairoLS(
 }
 
 /**
- * Reads the resident set size of a process from /proc/<pid>/status (Linux only).
- * Returns null if the file is unavailable (non-Linux host or pid already gone).
+ * Reads RSS from smaps_rollup. Includes LazyFree pages (mimalloc MADV_FREE, not yet reclaimed),
+ * giving a stable POST_ANALYSIS snapshot of the main DB footprint.
  */
-async function readProcessRssKB(pid: number): Promise<number | null> {
+async function readSettledMemKB(pid: number): Promise<number | null> {
     try {
-        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
-        const m = status.match(/VmRSS:\s+(\d+)\s+kB/);
-        return m ? parseInt(m[1], 10) : null;
+        const smaps = await fs.readFile(`/proc/${pid}/smaps_rollup`, "utf-8");
+        const rssMatch = smaps.match(/^Rss:\s+(\d+)\s+kB/m);
+        if (!rssMatch) return null;
+        return parseInt(rssMatch[1], 10);
     } catch {
         return null;
     }
 }
 
 /**
- * Prepends a probe function to all entry files to trigger a non-trivial re-analysis,
- * then logs a memory snapshot so the analysis pipeline can detect post-edit memory growth.
+ * Reads VmHWM (peak RSS) from /proc/<pid>/status.
+ * After a clear_refs reset this captures only the edit re-analysis peak.
  */
+async function readPeakMemKB(pid: number): Promise<number | null> {
+    try {
+        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
+        const match = status.match(/^VmHWM:\s+(\d+)\s+kB/m);
+        if (!match) return null;
+        return parseInt(match[1], 10);
+    } catch {
+        return null;
+    }
+}
+
+/**
+ * Resets VmHWM to current VmRSS (clear_refs value 5) so POST_EDIT measures
+ * only the edit re-analysis peak, not the cumulative initial-analysis peak.
+ */
+async function resetPeakRSS(pid: number): Promise<void> {
+    try {
+        await fs.writeFile(`/proc/${pid}/clear_refs`, "5\n");
+    } catch {
+        // Non-Linux or permission denied — silently skip.
+    }
+}
+
+/** Prepends a probe fn to trigger re-analysis, then reads peak RSS (VmHWM). */
 async function checkMemoryAfterEdit(
     pid: number,
     entryFiles: string[],
     connection: MessageConnection,
 ): Promise<void> {
     console.log(SEPARATOR);
-    console.log(`Simulating edit: prepending probe function to ${entryFiles.length} file(s)`);
+    console.log("Simulating edit...");
 
-    for (const [i, entryFile] of entryFiles.entries()) {
-        const content = await fs.readFile(entryFile, "utf-8");
-        console.log(`Edit ${i + 1}/${entryFiles.length}: ${path2url(entryFile)}`);
+    const entryFile = entryFiles[0];
+    const content = await fs.readFile(entryFile, "utf-8");
+    console.log(`Edit: ${path2url(entryFile)}`);
 
-        const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
-        await connection.sendNotification("textDocument/didChange", {
-            textDocument: { uri: path2url(entryFile), version: 1 },
-            contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
-        });
-        try {
-            await Promise.race([editAwaiter, timeout(ms("10 minutes"), `post-edit analysis (file ${i + 1})`)]);
-        } catch (err) {
-            console.log(`Warning: ${err}`);
-        } finally {
-            disposeEditAwaiter();
-        }
+    const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
+    await connection.sendNotification("textDocument/didChange", {
+        textDocument: { uri: path2url(entryFile), version: 1 },
+        // Prepend a trivial function to force Salsa to invalidate the full dependency tree.
+        contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
+    });
+    try {
+        await Promise.race([editAwaiter, timeout(ms("20 minutes"), "post-edit analysis")]);
+    } catch (err) {
+        console.log(`Warning: ${err}`);
+    } finally {
+        disposeEditAwaiter();
     }
 
-    const memPostEdit = await readProcessRssKB(pid);
-    if (memPostEdit === null) return;
-    console.log(`Memory after edit+re-analysis: ${memPostEdit} KB`);
-    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${memPostEdit}`);
+    const mem = await readPeakMemKB(pid);
+    if (mem === null) return;
+    console.log(`Memory after edit+re-analysis: ${mem} KB`);
+    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${mem}`);
 }
 
-/**
- * Takes a memory snapshot right after analysis completes and logs it
- * in the MAAT_* format so the analysis pipeline can extract it.
- */
+/** Reads plain RSS (smaps_rollup) after initial analysis settles. */
 async function checkMemoryGrowth(pid: number): Promise<void> {
-    const memPost = await readProcessRssKB(pid);
-    if (memPost === null) {
-        return;
-    }
+    const mem = await readSettledMemKB(pid);
+    if (mem === null) return;
 
     console.log(SEPARATOR);
-    console.log(`Memory after analysis: ${memPost} KB`);
-    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${memPost}`);
+    console.log(`Memory after analysis: ${mem} KB`);
+    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${mem}`);
 }
 
 /**
@@ -340,35 +362,28 @@ async function terminate(connection: MessageConnection): Promise<void> {
 }
 
 /**
- * Starts listening for `cairo/serverStatus` notifications
- * and returns a promise that resolves when CairoLS becomes truly idle,
- * along with a dispose function to clean up the notification listener.
+ * Resolves after `debounceMs` of silence on cairo/serverStatus. Any notification
+ * (including AnalysisStarted) resets the timer to avoid firing between analysis bursts.
  */
-function startAnalysisAwaiter(connection: MessageConnection): { promise: Promise<void>; dispose: () => void } {
+function startAnalysisAwaiter(
+    connection: MessageConnection,
+    debounceMs: number = ms("3 seconds"),
+): { promise: Promise<void>; dispose: () => void } {
     const defer = Promise.withResolvers<void>();
     let analysisTimer: NodeJS.Timeout | null = null;
 
     const listener = connection.onNotification(ServerStatus, ({ event }) => {
-        // CairoLS notifies about analysis events:
-        // - Starting analysis: event = 'AnalysisStarted'
-        // - Finishing analysis: event = 'AnalysisFinished'
-        //
-        // LS tends to spuriously go from busy to idle to busy state again in,
-        // so we debounce the event = 'AnalysisFinished' state for some small chunk of time
-        // before considering the analysis truly complete.
-
-        let finished = event == 'AnalysisFinished';
-
+        // Reset on every notification — AnalysisStarted cancels a pending resolve.
         if (analysisTimer) {
             clearTimeout(analysisTimer);
             analysisTimer = null;
         }
 
-        if (finished) {
+        if (event === 'AnalysisFinished') {
             analysisTimer = setTimeout(() => {
                 console.log("Analysis completed, server is idle.");
                 defer.resolve();
-            }, ms("3 seconds")).unref();
+            }, debounceMs).unref();
         }
     });
 

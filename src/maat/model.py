@@ -73,6 +73,7 @@ class Test(BaseModel):
     name: str
     rev: str
     steps: list[Step]
+    heavy: bool = False
 
 
 class TestSuite(BaseModel):
@@ -95,11 +96,15 @@ class TestSuite(BaseModel):
         if n == 1:
             return [self]
 
-        tests = list(self.tests)
-        random.shuffle(tests)
+        heavy = [t for t in self.tests if t.heavy]
+        light = [t for t in self.tests if not t.heavy]
+        random.shuffle(heavy)
+        random.shuffle(light)
 
         buckets: list[list[Test]] = [[] for _ in range(n)]
-        for idx, test in enumerate(tests):
+        for idx, test in enumerate(heavy):
+            buckets[idx % n].append(test)
+        for idx, test in enumerate(light):
             buckets[idx % n].append(test)
         return [self.__class__(tests=bucket) for bucket in buckets]
 

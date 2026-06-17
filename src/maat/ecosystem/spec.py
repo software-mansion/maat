@@ -19,6 +19,7 @@ type Ecosystem = EcosystemProject | list[Ecosystem] | Callable[[], Ecosystem]
 
 class EcosystemProject(BaseModel, ABC):
     workdir: str | None = None
+    heavy: bool = False
 
     @property
     @abstractmethod
@@ -78,20 +79,20 @@ class _Registry(EcosystemProject):
         )
 
 
-def git(repo: str, /, workdir: str | None = None) -> Ecosystem:
-    return _Git(repo=repo, workdir=workdir)
+def git(repo: str, /, workdir: str | None = None, heavy: bool = False) -> Ecosystem:
+    return _Git(repo=repo, workdir=workdir, heavy=heavy)
 
 
-def github(repo: str, /, workdir: str | None = None) -> Ecosystem:
-    return git(f"https://github.com/{repo}", workdir=workdir)
+def github(repo: str, /, workdir: str | None = None, heavy: bool = False) -> Ecosystem:
+    return git(f"https://github.com/{repo}", workdir=workdir, heavy=heavy)
 
 
-def registry(registry_url: str, package: str) -> Ecosystem:
-    return _Registry(registry_url=registry_url, package=package)
+def registry(registry_url: str, package: str, heavy: bool = False) -> Ecosystem:
+    return _Registry(registry_url=registry_url, package=package, heavy=heavy)
 
 
-def scarbs(package: str) -> Ecosystem:
-    return registry(_scarbs_xyz.BASE_URL, package)
+def scarbs(package: str, heavy: bool = False) -> Ecosystem:
+    return registry(_scarbs_xyz.BASE_URL, package, heavy=heavy)
 
 
 def entire_scarbs(*, blacklist: list[str | re.Pattern] = None) -> Ecosystem:
