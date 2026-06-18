@@ -69,7 +69,7 @@ withCairoLS(async (connection, pid) => {
         const diags = diagnosticsCollector.stop();
 
         await checkMemoryGrowth(pid);
-        // Isolate POST_EDIT: reset VmHWM to current VmRSS so the edit peak is measured independently.
+        // Reset VmHWM to current VmRSS so the POST_EDIT peak captures only the edit re-analysis phase.
         await resetPeakRSS(pid);
 
         let editTargets: string[];
@@ -214,7 +214,7 @@ async function withCairoLS(
 
 /**
  * Reads RSS from smaps_rollup. Includes LazyFree pages (mimalloc MADV_FREE, not yet reclaimed),
- * giving a stable POST_ANALYSIS snapshot of the main DB footprint.
+ * giving a stable settled reading used for both POST_ANALYSIS and POST_EDIT snapshots.
  */
 async function readSettledMemKB(pid: number): Promise<number | null> {
     try {
@@ -227,10 +227,7 @@ async function readSettledMemKB(pid: number): Promise<number | null> {
     }
 }
 
-/**
- * Reads VmHWM (peak RSS) from /proc/<pid>/status.
- * After a clear_refs reset this captures only the edit re-analysis peak.
- */
+/** Reads VmHWM (peak RSS) from /proc/<pid>/status. */
 async function readPeakMemKB(pid: number): Promise<number | null> {
     try {
         const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
@@ -243,8 +240,8 @@ async function readPeakMemKB(pid: number): Promise<number | null> {
 }
 
 /**
- * Resets VmHWM to current VmRSS (clear_refs value 5) so POST_EDIT measures
- * only the edit re-analysis peak, not the cumulative initial-analysis peak.
+ * Resets VmHWM to current VmRSS (clear_refs value 5) so the next readPeakMemKB
+ * captures only the peak from the subsequent phase, not the cumulative lifetime peak.
  */
 async function resetPeakRSS(pid: number): Promise<void> {
     try {
@@ -254,7 +251,7 @@ async function resetPeakRSS(pid: number): Promise<void> {
     }
 }
 
-/** Prepends a probe fn to trigger re-analysis, then reads peak RSS (VmHWM). */
+/** Prepends a probe fn to trigger re-analysis, then reads settled RSS and peak RSS. */
 async function checkMemoryAfterEdit(
     pid: number,
     entryFiles: string[],
@@ -281,20 +278,30 @@ async function checkMemoryAfterEdit(
         disposeEditAwaiter();
     }
 
-    const mem = await readPeakMemKB(pid);
-    if (mem === null) return;
-    console.log(`Memory after edit+re-analysis: ${mem} KB`);
-    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${mem}`);
+    // Settled read first, then peak — same order as checkMemoryGrowth for consistency.
+    const mem = await readSettledMemKB(pid);
+    if (mem !== null) {
+        console.log(`Memory after edit+re-analysis: ${mem} KB`);
+        console.log(`MAAT_LS_MEM_POST_EDIT_KB=${mem}`);
+    }
+    const peak = await readPeakMemKB(pid);
+    if (peak !== null) {
+        console.log(`MAAT_LS_MEM_POST_EDIT_PEAK_KB=${peak}`);
+    }
 }
 
-/** Reads plain RSS (smaps_rollup) after initial analysis settles. */
+/** Reads settled RSS and peak RSS after initial analysis completes. */
 async function checkMemoryGrowth(pid: number): Promise<void> {
-    const mem = await readSettledMemKB(pid);
-    if (mem === null) return;
-
     console.log(SEPARATOR);
-    console.log(`Memory after analysis: ${mem} KB`);
-    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${mem}`);
+    const mem = await readSettledMemKB(pid);
+    if (mem !== null) {
+        console.log(`Memory after analysis: ${mem} KB`);
+        console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${mem}`);
+    }
+    const peak = await readPeakMemKB(pid);
+    if (peak !== null) {
+        console.log(`MAAT_LS_MEM_POST_ANALYSIS_PEAK_KB=${peak}`);
+    }
 }
 
 /**

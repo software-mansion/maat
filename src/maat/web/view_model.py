@@ -76,7 +76,9 @@ class TestViewModel(BaseModel):
     incremental_build_time: timedelta | None
     incremental_build_no_test_time: timedelta | None
     ls_mem_post_analysis_kb: int | None
+    ls_mem_post_analysis_peak_kb: int | None
     ls_mem_post_edit_kb: int | None
+    ls_mem_post_edit_peak_kb: int | None
 
     @classmethod
     def new(cls, test: TestReport, report_meta: ReportMeta) -> Self:
@@ -99,7 +101,9 @@ class TestViewModel(BaseModel):
             incremental_build_time=test.analyses.incremental_build_time,
             incremental_build_no_test_time=test.analyses.incremental_build_no_test_time,
             ls_mem_post_analysis_kb=test.analyses.ls_mem_post_analysis_kb,
+            ls_mem_post_analysis_peak_kb=test.analyses.ls_mem_post_analysis_peak_kb,
             ls_mem_post_edit_kb=test.analyses.ls_mem_post_edit_kb,
+            ls_mem_post_edit_peak_kb=test.analyses.ls_mem_post_edit_peak_kb,
         )
 
 

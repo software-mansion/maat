@@ -237,8 +237,12 @@ class Analyses(BaseModel):
     """Time of ``scarb build --workspace`` with a warm target directory."""
     ls_mem_post_analysis_kb: int | None = None
     """CairoLS resident set size (KB) measured immediately after initial analysis completes."""
+    ls_mem_post_analysis_peak_kb: int | None = None
+    """CairoLS peak RSS (VmHWM, KB) reached during initial analysis."""
     ls_mem_post_edit_kb: int | None = None
     """CairoLS resident set size (KB) measured after re-analysis triggered by a trivial whitespace edit."""
+    ls_mem_post_edit_peak_kb: int | None = None
+    """CairoLS peak RSS (VmHWM, KB) reached during edit re-analysis (measured after clear_refs reset)."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):

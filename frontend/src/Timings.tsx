@@ -554,7 +554,9 @@ function intersperse<T, S>(items: readonly T[], sep: S): (T | S)[] {
 type MostVariableMemory = {
   testName: TestName;
   postValues: Record<ReportTitle, number>;
+  postPeakValues: Record<ReportTitle, number>;
   postEditValues: Record<ReportTitle, number>;
+  postEditPeakValues: Record<ReportTitle, number>;
 }[];
 
 function findMostVariableMemory(
@@ -572,17 +574,16 @@ function findMostVariableMemory(
       .slice(0, 10)
       .map((t) => ({
         testName: t.name,
-        postValues: { [report.title]: t.lsMemPostAnalysisKb! } as Record<
-          ReportTitle,
-          number
-        >,
-        postEditValues:
-          t.lsMemPostEditKb != null
-            ? ({ [report.title]: t.lsMemPostEditKb } as Record<
-                ReportTitle,
-                number
-              >)
-            : ({} as Record<ReportTitle, number>),
+        postValues: { [report.title]: t.lsMemPostAnalysisKb! } as Record<ReportTitle, number>,
+        postPeakValues: t.lsMemPostAnalysisPeakKb != null
+          ? ({ [report.title]: t.lsMemPostAnalysisPeakKb } as Record<ReportTitle, number>)
+          : ({} as Record<ReportTitle, number>),
+        postEditValues: t.lsMemPostEditKb != null
+          ? ({ [report.title]: t.lsMemPostEditKb } as Record<ReportTitle, number>)
+          : ({} as Record<ReportTitle, number>),
+        postEditPeakValues: t.lsMemPostEditPeakKb != null
+          ? ({ [report.title]: t.lsMemPostEditPeakKb } as Record<ReportTitle, number>)
+          : ({} as Record<ReportTitle, number>),
       }));
   }
 
@@ -596,19 +597,27 @@ function findMostVariableMemory(
   const candidatesMap = new DefaultMap<TestName, Map<ReportTitle, number>>(
     () => new Map(),
   );
+  const postPeakMap = new Map<TestName, Map<ReportTitle, number>>();
   const postEditMap = new Map<TestName, Map<ReportTitle, number>>();
+  const postEditPeakMap = new Map<TestName, Map<ReportTitle, number>>();
 
   for (const report of selectedReports) {
     for (const test of report.tests) {
       if (!pivotSuccessful.has(test.name)) continue;
       if (test.lsMemPostAnalysisKb != null) {
-        candidatesMap
-          .get(test.name)
-          .set(report.title, test.lsMemPostAnalysisKb);
+        candidatesMap.get(test.name).set(report.title, test.lsMemPostAnalysisKb);
+      }
+      if (test.lsMemPostAnalysisPeakKb != null) {
+        if (!postPeakMap.has(test.name)) postPeakMap.set(test.name, new Map());
+        postPeakMap.get(test.name)!.set(report.title, test.lsMemPostAnalysisPeakKb);
       }
       if (test.lsMemPostEditKb != null) {
         if (!postEditMap.has(test.name)) postEditMap.set(test.name, new Map());
         postEditMap.get(test.name)!.set(report.title, test.lsMemPostEditKb);
+      }
+      if (test.lsMemPostEditPeakKb != null) {
+        if (!postEditPeakMap.has(test.name)) postEditPeakMap.set(test.name, new Map());
+        postEditPeakMap.get(test.name)!.set(report.title, test.lsMemPostEditPeakKb);
       }
     }
   }
@@ -623,9 +632,9 @@ function findMostVariableMemory(
       return {
         testName,
         postValues: Object.fromEntries(postMap) as Record<ReportTitle, number>,
-        postEditValues: Object.fromEntries(
-          postEditMap.get(testName) ?? [],
-        ) as Record<ReportTitle, number>,
+        postPeakValues: Object.fromEntries(postPeakMap.get(testName) ?? []) as Record<ReportTitle, number>,
+        postEditValues: Object.fromEntries(postEditMap.get(testName) ?? []) as Record<ReportTitle, number>,
+        postEditPeakValues: Object.fromEntries(postEditPeakMap.get(testName) ?? []) as Record<ReportTitle, number>,
         variance: v,
       };
     })
@@ -654,12 +663,13 @@ function LsMemorySection() {
           {(
             [
               { title: "Post-Analysis Mean", key: "meanLsMemPostAnalysisKb" },
-              {
-                title: "Post-Analysis Median",
-                key: "medianLsMemPostAnalysisKb",
-              },
+              { title: "Post-Analysis Median", key: "medianLsMemPostAnalysisKb" },
+              { title: "Post-Analysis Peak Mean", key: "meanLsMemPostAnalysisPeakKb" },
+              { title: "Post-Analysis Peak Median", key: "medianLsMemPostAnalysisPeakKb" },
               { title: "Post-Edit Mean", key: "meanLsMemPostEditKb" },
               { title: "Post-Edit Median", key: "medianLsMemPostEditKb" },
+              { title: "Post-Edit Peak Mean", key: "meanLsMemPostEditPeakKb" },
+              { title: "Post-Edit Peak Median", key: "medianLsMemPostEditPeakKb" },
             ] as const
           ).map(({ title, key }) => (
             <ReportTableRow
@@ -696,14 +706,17 @@ function LsMemorySection() {
               }
             />
             <tbody>
-              {rows.map(({ testName, postValues, postEditValues }) => (
+              {rows.map(({ testName, postValues, postPeakValues, postEditValues, postEditPeakValues }) => (
                 <ReportTableRow
                   key={testName}
                   title={testName}
                   cell={(report) => {
                     const post = postValues[report.title] ?? null;
+                    const postPeak = postPeakValues[report.title] ?? null;
                     const postEdit = postEditValues[report.title] ?? null;
+                    const postEditPeak = postEditPeakValues[report.title] ?? null;
                     if (post == null) return <RichCell value={null} />;
+                    // Format: settled ↑peak → settled ↑peak (Δ settled)
                     return (
                       <RichCell
                         value={
@@ -711,10 +724,20 @@ function LsMemorySection() {
                             <span className="font-medium">
                               {formatMemoryKB(post)}
                             </span>
+                            {postPeak != null && (
+                              <span className="text-base-content/40">
+                                {" ↑"}{formatMemoryKB(postPeak)}
+                              </span>
+                            )}
                             {postEdit != null && (
                               <span className="text-base-content/60">
                                 {" → "}
                                 {formatMemoryKB(postEdit)}
+                                {postEditPeak != null && (
+                                  <span className="text-base-content/40">
+                                    {" ↑"}{formatMemoryKB(postEditPeak)}
+                                  </span>
+                                )}
                                 <span
                                   className={
                                     postEdit - post > 0
