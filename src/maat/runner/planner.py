@@ -76,6 +76,19 @@ def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
     ]
 
 
+def inject_local_ls_binary(tests: list[Test], host_path: str, scarb_version: str) -> None:
+    """Bind-mount *host_path* over the scarb-cairo-language-server binary inside the container.
+
+    Scarb launches its LS extension by path, so replacing the binary at its expected location
+    is cleaner than a separate env-var launch path — the SCARB env var is set automatically.
+    """
+    container_path = f"/opt/asdf/installs/scarb/{scarb_version}/bin/scarb-cairo-language-server"
+    for test in tests:
+        for step in test.steps:
+            if step.name == "ls":
+                step.binds = [[host_path, container_path, "ro"]]
+
+
 def prepare_plan(
     workspace: Workspace,
     sandbox: Image | str,
@@ -97,6 +110,10 @@ def prepare_plan(
                 heavy=project.heavy,
             )
             tests.append(test)
+
+        # Inject local LS binary into the ls step via bind mount.
+        if local_ls_binary := workspace.settings.local_ls_binary:
+            inject_local_ls_binary(tests, local_ls_binary, scarb)
 
         # Parse and merge extra environment variables into every step
         if extra_env_map := _parse_extra_env(extra_env):

@@ -49,6 +49,11 @@ class Step(BaseModel):
     """
     Working directory for this step. If None, the default working directory is used.
     """
+    binds: list[list[str]] = Field(default_factory=list, exclude=True)
+    """
+    Host bind mounts for this step: each entry is [host_path, container_path, mode].
+    Excluded from serialization — runtime-only.
+    """
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler) -> dict[str, Any]:
@@ -236,13 +241,9 @@ class Analyses(BaseModel):
     incremental_build_no_test_time: timedelta | None = None
     """Time of ``scarb build --workspace`` with a warm target directory."""
     ls_mem_post_analysis_kb: int | None = None
-    """CairoLS resident set size (KB) measured immediately after initial analysis completes."""
+    """CairoLS RSS (KB) captured at the last AnalysisFinished event of the initial analysis."""
     ls_mem_post_analysis_peak_kb: int | None = None
     """CairoLS peak RSS (VmHWM, KB) reached during initial analysis."""
-    ls_mem_post_edit_kb: int | None = None
-    """CairoLS resident set size (KB) measured after re-analysis triggered by a trivial whitespace edit."""
-    ls_mem_post_edit_peak_kb: int | None = None
-    """CairoLS peak RSS (VmHWM, KB) reached during edit re-analysis (measured after clear_refs reset)."""
 
     @model_serializer(mode="wrap")
     def serialize_model(self, nxt: SerializerFunctionWrapHandler):

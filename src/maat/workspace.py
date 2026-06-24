@@ -17,6 +17,8 @@ class WorkspaceSettings(BaseModel):
     ecosystem: Ecosystem
     default_scarb: str | None = None
     default_foundry: str | None = None
+    local_ls_binary: str | None = None
+    """Host path to a locally compiled cairo-language-server binary to use instead of the one bundled with scarb."""
     generate_report_name: Callable[[ReportNameGenerationContext], str] = (
         _default_report_name_generator
     )

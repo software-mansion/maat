@@ -555,8 +555,6 @@ type MostVariableMemory = {
   testName: TestName;
   postValues: Record<ReportTitle, number>;
   postPeakValues: Record<ReportTitle, number>;
-  postEditValues: Record<ReportTitle, number>;
-  postEditPeakValues: Record<ReportTitle, number>;
 }[];
 
 function findMostVariableMemory(
@@ -585,20 +583,6 @@ function findMostVariableMemory(
                 number
               >)
             : ({} as Record<ReportTitle, number>),
-        postEditValues:
-          t.lsMemPostEditKb != null
-            ? ({ [report.title]: t.lsMemPostEditKb } as Record<
-                ReportTitle,
-                number
-              >)
-            : ({} as Record<ReportTitle, number>),
-        postEditPeakValues:
-          t.lsMemPostEditPeakKb != null
-            ? ({ [report.title]: t.lsMemPostEditPeakKb } as Record<
-                ReportTitle,
-                number
-              >)
-            : ({} as Record<ReportTitle, number>),
       }));
   }
 
@@ -613,8 +597,6 @@ function findMostVariableMemory(
     () => new Map(),
   );
   const postPeakMap = new Map<TestName, Map<ReportTitle, number>>();
-  const postEditMap = new Map<TestName, Map<ReportTitle, number>>();
-  const postEditPeakMap = new Map<TestName, Map<ReportTitle, number>>();
 
   for (const report of selectedReports) {
     for (const test of report.tests) {
@@ -629,17 +611,6 @@ function findMostVariableMemory(
         postPeakMap
           .get(test.name)!
           .set(report.title, test.lsMemPostAnalysisPeakKb);
-      }
-      if (test.lsMemPostEditKb != null) {
-        if (!postEditMap.has(test.name)) postEditMap.set(test.name, new Map());
-        postEditMap.get(test.name)!.set(report.title, test.lsMemPostEditKb);
-      }
-      if (test.lsMemPostEditPeakKb != null) {
-        if (!postEditPeakMap.has(test.name))
-          postEditPeakMap.set(test.name, new Map());
-        postEditPeakMap
-          .get(test.name)!
-          .set(report.title, test.lsMemPostEditPeakKb);
       }
     }
   }
@@ -657,12 +628,6 @@ function findMostVariableMemory(
         postPeakValues: Object.fromEntries(
           postPeakMap.get(testName) ?? [],
         ) as Record<ReportTitle, number>,
-        postEditValues: Object.fromEntries(
-          postEditMap.get(testName) ?? [],
-        ) as Record<ReportTitle, number>,
-        postEditPeakValues: Object.fromEntries(
-          postEditPeakMap.get(testName) ?? [],
-        ) as Record<ReportTitle, number>,
         variance: v,
       };
     })
@@ -672,6 +637,7 @@ function findMostVariableMemory(
 }
 
 function LsMemorySection() {
+  const selection = useAtomValue(selectionAtom);
   const selectedReports = useAtomValue(selectedReportsAtom);
   const pivotReport = useAtomValue(pivotReportAtom);
   const isSingleReport = selectedReports.length === 1;
@@ -703,13 +669,6 @@ function LsMemorySection() {
                 title: "Post-Analysis Peak Median",
                 key: "medianLsMemPostAnalysisPeakKb",
               },
-              { title: "Post-Edit Mean", key: "meanLsMemPostEditKb" },
-              { title: "Post-Edit Median", key: "medianLsMemPostEditKb" },
-              { title: "Post-Edit Peak Mean", key: "meanLsMemPostEditPeakKb" },
-              {
-                title: "Post-Edit Peak Median",
-                key: "medianLsMemPostEditPeakKb",
-              },
             ] as const
           ).map(({ title, key }) => (
             <ReportTableRow
@@ -739,76 +698,65 @@ function LsMemorySection() {
                   {projectsTitle}
                   <Q>
                     {isSingleReport
-                      ? "Projects sorted by post-analysis resident set size (heaviest first). Shows memory after initial analysis and after re-analysis triggered by a trivial whitespace edit."
-                      : "Projects with the most variable post-analysis memory across selected reports. Shows memory after initial analysis and after re-analysis triggered by a trivial whitespace edit."}
+                      ? "Projects sorted by post-analysis resident set size (heaviest first). Shows RSS at last AnalysisFinished of initial analysis and peak RSS (VmHWM)."
+                      : "Projects with the most variable post-analysis memory across selected reports. Shows RSS at last AnalysisFinished and peak RSS (VmHWM)."}
                   </Q>
                 </>
               }
             />
             <tbody>
-              {rows.map(
-                ({
-                  testName,
-                  postValues,
-                  postPeakValues,
-                  postEditValues,
-                  postEditPeakValues,
-                }) => (
-                  <ReportTableRow
-                    key={testName}
-                    title={testName}
-                    cell={(report) => {
-                      const post = postValues[report.title] ?? null;
-                      const postPeak = postPeakValues[report.title] ?? null;
-                      const postEdit = postEditValues[report.title] ?? null;
-                      const postEditPeak =
-                        postEditPeakValues[report.title] ?? null;
-                      if (post == null) return <RichCell value={null} />;
-                      // Format: settled ↑peak → settled ↑peak (Δ settled)
-                      return (
-                        <RichCell
-                          value={
-                            <span className="text-xs leading-snug">
-                              <span className="font-medium">
-                                {formatMemoryKB(post)}
-                              </span>
-                              {postPeak != null && (
-                                <span className="text-base-content/40">
-                                  {" ↑"}
-                                  {formatMemoryKB(postPeak)}
-                                </span>
-                              )}
-                              {postEdit != null && (
-                                <span className="text-base-content/60">
-                                  {" → "}
-                                  {formatMemoryKB(postEdit)}
-                                  {postEditPeak != null && (
-                                    <span className="text-base-content/40">
-                                      {" ↑"}
-                                      {formatMemoryKB(postEditPeak)}
-                                    </span>
-                                  )}
-                                  <span
-                                    className={
-                                      postEdit - post > 0
-                                        ? "text-error"
-                                        : "text-success"
-                                    }
-                                  >
-                                    {" "}
-                                    ({postEdit - post >= 0 ? "+" : ""}
-                                    {formatMemoryKB(postEdit - post)})
-                                  </span>
-                                </span>
-                              )}
+              {rows.map(({ testName, postValues, postPeakValues }) => {
+                  const uniformRev = determineUniformRevForTest(
+                    vm,
+                    selection,
+                    testName,
+                  );
+                  return (
+                    <ReportTableRow
+                      key={testName}
+                      title={
+                        uniformRev ? (
+                          <>
+                            {testName}
+                            <br />
+                            <span className="font-normal text-base-content/60 text-xs">
+                              {uniformRev}
                             </span>
-                          }
-                        />
-                      );
-                    }}
-                  />
-                ),
-              )}
+                          </>
+                        ) : (
+                          testName
+                        )
+                      }
+                      cell={(report) => {
+                        const post = postValues[report.title] ?? null;
+                        const postPeak = postPeakValues[report.title] ?? null;
+                        const test = report.tests.find(
+                          (t) => t.name === testName,
+                        );
+                        const rev = uniformRev ? undefined : test?.rev;
+                        if (post == null) return <RichCell value={null} />;
+                        return (
+                          <RichCell
+                            rev={rev}
+                            value={
+                              <span className="text-xs leading-snug">
+                                <span className="font-medium">
+                                  {formatMemoryKB(post)}
+                                </span>
+                                {postPeak != null && (
+                                  <span className="text-base-content/40">
+                                    {" ↑"}
+                                    {formatMemoryKB(postPeak)}
+                                  </span>
+                                )}
+                              </span>
+                            }
+                          />
+                        );
+                      }}
+                    />
+                  );
+                })}
             </tbody>
           </>
         )}

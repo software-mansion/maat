@@ -37,10 +37,6 @@ class Metrics(BaseModel):
     median_ls_mem_post_analysis_kb: int | None
     mean_ls_mem_post_analysis_peak_kb: int | None
     median_ls_mem_post_analysis_peak_kb: int | None
-    mean_ls_mem_post_edit_kb: int | None
-    median_ls_mem_post_edit_kb: int | None
-    mean_ls_mem_post_edit_peak_kb: int | None
-    median_ls_mem_post_edit_peak_kb: int | None
 
     @classmethod
     def compute(cls, report: Report, meta: ReportMeta) -> Self:
@@ -53,8 +49,6 @@ class Metrics(BaseModel):
         incr_no_test_times: list[timedelta] = []
         ls_mem_post: list[int] = []
         ls_mem_post_peak: list[int] = []
-        ls_mem_post_edit: list[int] = []
-        ls_mem_post_edit_peak: list[int] = []
 
         for test in report.tests:
             for step_name in ["build", "lint", "test", "ls"]:
@@ -70,10 +64,6 @@ class Metrics(BaseModel):
                 ls_mem_post.append(v)
             if (v := test.analyses.ls_mem_post_analysis_peak_kb) is not None:
                 ls_mem_post_peak.append(v)
-            if (v := test.analyses.ls_mem_post_edit_kb) is not None:
-                ls_mem_post_edit.append(v)
-            if (v := test.analyses.ls_mem_post_edit_peak_kb) is not None:
-                ls_mem_post_edit_peak.append(v)
 
             if summary := test.analyses.tests_summary:
                 total_tests += summary.total
@@ -118,10 +108,6 @@ class Metrics(BaseModel):
             median_ls_mem_post_analysis_kb=_int_median(ls_mem_post),
             mean_ls_mem_post_analysis_peak_kb=_int_mean(ls_mem_post_peak),
             median_ls_mem_post_analysis_peak_kb=_int_median(ls_mem_post_peak),
-            mean_ls_mem_post_edit_kb=_int_mean(ls_mem_post_edit),
-            median_ls_mem_post_edit_kb=_int_median(ls_mem_post_edit),
-            mean_ls_mem_post_edit_peak_kb=_int_mean(ls_mem_post_edit_peak),
-            median_ls_mem_post_edit_peak_kb=_int_median(ls_mem_post_edit_peak),
         )
 
 
