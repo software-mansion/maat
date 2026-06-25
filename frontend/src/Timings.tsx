@@ -706,57 +706,57 @@ function LsMemorySection() {
             />
             <tbody>
               {rows.map(({ testName, postValues, postPeakValues }) => {
-                  const uniformRev = determineUniformRevForTest(
-                    vm,
-                    selection,
-                    testName,
-                  );
-                  return (
-                    <ReportTableRow
-                      key={testName}
-                      title={
-                        uniformRev ? (
-                          <>
-                            {testName}
-                            <br />
-                            <span className="font-normal text-base-content/60 text-xs">
-                              {uniformRev}
-                            </span>
-                          </>
-                        ) : (
-                          testName
-                        )
-                      }
-                      cell={(report) => {
-                        const post = postValues[report.title] ?? null;
-                        const postPeak = postPeakValues[report.title] ?? null;
-                        const test = report.tests.find(
-                          (t) => t.name === testName,
-                        );
-                        const rev = uniformRev ? undefined : test?.rev;
-                        if (post == null) return <RichCell value={null} />;
-                        return (
-                          <RichCell
-                            rev={rev}
-                            value={
-                              <span className="text-xs leading-snug">
-                                <span className="font-medium">
-                                  {formatMemoryKB(post)}
-                                </span>
-                                {postPeak != null && (
-                                  <span className="text-base-content/40">
-                                    {" ↑"}
-                                    {formatMemoryKB(postPeak)}
-                                  </span>
-                                )}
+                const uniformRev = determineUniformRevForTest(
+                  vm,
+                  selection,
+                  testName,
+                );
+                return (
+                  <ReportTableRow
+                    key={testName}
+                    title={
+                      uniformRev ? (
+                        <>
+                          {testName}
+                          <br />
+                          <span className="font-normal text-base-content/60 text-xs">
+                            {uniformRev}
+                          </span>
+                        </>
+                      ) : (
+                        testName
+                      )
+                    }
+                    cell={(report) => {
+                      const post = postValues[report.title] ?? null;
+                      const postPeak = postPeakValues[report.title] ?? null;
+                      const test = report.tests.find(
+                        (t) => t.name === testName,
+                      );
+                      const rev = uniformRev ? undefined : test?.rev;
+                      if (post == null) return <RichCell value={null} />;
+                      return (
+                        <RichCell
+                          rev={rev}
+                          value={
+                            <span className="text-xs leading-snug">
+                              <span className="font-medium">
+                                {formatMemoryKB(post)}
                               </span>
-                            }
-                          />
-                        );
-                      }}
-                    />
-                  );
-                })}
+                              {postPeak != null && (
+                                <span className="text-base-content/40">
+                                  {" ↑"}
+                                  {formatMemoryKB(postPeak)}
+                                </span>
+                              )}
+                            </span>
+                          }
+                        />
+                      );
+                    }}
+                  />
+                );
+              })}
             </tbody>
           </>
         )}
