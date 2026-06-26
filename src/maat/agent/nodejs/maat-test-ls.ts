@@ -44,7 +44,7 @@ class AnalysisEventLogger {
     onEvent(event: ServerStatusParams["event"]): void {
         const time = new Date().toISOString().slice(11, 23); // HH:MM:SS.mmm
         const memStatsPromise = readMemStatsKB(this.pid);
-        const memPromise = memStatsPromise.then((stats) => stats?.rssKb ?? null);
+        const memPromise = memStatsPromise.then((stats) => stats?.privateKb ?? null);
         if (event === "AnalysisFinished") {
             this.lastFinishedMem = memPromise;
         }
@@ -198,24 +198,25 @@ function formatMemKB(kb: number): string {
 }
 
 interface MemStatsKB {
+    privateKb: number;
     rssKb: number;
-    lazyFreeKb: number;
 }
 
 function formatMemStats(stats: MemStatsKB): string {
-    return `${formatMemKB(stats.rssKb)} (LazyFree ${formatMemKB(stats.lazyFreeKb)})`;
+    return `${formatMemKB(stats.privateKb)} private (RSS ${formatMemKB(stats.rssKb)})`;
 }
 
-/** Reads RSS and LazyFree from smaps_rollup. */
+/** Reads Private_Clean + Private_Dirty (activity-monitor-style) and RSS from smaps_rollup. */
 async function readMemStatsKB(pid: number): Promise<MemStatsKB | null> {
     try {
         const smaps = await fs.readFile(`/proc/${pid}/smaps_rollup`, "utf-8");
         const rssMatch = smaps.match(/^Rss:\s+(\d+)\s+kB/m);
-        if (!rssMatch) return null;
-        const lazyFreeMatch = smaps.match(/^LazyFree:\s+(\d+)\s+kB/m);
+        const privateCleanMatch = smaps.match(/^Private_Clean:\s+(\d+)\s+kB/m);
+        const privateDirtyMatch = smaps.match(/^Private_Dirty:\s+(\d+)\s+kB/m);
+        if (!rssMatch || !privateCleanMatch || !privateDirtyMatch) return null;
         return {
+            privateKb: parseInt(privateCleanMatch[1], 10) + parseInt(privateDirtyMatch[1], 10),
             rssKb: parseInt(rssMatch[1], 10),
-            lazyFreeKb: lazyFreeMatch ? parseInt(lazyFreeMatch[1], 10) : 0,
         };
     } catch {
         return null;
@@ -234,11 +235,11 @@ async function readPeakMemKB(pid: number): Promise<number | null> {
     }
 }
 
-/** Logs RSS at last AnalysisFinished and peak RSS after initial analysis completes. */
+/** Logs private memory at last AnalysisFinished and peak RSS (VmHWM). */
 async function checkMemoryGrowth(pid: number, mem: number | null): Promise<void> {
     console.log(SEPARATOR);
     if (mem !== null) {
-        console.log(`Memory at AnalysisFinished: ${mem} KB`);
+        console.log(`Private memory at AnalysisFinished: ${mem} KB`);
         console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${mem}`);
     }
     const peak = await readPeakMemKB(pid);
