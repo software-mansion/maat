@@ -162,6 +162,7 @@ def _execute_test(
                     step_reporter=step_reporter,
                     env=step.env,
                     workdir=step.workdir,
+                    extra_binds=step.binds or None,
                 )
 
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
@@ -181,6 +182,7 @@ def docker_run_step(
     raise_on_nonzero_exit: bool = False,
     env: dict[str, str] | None = None,
     workdir: str | None = None,
+    extra_binds: list[list[str]] | None = None,
 ) -> int:
     exit_code = 0
 
@@ -205,6 +207,8 @@ def docker_run_step(
         volumes.append((cache_volume, MAAT_CACHE, "rw"))
     if workbench_volume is not None:
         volumes.append((workbench_volume, MAAT_WORKBENCH, "rw"))
+    if extra_binds:
+        volumes.extend(extra_binds)
 
     try:
         stream = docker.container.run(

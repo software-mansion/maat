@@ -31,28 +31,49 @@ const SEPARATOR = "\n==============================";
 const ViewAnalyzedCrates = new RequestType0<{}, {}>("cairo/viewAnalyzedCrates");
 
 interface ServerStatusParams {
-    event: "AnalysisStarted" | "AnalysisFinished";
-    idle: boolean;
+    event: "AnalysisStarted" | "AnalysisFinished" | "MacrosBuildingStarted" | "MacrosBuildingFinished" | "DiagnosticsDbFreed";
 }
 
 const ServerStatus = new NotificationType<ServerStatusParams>("cairo/serverStatus");
 
+class AnalysisEventLogger {
+    lastFinishedMem: Promise<number | null> = Promise.resolve(null);
+
+    constructor(private readonly pid: number) {}
+
+    onEvent(event: ServerStatusParams["event"]): void {
+        const time = new Date().toISOString().slice(11, 23); // HH:MM:SS.mmm
+        const memStatsPromise = readMemStatsKB(this.pid);
+        const memPromise = memStatsPromise.then((stats) => stats?.privateKb ?? null);
+        if (event === "AnalysisFinished") {
+            this.lastFinishedMem = memPromise;
+        }
+        memStatsPromise.then((stats) => {
+            const mem = stats != null ? formatMemStats(stats) : "—";
+            console.log(`${time}  ${event}  ${mem}`);
+        });
+    }
+}
+
 withCairoLS(async (connection, pid) => {
     const rootUri = `file://${process.env.PWD}`;
+    const eventLogger = new AnalysisEventLogger(pid);
     await initialize(connection, rootUri, baseCapabilities());
 
     try {
-        // Install various probes.
-        const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(connection);
+        const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(
+            connection, ms("20 seconds"),
+            (event) => eventLogger.onEvent(event),
+            () => eventLogger.lastFinishedMem,
+        );
         const diagnosticsCollector = DiagnosticsCollector.start(connection);
 
-        // Open any lib.cairo file we can find to ensure
-        // all packages in the project will be opened and analysed.
-        let libCairoFiles = await findAllEntryFiles();
-        for (const libCairoFile of libCairoFiles) {
-            let fileUrl = path2url(libCairoFile);
-            console.log(`Opening ${fileUrl}`);
-            await openFile(fileUrl, connection);
+        const allLibCairoFiles = await findAllEntryFiles();
+        // Shortest path ≈ root package; its changes cascade into dependents.
+        const entryFile = allLibCairoFiles.sort((a, b) => a.length - b.length)[0] ?? null;
+        if (entryFile) {
+            console.log(`Opening ${path2url(entryFile)}`);
+            await openFile(path2url(entryFile), connection);
         }
 
         // Wait for project analysis to finish.
@@ -61,30 +82,15 @@ withCairoLS(async (connection, pid) => {
         // proc-macro build + analysis alone runs well past 5 minutes), otherwise we'd kill the
         // server mid-analysis and report a bogus LS failure.
         console.log(SEPARATOR);
+        let analysisMemKb: number | null = null;
         try {
-            await Promise.race([analysisAwaiter, timeout(ms("12 minutes"), "analysis")]);
+            analysisMemKb = await Promise.race([analysisAwaiter, timeout(ms("20 minutes"), "analysis")]) ?? null;
         } finally {
             disposeAwaiter();
         }
         const diags = diagnosticsCollector.stop();
 
-        await checkMemoryGrowth(pid);
-
-        let editTargets: string[];
-        if (libCairoFiles.length > 0) {
-            editTargets = [...libCairoFiles].sort().slice(0, 3);
-        } else {
-            const fallback = await findAnyCairoFile();
-            if (fallback) {
-                await openFile(path2url(fallback), connection);
-                editTargets = [fallback];
-            } else {
-                editTargets = [];
-            }
-        }
-        if (editTargets.length > 0) {
-            await checkMemoryAfterEdit(pid, editTargets, connection);
-        }
+        await checkMemoryGrowth(pid, analysisMemKb);
 
         await viewAnalysedCrates(connection);
         showDiagnostics(diags);
@@ -120,34 +126,10 @@ async function findAllEntryFiles(): Promise<string[]> {
 }
 
 /**
- * Finds the first `.cairo` file in PWD recursively.
- * Used as a fallback edit target when no lib.cairo exists.
- */
-async function findAnyCairoFile(): Promise<string | null> {
-    async function visit(dir: string): Promise<string | null> {
-        const entries = await fs.readdir(dir, { withFileTypes: true });
-
-        for (const entry of entries) {
-            const fullPath = path.join(dir, entry.name);
-            if (entry.isDirectory()) {
-                const found = await visit(fullPath);
-                if (found) return found;
-            } else if (entry.name.endsWith(".cairo")) {
-                return fullPath;
-            }
-        }
-
-        return null;
-    }
-
-    return visit(".");
-}
-
-/**
  * Opens a file in the LS.
  */
 async function openFile(url: string, connection: MessageConnection): Promise<void> {
-    let filePath = url2path(url);
+    const filePath = url2path(url);
     await connection.sendNotification("textDocument/didOpen", {
         textDocument: {
             uri: url,
@@ -198,6 +180,7 @@ async function withCairoLS(
             connection.dispose();
         }
     } finally {
+        // Give the LS a moment to exit cleanly after shutdown/exit before force-killing.
         setTimeout(() => {
             if (!serverProcess.killed) {
                 serverProcess.kill();
@@ -208,69 +191,61 @@ async function withCairoLS(
     return await exitPromise.promise;
 }
 
-/**
- * Reads the resident set size of a process from /proc/<pid>/status (Linux only).
- * Returns null if the file is unavailable (non-Linux host or pid already gone).
- */
-async function readProcessRssKB(pid: number): Promise<number | null> {
+function formatMemKB(kb: number): string {
+    if (kb >= 1024 * 1024) return `${(kb / 1024 / 1024).toFixed(2)} GB`;
+    if (kb >= 1024) return `${Math.round(kb / 1024)} MB`;
+    return `${kb} KB`;
+}
+
+interface MemStatsKB {
+    privateKb: number;
+    rssKb: number;
+}
+
+function formatMemStats(stats: MemStatsKB): string {
+    return `${formatMemKB(stats.privateKb)} private (RSS ${formatMemKB(stats.rssKb)})`;
+}
+
+/** Reads Private_Clean + Private_Dirty (activity-monitor-style) and RSS from smaps_rollup. */
+async function readMemStatsKB(pid: number): Promise<MemStatsKB | null> {
     try {
-        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
-        const m = status.match(/VmRSS:\s+(\d+)\s+kB/);
-        return m ? parseInt(m[1], 10) : null;
+        const smaps = await fs.readFile(`/proc/${pid}/smaps_rollup`, "utf-8");
+        const rssMatch = smaps.match(/^Rss:\s+(\d+)\s+kB/m);
+        const privateCleanMatch = smaps.match(/^Private_Clean:\s+(\d+)\s+kB/m);
+        const privateDirtyMatch = smaps.match(/^Private_Dirty:\s+(\d+)\s+kB/m);
+        if (!rssMatch || !privateCleanMatch || !privateDirtyMatch) return null;
+        return {
+            privateKb: parseInt(privateCleanMatch[1], 10) + parseInt(privateDirtyMatch[1], 10),
+            rssKb: parseInt(rssMatch[1], 10),
+        };
     } catch {
         return null;
     }
 }
 
-/**
- * Prepends a probe function to all entry files to trigger a non-trivial re-analysis,
- * then logs a memory snapshot so the analysis pipeline can detect post-edit memory growth.
- */
-async function checkMemoryAfterEdit(
-    pid: number,
-    entryFiles: string[],
-    connection: MessageConnection,
-): Promise<void> {
-    console.log(SEPARATOR);
-    console.log(`Simulating edit: prepending probe function to ${entryFiles.length} file(s)`);
-
-    for (const [i, entryFile] of entryFiles.entries()) {
-        const content = await fs.readFile(entryFile, "utf-8");
-        console.log(`Edit ${i + 1}/${entryFiles.length}: ${path2url(entryFile)}`);
-
-        const { promise: editAwaiter, dispose: disposeEditAwaiter } = startAnalysisAwaiter(connection);
-        await connection.sendNotification("textDocument/didChange", {
-            textDocument: { uri: path2url(entryFile), version: 1 },
-            contentChanges: [{ text: "fn __maat_ls_probe__() {}\n" + content }],
-        });
-        try {
-            await Promise.race([editAwaiter, timeout(ms("10 minutes"), `post-edit analysis (file ${i + 1})`)]);
-        } catch (err) {
-            console.log(`Warning: ${err}`);
-        } finally {
-            disposeEditAwaiter();
-        }
+/** Reads VmHWM (peak RSS) from /proc/<pid>/status. */
+async function readPeakMemKB(pid: number): Promise<number | null> {
+    try {
+        const status = await fs.readFile(`/proc/${pid}/status`, "utf-8");
+        const match = status.match(/^VmHWM:\s+(\d+)\s+kB/m);
+        if (!match) return null;
+        return parseInt(match[1], 10);
+    } catch {
+        return null;
     }
-
-    const memPostEdit = await readProcessRssKB(pid);
-    if (memPostEdit === null) return;
-    console.log(`Memory after edit+re-analysis: ${memPostEdit} KB`);
-    console.log(`MAAT_LS_MEM_POST_EDIT_KB=${memPostEdit}`);
 }
 
-/**
- * Takes a memory snapshot right after analysis completes and logs it
- * in the MAAT_* format so the analysis pipeline can extract it.
- */
-async function checkMemoryGrowth(pid: number): Promise<void> {
-    const memPost = await readProcessRssKB(pid);
-    if (memPost === null) {
-        return;
-    }
-
+/** Logs private memory at last AnalysisFinished and peak RSS (VmHWM). */
+async function checkMemoryGrowth(pid: number, mem: number | null): Promise<void> {
     console.log(SEPARATOR);
-    console.log(`Memory after analysis: ${memPost} KB`);
-    console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${memPost}`);
+    if (mem !== null) {
+        console.log(`Private memory at AnalysisFinished: ${mem} KB`);
+        console.log(`MAAT_LS_MEM_POST_ANALYSIS_KB=${mem}`);
+    }
+    const peak = await readPeakMemKB(pid);
+    if (peak !== null) {
+        console.log(`MAAT_LS_MEM_POST_ANALYSIS_PEAK_KB=${peak}`);
+    }
 }
 
 /**
@@ -343,43 +318,40 @@ async function terminate(connection: MessageConnection): Promise<void> {
 }
 
 /**
- * Starts listening for `cairo/serverStatus` notifications
- * and returns a promise that resolves when CairoLS becomes truly idle,
- * along with a dispose function to clean up the notification listener.
+ * Awaiter for analysis completion: debounces on AnalysisFinished, waiting for
+ * `debounceMs` of silence (AnalysisStarted resets the timer), then resolves with
+ * the RSS captured at the last AnalysisFinished event.
  */
-function startAnalysisAwaiter(connection: MessageConnection): { promise: Promise<void>; dispose: () => void } {
-    const defer = Promise.withResolvers<void>();
+function startAnalysisAwaiter(
+    connection: MessageConnection,
+    debounceMs: number = ms("20 seconds"),
+    onEvent?: (event: ServerStatusParams["event"]) => void,
+    getMem?: () => Promise<number | null>,
+): { promise: Promise<number | null>; dispose: () => void } {
+    const defer = Promise.withResolvers<number | null>();
     let analysisTimer: NodeJS.Timeout | null = null;
 
     const listener = connection.onNotification(ServerStatus, ({ event }) => {
-        // CairoLS notifies about analysis events:
-        // - Starting analysis: event = 'AnalysisStarted'
-        // - Finishing analysis: event = 'AnalysisFinished'
-        //
-        // LS tends to spuriously go from busy to idle to busy state again in,
-        // so we debounce the event = 'AnalysisFinished' state for some small chunk of time
-        // before considering the analysis truly complete.
+        onEvent?.(event);
 
-        let finished = event == 'AnalysisFinished';
-
-        if (analysisTimer) {
+        if (event === "AnalysisStarted" && analysisTimer) {
             clearTimeout(analysisTimer);
             analysisTimer = null;
         }
 
-        if (finished) {
-            analysisTimer = setTimeout(() => {
-                console.log("Analysis completed, server is idle.");
-                defer.resolve();
-            }, ms("3 seconds")).unref();
+        if (event === "AnalysisFinished") {
+            analysisTimer = setTimeout(async () => {
+                analysisTimer = null;
+                const time = new Date().toISOString().slice(11, 23);
+                console.log(`Analysis stable (AnalysisFinished).  ${time}`);
+                const mem = getMem ? await getMem() : null;
+                defer.resolve(mem);
+            }, debounceMs).unref();
         }
     });
 
     const dispose = () => {
-        if (analysisTimer) {
-            clearTimeout(analysisTimer);
-            analysisTimer = null;
-        }
+        if (analysisTimer) { clearTimeout(analysisTimer); analysisTimer = null; }
         listener.dispose();
     };
 

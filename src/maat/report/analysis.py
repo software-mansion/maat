@@ -123,8 +123,8 @@ def ls_memory(test: TestReport):
         return
     if m := re.search(r"MAAT_LS_MEM_POST_ANALYSIS_KB=(\d+)", log):
         test.analyses.ls_mem_post_analysis_kb = int(m.group(1))
-    if m := re.search(r"MAAT_LS_MEM_POST_EDIT_KB=(\d+)", log):
-        test.analyses.ls_mem_post_edit_kb = int(m.group(1))
+    if m := re.search(r"MAAT_LS_MEM_POST_ANALYSIS_PEAK_KB=(\d+)", log):
+        test.analyses.ls_mem_post_analysis_peak_kb = int(m.group(1))
 
 
 def _extract_count(pattern: str, text: str, default: int | None = None) -> int:

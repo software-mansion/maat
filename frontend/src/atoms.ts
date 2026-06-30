@@ -35,8 +35,8 @@ export interface Metrics {
   medianIncrementalBuildNoTestTime: string | null;
   meanLsMemPostAnalysisKb: number | null;
   medianLsMemPostAnalysisKb: number | null;
-  meanLsMemPostEditKb: number | null;
-  medianLsMemPostEditKb: number | null;
+  meanLsMemPostAnalysisPeakKb: number | null;
+  medianLsMemPostAnalysisPeakKb: number | null;
 }
 
 export type LabelCategory =
@@ -156,7 +156,7 @@ export interface Test {
   incrementalBuildTime: string | null;
   incrementalBuildNoTestTime: string | null;
   lsMemPostAnalysisKb: number | null;
-  lsMemPostEditKb: number | null;
+  lsMemPostAnalysisPeakKb: number | null;
 }
 
 export interface Report {

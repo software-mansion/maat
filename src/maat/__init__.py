@@ -15,7 +15,7 @@ from maat.report.metrics import Metrics
 from maat.report.reporter import Reporter
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.runner.executor import docker_run_step, execute_plan, execute_plan_partition
-from maat.runner.planner import prepare_plan
+from maat.runner.planner import inject_local_ls_binary, prepare_plan
 from maat.utils.asdf import asdf_latest, asdf_set
 from maat.utils.log import log, track
 from maat.utils.shell import join_command
@@ -563,16 +563,27 @@ def plan(
     type=int,
     default=None,
 )
+@click.option(
+    "--local-ls-binary",
+    type=str,
+    default=None,
+    help="Host path to a locally compiled cairo-language-server binary to use instead of the one bundled with scarb.",
+)
 @pass_docker
 def run_plan(
     docker: DockerClient,
     plan_file: Path,
     partition: int | None,
     jobs: int | None,
+    local_ls_binary: str | None,
 ) -> None:
     print(f"🧪 Running plan from file: {plan_file}")
 
     plan = Plan.model_validate_json(plan_file.read_bytes())
+
+    if local_ls_binary:
+        for test_suite in plan.partitions:
+            inject_local_ls_binary(test_suite.tests, local_ls_binary, plan.scarb)
 
     if len(plan.partitions) > 1 and partition is None:
         raise click.UsageError(

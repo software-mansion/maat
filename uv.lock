@@ -175,15 +175,15 @@ wheels = [
 
 [[package]]
 name = "python-on-whales"
-version = "0.75.1"
+version = "0.81.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "pydantic" },
     { name = "typing-extensions" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/2c/00/f879cf74e7afa0bff514c3caad72367e493b0f3a3cc9b6b931b5f6f51540/python_on_whales-0.75.1.tar.gz", hash = "sha256:ad192482d79edc81fb4ff9dde84e9188d5b8b181a5e46d54d40afcd6c9ad90e6", size = 111056, upload-time = "2025-01-10T19:26:38.294Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/e9/81/4b545de811e41ff90762a1c7045fcae215f20f4114eebddedab8eab6f63e/python_on_whales-0.81.0.tar.gz", hash = "sha256:bb6172014e3fe949f908092748bddf34df758cb92c2c3d0536b75bf236abce1b", size = 115066, upload-time = "2026-03-09T14:17:43.534Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/7d/8a/cbc54b0bbcb73c698784d6720002593273a746ec48cbdd1b0d52b8d331e2/python_on_whales-0.75.1-py3-none-any.whl", hash = "sha256:67b1779c44200d0f832c5dea43b7c147c03546aaa02eacce6f375c821c0498e9", size = 114983, upload-time = "2025-01-10T19:26:35.919Z" },
+    { url = "https://files.pythonhosted.org/packages/a9/cb/5049e041a1d0e6f6cb6ac8737a8215fb4e67cb147f140ef31e67361dc61a/python_on_whales-0.81.0-py3-none-any.whl", hash = "sha256:6d5f81f56d0f95fd311a7cce29a01a1a60841074e4936000dc5f2dc9a7ffafac", size = 119240, upload-time = "2026-03-09T14:17:42.195Z" },
 ]
 
 [[package]]
