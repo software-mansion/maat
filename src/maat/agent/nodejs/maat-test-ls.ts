@@ -62,7 +62,7 @@ withCairoLS(async (connection, pid) => {
 
     try {
         const { promise: analysisAwaiter, dispose: disposeAwaiter } = startAnalysisAwaiter(
-            connection, ms("20 seconds"),
+            connection, ms("3 seconds"),
             (event) => eventLogger.onEvent(event),
             () => eventLogger.lastFinishedMem,
         );
