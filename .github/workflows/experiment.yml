@@ -56,7 +56,8 @@ jobs:
   plan:
     permissions:
       packages: write
-    runs-on: ubuntu-latest
+    # Self-hosted, non-ephemeral machine: each job must clean up after itself.
+    runs-on: [ self-hosted, Linux, benchmarks ]
     outputs:
       partition-array: ${{ steps.generate-partitions.outputs.partition-array }}
       sandbox-digest: ${{ steps.sandbox-digest.outputs.sandbox-digest }}
@@ -117,7 +118,7 @@ jobs:
         id: generate-partitions
         run: |
           # Generate a JSON array of numbers from 0 to PARTITIONS_COUNT-1.
-          ARRAY=$(python -c "import json; print(json.dumps(list(range(${{ env.PARTITIONS_COUNT }}))))")
+          ARRAY=$(uv run python -c "import json; print(json.dumps(list(range(${{ env.PARTITIONS_COUNT }}))))")
           echo "partition-array=$ARRAY" >> $GITHUB_OUTPUT
 
       - name: Upload plan artifact
@@ -126,10 +127,20 @@ jobs:
           name: maat-plan
           path: maat-plan.json
 
+      - name: Clean up Docker resources
+        if: always()
+        run: |
+          # Maat removes its containers and volumes itself, but not when the job
+          # is killed mid-run, and superseded image/build layers pile up across runs.
+          docker ps -aq --filter "name=maat-" | xargs -r docker rm -f
+          docker volume ls -q --filter "name=maat-" | xargs -r docker volume rm -f
+          docker image prune -f
+          docker builder prune -f --keep-storage=10GB
+
   run:
     permissions:
       packages: read
-    runs-on: ubuntu-latest
+    runs-on: [ self-hosted, Linux, benchmarks ]
     needs: plan
     strategy:
       matrix:
@@ -176,16 +187,30 @@ jobs:
           name: maat-report-part-${{ matrix.partition }}
           path: ${{ env.REPORT_PATH }}
 
+      - name: Clean up Docker resources
+        if: always()
+        run: |
+          # Maat removes its containers and volumes itself, but not when the job
+          # is killed mid-run.
+          docker ps -aq --filter "name=maat-" | xargs -r docker rm -f
+          docker volume ls -q --filter "name=maat-" | xargs -r docker volume rm -f
+          # Sandbox images are pinned by digest so they never become dangling;
+          # remove explicitly or every experiment leaves a multi-GB image behind.
+          docker image rm -f "${{ needs.plan.outputs.sandbox-digest }}" || true
+          docker image prune -f
+
   commit:
     permissions:
       contents: write
       id-token: write
       actions: write
     needs: run
-    runs-on: ubuntu-latest
-    env:
-      PARTIAL_REPORTS_PATH: /tmp/maat-reports
+    runs-on: [ self-hosted, Linux, benchmarks ]
     steps:
+      # runner.temp is wiped between jobs; /tmp is not on a non-ephemeral runner,
+      # and stale partial reports from a previous experiment would get merged in.
+      - name: Set partial reports path
+        run: echo "PARTIAL_REPORTS_PATH=${{ runner.temp }}/maat-reports" >> "$GITHUB_ENV"
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
       - run: uv sync
