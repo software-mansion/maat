@@ -57,7 +57,7 @@ jobs:
     permissions:
       packages: write
     # Self-hosted, non-ephemeral machine: each job must clean up after itself.
-    runs-on: [ self-hosted, Linux, benchmarks ]
+    runs-on: [ self-hosted, Linux, benchmarks, large ]
     outputs:
       partition-array: ${{ steps.generate-partitions.outputs.partition-array }}
       sandbox-digest: ${{ steps.sandbox-digest.outputs.sandbox-digest }}
@@ -140,7 +140,7 @@ jobs:
   run:
     permissions:
       packages: read
-    runs-on: [ self-hosted, Linux, benchmarks ]
+    runs-on: [ self-hosted, Linux, benchmarks, large ]
     needs: plan
     strategy:
       matrix:
@@ -205,7 +205,7 @@ jobs:
       id-token: write
       actions: write
     needs: run
-    runs-on: [ self-hosted, Linux, benchmarks ]
+    runs-on: [ self-hosted, Linux, benchmarks, large ]
     steps:
       # runner.temp is wiped between jobs; /tmp is not on a non-ephemeral runner,
       # and stale partial reports from a previous experiment would get merged in.
