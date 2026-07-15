@@ -32,6 +32,7 @@ ecosystem: Ecosystem = [
             # Spam.
             "dl_alexandria_storage",
             "dl_alexandria_utils",
+            "test_package442",
             # Garaga makes sth (prob LS) resolve indefinitely.
             "garaga",
             # Heavy packages (extracted to separate entries below).
