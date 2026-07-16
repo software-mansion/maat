@@ -126,9 +126,16 @@ jobs:
           name: maat-plan
           path: maat-plan.json
 
+  # Each partition runs on a dedicated, freshly created GCP VM which is deleted
+  # as soon as the partition finishes. The job itself stays on a GitHub runner
+  # and only drives the VM over SSH -- GitHub runners have no CPU model
+  # guarantee, so nothing timing-sensitive may happen here.
+  # See docs/gcp-runners.md for the one-time project setup this needs.
   run:
     permissions:
+      contents: read
       packages: read
+      id-token: write
     runs-on: ubuntu-latest
     needs: plan
     strategy:
@@ -136,20 +143,24 @@ jobs:
         # Dynamically generated array based on PARTITIONS_COUNT
         partition: ${{ fromJSON(needs.plan.outputs.partition-array) }}
       fail-fast: true
+    env:
+      VM_NAME: maat-${{ github.run_id }}-${{ github.run_attempt }}-p${{ matrix.partition }}
+      ZONE: ${{ vars.GCP_ZONE }}
+      MACHINE_TYPE: ${{ vars.GCP_MACHINE_TYPE || 'c4-standard-16' }}
+      EXPECTED_CPU_MODEL: ${{ vars.EXPECTED_CPU_MODEL }}
+      NETWORK: ${{ vars.GCP_NETWORK || 'maat-net' }}
+      SUBNET: ${{ vars.GCP_SUBNET || 'maat-subnet' }}
+      # gcloud generates an SSH key on first use and would otherwise prompt.
+      CLOUDSDK_CORE_DISABLE_PROMPTS: 1
     steps:
       - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
-      - run: uv sync
 
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+      - uses: google-github-actions/auth@v2
         with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
+          service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      - name: Pull sandbox image from GitHub Container Registry
-        run: docker pull "${{ needs.plan.outputs.sandbox-digest }}"
+      - uses: google-github-actions/setup-gcloud@v2
 
       - name: Download plan artifact
         uses: actions/download-artifact@v4
@@ -157,15 +168,98 @@ jobs:
           name: maat-plan
           path: .
 
-      - name: Run plan partition
-        run: ./maat run-plan --partition ${{ matrix.partition }} --jobs 1 maat-plan.json
+      # --max-run-duration is the backstop against leaked VMs. The teardown step
+      # below covers normal failures, but not a cancelled workflow or a dead
+      # runner -- and `cancel-in-progress: true` above makes cancellation
+      # routine. This makes GCP delete the VM regardless of what happens here.
+      # Experiment VMs build arbitrary third-party Cairo packages, so they are
+      # kept off any network carrying real infrastructure: a dedicated VPC with
+      # no peering, no internal egress, no service account, and no API scopes.
+      # scripts/gcp/setup-network.sh creates that network; the "Network
+      # isolation" section of docs/gcp-runners.md explains the boundary.
+      - name: Create VM
+        run: |
+          gcloud compute instances create "$VM_NAME" \
+            --zone="$ZONE" \
+            --machine-type="$MACHINE_TYPE" \
+            --threads-per-core=1 \
+            --image-family=ubuntu-2404-lts-amd64 \
+            --image-project=ubuntu-os-cloud \
+            --boot-disk-size=200GB \
+            --boot-disk-type=hyperdisk-balanced \
+            --network="$NETWORK" \
+            --subnet="$SUBNET" \
+            --tags=maat-runner \
+            --metadata=enable-oslogin=TRUE \
+            --metadata-from-file=startup-script=scripts/gcp/startup.sh \
+            --no-service-account --no-scopes \
+            --max-run-duration=6h \
+            --instance-termination-action=DELETE \
+            --labels=maat-run=${{ github.run_id }},maat-partition=${{ matrix.partition }}
 
-      - name: Find generated partial report
+      - name: Wait for VM to finish provisioning
+        run: |
+          for _ in $(seq 1 60); do
+            if gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
+                --command='test -f /var/lib/maat-ready' 2>/dev/null; then
+              echo "VM is ready"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::VM did not become ready within 10 minutes"
+          gcloud compute instances get-serial-port-output "$VM_NAME" --zone="$ZONE" || true
+          exit 1
+
+      # Group membership only applies to sessions opened after this one, which
+      # is why this cannot be folded into the run step below.
+      - name: Grant the SSH user access to Docker
+        run: |
+          gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
+            --command='sudo usermod -aG docker "$(whoami)"'
+
+      - name: Upload Ma'at sources and plan
+        run: |
+          git archive --format=tar.gz -o maat-src.tar.gz HEAD
+          gcloud compute scp --zone="$ZONE" --tunnel-through-iap \
+            maat-src.tar.gz maat-plan.json "$VM_NAME:~/"
+          gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap --command='
+            set -eux
+            mkdir -p ~/maat
+            tar -xzf ~/maat-src.tar.gz -C ~/maat
+            mv ~/maat-plan.json ~/maat/
+            cd ~/maat && uv sync
+          '
+
+      - name: Verify the VM landed on the expected CPU
+        run: |
+          gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
+            --command="EXPECTED_CPU_MODEL='$EXPECTED_CPU_MODEL' bash ~/maat/scripts/gcp/assert-cpu.sh"
+
+      - name: Login to GitHub Container Registry
+        run: |
+          printf '%s' '${{ secrets.GITHUB_TOKEN }}' | \
+            gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
+              --command='docker login ghcr.io -u ${{ github.actor }} --password-stdin'
+
+      - name: Pull sandbox image from GitHub Container Registry
+        run: |
+          gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
+            --command='docker pull "${{ needs.plan.outputs.sandbox-digest }}"'
+
+      - name: Run plan partition
+        run: |
+          gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
+            --command='cd ~/maat && ./maat run-plan --partition ${{ matrix.partition }} --jobs 1 maat-plan.json'
+
+      - name: Fetch generated partial report
         run: |
           REPORT_NAME=$(jq -r '.report_name' maat-plan.json)
           REPORT_PATH="reports/${REPORT_NAME}-${{ matrix.partition }}.json"
-          if [ ! -f "$REPORT_PATH" ]; then
-            echo "Error: Report file not found at $REPORT_PATH"
+          mkdir -p reports
+          if ! gcloud compute scp --zone="$ZONE" --tunnel-through-iap \
+              "$VM_NAME:maat/${REPORT_PATH}" "$REPORT_PATH"; then
+            echo "::error::Report file not found on VM at ${REPORT_PATH}"
             exit 1
           fi
           echo "REPORT_PATH=$REPORT_PATH" >> $GITHUB_ENV
@@ -175,6 +269,12 @@ jobs:
         with:
           name: maat-report-part-${{ matrix.partition }}
           path: ${{ env.REPORT_PATH }}
+
+      - name: Delete VM
+        if: always()
+        run: |
+          gcloud compute instances delete "$VM_NAME" --zone="$ZONE" --quiet \
+            || echo "::warning::Could not delete $VM_NAME; --max-run-duration will reap it"
 
   commit:
     permissions:
