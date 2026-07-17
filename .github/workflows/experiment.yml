@@ -250,7 +250,7 @@ jobs:
       - name: Run plan partition
         run: |
           gcloud compute ssh "$VM_NAME" --zone="$ZONE" --tunnel-through-iap \
-            --command='cd ~/maat && ./maat run-plan --partition ${{ matrix.partition }} --jobs 1 maat-plan.json'
+            --command='cd ~/maat && MAAT_COMMIT=${{ github.sha }} ./maat run-plan --partition ${{ matrix.partition }} --jobs 1 maat-plan.json'
 
       - name: Fetch generated partial report
         run: |
