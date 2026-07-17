@@ -12,6 +12,12 @@ from maat.utils.docker import image_id
 from maat.utils.semver import is_unstable_semver
 from maat.workspace import Workspace
 
+# Wall-clock cap for the `ls` step's container. CairoLS can freeze on heavy proc-macro projects
+# (see docs and `maat-test-ls`), and the step must never be allowed to hang the whole partition.
+# This is the outer backstop: `maat-test-ls` enforces its own, tighter, in-process hard cap; this
+# value only has to comfortably exceed that so the harness gets a chance to self-report first.
+LS_STEP_TIMEOUT_SECS = 30 * 60
+
 
 def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
     env: dict[str, str] = {}
@@ -72,17 +78,27 @@ def _workflow(project: EcosystemProject, scarb: str) -> list[Step]:
             },
             workdir=project.workdir,
         ),
-        Step(name="ls", run="maat-test-ls", workdir=project.workdir, env=env),
+        Step(
+            name="ls",
+            run="maat-test-ls",
+            workdir=project.workdir,
+            env=env,
+            timeout=LS_STEP_TIMEOUT_SECS,
+        ),
     ]
 
 
-def inject_local_ls_binary(tests: list[Test], host_path: str, scarb_version: str) -> None:
+def inject_local_ls_binary(
+    tests: list[Test], host_path: str, scarb_version: str
+) -> None:
     """Bind-mount *host_path* over the scarb-cairo-language-server binary inside the container.
 
     Scarb launches its LS extension by path, so replacing the binary at its expected location
     is cleaner than a separate env-var launch path — the SCARB env var is set automatically.
     """
-    container_path = f"/opt/asdf/installs/scarb/{scarb_version}/bin/scarb-cairo-language-server"
+    container_path = (
+        f"/opt/asdf/installs/scarb/{scarb_version}/bin/scarb-cairo-language-server"
+    )
     for test in tests:
         for step in test.steps:
             if step.name == "ls":

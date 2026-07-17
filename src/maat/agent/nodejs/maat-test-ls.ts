@@ -28,6 +28,23 @@ import {
 
 const SEPARATOR = "\n==============================";
 
+/** Reads a duration from an env var (any `ms`-parseable string), falling back to `dflt`. */
+function envMs(name: string, dflt: ms.StringValue): number {
+    const value = process.env[name];
+    return value ? ms(value as ms.StringValue) : ms(dflt);
+}
+
+// Per-request timeouts. Every LSP request is raced against these so a wedged CairoLS can never
+// make an `await sendRequest(...)` hang forever (the previous behaviour, which let the whole
+// step hang until CI's 6h ceiling). Overridable via env for tuning and tests.
+const INITIALIZE_TIMEOUT = envMs("MAAT_LS_INITIALIZE_TIMEOUT", "2 minutes");
+const REQUEST_TIMEOUT = envMs("MAAT_LS_REQUEST_TIMEOUT", "60 seconds");
+const SHUTDOWN_TIMEOUT = envMs("MAAT_LS_SHUTDOWN_TIMEOUT", "30 seconds");
+// Independent hard cap on the whole LS run. Must exceed the 20-minute analysis wait plus the
+// request timeouts above so the normal path always finishes first; this only fires if the LS
+// wedges so badly that even shutdown/close never settle.
+const HARD_TIMEOUT = envMs("MAAT_LS_HARD_TIMEOUT", "24 minutes");
+
 const ViewAnalyzedCrates = new RequestType0<{}, {}>("cairo/viewAnalyzedCrates");
 
 interface ServerStatusParams {
@@ -144,7 +161,9 @@ async function openFile(url: string, connection: MessageConnection): Promise<voi
  * Calls `cairo/viewAnalyzedCrates` and console-logs the result.
  */
 async function viewAnalysedCrates(connection: MessageConnection) {
-    const result = await connection.sendRequest(ViewAnalyzedCrates);
+    const result = await withTimeout("viewAnalyzedCrates", REQUEST_TIMEOUT, () =>
+        connection.sendRequest(ViewAnalyzedCrates),
+    );
     console.log(SEPARATOR);
     console.log(result);
 }
@@ -158,7 +177,23 @@ async function withCairoLS(
         stdio: ["pipe", "pipe", "inherit"],
     });
 
+    // Hard wall-clock watchdog, armed here and NOT dependent on `callback` settling. Even with
+    // per-request timeouts, a badly deadlocked LS could leave `connection.dispose()` / process
+    // 'close' hanging; this guarantees the harness process still exits (non-zero) instead of
+    // riding to CI's 6h ceiling.
+    const hardKill = setTimeout(() => {
+        console.error(
+            `${SEPARATOR}\nMAAT_LS_HARD_TIMEOUT after ${ms(HARD_TIMEOUT)}; SIGKILLing CairoLS and exiting.`,
+        );
+        try {
+            serverProcess.kill("SIGKILL");
+        } catch {}
+        process.exit(124);
+    }, HARD_TIMEOUT);
+
+    let closed = false;
     serverProcess.on("close", (code, signal) => {
+        closed = true;
         console.log(SEPARATOR);
         console.log(`CairoLS process exited with code: ${code ?? signal}`);
         if (code != null && code !== 0) {
@@ -167,6 +202,7 @@ async function withCairoLS(
         exitPromise.resolve();
     });
 
+    let callbackError: unknown = undefined;
     try {
         const connection = createMessageConnection(
             new StreamMessageReader(serverProcess.stdout),
@@ -179,16 +215,31 @@ async function withCairoLS(
         } finally {
             connection.dispose();
         }
-    } finally {
-        // Give the LS a moment to exit cleanly after shutdown/exit before force-killing.
-        setTimeout(() => {
-            if (!serverProcess.killed) {
-                serverProcess.kill();
-            }
-        }, ms("3 seconds")).unref();
+    } catch (err) {
+        // Capture and rethrow after we have ensured the server is dead, so a failing callback
+        // still tears the LS down.
+        callbackError = err;
     }
 
-    return await exitPromise.promise;
+    // Escalate: SIGTERM, then SIGKILL if it has not actually exited. Guard on `closed` (real
+    // exit), not `serverProcess.killed` (merely "a signal was sent") — a wedged LS may ignore
+    // SIGTERM. The live ChildProcess handle keeps the event loop alive so these timers fire.
+    setTimeout(() => {
+        if (!closed) serverProcess.kill("SIGTERM");
+    }, ms("3 seconds")).unref();
+    setTimeout(() => {
+        if (!closed) serverProcess.kill("SIGKILL");
+    }, ms("6 seconds")).unref();
+
+    try {
+        await exitPromise.promise;
+    } finally {
+        clearTimeout(hardKill);
+    }
+
+    if (callbackError !== undefined) {
+        throw callbackError;
+    }
 }
 
 function formatMemKB(kb: number): string {
@@ -299,7 +350,9 @@ async function initialize(
     connection.onRequest(RegistrationRequest.method, () => {});
 
     // Send `initialize` request.
-    await connection.sendRequest(InitializeRequest.method, params);
+    await withTimeout("initialize", INITIALIZE_TIMEOUT, () =>
+        connection.sendRequest(InitializeRequest.method, params),
+    );
 
     // Send `initialized` notification.
     await connection.sendNotification(InitializedNotification.method, {});
@@ -310,11 +363,22 @@ async function initialize(
  * @param connection An active MessageConnection to the server
  */
 async function terminate(connection: MessageConnection): Promise<void> {
-    // Send `shutdown` request
-    await connection.sendRequest(ShutdownRequest.method);
+    // Send `shutdown` request. If the LS is wedged and never answers, don't block forever here —
+    // log and fall through to `exit`; the caller's watchdog will force-kill the process.
+    try {
+        await withTimeout("shutdown", SHUTDOWN_TIMEOUT, () =>
+            connection.sendRequest(ShutdownRequest.method),
+        );
+    } catch (err) {
+        console.error(`shutdown request did not complete: ${err}`);
+    }
 
-    // Send `exit` notification
-    await connection.sendNotification(ExitNotification.method);
+    // Send `exit` notification (best-effort).
+    try {
+        await connection.sendNotification(ExitNotification.method);
+    } catch (err) {
+        console.error(`exit notification failed: ${err}`);
+    }
 }
 
 /**
@@ -365,6 +429,33 @@ function timeout(ms: number, operation: string = "operation"): Promise<void> {
     return new Promise((_, reject) =>
         setTimeout(() => reject(new Error(`${operation} timed out`)), ms).unref(),
     );
+}
+
+/** Current wall-clock time as `HH:MM:SS.mmm`, for correlating request traces with LS output. */
+function nowTs(): string {
+    return new Date().toISOString().slice(11, 23);
+}
+
+/**
+ * Runs an LSP operation with a timeout, tracing when it is issued and when it settles.
+ * Rejects (via {@link timeout}) if it does not complete in time — a stuck request means the LS is
+ * not answering, so the caller is expected to tear the server down.
+ */
+async function withTimeout<T>(
+    label: string,
+    timeoutMs: number,
+    op: () => Promise<T>,
+): Promise<T> {
+    const started = Date.now();
+    console.log(`[${nowTs()}] -> ${label}`);
+    try {
+        const result = (await Promise.race([op(), timeout(timeoutMs, label)])) as T;
+        console.log(`[${nowTs()}] <- ${label} (${Date.now() - started}ms)`);
+        return result;
+    } catch (err) {
+        console.error(`[${nowTs()}] !! ${label} did not complete: ${err}`);
+        throw err;
+    }
 }
 
 class DiagnosticsCollector {
