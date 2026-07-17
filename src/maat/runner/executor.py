@@ -165,6 +165,9 @@ def _execute_test(
                     extra_binds=step.binds or None,
                 )
 
+                if exit_code != 0:
+                    log(f"⚠️ {test.name}: `{step.name}` exited with code {exit_code}")
+
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
                 if step.setup and exit_code != 0:
                     setup_failed = True
@@ -227,6 +230,14 @@ def docker_run_step(
                 step_reporter.log(source, line)
     except DockerException as e:
         exit_code = e.return_code
+        # If the docker CLI failed without streaming any output (e.g. the
+        # image reference could not be resolved), surface its stderr in the
+        # step log — otherwise the report records a bare exit code with an
+        # empty log and nothing to debug from.
+        if step_reporter is not None and not step_reporter.has_output and e.stderr:
+            stderr = e.stderr if isinstance(e.stderr, bytes) else str(e.stderr).encode()
+            for line in stderr.splitlines(keepends=True):
+                step_reporter.log("stderr", line)
         if raise_on_nonzero_exit:
             raise
         # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.
