@@ -88,10 +88,21 @@ withCairoLS(async (connection, pid) => {
         const allLibCairoFiles = await findAllEntryFiles();
         // Shortest path ≈ root package; its changes cascade into dependents.
         const entryFile = allLibCairoFiles.sort((a, b) => a.length - b.length)[0] ?? null;
-        if (entryFile) {
-            console.log(`Opening ${path2url(entryFile)}`);
-            await openFile(path2url(entryFile), connection);
+
+        if (!entryFile) {
+            // Packages with no Cairo sources (e.g. pure proc-macro crates like `alexandria_macros`)
+            // never open a document, so the LS never starts analysis and `AnalysisFinished` can
+            // never fire. Waiting on it would pointlessly burn the entire analysis timeout and then
+            // report a bogus LS failure, so finish cleanly instead — there is nothing to analyze.
+            console.log(SEPARATOR);
+            console.log("No Cairo entry file (lib.cairo) found; nothing to analyze, skipping LS analysis.");
+            disposeAwaiter();
+            diagnosticsCollector.stop();
+            return;
         }
+
+        console.log(`Opening ${path2url(entryFile)}`);
+        await openFile(path2url(entryFile), connection);
 
         // Wait for project analysis to finish.
         // This is only a safety net against a genuinely hung LS. The cap has to comfortably
