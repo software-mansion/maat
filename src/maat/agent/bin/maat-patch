@@ -68,7 +68,7 @@ def patch_root(manifest: tomlkit.TOMLDocument, project_root: Path):
     )
 
     for dep in ["assert_macros", "starknet", "cairo_test"]:
-        patch_field(scarbs_patch_table, dep, scarb_version)
+        patch_field(scarbs_patch_table, dep, cairo_version)
 
     if should_patch_snforge_std:
         for dep in ["snforge_std", "snforge_scarb_plugin"]:
@@ -88,7 +88,8 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
             if test_runner == "snforge":
                 add_dev_dependency_if_missing(manifest, "snforge_std", foundry_dep_spec)
             if test_runner == "cairo-test":
-                add_dev_dependency_if_missing(manifest, "cairo_test", scarb_version)
+                # cairo_test is a core package versioned with cairo, not scarb.
+                add_dev_dependency_if_missing(manifest, "cairo_test", cairo_version)
 
         # Try to borrow [dev-dependencies] from Scarb.orig.toml.
         scarb_orig_toml_path = member_root / "Scarb.orig.toml"
@@ -202,7 +203,6 @@ def diff_and_commit_patched_files():
 
 
 if __name__ == "__main__":
-    scarb_version = get_tool_version("scarb")
     cairo_version = get_scarb_cairo_version()
     foundry_version = get_tool_version("snforge")
 
