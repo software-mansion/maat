@@ -88,7 +88,7 @@ def patch_member(manifest: tomlkit.TOMLDocument, member_root: Path):
             if test_runner == "snforge":
                 add_dev_dependency_if_missing(manifest, "snforge_std", foundry_dep_spec)
             if test_runner == "cairo-test":
-                # cairo_test is a core package versioned with cairo, not scarb.
+                # cairo_test is a "builtin" package versioned with cairo, not scarb.
                 add_dev_dependency_if_missing(manifest, "cairo_test", cairo_version)
 
         # Try to borrow [dev-dependencies] from Scarb.orig.toml.
