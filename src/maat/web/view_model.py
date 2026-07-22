@@ -5,7 +5,14 @@ from typing import Literal, Self
 from pydantic import BaseModel, ConfigDict, Field
 from pydantic.alias_generators import to_camel
 
-from maat.model import Label, LabelCategory, ReportMeta, StepReport, TestReport
+from maat.model import (
+    HardwareInfo,
+    Label,
+    LabelCategory,
+    ReportMeta,
+    StepReport,
+    TestReport,
+)
 from maat.report.metrics import Metrics
 from maat.web.report_info import ReportInfo
 from maat.web.slices import Slice
@@ -26,6 +33,10 @@ class MetricsViewModel(Metrics):
     @classmethod
     def new(cls, metrics: Metrics) -> Self:
         return cls(**metrics.model_dump())
+
+
+class HardwareViewModel(HardwareInfo):
+    model_config = ViewModelConfig
 
 
 class LabelViewModel(BaseModel):
@@ -110,6 +121,7 @@ class ReportViewModel(BaseModel):
     ecosystem_csv_href: str
     ecosystem_json_href: str
     metrics: MetricsViewModel
+    hardware: list[HardwareViewModel]
     tests: list[TestViewModel]
 
     @classmethod
@@ -119,6 +131,10 @@ class ReportViewModel(BaseModel):
             ecosystem_csv_href=str(ecosystem_csv_path(report_info.meta)),
             ecosystem_json_href=str(ecosystem_json_path(report_info.meta)),
             metrics=MetricsViewModel.new(report_info.metrics),
+            hardware=[
+                HardwareViewModel(**hardware.model_dump())
+                for hardware in report_info.report.hardware
+            ],
             tests=[
                 TestViewModel.new(t, report_info.meta) for t in report_info.report.tests
             ],

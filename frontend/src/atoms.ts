@@ -39,6 +39,18 @@ export interface Metrics {
   medianLsMemPostAnalysisPeakKb: number | null;
 }
 
+export interface Hardware {
+  cpuModel: string | null;
+  physicalCores: number | null;
+  logicalCores: number | null;
+  memoryBytes: number | null;
+  architecture: string | null;
+  kernel: string | null;
+  virtualized: boolean | null;
+  cpuStealPercent: number | null;
+  cpuPressurePercent: number | null;
+}
+
 export type LabelCategory =
   | "error"
   | "build-fail"
@@ -164,6 +176,7 @@ export interface Report {
   ecosystemCsvHref: string;
   ecosystemJsonHref: string;
   metrics: Metrics;
+  hardware: Hardware[];
   tests: Test[];
 }
 
@@ -281,6 +294,7 @@ export const pivotReportAtom = atom<Report | undefined>((get) => {
 });
 
 export type SectionId =
+  | "hardware"
   | "metrics"
   | `label-${LabelCategory}`
   | `timings-${StepName}`
@@ -290,7 +304,7 @@ export type SectionId =
 
 export const openSectionsAtom = atomWithStorage<SectionId[] | "all">(
   "maat-open-sections",
-  ["metrics", "downloads"],
+  ["hardware", "metrics", "downloads"],
 );
 
 export const toolbarPinnedAtom = atomWithStorage<boolean>(
@@ -325,6 +339,7 @@ export function showSectionInDomain(
   const when = (...domains: DomainName[]) =>
     domainName === "all" || domains.includes(domainName);
   switch (sectionId) {
+    case "hardware":
     case "metrics":
       return true;
     case "label-error":
