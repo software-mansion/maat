@@ -131,6 +131,10 @@ jobs:
       packages: read
     runs-on: ubuntu-latest
     needs: plan
+    # Backstop only: per-step timeouts in `maat run-plan` (notably the `ls` step) bound individual
+    # hangs to minutes. This coarse ceiling merely stops a runaway partition from riding to
+    # GitHub's 6h default, and pairs with fail-fast so siblings are cancelled promptly.
+    timeout-minutes: 180
     strategy:
       matrix:
         # Dynamically generated array based on PARTITIONS_COUNT

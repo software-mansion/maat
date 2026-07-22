@@ -1,18 +1,27 @@
 import os
+import threading
+import time
 import traceback
 from concurrent.futures import ThreadPoolExecutor
 from contextlib import ExitStack
 from pathlib import Path
+from queue import Empty, Queue
 
 from python_on_whales import DockerClient, DockerException, Image, Volume
 
-from maat.model import EXIT_RUNNER_SKIPPED, Plan, PlanPartitionView, Test
+from maat.model import (
+    EXIT_RUNNER_SKIPPED,
+    EXIT_STEP_TIMEOUT,
+    Plan,
+    PlanPartitionView,
+    Test,
+)
 from maat.report.reporter import Reporter, StepReporter
 from maat.runner.bake_volume import bake_volume
 from maat.runner.cancellation_token import CancellationToken, CancelledException
 from maat.runner.ephemeral_volume import ephemeral_volume
 from maat.sandbox import MAAT_CACHE, MAAT_WORKBENCH
-from maat.utils.log import log, track
+from maat.utils.log import log, track, uptime
 from maat.utils.shell import split_command
 from maat.utils.slugify import slugify
 from maat.utils.unique_id import snowflake_id
@@ -163,6 +172,9 @@ def _execute_test(
                     env=step.env,
                     workdir=step.workdir,
                     extra_binds=step.binds or None,
+                    timeout=step.timeout,
+                    stream_logs=step.timeout is not None
+                    or bool(os.environ.get("MAAT_STREAM_LOGS")),
                 )
 
                 # If this was a setup step, and it failed, mark that we should skip the remaining steps.
@@ -183,6 +195,8 @@ def docker_run_step(
     env: dict[str, str] | None = None,
     workdir: str | None = None,
     extra_binds: list[list[str]] | None = None,
+    timeout: float | None = None,
+    stream_logs: bool = False,
 ) -> int:
     exit_code = 0
 
@@ -222,9 +236,78 @@ def docker_run_step(
             workdir=real_workdir,
             stream=True,
         )
-        for source, line in stream:
-            if step_reporter is not None:
-                step_reporter.log(source, line)
+
+        # Consume the container's output on a helper thread so we can enforce a wall-clock
+        # timeout on it. A plain `for ... in stream` is an unbounded blocking read: a hung
+        # container (e.g. a wedged CairoLS during the `ls` step) would otherwise block this
+        # worker thread — and therefore `pool.shutdown(wait=True)` and the whole partition —
+        # until the CI job's 6h ceiling, with no output flushed.
+        events: Queue = Queue()
+
+        def _pump():
+            try:
+                for source, line in stream:
+                    events.put(("line", source, line))
+                events.put(("done", None, None))
+            except DockerException as exc:
+                events.put(("docker_error", exc, None))
+            except Exception as exc:  # forward any other error to the main thread
+                events.put(("error", exc, None))
+
+        pump_thread = threading.Thread(
+            target=_pump, name=f"maat-pump-{container_name}", daemon=True
+        )
+        pump_thread.start()
+
+        deadline = None if timeout is None else time.monotonic() + timeout
+        timed_out = False
+        pending_error: Exception | None = None
+
+        while True:
+            if ct is not None and ct.is_cancelled:
+                # Cancellation kills containers by label elsewhere; stop consuming output.
+                break
+
+            if deadline is None:
+                wait = 1.0
+            else:
+                wait = deadline - time.monotonic()
+                if wait <= 0:
+                    timed_out = True
+                    break
+                wait = min(wait, 1.0)
+
+            try:
+                kind, a, b = events.get(timeout=wait)
+            except Empty:
+                continue
+
+            if kind == "line":
+                source, line = a, b
+                if step_reporter is not None:
+                    step_reporter.log(source, line)
+                if stream_logs:
+                    _tee_line(source, line)
+            elif kind == "done":
+                break
+            else:  # "docker_error" or "error"
+                pending_error = a
+                break
+
+        if timed_out:
+            log(
+                f"⏱️ step exceeded timeout of {timeout:.0f}s, "
+                f"killing container {container_name}"
+            )
+            try:
+                docker.container.kill(container_name)
+            except DockerException:
+                pass  # already gone / not running
+            exit_code = EXIT_STEP_TIMEOUT
+            # Give the pump a moment to drain the tail so the report captures it.
+            pump_thread.join(timeout=30)
+        elif pending_error is not None:
+            raise pending_error
     except DockerException as e:
         exit_code = e.return_code
         if raise_on_nonzero_exit:
@@ -239,6 +322,17 @@ def docker_run_step(
             step_reporter.set_exit_code(exit_code)
 
     return exit_code
+
+
+def _tee_line(source: str, line: bytes) -> None:
+    """Echo a streamed container output line to stdout as it arrives.
+
+    Container output is otherwise only buffered in the report and flushed when the step ends,
+    so a hanging step yields no live trail. Teeing turns silent hangs into a timestamped stream.
+    """
+    tag = "err" if source == "stderr" else "out"
+    text = line.decode("utf-8", errors="replace").rstrip("\n")
+    print(f"[{uptime()}] │ {tag}: {text}", flush=True)
 
 
 def truncate_with_ellipsis(text, max_length):

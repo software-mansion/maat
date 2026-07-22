@@ -27,6 +27,9 @@ type Severity = Literal["error", "warn"]
 EXIT_RUNNER_SKIPPED = -1
 """Exit code set for steps which were skipped by the runner."""
 
+EXIT_STEP_TIMEOUT = 124
+"""Exit code set for steps whose container exceeded ``Step.timeout`` and was killed."""
+
 
 class Step(BaseModel):
     run: str | list[str]
@@ -48,6 +51,13 @@ class Step(BaseModel):
     workdir: str | None = None
     """
     Working directory for this step. If None, the default working directory is used.
+    """
+    timeout: int | None = None
+    """
+    Maximum wall-clock time in seconds for this step's container. When exceeded, the container
+    is killed and the step is recorded with exit code ``EXIT_STEP_TIMEOUT``. ``None`` (the default)
+    disables the timeout. Set for steps that can hang indefinitely (notably the ``ls`` step, which
+    drives CairoLS and can freeze on heavy proc-macro projects).
     """
     binds: list[list[str]] = Field(default_factory=list, exclude=True)
     """
