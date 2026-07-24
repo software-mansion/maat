@@ -5,6 +5,7 @@ import { ErrorBoundary, type FallbackProps } from "react-error-boundary";
 import { toolbarPinnedAtom } from "./atoms.ts";
 import { DownloadsSection } from "./Downloads.tsx";
 import { Footer } from "./Footer.tsx";
+import { HardwareSection } from "./Hardware.tsx";
 import { LabelsSection } from "./Labels.tsx";
 import { MetricsSection } from "./Metrics.tsx";
 import { Tabs } from "./Tabs.tsx";
@@ -18,6 +19,7 @@ export function App() {
       <ErrorBoundary FallbackComponent={Fallback}>
         <Suspense fallback={<Loading />}>
           <ToolbarContainer />
+          <HardwareSection />
           <MetricsSection />
           <LabelsSection />
           <TimingSections />

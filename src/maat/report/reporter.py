@@ -4,6 +4,7 @@ from typing import Literal, Self
 
 from maat import Report
 from maat.model import Step, StepReport, Test, TestReport, Plan
+from maat.utils.hardware import HardwareCollector
 
 
 class StepReporter:
@@ -64,11 +65,13 @@ class TestReporter:
 
 class Reporter:
     def __init__(self, plan: Plan):
+        self._hardware_collector = HardwareCollector()
         self._report = Report(
             workspace=plan.workspace,
             scarb=plan.scarb,
             foundry=plan.foundry,
             total_execution_time=timedelta.max,
+            hardware=[],
         )
         self._timer = _ExecutionTimer()
 
@@ -77,6 +80,7 @@ class Reporter:
 
     def finish(self) -> Report:
         self._report.total_execution_time = self._timer.stop()
+        self._report.hardware = [self._hardware_collector.finish()]
         return self._report
 
 

@@ -7,6 +7,7 @@ from typing import Any, Callable, Iterator, Literal, Self, Protocol
 
 from pydantic import (
     BaseModel,
+    ConfigDict,
     Field,
     RootModel,
     SerializerFunctionWrapHandler,
@@ -329,6 +330,40 @@ class TestReport(BaseModel):
         )
 
 
+class HardwareInfo(BaseModel):
+    """Runtime-relevant hardware and observed contention for an experiment."""
+
+    model_config = ConfigDict(frozen=True)
+
+    cpu_model: str | None = None
+    physical_cores: int | None = None
+    logical_cores: int | None = None
+    memory_bytes: int | None = None
+    architecture: str | None = None
+    kernel: str | None = None
+    virtualized: bool | None = None
+    cpu_steal_percent: float | None = None
+    cpu_pressure_percent: float | None = None
+
+    @property
+    def sort_key(self) -> tuple[str, ...]:
+        """Return a stable key used for report serialization."""
+        return tuple(
+            "" if value is None else str(value)
+            for value in (
+                self.cpu_model,
+                self.physical_cores,
+                self.logical_cores,
+                self.memory_bytes,
+                self.architecture,
+                self.kernel,
+                self.virtualized,
+                self.cpu_steal_percent,
+                self.cpu_pressure_percent,
+            )
+        )
+
+
 class Report(BaseModel):
     workspace: str
     scarb: Semver
@@ -336,6 +371,7 @@ class Report(BaseModel):
     maat_commit: str = Field(default_factory=this_maat_commit)
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total_execution_time: timedelta
+    hardware: list[HardwareInfo] = []
     tests: list[TestReport] = []
 
     @property
@@ -370,6 +406,10 @@ class Report(BaseModel):
             total_execution_time=sum(
                 (r.total_execution_time for r in reports), timedelta()
             ),
+            hardware=sorted(
+                set(hardware for report in reports for hardware in report.hardware),
+                key=lambda hardware: hardware.sort_key,
+            ),
             tests=[t for r in reports for t in r.tests],
         )
 
@@ -379,6 +419,7 @@ class Report(BaseModel):
 
         This method mutates the report object in place.
         """
+        self.hardware.sort(key=lambda hardware: hardware.sort_key)
         self.tests.sort(key=lambda t: t.name)
 
     def test(self, name: str) -> TestReport | None:
