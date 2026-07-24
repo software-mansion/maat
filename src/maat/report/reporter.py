@@ -15,6 +15,10 @@ class StepReporter:
     def set_exit_code(self, exit_code: int):
         self._report.exit_code = exit_code
 
+    @property
+    def has_output(self) -> bool:
+        return bool(self._log_builder)
+
     def log(self, source: Literal["stdout", "stderr"], line: bytes):
         match source:
             case "stdout":

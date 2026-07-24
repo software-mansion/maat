@@ -13,6 +13,7 @@ Ma'at is something like [Crater] of [Rust], but for Cairo.
 * [Running Ma'at Locally](/docs/local.md)
 * [Checkouts](/docs/checkouts.md)
 * [Timings Methodology](/docs/timings.md)
+* [GCP Experiment Runners](/docs/gcp-runners.md)
 
 [cairo]: https://www.cairo-lang.org/
 
