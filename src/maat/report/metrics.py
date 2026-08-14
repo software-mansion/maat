@@ -5,6 +5,7 @@ from typing import Self
 
 from pydantic import BaseModel
 
+from maat.hardware import HardwareEnvironment
 from maat.model import Report, ReportMeta
 
 
@@ -18,6 +19,8 @@ class Metrics(BaseModel):
     total_execution_time: timedelta
     total_projects: int
     """Total number of projects tested in the experiment."""
+
+    hardware: list[HardwareEnvironment]
 
     mean_build_time: timedelta | None
     mean_lint_time: timedelta | None
@@ -92,6 +95,7 @@ class Metrics(BaseModel):
             created_at=report.created_at,
             total_execution_time=report.total_execution_time,
             total_projects=len(report.tests),
+            hardware=report.hardware,
             mean_build_time=mean_build_time,
             mean_lint_time=mean_lint_time,
             mean_test_time=mean_test_time,
