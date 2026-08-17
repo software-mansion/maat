@@ -3,6 +3,7 @@ from datetime import timedelta
 from typing import Literal, Self
 
 from maat import Report
+from maat.hardware import HardwareEnvironment
 from maat.model import Step, StepReport, Test, TestReport, Plan
 
 
@@ -69,6 +70,7 @@ class Reporter:
             scarb=plan.scarb,
             foundry=plan.foundry,
             total_execution_time=timedelta.max,
+            hardware=[HardwareEnvironment.capture()],
         )
         self._timer = _ExecutionTimer()
 

@@ -14,6 +14,7 @@ from pydantic import (
     model_validator,
 )
 
+from maat.hardware import HardwareEnvironment
 from maat.installation import REPO, this_maat_commit
 from maat.utils.shell import join_command, inline_env, add_workdir
 from maat.utils.smart_sort import smart_sort_key
@@ -337,6 +338,7 @@ class Report(BaseModel):
     created_at: datetime = Field(default_factory=lambda: datetime.now(timezone.utc))
     total_execution_time: timedelta
     tests: list[TestReport] = []
+    hardware: list[HardwareEnvironment] = []
 
     @property
     def by_version_preferring_scarb(self):
@@ -361,6 +363,12 @@ class Report(BaseModel):
             ):
                 raise ValueError(f"cannot merge reports with varying '{field}' values")
 
+        merged_hardware: list[HardwareEnvironment] = []
+        for r in reports:
+            for h in r.hardware:
+                if h not in merged_hardware:
+                    merged_hardware.append(h)
+
         return Report(
             workspace=reports[0].workspace,
             scarb=reports[0].scarb,
@@ -371,6 +379,7 @@ class Report(BaseModel):
                 (r.total_execution_time for r in reports), timedelta()
             ),
             tests=[t for r in reports for t in r.tests],
+            hardware=merged_hardware,
         )
 
     def before_save(self):
