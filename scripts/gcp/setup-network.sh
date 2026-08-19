@@ -41,8 +41,18 @@ exists() {
   gcloud compute $1 describe "$2" ${3:-} --format='value(name)' >/dev/null 2>&1
 }
 
+# This script only creates missing resources; it never reconciles an existing
+# one against the flags below. If you change a range, a rule, or a priority
+# here, an existing resource with the same name silently keeps its old config
+# -- "already exists, skipping" looks identical whether or not that config
+# still matches. Delete the resource first (or diff it against this script)
+# before assuming a re-run picked up your edit.
+skip_existing() {
+  echo "$1 $2 already exists, skipping (not reconciled -- see the note above exists())"
+}
+
 if exists networks "$NETWORK"; then
-  echo "network $NETWORK already exists, skipping"
+  skip_existing network "$NETWORK"
 else
   gcloud compute networks create "$NETWORK" \
     --subnet-mode=custom \
@@ -50,7 +60,7 @@ else
 fi
 
 if exists "networks subnets" "$SUBNET" "--region=$REGION"; then
-  echo "subnet $SUBNET already exists, skipping"
+  skip_existing subnet "$SUBNET"
 else
   # Private Google Access stays off: VMs have no service account and no business
   # talking to the GCP API.
@@ -75,6 +85,8 @@ if ! exists firewall-rules "${NETWORK}-allow-iap-ssh"; then
     --source-ranges=35.235.240.0/20 \
     --target-tags="$TAG" \
     --description="SSH from IAP only"
+else
+  skip_existing "firewall rule" "${NETWORK}-allow-iap-ssh"
 fi
 
 # Redundant with the implied deny-ingress rule, but makes the intent explicit
@@ -88,6 +100,8 @@ if ! exists firewall-rules "${NETWORK}-deny-ingress"; then
     --rules=all \
     --source-ranges=0.0.0.0/0 \
     --description="Nothing reaches experiment VMs except via IAP"
+else
+  skip_existing "firewall rule" "${NETWORK}-deny-ingress"
 fi
 
 # --- Egress ----------------------------------------------------------------
@@ -95,7 +109,11 @@ fi
 # Blocks every private range, which covers: other VPCs (were this network ever
 # peered), on-prem over VPN/Interconnect, and the experiment VMs reaching each
 # other -- partitions must stay independent. Deliberately includes this subnet's
-# own range.
+# own range. Includes 100.64.0.0/10 (RFC 6598 shared address space, used by some
+# orgs' internal networks and by some GCP-native constructs such as proxy-only
+# subnets) alongside the classic RFC 1918 ranges -- this rule is the safety net
+# for a mistaken peering, so it needs to cover whatever address space the other
+# side of that peering might use, not just 10/8, 172.16/12, 192.168/16.
 #
 # Egress to the metadata server (169.254.169.254) is always permitted by GCP
 # regardless of firewall rules, so OS Login and the startup script still work.
@@ -106,8 +124,10 @@ if ! exists firewall-rules "${NETWORK}-deny-egress-private"; then
     --priority=1000 \
     --action=DENY \
     --rules=all \
-    --destination-ranges=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16 \
+    --destination-ranges=10.0.0.0/8,172.16.0.0/12,192.168.0.0/16,100.64.0.0/10 \
     --description="Experiment VMs cannot reach any internal address"
+else
+  skip_existing "firewall rule" "${NETWORK}-deny-egress-private"
 fi
 
 # Public internet stays open: the run pulls the sandbox image from ghcr.io and
@@ -122,6 +142,8 @@ if ! exists firewall-rules "${NETWORK}-allow-egress-internet"; then
     --rules=all \
     --destination-ranges=0.0.0.0/0 \
     --description="Public internet egress for image and dependency pulls"
+else
+  skip_existing "firewall rule" "${NETWORK}-allow-egress-internet"
 fi
 
 echo

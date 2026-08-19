@@ -313,14 +313,16 @@ def docker_run_step(
             raise pending_error
     except DockerException as e:
         exit_code = e.return_code
-        # If the docker CLI failed without streaming any output (e.g. the
-        # image reference could not be resolved), surface its stderr in the
-        # step log — otherwise the report records a bare exit code with an
-        # empty log and nothing to debug from.
-        if step_reporter is not None and not step_reporter.has_output and e.stderr:
-            stderr = e.stderr if isinstance(e.stderr, bytes) else str(e.stderr).encode()
-            for line in stderr.splitlines(keepends=True):
-                step_reporter.log("stderr", line)
+        # python_on_whales streams every line to us before raising, so e.stderr
+        # duplicates what has_output already reflects. The case actually worth
+        # recording is a process that produced nothing at all before dying —
+        # otherwise the report records a bare exit code with an empty log and
+        # nothing to debug from.
+        if step_reporter is not None and not step_reporter.has_output:
+            step_reporter.log(
+                "stderr",
+                f"[maat] process exited with code {exit_code} and produced no output before failing\n".encode(),
+            )
         if raise_on_nonzero_exit:
             raise
         # Docker run uses exit codes 125, 126, 127 to signal Docker daemon errors.

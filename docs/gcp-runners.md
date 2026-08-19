@@ -98,6 +98,13 @@ gcloud compute machine-types list --filter="name=c4-standard-16 AND zone~'europe
 If C4 is unavailable, **C3** (Intel Sapphire Rapids) is the fallback: wider zone coverage, also a
 single-CPU family, slightly older.
 
+The 4 partition jobs create their VMs concurrently, so the project's C4 vCPU quota in the target
+region must cover all of them at once — `PARTITIONS_COUNT × 16` (64 vCPUs at the default partition
+count) for `c4-standard-16`. Machine-type availability (above) only confirms the shape exists in the
+zone, not that your project is allowed to run four of them simultaneously. Request the quota bump
+under *IAM & Admin → Quotas* before the first real run; the workflow retries transient capacity
+errors a few times, but a genuine quota shortfall still fails every partition.
+
 ## Network isolation
 
 Experiment VMs run arbitrary third-party code. Every package Ma'at builds comes from the Cairo
@@ -110,7 +117,7 @@ single mistake opens it up:
 | Layer | Effect |
 | --- | --- |
 | Dedicated custom-mode VPC (`maat-net`) | VPCs do not route to one another unless peered. Nothing on this network can reach the default network, or any other, over internal IPs. |
-| Egress deny for `10/8`, `172.16/12`, `192.168/16` | VMs cannot reach *any* internal address — including each other, and including anything that would become reachable if this VPC were ever peered by mistake. |
+| Egress deny for `10/8`, `172.16/12`, `192.168/16`, `100.64.0.0/10` | VMs cannot reach *any* internal address — including each other, and including anything that would become reachable if this VPC were ever peered by mistake. |
 | Ingress from `35.235.240.0/20` only | Only IAP can connect in, and IAP authenticates before forwarding. Everything else is denied. |
 | `--no-service-account --no-scopes` | The VM holds no GCP credentials, so it cannot call the API even for resources it could route to. |
 

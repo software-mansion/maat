@@ -9,9 +9,9 @@ def this_maat_commit() -> str:
     # CI ships the sources with `git archive`, which does not include a .git
     # directory, so there is no repo to query on the runner. The workflow passes
     # the archived commit through MAAT_COMMIT; prefer it when set.
-    env = os.environ.get("MAAT_COMMIT")
+    env = os.environ.get("MAAT_COMMIT", "").strip()
     if env:
-        return env.strip()
+        return env
 
     return (
         subprocess.check_output(
