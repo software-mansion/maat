@@ -20,8 +20,21 @@ ViewModelConfig = ConfigDict(
 )
 
 
+class HardwareEnvironmentViewModel(BaseModel):
+    model_config = ViewModelConfig
+
+    os: str
+    arch: str
+    cpu_model: str | None
+    cpu_count: int | None
+    memory_total_mb: int | None
+    ci: bool
+
+
 class MetricsViewModel(Metrics):
     model_config = ViewModelConfig
+
+    hardware: list[HardwareEnvironmentViewModel]
 
     @classmethod
     def new(cls, metrics: Metrics) -> Self:

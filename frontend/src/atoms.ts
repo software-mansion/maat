@@ -13,6 +13,15 @@ export type ReportTitle = string & {
 export type SliceTitle = string & { readonly __nonexistent_tag: unique symbol };
 export type TestName = string & { readonly __nonexistent_tag: unique symbol };
 
+export interface HardwareEnvironment {
+  os: string;
+  arch: string;
+  cpuModel: string | null;
+  cpuCount: number | null;
+  memoryTotalMb: number | null;
+  ci: boolean;
+}
+
 export interface Metrics {
   workspace: string;
   scarbVersion: string;
@@ -21,6 +30,7 @@ export interface Metrics {
   createdAt: string;
   totalExecutionTime: string;
   totalProjects: number;
+  hardware: HardwareEnvironment[];
   meanBuildTime: string | null;
   meanLintTime: string | null;
   meanTestTime: string | null;

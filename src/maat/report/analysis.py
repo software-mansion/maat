@@ -3,6 +3,7 @@ from datetime import timedelta
 from typing import Literal
 
 from maat.model import (
+    EXIT_STEP_TIMEOUT,
     Analyser,
     Label,
     LabelCategory,
@@ -329,6 +330,11 @@ def _ls_label(ls: StepReport, build_failed: bool) -> Label | None:
     Creates a label based on language server diagnostics and build status.
     Returns a label only when there is an inconsistency between build and LS statuses.
     """
+    # A timed-out `ls` step means CairoLS hung (see `Step.timeout` and the `maat-test-ls`
+    # hard cap). Surface it explicitly instead of letting it fall through to a generic error.
+    if ls.exit_code == EXIT_STEP_TIMEOUT:
+        return Label.new(LabelCategory.LS_FAIL, "ls timeout")
+
     has_errors = _ls_has_errors(ls)
 
     if lbl := _fatal_panic(ls, category=LabelCategory.LS_FAIL):
