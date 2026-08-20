@@ -47,9 +47,9 @@ ecosystem: Ecosystem = [
     scarbs("dojo_cairo_macros", heavy=True),
     # github("CarmineOptions/konoha"), # Depends on ancient OZ
     # github("DLC-link/ibtc-cairo", workdir="contracts"), # Depends on ancient OZ
-    github("EkuboProtocol/abis"),
+    # github("EkuboProtocol/abis"), # Repository no longer exists
     github("EkuboProtocol/governance"),
-    github("EkuboProtocol/revenue-buybacks"),
+    # github("EkuboProtocol/revenue-buybacks"), # Repository no longer exists
     github("EkuboProtocol/starknet-contracts"),
     github("HerodotusDev/integrity"),
     github("OpenZeppelin/cairo-contracts", heavy=True),
