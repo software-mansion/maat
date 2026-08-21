@@ -176,7 +176,13 @@ def load_sandbox_image(f):
 
         if pull:
             with track(f"Pulling sandbox image: {pull}"):
-                sandbox_image = docker.image.pull(pull)
+                docker.image.pull(pull)
+            # Keep the registry reference instead of the pulled Image object.
+            # Plans embed this value (see prepare_plan) and may be executed on
+            # a different machine, where a daemon-local image ID does not
+            # resolve — Docker then misparses `sha256:...` as a repository
+            # named "sha256" and every step dies on a failed pull.
+            sandbox_image = pull
         else:
             sandbox_image = sandbox.build(scarb=scarb, foundry=foundry, docker=docker)
 
@@ -221,7 +227,7 @@ def cli() -> None:
 def run_local(
     docker: DockerClient,
     workspace: Workspace,
-    sandbox_image: Image,
+    sandbox_image: Image | str,
     jobs: int | None,
     report_name: str | None,
     extra_env: str | None,
@@ -380,7 +386,7 @@ def reanalyse(report: Path = None, all: bool = False) -> None:
 def checkout(
     docker: DockerClient,
     workspace: Workspace,
-    sandbox_image: Image,
+    sandbox_image: Image | str,
     test_name: str,
 ) -> None:
     plan = prepare_plan(
@@ -526,7 +532,7 @@ def gc_reports() -> None:
 def plan(
     docker: DockerClient,
     workspace: Workspace,
-    sandbox_image: Image,
+    sandbox_image: Image | str,
     output: Path,
     partitions: int,
     report_name: str | None,
@@ -598,6 +604,16 @@ def run_plan(
     if not (0 <= partition < len(plan.partitions)):
         raise click.UsageError(
             f"Partition index out of range. Plan has {len(plan.partitions)} partitions (0-{len(plan.partitions) - 1})."
+        )
+
+    # Plans reference the sandbox by registry digest (or image ID when built
+    # locally) and expect it to be present in this machine's Docker daemon.
+    # Without this check, a missing image degrades into every step failing
+    # with an empty log while the run itself appears to succeed.
+    if not docker.image.exists(plan.sandbox):
+        raise click.ClickException(
+            f"sandbox image not found on this machine: {plan.sandbox}\n"
+            f"Pull it first, e.g.: docker pull {plan.sandbox}"
         )
 
     partition_view = PlanPartitionView(plan=plan, partition=partition)
