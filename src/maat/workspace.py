@@ -8,7 +8,7 @@ from maat.installation import REPO
 
 
 def _default_report_name_generator(ctx: ReportNameGenerationContext) -> str:
-    return f"{ctx.workspace}-{ctx.scarb}-{ctx.foundry}"
+    return f"{ctx.workspace}-{ctx.scarb}-{ctx.foundry}-{ctx.run_id}"
 
 
 class WorkspaceSettings(BaseModel):

@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import shlex
+import os
 
 from maat.utils.log import track
 from python_on_whales import DockerClient, Image
@@ -149,6 +150,7 @@ def prepare_plan(
                 workspace=workspace.name,
                 scarb=scarb,
                 foundry=foundry,
+                run_id=os.environ.get("GITHUB_RUN_NUMBER", "local"),
             )
         )
 
@@ -169,6 +171,7 @@ class _PlanningReportNameGenerationContext(ReportNameGenerationContext):
     workspace: str
     scarb: str
     foundry: str
+    run_id: str
 
 
 def _incremental_build_command(build_cmd: str) -> str:

@@ -132,3 +132,4 @@ class ReportNameGenerationContext(Protocol):
     workspace: str
     scarb: str
     foundry: str
+    run_id: str
