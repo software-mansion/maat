@@ -17,6 +17,14 @@
 #      peers this network by mistake.
 #   3. Ingress from the IAP range only, so nothing can connect in.
 #
+# None of this touches public internet access -- only internal/private IP
+# ranges are denied (see the egress rules below), so RPC calls, fork tests,
+# and anything else reaching a public endpoint work exactly as they would
+# on a GitHub-hosted runner. This exists because, unlike a GitHub-hosted
+# runner, these VMs live inside our own GCP project: without it, a VM
+# compiling untrusted third-party code would sit on the same network as
+# our other cloud resources instead of a separate, unrelated one.
+#
 # Combined with `--no-service-account --no-scopes` on the instance (see the
 # experiment workflow), a VM has no credentials for the GCP API either.
 #
