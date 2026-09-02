@@ -33,6 +33,9 @@ ecosystem: Ecosystem = [
             "dl_alexandria_storage",
             "dl_alexandria_utils",
             "test_package442",
+            # Listed by the registry's package index but its own version index 404s --
+            # looks unpublished/yanked without the listing being cleaned up.
+            "testing",
             # Garaga makes sth (prob LS) resolve indefinitely.
             "garaga",
             # Heavy packages (extracted to separate entries below).

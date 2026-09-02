@@ -23,7 +23,7 @@ def build(
     cache: bool = True,
     output: str | dict[str, str] = None,
     iidfile: Path | None = None,
-) -> Image:
+) -> str:
     output_dict: dict[str, str] = {}
     match output:
         case str():
@@ -67,7 +67,7 @@ def build(
 
     log(f"🚀 Successfully built sandbox image: {' or '.join(image.repo_tags)}")
 
-    return image
+    return image.id
 
 
 class ToolVersions(NamedTuple):
@@ -75,7 +75,7 @@ class ToolVersions(NamedTuple):
     foundry: Semver
 
 
-def tool_versions(image: Image | str, docker: DockerClient) -> ToolVersions:
+def tool_versions(image: str, docker: DockerClient) -> ToolVersions:
     image = inspect_image(image, docker)
     return ToolVersions(
         scarb=image.config.labels["maat.scarb.version"],
