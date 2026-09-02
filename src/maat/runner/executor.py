@@ -7,7 +7,7 @@ from contextlib import ExitStack
 from pathlib import Path
 from queue import Empty, Queue
 
-from python_on_whales import DockerClient, DockerException, Image, Volume
+from python_on_whales import DockerClient, DockerException, Volume
 
 from maat.model import (
     EXIT_RUNNER_SKIPPED,
@@ -84,7 +84,7 @@ def execute_plan_partition(
 
 def _execute_test(
     test: Test,
-    sandbox: Image | str,
+    sandbox: str,
     ct: CancellationToken,
     docker: DockerClient,
     reporter: Reporter,
@@ -187,7 +187,7 @@ def _execute_test(
 
 def docker_run_step(
     docker: DockerClient,
-    image: Image | str,
+    image: str,
     command: list[str],
     cache_volume: Volume | None = None,
     workbench_volume: Volume | None = None,

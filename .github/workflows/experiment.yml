@@ -148,15 +148,15 @@ jobs:
       ZONE: ${{ vars.GCP_ZONE }}
       MACHINE_TYPE: ${{ vars.GCP_MACHINE_TYPE || 'c4-standard-16' }}
       EXPECTED_CPU_MODEL: ${{ vars.EXPECTED_CPU_MODEL }}
-      NETWORK: ${{ vars.GCP_NETWORK || 'maat-net' }}
-      SUBNET: ${{ vars.GCP_SUBNET || 'maat-subnet' }}
+      NETWORK: maat-net
+      SUBNET: maat-subnet
       IMAGE_FAMILY: ubuntu-2404-lts-amd64
       IMAGE_PROJECT: ubuntu-os-cloud
       BOOT_DISK_SIZE: 200GB
       BOOT_DISK_TYPE: hyperdisk-balanced
       # gcloud generates an SSH key on first use and would otherwise prompt.
       CLOUDSDK_CORE_DISABLE_PROMPTS: 1
-      # Bounded by this job's timeout-minutes (180), not the VM's 6h lifetime.
+      # Bounded by this job's timeout-minutes (180), not the VM's 4h lifetime.
       RUN_PLAN_MAX_POLL_MINUTES: 170
     steps:
       - uses: actions/checkout@v4
@@ -205,7 +205,7 @@ jobs:
               --metadata=enable-oslogin=TRUE \
               --metadata-from-file=startup-script=scripts/gcp/startup.sh \
               --no-service-account --no-scopes \
-              --max-run-duration=6h \
+              --max-run-duration=4h \
               --instance-termination-action=DELETE \
               --labels=maat-run=${{ github.run_id }},maat-partition=${{ matrix.partition }}; then
               exit 0

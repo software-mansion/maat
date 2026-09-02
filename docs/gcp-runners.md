@@ -33,10 +33,10 @@ the current `c4-standard-16` rate in your zone.
 Two safeguards against paying for VMs nobody is using:
 
 - The `Delete VM` step runs with `if: always()`, so it fires on failure as well as success.
-- `--max-run-duration=6h --instance-termination-action=DELETE` makes GCP delete the VM server-side
+- `--max-run-duration=4h --instance-termination-action=DELETE` makes GCP delete the VM server-side
   regardless. This is the one that matters: the teardown step cannot run if the workflow is
   cancelled or the runner dies, and `cancel-in-progress: true` makes cancellation routine. Raise the
-  duration if experiments ever legitimately run longer than six hours, or they will be killed
+  duration if experiments ever legitimately run longer than four hours, or they will be killed
   mid-run.
 
 Spot VMs would be 60–90% cheaper but are not used: the `run` job is `fail-fast: true`, so a single
@@ -85,8 +85,6 @@ Set under *Settings → Secrets and variables → Actions → Variables*:
 | `GCP_SERVICE_ACCOUNT` | yes | Service account email the workflow impersonates |
 | `GCP_ZONE` | yes | Zone to create VMs in, e.g. `europe-west4-a` |
 | `GCP_MACHINE_TYPE` | no | Defaults to `c4-standard-16` |
-| `GCP_NETWORK` | no | Defaults to `maat-net` |
-| `GCP_SUBNET` | no | Defaults to `maat-subnet` |
 | `EXPECTED_CPU_MODEL` | no | Pins the CPU model; see below |
 
 Check C4 availability in your zone before picking one — it is not in every region yet:
@@ -135,32 +133,6 @@ Two constraints to preserve if you edit any of this:
 Egress to the metadata server (`169.254.169.254`) is permitted by GCP regardless of firewall rules,
 which is what lets OS Login and the startup script work. It exposes nothing here — with no service
 account attached, the metadata server holds no tokens to steal.
-
-### What this does not cover
-
-**The VMs still have public internet egress, and that is not fully closable.** A run has to pull the
-sandbox image from ghcr.io and dependencies from crates.io and the Scarb registry, all of which are
-CDN-backed with addresses that cannot be sensibly allowlisted. So:
-
-- Nothing you run on **internal IPs** is reachable from an experiment VM. This is the guarantee, and
-  it holds.
-- Anything you expose on a **public IP** is reachable from an experiment VM *exactly as it is from
-  any host on the internet* — no more, but no less. If you have a public load balancer, a Cloud SQL
-  instance with a public IP, or an API gateway, an experiment VM can send packets to it. It has no
-  credentials and no privileged network position, so it is an anonymous internet client, but it is
-  not blocked.
-
-If that residual exposure matters, the options are, roughly in order of cost:
-
-1. Restrict your public endpoints by source IP, and give the experiment VMs a fixed egress IP via
-   Cloud NAT so they can be excluded.
-2. Replace internet egress with an HTTP proxy on an allowlist of registry hosts, add `--no-address`,
-   and point Docker and Scarb at the proxy. This is the real fix, and it is a project of its own —
-   the registries redirect to CDNs, so the allowlist is not short.
-3. Run experiments in a separate GCP project entirely, which turns quota and IAM into a boundary too.
-
-Option 3 is the one worth considering if this ever holds anything sensitive; the current setup is
-sized for "keep third-party build scripts away from our infrastructure", which it does.
 
 ### Verifying the boundary
 
@@ -234,46 +206,6 @@ start and cache population, so disk latency variance lands directly in the compa
 The default `c4-standard-16` has no local SSD and the script falls back to the boot disk. To use one,
 set `GCP_MACHINE_TYPE` to the `-lssd` variant — verify the exact shape name and its availability in
 your zone first, as C4 local SSD shapes are not offered everywhere.
-
-## Debugging a VM
-
-VMs are deleted on failure. To keep one alive, re-run the workflow with the `Delete VM` step disabled,
-or create one by hand:
-
-```shell
-gcloud compute instances create maat-debug \
-  --zone="$ZONE" \
-  --machine-type=c4-standard-16 \
-  --threads-per-core=1 \
-  --image-family=ubuntu-2404-lts-amd64 \
-  --image-project=ubuntu-os-cloud \
-  --boot-disk-size=200GB \
-  --boot-disk-type=hyperdisk-balanced \
-  --network=maat-net \
-  --subnet=maat-subnet \
-  --tags=maat-runner \
-  --metadata=enable-oslogin=TRUE \
-  --metadata-from-file=startup-script=scripts/gcp/startup.sh \
-  --no-service-account --no-scopes \
-  --max-run-duration=2h \
-  --instance-termination-action=DELETE
-
-gcloud compute ssh maat-debug --zone="$ZONE" --tunnel-through-iap
-```
-
-Keep `--max-run-duration` on debug VMs too, so a forgotten one reaps itself.
-
-Startup script output goes to the serial console:
-
-```shell
-gcloud compute instances get-serial-port-output maat-debug --zone="$ZONE"
-```
-
-To find VMs a broken run left behind:
-
-```shell
-gcloud compute instances list --filter="labels.maat-run:*"
-```
 
 ## Possible improvements
 

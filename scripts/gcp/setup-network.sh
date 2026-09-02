@@ -38,8 +38,9 @@ set -euo pipefail
 : "${ZONE:?set ZONE, e.g. ZONE=europe-west4-a}"
 
 REGION="${ZONE%-*}"
-NETWORK="${NETWORK:-maat-net}"
-SUBNET="${SUBNET:-maat-subnet}"
+# Not configurable: the experiment workflow hardcodes these same names.
+NETWORK="maat-net"
+SUBNET="maat-subnet"
 # Any range works: this VPC is never peered, so it cannot collide with anything.
 SUBNET_RANGE="${SUBNET_RANGE:-10.200.0.0/24}"
 TAG="maat-runner"
@@ -155,9 +156,7 @@ else
 fi
 
 echo
-echo "Done. Set these repository variables:"
-echo "  GCP_NETWORK = $NETWORK"
-echo "  GCP_SUBNET  = $SUBNET"
+echo "Done."
 echo
 echo "Rules on $NETWORK:"
 gcloud compute firewall-rules list --filter="network=$NETWORK" \

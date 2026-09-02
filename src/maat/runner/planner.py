@@ -3,13 +3,12 @@ import shlex
 import os
 
 from maat.utils.log import track
-from python_on_whales import DockerClient, Image
+from python_on_whales import DockerClient
 
 from maat.ecosystem.spec import EcosystemProject, ReportNameGenerationContext
 from maat.ecosystem.utils import flatten_ecosystem
 from maat.model import Plan, Step, Test, TestSuite
 from maat.sandbox import tool_versions
-from maat.utils.docker import image_id
 from maat.utils.semver import is_unstable_semver
 from maat.workspace import Workspace
 
@@ -108,7 +107,7 @@ def inject_local_ls_binary(
 
 def prepare_plan(
     workspace: Workspace,
-    sandbox: Image | str,
+    sandbox: str,
     partitions: int,
     docker: DockerClient,
     report_name: str | None = None,
@@ -161,7 +160,7 @@ def prepare_plan(
         scarb=scarb,
         foundry=foundry,
         report_name=report_name,
-        sandbox=image_id(sandbox),
+        sandbox=sandbox,
         partitions=partitioned_suite,
     )
 

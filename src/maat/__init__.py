@@ -4,7 +4,7 @@ import subprocess
 from pathlib import Path
 
 import click
-from python_on_whales import DockerClient, Image
+from python_on_whales import DockerClient
 
 from maat import sandbox, web
 from maat.installation import REPO
@@ -227,7 +227,7 @@ def cli() -> None:
 def run_local(
     docker: DockerClient,
     workspace: Workspace,
-    sandbox_image: Image | str,
+    sandbox_image: str,
     jobs: int | None,
     report_name: str | None,
     extra_env: str | None,
@@ -386,7 +386,7 @@ def reanalyse(report: Path = None, all: bool = False) -> None:
 def checkout(
     docker: DockerClient,
     workspace: Workspace,
-    sandbox_image: Image | str,
+    sandbox_image: str,
     test_name: str,
 ) -> None:
     plan = prepare_plan(
@@ -532,7 +532,7 @@ def gc_reports() -> None:
 def plan(
     docker: DockerClient,
     workspace: Workspace,
-    sandbox_image: Image | str,
+    sandbox_image: str,
     output: Path,
     partitions: int,
     report_name: str | None,
