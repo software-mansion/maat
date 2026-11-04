@@ -19,9 +19,11 @@ trap 'rm -f "$stderr_file"' EXIT
 
 for attempt in 1 2 3 4 5; do
   rc=0
-  gcloud compute ssh "$vm_name" --zone="$zone" --tunnel-through-iap \
-    --command="$remote_command" 2>"$stderr_file" || rc=$?
-  cat "$stderr_file" >&2
+  # Stream stderr live (keeping its order relative to stdout) while also
+  # capturing it, so the rate-limit check below can inspect it. pipefail makes
+  # rc reflect gcloud's exit code rather than tee's.
+  { gcloud compute ssh "$vm_name" --zone="$zone" --tunnel-through-iap \
+      --command="$remote_command" 2>&1 1>&3 3>&- | tee "$stderr_file" >&2; } 3>&1 || rc=$?
   if [ "$rc" -eq 0 ] || ! grep -q 'RESOURCE_EXHAUSTED' "$stderr_file"; then
     exit "$rc"
   fi
