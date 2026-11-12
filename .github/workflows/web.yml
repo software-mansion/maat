@@ -28,14 +28,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.4.0
         with:
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v6
+      - uses: astral-sh/setup-uv@v6.8.0
       - run: uv sync
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4.4.0
         with:
           node-version-file: .tool-versions
           cache: 'npm'
@@ -47,8 +47,8 @@ jobs:
       - run: npm run build
         working-directory: frontend
 
-      - uses: actions/configure-pages@v5
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/configure-pages@v5.0.0
+      - uses: actions/upload-pages-artifact@v3.0.1
         id: deployment
         with:
           path: frontend/dist/
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v4.0.5
   notify-team:
     needs: deploy
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.experiment_name != '' && !contains(inputs.notify_team, 'false')}}
