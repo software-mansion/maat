@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # Also keeps .github/workflows/actions.lock in sync: Dependabot regenerates
+  # the matching lockfile entry in the same PR.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "monthly"
+    groups:
+      actions:
+        patterns:
+          - "*"
