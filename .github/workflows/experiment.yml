@@ -61,12 +61,12 @@ jobs:
       partition-array: ${{ steps.generate-partitions.outputs.partition-array }}
       sandbox-digest: ${{ steps.sandbox-digest.outputs.sandbox-digest }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v4.4.0
+      - uses: astral-sh/setup-uv@v6.8.0
       - run: uv sync
 
       - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v3.7.0
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -121,7 +121,7 @@ jobs:
           echo "partition-array=$ARRAY" >> $GITHUB_OUTPUT
 
       - name: Upload plan artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: maat-plan
           path: maat-plan.json
@@ -159,17 +159,17 @@ jobs:
       # Bounded by this job's timeout-minutes (180), not the VM's 4h lifetime.
       RUN_PLAN_MAX_POLL_MINUTES: 170
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v4.4.0
 
-      - uses: google-github-actions/auth@v2
+      - uses: google-github-actions/auth@v2.1.13
         with:
           workload_identity_provider: ${{ vars.GCP_WIF_PROVIDER }}
           service_account: ${{ vars.GCP_SERVICE_ACCOUNT }}
 
-      - uses: google-github-actions/setup-gcloud@v2
+      - uses: google-github-actions/setup-gcloud@v2.2.1
 
       - name: Download plan artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: maat-plan
           path: .
@@ -291,7 +291,7 @@ jobs:
           echo "REPORT_PATH=$REPORT_PATH" >> $GITHUB_ENV
 
       - name: Upload partial report
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v4.6.2
         with:
           name: maat-report-part-${{ matrix.partition }}
           path: ${{ env.REPORT_PATH }}
@@ -312,8 +312,8 @@ jobs:
     env:
       PARTIAL_REPORTS_PATH: /tmp/maat-reports
     steps:
-      - uses: actions/checkout@v4
-      - uses: astral-sh/setup-uv@v6
+      - uses: actions/checkout@v4.4.0
+      - uses: astral-sh/setup-uv@v6.8.0
       - run: uv sync
 
       - name: Set up Git configuration
@@ -322,13 +322,13 @@ jobs:
           git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - name: Download plan artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           name: maat-plan
           path: .
 
       - name: Download all partial reports
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v4.3.0
         with:
           pattern: maat-report-part-*
           path: ${{ env.PARTIAL_REPORTS_PATH }}
