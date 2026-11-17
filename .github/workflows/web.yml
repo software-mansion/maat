@@ -28,14 +28,14 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4.4.0
+      - uses: actions/checkout@v7.0.1
         with:
           fetch-depth: 0
 
-      - uses: astral-sh/setup-uv@v6.8.0
+      - uses: astral-sh/setup-uv@v10.3.3
       - run: uv sync
 
-      - uses: actions/setup-node@v4.4.0
+      - uses: actions/setup-node@v7.1.0
         with:
           node-version-file: .tool-versions
           cache: 'npm'
@@ -47,8 +47,8 @@ jobs:
       - run: npm run build
         working-directory: frontend
 
-      - uses: actions/configure-pages@v5.0.0
-      - uses: actions/upload-pages-artifact@v3.0.1
+      - uses: actions/configure-pages@v6.0.0
+      - uses: actions/upload-pages-artifact@v5.0.0
         id: deployment
         with:
           path: frontend/dist/
@@ -67,7 +67,7 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4.0.5
+        uses: actions/deploy-pages@v5.0.1
   notify-team:
     needs: deploy
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.experiment_name != '' && !contains(inputs.notify_team, 'false')}}
@@ -79,7 +79,7 @@ jobs:
           ENCODED_NAME=$(echo -n ${{ toJSON(github.event.inputs.experiment_name) }} | jq -Rr @uri)
           echo "encoded_name=$ENCODED_NAME" >> $GITHUB_OUTPUT
       - name: Notifying the team about new report upload
-        uses: slackapi/slack-github-action@v2.1.1
+        uses: slackapi/slack-github-action@v4.0.0
         with:
           webhook: ${{ secrets.SLACK_NEW_MAAT_REPORT_WEBHOOK_URL }}
           webhook-type: webhook-trigger
