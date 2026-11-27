@@ -23,6 +23,8 @@ from maat.web.report_info import ReportInfo
 from maat.web.slices import make_slices
 from maat.workspace import Workspace
 
+ANALYSES_DIR = REPO / "analyses"
+
 pass_docker = click.make_pass_decorator(DockerClient, ensure=True)
 
 
@@ -690,16 +692,60 @@ def rerun_all(
 
 
 @cli.command(
-    help="Show which earlier reports (pivots) REPORT should be compared against, and why."
+    help="Compare a report against automatically chosen pivots and write the analysis JSON."
 )
 @click.argument("report", type=PathParamType, required=True)
+@click.option(
+    "--pivot",
+    "pivots",
+    multiple=True,
+    help="Report name to compare against (repeatable). Overrides automatic pivot selection.",
+)
+@click.option(
+    "-o",
+    "--output",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Analysis JSON output path. Defaults to analyses/<report>.json.",
+)
 @click.option(
     "--no-git-history",
     is_flag=True,
     help="Don't consider reports pruned from reports/ (faster, offline).",
 )
-def triage(report: Path, no_git_history: bool) -> None:
-    _print_pivots(report, include_history=not no_git_history)
+@click.option(
+    "--pivots-only",
+    is_flag=True,
+    help="Only print the automatically chosen pivots and why, then exit.",
+)
+@click.option(
+    "--run-url", envvar="MAAT_RUN_URL", help="CI run URL to link from the page."
+)
+def triage(
+    report: Path,
+    pivots: tuple[str, ...],
+    output: Path | None,
+    no_git_history: bool,
+    pivots_only: bool,
+    run_url: str | None,
+) -> None:
+    if pivots_only:
+        _print_pivots(report, include_history=not no_git_history)
+        return
+
+    from maat.triage.pipeline import run_triage
+
+    analysis = run_triage(
+        report_path=report,
+        pivot_names=list(pivots) or None,
+        include_history=not no_git_history,
+        run_url=run_url,
+    )
+
+    output = output or ANALYSES_DIR / f"{analysis.report}.json"
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(analysis.model_dump_json(indent=2) + "\n", encoding="utf-8")
+    log(f"💾 analysis written to {output}")
+    log(f"{analysis.status.upper()}: {analysis.headline}")
 
 
 def _print_pivots(report: Path, include_history: bool) -> None:

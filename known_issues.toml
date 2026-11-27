@@ -1,0 +1,20 @@
+# Known, understood failures. `./maat triage` matches these deterministically and tells the
+# triage model about them, so they stop being reported as news. The model may propose new
+# entries as "known-issue" action items; a human adds them here.
+#
+# projects: shell-style globs matched against project names.
+# labels:   shell-style globs matched against label strings (omitted: any label).
+#
+# [[issue]]
+# id = "example-unsolvable-deps"
+# projects = ["starkware_utils"]
+# labels = ["broken(unsolvable deps)"]
+# note = "Depends on a git revision that was force-pushed away."
+# link = "https://github.com/software-mansion/maat/issues/000"
+
+[[issue]]
+id = "cairo-2.22-sierra-gas-increase"
+projects = ["dojoengine/origami", "quiver_achievement", "quiver_quest"]
+# Test failures only: build failures or other projects running out of gas are still reported.
+labels = ["test-fail*"]
+note = "Intended: Cairo 2.22.0-rc.0 introduced new Sierra (enum_match_v2 for all enum matches), which increases gas costs of contracts built with 2.22+. Tests with a tight available_gas budget fail with 'Test cost exceeded the available gas'; projects need to raise their gas limits."
