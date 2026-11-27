@@ -4,12 +4,16 @@
 *pivots*. Each section below describes one step; everything except the Claude step is
 deterministic.
 
-## Running locally
+## Running locally (offline replay)
 
 ```shell
 ./maat triage reports/<report>.json --pivots-only
-./maat triage reports/<report>.json -o /tmp/a.json
-./maat triage reports/<report>.json --pivot <pivot-report> -o /tmp/a.json   # choose pivots by hand
+
+# Deterministic part only, plus the exact prompt Claude would get:
+./maat triage reports/<report>.json --no-llm --dry-run /tmp/prompt.txt -o /tmp/a.json
+
+# Full run (needs ANTHROPIC_API_KEY); pick pivots by hand to compare prompt changes:
+./maat triage reports/<report>.json --pivot <pivot-report> -o /tmp/a.json
 ```
 
 ## Pivots
@@ -77,3 +81,21 @@ primary pivot and the target, via the GitHub compare API. Stable and pre-release
 their `v*` tags; nightly and dev source commits come from the `scarb-nightlies` and
 `starknet-foundry-nightlies` release notes; the Cairo version comes from Scarb's `Cargo.toml`.
 A local run uses your `gh` login for the GitHub API.
+
+## Claude
+
+`triage/llm.py`. One structured-output request, with no tools, that classifies each change
+(toolchain regression, intended breaking change, project change, flaky, infra, harness, known
+issue, performance) and proposes action items. Logs are passed as untrusted data. The prompt
+asks for zero findings when nothing changed. The model and effort can be overridden with
+`MAAT_TRIAGE_MODEL` and `MAAT_TRIAGE_EFFORT`; it needs `ANTHROPIC_API_KEY`.
+
+Guardrails (`triage/pipeline.py`):
+
+* Project names, commit SHAs and lint kinds the input doesn't contain are dropped.
+* The status is forced to green when the diff shows no new failures, no performance
+  regression and no significant lint change.
+* The status is raised to amber when regressions are left unexplained.
+* The status is raised to amber when a significant lint diagnostic change isn't attributed
+  (per kind) to an intended change with a suspected upstream commit.
+* Without the LLM, the status is green or amber, never red.
