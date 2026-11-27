@@ -16,6 +16,7 @@ running experiments on Cairo ecosystem projects using Docker containers.
   - `agent/`: Docker container configuration
   - `utils/`: Helper utilities
   - `web/`: Web interface components
+  - `triage/`: Automated report triage (pivots, diff, Claude, analysis page); see `docs/triage.md`
   - `workspace.py`: Workspace management
 - `docs/`: Documentation
 - `reports/`: Experiment reports storage
