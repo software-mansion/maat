@@ -692,7 +692,8 @@ def rerun_all(
 
 
 @cli.command(
-    help="Compare a report against automatically chosen pivots and write the analysis JSON."
+    help="Compare a report against automatically chosen pivots, triage the differences "
+    "with Claude and write the analysis JSON."
 )
 @click.argument("report", type=PathParamType, required=True)
 @click.option(
@@ -706,6 +707,14 @@ def rerun_all(
     "--output",
     type=click.Path(dir_okay=False, path_type=Path),
     help="Analysis JSON output path. Defaults to analyses/<report>.json.",
+)
+@click.option(
+    "--no-llm", is_flag=True, help="Skip the Claude step; deterministic analysis only."
+)
+@click.option(
+    "--dry-run",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Write the LLM prompt to this file instead of calling Claude.",
 )
 @click.option(
     "--no-git-history",
@@ -724,6 +733,8 @@ def triage(
     report: Path,
     pivots: tuple[str, ...],
     output: Path | None,
+    no_llm: bool,
+    dry_run: Path | None,
     no_git_history: bool,
     pivots_only: bool,
     run_url: str | None,
@@ -737,6 +748,8 @@ def triage(
     analysis = run_triage(
         report_path=report,
         pivot_names=list(pivots) or None,
+        use_llm=not no_llm,
+        dry_run_prompt=dry_run,
         include_history=not no_git_history,
         run_url=run_url,
     )

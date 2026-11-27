@@ -6,17 +6,23 @@ from maat.triage.catalog import ReportRef, build_catalog, ref_for_path
 from maat.triage.changelog import changelogs as fetch_changelogs
 from maat.triage.diff import ReportDiff, diff_reports, reconcile, worst_category
 from maat.triage.known_issues import load_known_issues
-from maat.triage.model import Analysis
+from maat.triage.llm import build_prompt, call_claude
+from maat.triage.model import STATUS_RANK, Analysis, LlmMeta, Triage
 from maat.triage.pivot import Pivot, choose_pivots, strip_run_number, target_kind
 from maat.utils.log import log, track
 from maat.utils.shell import join_command
 
 HISTORY_DEPTH = 4
 
+# Classifications under which a regression is "explained" and need not hold the status at amber.
+_EXPLAINED = {"known-issue", "flaky", "infra", "project-change"}
+
 
 def run_triage(
     report_path: Path,
     pivot_names: list[str] | None = None,
+    use_llm: bool = True,
+    dry_run_prompt: Path | None = None,
     include_history: bool = True,
     run_url: str | None = None,
 ) -> Analysis:
@@ -63,8 +69,28 @@ def run_triage(
                 diffs[0].pivot_versions, diffs[0].target_versions
             )
 
-    status, notes = _final_status(diffs)
-    headline = _fallback_headline(diffs)
+    triage: Triage | None = None
+    llm: LlmMeta | None = None
+    if diffs:
+        prompt = build_prompt(
+            target_ref.name, diffs[0].target_versions, diffs, changelogs, known_issues
+        )
+        if dry_run_prompt is not None:
+            dry_run_prompt.write_text(prompt, encoding="utf-8")
+            log(
+                f"📝 prompt written to {dry_run_prompt} ({len(prompt)} chars); LLM not called"
+            )
+        elif use_llm:
+            with track("Asking Claude"):
+                triage, llm = call_claude(prompt)
+            if llm.error:
+                log(f"⚠️ LLM step failed: {llm.error}")
+
+    if triage is not None:
+        triage = _sanitize(triage, diffs, changelogs)
+
+    status, notes = _final_status(triage, diffs)
+    headline = triage.headline if triage else _fallback_headline(diffs, llm)
 
     return Analysis(
         report=target_ref.name,
@@ -78,10 +104,12 @@ def run_triage(
         pivots=pivots,
         diffs=diffs,
         changelogs=changelogs,
+        triage=triage,
         status=status,
         status_notes=notes,
         headline=headline,
         rerun_command=_rerun_command(target),
+        llm=llm,
         run_url=run_url,
     )
 
@@ -121,29 +149,99 @@ def _history(target: ReportRef, catalog: list[ReportRef]) -> dict[str, list[str]
     return history
 
 
-def _final_status(diffs: list[ReportDiff]) -> tuple[str, list[str]]:
+def _sanitize(triage: Triage, diffs: list[ReportDiff], changelogs) -> Triage:
+    """Drop references the input doesn't contain; the LLM must not introduce new facts."""
+    known_projects = {c.project for d in diffs for c in d.changes} | {
+        o.project for d in diffs for o in d.performance.outliers
+    }
+    known_shas = {c.sha for cl in changelogs for c in cl.commits}
+    known_lint = {k.id for k in diffs[0].lint.kinds} if diffs else set()
+
+    for f in triage.findings:
+        f.projects = [p for p in f.projects if p in known_projects]
+        f.suspected_commits = [
+            s
+            for s in f.suspected_commits
+            if any(k.startswith(s[:7]) or s.startswith(k) for k in known_shas)
+        ]
+        f.lint_kinds = [k for k in f.lint_kinds if k in known_lint]
+    for a in triage.actions:
+        a.projects = [p for p in a.projects if p in known_projects]
+    return triage
+
+
+def _final_status(
+    triage: Triage | None, diffs: list[ReportDiff]
+) -> tuple[str, list[str]]:
     """
-    Deterministic status: green when the diff shows no new failures, no performance regression and no significant lint change, amber otherwise.
-    Red needs a judgement the data alone can't make.
+    Clamp the LLM status to what the data shows:
+    nothing new and no perf regression ⇒ green; unexplained regressions ⇒ at least amber.
+    Without an LLM verdict the status is green or amber, never red.
     """
+    notes: list[str] = []
     if not diffs:
         return "amber", ["no pivot report available; nothing to compare against"]
 
     primary = diffs[0]
-    # Regressions against any pivot count (an RC can be unchanged vs the previous RC and
-    # still be broken vs the last stable release).
+    # Regressions against any pivot block a forced green (an RC can be unchanged vs the
+    # previous RC and still be broken vs the last stable release). Only the primary pivot
+    # forces amber below, so long-standing differences don't pin every nightly to amber.
     news = primary.of_kind("regression", "changed-failure", "new-project") + [
         c for d in diffs[1:] for c in d.of_kind("regression")
     ]
     unknown_news = [c for c in news if not c.known_issue]
     perf_regressed = primary.performance.regressed
     lint_shift = primary.lint.significant_kinds()
-    if unknown_news or perf_regressed or lint_shift:
-        return "amber", []
-    return "green", []
+
+    if triage is None:
+        status = "amber" if (unknown_news or perf_regressed or lint_shift) else "green"
+        if status == "amber":
+            notes.append(
+                "LLM triage unavailable; amber because there are unexplained changes"
+            )
+        return status, notes
+
+    status = triage.status
+    if not unknown_news and not perf_regressed and not lint_shift and status != "green":
+        notes.append(
+            f"LLM said {status}, but the diff shows no new failures, no performance "
+            "regression and no significant lint change"
+        )
+        status = "green"
+
+    explained = {
+        p for f in triage.findings if f.classification in _EXPLAINED for p in f.projects
+    }
+    unexplained = [
+        c.project
+        for c in primary.of_kind("regression")
+        if not c.known_issue and c.project not in explained
+    ]
+    if unexplained and STATUS_RANK[status] < STATUS_RANK["amber"]:
+        notes.append(
+            f"raised to amber: unexplained regressions in {', '.join(unexplained[:5])}"
+        )
+        status = "amber"
+
+    # A lint change may be intended (new lint) or not (a lint broken along the way), so each
+    # significant kind needs its own justification: an intended change backed by a commit.
+    justified = {
+        k
+        for f in triage.findings
+        if f.classification == "intended-breaking-change" and f.suspected_commits
+        for k in f.lint_kinds
+    }
+    unjustified = [k for k in lint_shift if k.id not in justified]
+    if unjustified and STATUS_RANK[status] < STATUS_RANK["amber"]:
+        notes.append(
+            "raised to amber: lint diagnostic changes not attributed to an intended upstream "
+            "change: " + "; ".join(f"{k.id} {k.kind[:60]}" for k in unjustified[:3])
+        )
+        status = "amber"
+    return status, notes
 
 
-def _fallback_headline(diffs: list[ReportDiff]) -> str:
+def _fallback_headline(diffs: list[ReportDiff], llm: LlmMeta | None) -> str:
     if not diffs:
         return "No pivot report found; nothing to compare against."
     d = diffs[0]
@@ -153,6 +251,8 @@ def _fallback_headline(diffs: list[ReportDiff]) -> str:
     s = f"vs {d.pivot}: {reg} regressions, {chg} changed failures, {fix} fixes."
     if lint := d.lint.significant_kinds():
         s += f" Lint diagnostics changed ({len(lint)} kinds)."
+    if llm and llm.error:
+        s += " (LLM triage unavailable)"
     return s
 
 
