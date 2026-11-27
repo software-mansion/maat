@@ -3,6 +3,7 @@ from typing import Literal
 
 from pydantic import BaseModel
 
+from maat.triage.changelog import ToolChangelog
 from maat.triage.diff import ReportDiff
 from maat.triage.pivot import Pivot
 
@@ -18,6 +19,8 @@ class Analysis(BaseModel):
     target_versions: dict[str, str]
     pivots: list[Pivot]
     diffs: list[ReportDiff]
+    changelogs: list[ToolChangelog]
+    """Changelog against the primary pivot."""
     status: Status
     status_notes: list[str] = []
     """Why the status is what it is, when that isn't obvious from the diff."""
