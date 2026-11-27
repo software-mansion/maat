@@ -14,7 +14,9 @@ from pydantic import BaseModel
 from maat.installation import REPO
 from maat.model import LabelCategory, Report, ReportMeta, TestReport, TestsSummary
 from maat.triage.known_issues import KnownIssue, match_known_issue
+from maat.triage.lint import LintDiff, lint_diff, reconcile_lint
 from maat.triage.logs import error_set, error_signature, excerpt, lint_panicked
+from maat.triage.perf import Performance, compare_performance
 from maat.web.view_model import logs_txt_path
 
 # Categories that describe a known-broken Ma'at setup rather than a toolchain outcome.
@@ -91,7 +93,9 @@ class ReportDiff(BaseModel):
     target_versions: dict[str, str]
     pivot_versions: dict[str, str]
     changes: list[ProjectChange]
+    performance: Performance
     drift: Drift
+    lint: LintDiff = LintDiff()
     projects_total: int
     projects_clean: int
     """Projects whose worst label is ``test-pass`` in the target."""
@@ -142,7 +146,9 @@ def diff_reports(
         target_versions=_versions(target),
         pivot_versions=_versions(pivot),
         changes=changes,
+        performance=compare_performance(target, pivot, known_issues),
         drift=_drift(target, pivot, t_tests, p_tests),
+        lint=lint_diff(t_tests, p_tests),
         projects_total=len(target.tests),
         projects_clean=clean,
     )
@@ -171,7 +177,7 @@ def _bad_categories(t: TestReport) -> set[LabelCategory]:
         - _IGNORED_CATEGORIES
         - _LINT_CATEGORIES
     )
-    # Lint violations are not a build/test outcome, but a cairo-lint panic is a
+    # Lint violations are tracked separately (see `lint.lint_diff`), but a cairo-lint panic is a
     # toolchain crash like any other, so it counts as a real failure.
     if lint_panicked(t):
         bad.add(LabelCategory.LINT_FAIL)
@@ -267,6 +273,8 @@ def reconcile(diffs: list["ReportDiff"]) -> None:
                 for oc in o.changes
             ):
                 d.changes[i] = c.model_copy(update={"kind": "still-failing"})
+
+    reconcile_lint(diffs)
 
 
 def _drift(

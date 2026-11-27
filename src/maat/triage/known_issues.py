@@ -7,6 +7,8 @@ noticing it. The LLM is told which failures matched and may propose new entries.
 
 from fnmatch import fnmatchcase
 from pathlib import Path
+from typing import Literal
+
 import tomlkit
 from pydantic import BaseModel
 
@@ -22,6 +24,13 @@ class KnownIssue(BaseModel):
     labels: list[str] = ["*"]
     """
     Glob patterns matched against label strings, e.g. ``build-fail*``. Omitted: any label.
+    An explicit empty list matches no failures (useful for performance-only entries).
+    """
+    scope: Literal["failures", "performance", "all"] = "failures"
+    """
+    ``failures``: matching failures are marked known and stop counting as news.
+    ``performance``: matching projects are excluded from performance aggregates (their own
+    numbers are still shown separately). ``all``: both.
     """
     note: str
     link: str | None = None
@@ -30,9 +39,12 @@ class KnownIssue(BaseModel):
         return any(fnmatchcase(project, p) for p in self.projects)
 
     def matches(self, project: str, labels: list[str]) -> bool:
-        if not self.matches_project(project):
+        if self.scope == "performance" or not self.matches_project(project):
             return False
         return any(fnmatchcase(lbl, pat) for lbl in labels for pat in self.labels)
+
+    def covers_performance(self, project: str) -> bool:
+        return self.scope in ("performance", "all") and self.matches_project(project)
 
 
 def load_known_issues(path: Path = KNOWN_ISSUES_PATH) -> list[KnownIssue]:

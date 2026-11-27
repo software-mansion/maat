@@ -114,7 +114,7 @@ def _history(target: ReportRef, catalog: list[ReportRef]) -> dict[str, list[str]
 
 def _final_status(diffs: list[ReportDiff]) -> tuple[str, list[str]]:
     """
-    Deterministic status: green when the diff shows no new failures, amber otherwise.
+    Deterministic status: green when the diff shows no new failures, no performance regression and no significant lint change, amber otherwise.
     Red needs a judgement the data alone can't make.
     """
     if not diffs:
@@ -127,7 +127,9 @@ def _final_status(diffs: list[ReportDiff]) -> tuple[str, list[str]]:
         c for d in diffs[1:] for c in d.of_kind("regression")
     ]
     unknown_news = [c for c in news if not c.known_issue]
-    if unknown_news:
+    perf_regressed = primary.performance.regressed
+    lint_shift = primary.lint.significant_kinds()
+    if unknown_news or perf_regressed or lint_shift:
         return "amber", []
     return "green", []
 
@@ -140,6 +142,8 @@ def _fallback_headline(diffs: list[ReportDiff]) -> str:
     fix = len(d.of_kind("fix"))
     chg = len(d.of_kind("changed-failure"))
     s = f"vs {d.pivot}: {reg} regressions, {chg} changed failures, {fix} fixes."
+    if lint := d.lint.significant_kinds():
+        s += f" Lint diagnostics changed ({len(lint)} kinds)."
     return s
 
 

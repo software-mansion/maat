@@ -3,7 +3,11 @@
 # entries as "known-issue" action items; a human adds them here.
 #
 # projects: shell-style globs matched against project names.
-# labels:   shell-style globs matched against label strings (omitted: any label).
+# labels:   shell-style globs matched against label strings (omitted: any label;
+#           an explicit empty list matches no failures).
+# scope:    "failures" (default) marks matching failures as known;
+#           "performance" excludes matching projects from performance aggregates
+#           (their own numbers are still shown separately); "all" does both.
 #
 # [[issue]]
 # id = "example-unsolvable-deps"
@@ -11,6 +15,14 @@
 # labels = ["broken(unsolvable deps)"]
 # note = "Depends on a git revision that was force-pushed away."
 # link = "https://github.com/software-mansion/maat/issues/000"
+
+[[issue]]
+id = "nalgebra-performance"
+projects = ["nalgebra", "nalgebra_*"]
+# Performance-only: excluded from perf aggregates; real build/test failures in these
+# projects are still reported.
+scope = "performance"
+note = "The nalgebra* family (~55 packages) is very slow and jittery to build, test and analyse (nalgebra itself takes ~2 min per step). Timing and CairoLS memory outliers in these projects are known and not a regression signal on their own."
 
 [[issue]]
 id = "cairo-2.22-sierra-gas-increase"
