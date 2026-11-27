@@ -14,6 +14,7 @@ Ma'at is something like [Crater] of [Rust], but for Cairo.
 * [Checkouts](/docs/checkouts.md)
 * [Timings Methodology](/docs/timings.md)
 * [GCP Experiment Runners](/docs/gcp-runners.md)
+* [Automated Triage](/docs/triage.md)
 
 [cairo]: https://www.cairo-lang.org/
 

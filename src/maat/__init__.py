@@ -689,5 +689,27 @@ def rerun_all(
         subprocess.run(cmd, check=True)
 
 
+@cli.command(
+    help="Show which earlier reports (pivots) REPORT should be compared against, and why."
+)
+@click.argument("report", type=PathParamType, required=True)
+@click.option(
+    "--no-git-history",
+    is_flag=True,
+    help="Don't consider reports pruned from reports/ (faster, offline).",
+)
+def triage(report: Path, no_git_history: bool) -> None:
+    _print_pivots(report, include_history=not no_git_history)
+
+
+def _print_pivots(report: Path, include_history: bool) -> None:
+    from maat.triage.catalog import build_catalog, ref_for_path
+    from maat.triage.pivot import choose_pivots
+
+    target = ref_for_path(report)
+    for p in choose_pivots(target, build_catalog(include_history=include_history)):
+        click.echo(f"{p.name}\t{p.reason}")
+
+
 if __name__ == "__main__":
     cli()
