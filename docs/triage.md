@@ -50,3 +50,22 @@ Status: green when nothing changed, amber otherwise. Regressions against any piv
 
 `known_issues.toml`, glob-matched against project names and labels. Matching failures are
 marked as known and stop counting as news.
+
+## Performance and lint
+
+`triage/perf.py`. Paired per-project ratios (target/pivot), only on matching hardware (CPU
+model and count): build, test, lint and CairoLS step times, cold and incremental build, and
+CairoLS peak memory. A metric is significant when the median moved by more than 7%, or a test
+runner group of at least 10 projects moved by more than 15% (two groups moving in opposite
+directions can cancel out in the overall median). Significant metrics list the projects that
+contribute most to the shift. Single-project outliers are listed separately; on their own they
+are not a regression.
+
+A known issue with `scope = "performance"` excludes its projects from these aggregates; their
+own medians are still shown in a separate line. `"all"` covers both failures and performance.
+
+`triage/lint.py`. cairo-lint diagnostics are counted per kind (code and message) on projects
+whose rev is unchanged, where cairo-lint output is deterministic. A kind that changed in at
+least 2 projects or by at least 5 diagnostics is significant.
+
+Status: a performance regression or a significant lint change also makes it amber.
