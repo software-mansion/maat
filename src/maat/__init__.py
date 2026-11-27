@@ -342,6 +342,7 @@ def export_web_assets(
         reports=report_tuples,
         view_model_path=view_model,
         assets_path=assets,
+        analyses_dir=ANALYSES_DIR,
     )
 
 
@@ -494,6 +495,9 @@ def gc_reports() -> None:
     for report_file in reports_to_remove:
         log(f"  - {report_file.name}")
         report_file.unlink()
+        analysis_file = ANALYSES_DIR / report_file.name
+        if analysis_file.exists():
+            analysis_file.unlink()
 
     log(f"Removed {len(reports_to_remove)} unused reports.")
 
@@ -693,7 +697,7 @@ def rerun_all(
 
 @cli.command(
     help="Compare a report against automatically chosen pivots, triage the differences "
-    "with Claude and write the analysis JSON."
+    "with Claude and write the analysis JSON (and optionally an HTML preview)."
 )
 @click.argument("report", type=PathParamType, required=True)
 @click.option(
@@ -707,6 +711,11 @@ def rerun_all(
     "--output",
     type=click.Path(dir_okay=False, path_type=Path),
     help="Analysis JSON output path. Defaults to analyses/<report>.json.",
+)
+@click.option(
+    "--html",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Also render the HTML page to this path (for previews and offline replay).",
 )
 @click.option(
     "--no-llm", is_flag=True, help="Skip the Claude step; deterministic analysis only."
@@ -733,6 +742,7 @@ def triage(
     report: Path,
     pivots: tuple[str, ...],
     output: Path | None,
+    html: Path | None,
     no_llm: bool,
     dry_run: Path | None,
     no_git_history: bool,
@@ -744,6 +754,7 @@ def triage(
         return
 
     from maat.triage.pipeline import run_triage
+    from maat.triage.render import render_analysis
 
     analysis = run_triage(
         report_path=report,
@@ -759,6 +770,12 @@ def triage(
     output.write_text(analysis.model_dump_json(indent=2) + "\n", encoding="utf-8")
     log(f"💾 analysis written to {output}")
     log(f"{analysis.status.upper()}: {analysis.headline}")
+
+    if html:
+        available = {p.stem for p in (REPO / "reports").glob("*.json")}
+        html.parent.mkdir(parents=True, exist_ok=True)
+        html.write_text(render_analysis(analysis, available), encoding="utf-8")
+        log(f"🌐 HTML written to {html}")
 
 
 def _print_pivots(report: Path, include_history: bool) -> None:

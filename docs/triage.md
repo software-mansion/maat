@@ -10,10 +10,10 @@ deterministic.
 ./maat triage reports/<report>.json --pivots-only
 
 # Deterministic part only, plus the exact prompt Claude would get:
-./maat triage reports/<report>.json --no-llm --dry-run /tmp/prompt.txt -o /tmp/a.json
+./maat triage reports/<report>.json --no-llm --dry-run /tmp/prompt.txt --html /tmp/a.html -o /tmp/a.json
 
 # Full run (needs ANTHROPIC_API_KEY); pick pivots by hand to compare prompt changes:
-./maat triage reports/<report>.json --pivot <pivot-report> -o /tmp/a.json
+./maat triage reports/<report>.json --pivot <pivot-report> --html /tmp/a.html -o /tmp/a.json
 ```
 
 ## Pivots
@@ -99,3 +99,11 @@ Guardrails (`triage/pipeline.py`):
 * The status is raised to amber when a significant lint diagnostic change isn't attributed
   (per kind) to an intended change with a suspected upstream commit.
 * Without the LLM, the status is green or amber, never red.
+
+## Analysis page
+
+`triage/render.py`. A static page with only the essentials: status, compared reports (with
+side-by-side links into the report viewer), action items (with a rerun command and pre-filled
+issue links), findings, change tables, performance, drift and upstream commits.
+`./maat export-web-assets` renders every `analyses/*.json` to `analysis/<report>.html`, and
+`gc-reports` removes analyses together with their reports.
