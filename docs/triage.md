@@ -69,3 +69,11 @@ whose rev is unchanged, where cairo-lint output is deterministic. A kind that ch
 least 2 projects or by at least 5 diagnostics is significant.
 
 Status: a performance regression or a significant lint change also makes it amber.
+
+## Upstream changes
+
+`triage/changelog.py`. Scarb, Cairo, cairo-lint and Starknet Foundry commits between the
+primary pivot and the target, via the GitHub compare API. Stable and pre-release versions use
+their `v*` tags; nightly and dev source commits come from the `scarb-nightlies` and
+`starknet-foundry-nightlies` release notes; the Cairo version comes from Scarb's `Cargo.toml`.
+A local run uses your `gh` login for the GitHub API.

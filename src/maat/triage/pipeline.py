@@ -3,6 +3,7 @@ from pathlib import Path
 
 from maat.model import Report
 from maat.triage.catalog import ReportRef, build_catalog, ref_for_path
+from maat.triage.changelog import changelogs as fetch_changelogs
 from maat.triage.diff import ReportDiff, diff_reports, reconcile, worst_category
 from maat.triage.known_issues import load_known_issues
 from maat.triage.model import Analysis
@@ -55,6 +56,13 @@ def run_triage(
             )
     reconcile(diffs)
 
+    changelogs = []
+    if diffs:
+        with track("Fetching upstream changelogs"):
+            changelogs = fetch_changelogs(
+                diffs[0].pivot_versions, diffs[0].target_versions
+            )
+
     status, notes = _final_status(diffs)
     headline = _fallback_headline(diffs)
 
@@ -69,6 +77,7 @@ def run_triage(
         },
         pivots=pivots,
         diffs=diffs,
+        changelogs=changelogs,
         status=status,
         status_notes=notes,
         headline=headline,
