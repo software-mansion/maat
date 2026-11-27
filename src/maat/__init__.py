@@ -738,6 +738,14 @@ def rerun_all(
 @click.option(
     "--run-url", envvar="MAAT_RUN_URL", help="CI run URL to link from the page."
 )
+@click.option(
+    "--slack-env",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="Append Slack variables as heredoc blocks to this file (e.g. $GITHUB_OUTPUT).",
+)
+@click.option(
+    "--site-url", envvar="MAAT_SITE_URL", default="", help="Base URL of the web build."
+)
 def triage(
     report: Path,
     pivots: tuple[str, ...],
@@ -748,6 +756,8 @@ def triage(
     no_git_history: bool,
     pivots_only: bool,
     run_url: str | None,
+    slack_env: Path | None,
+    site_url: str,
 ) -> None:
     if pivots_only:
         _print_pivots(report, include_history=not no_git_history)
@@ -777,6 +787,9 @@ def triage(
         html.write_text(render_analysis(analysis, available), encoding="utf-8")
         log(f"🌐 HTML written to {html}")
 
+    if slack_env:
+        _write_slack_env(analysis_path=output, site_url=site_url, target=slack_env)
+
 
 def _print_pivots(report: Path, include_history: bool) -> None:
     from maat.triage.catalog import build_catalog, ref_for_path
@@ -785,6 +798,57 @@ def _print_pivots(report: Path, include_history: bool) -> None:
     target = ref_for_path(report)
     for p in choose_pivots(target, build_catalog(include_history=include_history)):
         click.echo(f"{p.name}\t{p.reason}")
+
+
+@cli.command(
+    help="Print Slack workflow variables for a report's analysis as GitHub output heredocs."
+)
+@click.argument("report_name", required=True)
+@click.option(
+    "--site-url", envvar="MAAT_SITE_URL", default="", help="Base URL of the web build."
+)
+@click.option(
+    "--output",
+    type=click.Path(dir_okay=False, path_type=Path),
+    help="File to append to (e.g. $GITHUB_OUTPUT). Defaults to stdout.",
+)
+def slack_fields(report_name: str, site_url: str, output: Path | None) -> None:
+    _write_slack_env(
+        analysis_path=ANALYSES_DIR / f"{report_name}.json",
+        site_url=site_url,
+        target=output,
+    )
+
+
+def _write_slack_env(analysis_path: Path, site_url: str, target: Path | None) -> None:
+    from maat.triage.model import Analysis
+    from maat.triage.pipeline import slack_fields as compute_slack_fields
+
+    # No (readable) analysis, e.g. triage failed: send empty values so the Slack workflow
+    # still runs.
+    fields = {"status": "", "summary": "", "analysis_url": "", "thread_text": ""}
+    if analysis_path.exists():
+        try:
+            analysis = Analysis.model_validate_json(analysis_path.read_bytes())
+        except (OSError, ValueError) as e:
+            # stderr: stdout may be the heredoc output itself.
+            click.echo(f"⚠️ cannot read {analysis_path}: {e}", err=True)
+        else:
+            url = (
+                f"{site_url.rstrip('/')}/analysis/{analysis.report}.html"
+                if site_url
+                else ""
+            )
+            fields = compute_slack_fields(analysis, url)
+
+    text = "".join(
+        f"{key}<<MAAT_EOF\n{value}\nMAAT_EOF\n" for key, value in fields.items()
+    )
+    if target is None:
+        click.echo(text, nl=False)
+    else:
+        with target.open("a", encoding="utf-8") as f:
+            f.write(text)
 
 
 if __name__ == "__main__":
