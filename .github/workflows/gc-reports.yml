@@ -32,7 +32,7 @@ jobs:
           git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
 
       - run: git pull --ff-only
-      - run: git add -A reports
+      - run: git add -A reports analyses
 
       - name: Check for changes
         id: check_changes

@@ -18,7 +18,10 @@ from maat.web.view_model import (
 
 
 def export_assets(
-    reports: list[tuple[Report, ReportMeta]], view_model_path: Path, assets_path: Path
+    reports: list[tuple[Report, ReportMeta]],
+    view_model_path: Path,
+    assets_path: Path,
+    analyses_dir: Path | None = None,
 ):
     view_model_path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -39,6 +42,8 @@ def export_assets(
 
     _write_logs(reports, assets_path)
     _write_archives(reports, assets_path)
+    if analyses_dir is not None:
+        _write_analyses(reports, analyses_dir, assets_path)
 
     sls = make_slices(reports)
 
@@ -78,3 +83,22 @@ def _write_archives(reports: list[ReportInfo], output: Path):
         # Create the JSON archive.
         with open(output / ecosystem_json_path(meta), "w", encoding="utf-8") as f:
             json.dump(ecosystem, f)
+
+
+def _write_analyses(reports: list[ReportInfo], analyses_dir: Path, output: Path):
+    """Render ``analyses/<report>.json`` files into ``analysis/<report>.html`` pages."""
+    from maat.triage.model import Analysis
+    from maat.triage.render import render_analysis
+
+    available = {meta.name for _, meta, _ in reports}
+    out_dir = output / "analysis"
+    out_dir.mkdir(parents=True, exist_ok=True)
+    for path in sorted(analyses_dir.glob("*.json")):
+        try:
+            analysis = Analysis.model_validate_json(path.read_bytes())
+        except ValueError as e:
+            print(f"skipping analysis {path.name}: {e}")
+            continue
+        (out_dir / f"{analysis.report}.html").write_text(
+            render_analysis(analysis, available), encoding="utf-8"
+        )
