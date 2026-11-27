@@ -1,8 +1,13 @@
 # Automated Triage
 
-`./maat triage REPORT` analyses a report by comparing it against earlier reports, called
-*pivots*. Each section below describes one step; everything except the Claude step is
-deterministic.
+After every experiment, the `analyse` job in `experiment.yml` runs `./maat triage` on the new
+report. It compares the report against earlier reports, called *pivots*, produces a
+green/amber/red status, findings and action items, and commits them to
+`analyses/<report>.json`. The web build renders that file to `analysis/<report>.html`, and the
+Slack notification carries the status, a one-line summary, a link to the page, and (only if
+there is something to say) a thread reply with the top findings.
+
+A failed analysis never blocks the report: every triage step in CI is non-blocking.
 
 ## Running locally (offline replay)
 
@@ -107,3 +112,15 @@ side-by-side links into the report viewer), action items (with a rerun command a
 issue links), findings, change tables, performance, drift and upstream commits.
 `./maat export-web-assets` renders every `analyses/*.json` to `analysis/<report>.html`, and
 `gc-reports` removes analyses together with their reports.
+
+## CI and Slack
+
+The `analyse` job in `experiment.yml` runs after the report is committed, commits
+`analyses/<report>.json`, and triggers the web build. `web.yml` reads the analysis with
+`./maat slack-fields` and adds it to the Slack payload.
+
+Configuration:
+
+* Repository secret `ANTHROPIC_API_KEY`.
+* Slack workflow (webhook trigger) variables: `url`, `report_name`, `status`, `summary`,
+  `analysis_url`, `thread_text`. `thread_text` is empty when there is nothing worth a thread.

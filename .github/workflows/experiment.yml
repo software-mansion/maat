@@ -309,6 +309,8 @@ jobs:
       actions: write
     needs: run
     runs-on: ubuntu-latest
+    outputs:
+      report-name: ${{ steps.report-name.outputs.report-name }}
     env:
       PARTIAL_REPORTS_PATH: /tmp/maat-reports
     steps:
@@ -335,10 +337,12 @@ jobs:
           merge-multiple: true
 
       - name: Extract report name from plan
+        id: report-name
         run: |
           # Get the report name from the plan file
           REPORT_NAME=$(jq -r '.report_name' maat-plan.json)
           echo "REPORT_NAME=$REPORT_NAME" >> $GITHUB_ENV
+          echo "report-name=$REPORT_NAME" >> "$GITHUB_OUTPUT"
 
       - name: Merge reports
         run: >-
@@ -352,8 +356,71 @@ jobs:
       - run: "git commit -m 'experiment: ${{ env.REPORT_NAME }}'"
       - run: git push
 
+  # Compares the new report against automatically chosen pivots and asks Claude to triage the
+  # differences (see `./maat triage --help`). Every step that can fail is non-blocking: a
+  # missing analysis only means the Slack message and web page come without it.
+  analyse:
+    permissions:
+      contents: write
+    needs: commit
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      REPORT_NAME: ${{ needs.commit.outputs.report-name }}
+    steps:
+      - uses: actions/checkout@v7.0.1
+        with:
+          # Pivot reports pruned by gc-reports are loaded from git history.
+          fetch-depth: 0
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv sync
+
+      - name: Set up Git configuration
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email 41898282+github-actions[bot]@users.noreply.github.com
+
+      - run: git pull --ff-only
+
+      - name: Triage report
+        id: triage
+        continue-on-error: true
+        # Leaves time to commit whatever was produced before the job timeout.
+        timeout-minutes: 20
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          # Read-only use: GitHub compare API for upstream changelogs.
+          GITHUB_TOKEN: ${{ github.token }}
+          MAAT_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: ./maat triage "reports/${REPORT_NAME}.json"
+
+      - name: Commit analysis
+        continue-on-error: true
+        run: |
+          FILE="analyses/${REPORT_NAME}.json"
+          if [[ ! -f "$FILE" ]]; then
+            echo "::warning::No analysis produced for ${REPORT_NAME}"
+            exit 0
+          fi
+          git add "$FILE"
+          git commit -m "analysis: ${REPORT_NAME}"
+          for _ in 1 2 3; do
+            if git pull --rebase && git push; then exit 0; fi
+            sleep 10
+          done
+          echo "::warning::Could not push analysis for ${REPORT_NAME}"
+
+  # Separate from `analyse` so that a failed, cancelled or timed-out analysis never blocks the
+  # web deploy and Slack notification of the report itself.
+  trigger-web:
+    permissions:
+      actions: write
+    needs: [commit, analyse]
+    if: ${{ always() && needs.commit.result == 'success' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    steps:
       - name: Trigger Web workflow
-        if: github.ref == 'refs/heads/main'
-        run: gh workflow run web.yml --ref "${{ github.ref }}" -f experiment_name="${{ env.REPORT_NAME }}" -f notify_team=${{ inputs.notify_team }}
+        run: gh workflow run web.yml --repo "${{ github.repository }}" --ref "${{ github.ref }}" -f experiment_name="${REPORT_NAME}" -f notify_team=${{ inputs.notify_team }}
         env:
           GH_TOKEN: ${{ github.token }}
+          REPORT_NAME: ${{ needs.commit.outputs.report-name }}

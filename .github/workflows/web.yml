@@ -73,6 +73,20 @@ jobs:
     if: ${{ github.event_name == 'workflow_dispatch' && github.event.inputs.experiment_name != '' && !contains(inputs.notify_team, 'false')}}
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: astral-sh/setup-uv@v10.3.3
+      - run: uv sync
+
+      # Empty values when no analysis exists (or it can't be read), so the Slack workflow
+      # still runs.
+      - name: Read triage analysis
+        id: analysis
+        continue-on-error: true
+        env:
+          MAAT_SITE_URL: ${{ needs.deploy.outputs.page_url }}
+          REPORT_NAME: ${{ github.event.inputs.experiment_name }}
+        run: ./maat slack-fields "$REPORT_NAME" --output "$GITHUB_OUTPUT"
+
       - name: URL encode experiment name
         id: url-encode
         run: |
@@ -86,5 +100,9 @@ jobs:
           payload: |
             {
               "url": "${{ needs.deploy.outputs.page_url }}#s=${{ steps.url-encode.outputs.encoded_name }}&p=${{ steps.url-encode.outputs.encoded_name }}",
-              "report_name": "${{ github.event.inputs.experiment_name }}"
+              "report_name": "${{ github.event.inputs.experiment_name }}",
+              "status": ${{ toJSON(steps.analysis.outputs.status) }},
+              "summary": ${{ toJSON(steps.analysis.outputs.summary) }},
+              "analysis_url": ${{ toJSON(steps.analysis.outputs.analysis_url) }},
+              "thread_text": ${{ toJSON(steps.analysis.outputs.thread_text) }}
             }

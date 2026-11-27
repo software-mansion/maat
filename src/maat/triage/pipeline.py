@@ -271,3 +271,48 @@ def _rerun_command(report: Report) -> str:
             f"foundry={report.foundry}",
         ]
     )
+
+
+STATUS_EMOJI = {"green": "🟢", "amber": "🟠", "red": "🔴"}
+
+
+def slack_fields(analysis: Analysis, analysis_url: str) -> dict[str, str]:
+    """Variables for the Slack workflow. ``thread_text`` is empty when there is nothing to say."""
+    status = f"{STATUS_EMOJI[analysis.status]} {analysis.status.upper()}"
+    lines: list[str] = []
+    t = analysis.triage
+    if t is not None:
+        # The thread is for things someone has to look at: known issues and performance
+        # findings that aren't a regression stay on the page only.
+        perf_news = t.performance.verdict in ("regressed", "mixed")
+        news = [
+            f
+            for f in t.findings
+            if f.classification != "known-issue"
+            and (f.classification != "performance" or perf_news)
+        ]
+        for f in news[:3]:
+            projects = ", ".join(f.projects[:3]) + (" …" if len(f.projects) > 3 else "")
+            lines.append(
+                f"• *{f.title}* ({f.classification}, {f.confidence})"
+                + (f" — {projects}" if projects else "")
+            )
+        if len(news) > 3:
+            lines.append(f"…and {len(news) - 3} more findings")
+        if t.actions:
+            lines.append(
+                f"{len(t.actions)} action item(s): "
+                + "; ".join(a.title for a in t.actions[:3])
+            )
+        if t.performance.verdict in ("regressed", "mixed"):
+            lines.append(f"Performance: {t.performance.summary}")
+    elif analysis.status != "green" and analysis.primary is not None:
+        lines.append(analysis.headline)
+    if lines:
+        lines.append(f"Details: {analysis_url}")
+    return {
+        "status": status,
+        "summary": analysis.headline,
+        "analysis_url": analysis_url,
+        "thread_text": "\n".join(lines),
+    }
